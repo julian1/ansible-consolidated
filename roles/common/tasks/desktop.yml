@@ -1,0 +1,20 @@
+
+    - apt: name=xorg
+    - apt: name=xmonad
+    - apt: name=xmobar
+    - apt: name=xtrlock
+    - apt: name=dmenu
+ 
+    - apt: name=alsa-utils  # alsa-mixer, and amixer
+
+    - apt: name=iceweasel
+    - apt: name=evince
+    - apt: name=ircii
+
+    - apt: name=mplayer
+
+    - apt: name=virtualbox
+    - apt: name=vagrant
+
+    - apt: name=cifs-utils # to mount shares
+ 

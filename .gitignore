@@ -1,0 +1,7 @@
+*.swp
+*.swo
+*.swn
+*.class
+target
+harcopy.0
+roles/common/yaegashi.blockinfile

@@ -1,0 +1,5 @@
+
+    - name: Disable shell bell
+      replace: dest=/etc/inputrc backup=true regexp='#.*(set bell-style visible.*)' replace='\1'
+
+

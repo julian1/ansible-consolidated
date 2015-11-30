@@ -1,0 +1,64 @@
+- hosts: all
+  roles:
+     - yaegashi.blockinfile
+  sudo: no
+  tasks:
+    # hostname?
+    - include: tasks/sources.yml template_src=debian-sources.j2 version=testing upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
+    - include: tasks/sudoers.yml
+    - include: tasks/disable-shell-bell.yml
+    - include: tasks/bridge.yml
+    - include: tasks/chefdk.yml
+
+    - apt: name=memtest86
+    - apt: name=fail2ban
+
+    - apt: name=alsa-oss
+    - apt: name=alsa-utils
+    - apt: name=alsa-tools
+
+    - name: Setup soundcard
+      blockinfile:
+        dest: /etc/modprobe.d/alsa-base.conf
+        create: true
+        content: |
+          # hdmi and cth reversed
+          options snd_hda_intel enable=0,1
+
+          # hardware beep off
+          options snd_hda_intel beep_mode=0
+          blacklist pcspkr
+      notify: reboot
+
+    - name: Initialize alsa
+      # command: bash -c "/usr/sbin/alsactl"
+      command: /usr/sbin/alsactl
+      args:
+        creates: /var/lib/alsa/asound.state
+      notify: reboot
+
+    - name: Wifi firmware
+      apt: name=firmware-iwlwifi
+
+    - name: Modprobe
+      modprobe: name=iwlwifi state=present
+
+    - name: Bring up interface
+      command: /sbin/ifconfig wlp2s0 up
+
+    - apt: name=wpasupplicant
+    - apt: name=wicd-curses
+
+
+    # make sure systemd is installed
+    - apt: name=systemd-container
+      when: (ansible_distribution == "Debian" and ansible_distribution_major_version > "8")
+    
+    - apt: name=debootstrap
+
+    # TODO add devenv and desktop...
+
+
+  handlers:
+    - include: handlers/main.yml
+

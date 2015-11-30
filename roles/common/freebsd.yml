@@ -1,0 +1,52 @@
+- hosts: all
+  gather_facts: yes
+  # no sudo since this creates user
+  sudo: no
+  vars:
+    - user: meteo
+  tasks:
+
+    # TODO check this again
+    - template: src=templates/sshd_config.j2 dest=/etc/ssh/sshd_config mode=0644
+      notify: restart_sshd
+
+
+    - pkgng: name=bash
+
+    - name: User
+      # wheel gives su
+      user: name={{user}} shell=/usr/local/bin/bash  groups=wheel append=yes
+
+    - authorized_key: user={{user}} key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
+
+ 
+    - pkgng: name=git
+
+    - pkgng: name=vim-lite
+    # - pkgng: name=git
+    - pkgng: name=screen
+    - pkgng: name=less
+    # - pkgng: name=pkgngitude
+#    - pkgng: name=mlocate
+    - pkgng: name=wget
+    - pkgng: name=curl
+#    - pkgng: name=dnsutils   # dig, nslookup
+    #- pkgng: name=sudo
+      # - pkgng: name=nettools
+    # - pkgng: name=time
+    - pkgng: name=pstree # pstree
+    - pkgng: name=iftop
+    # - pkgng: name=iotop   # 
+    - pkgng: name=lsof   # what the other one?
+    # - pkgng: name=iptables
+    - pkgng: name=netcat
+
+    # - pkgng: name=debootstrap
+    - pkgng: name=fusefs-sshfs
+    - pkgng: name=rsync
+
+  handlers:
+    - name: restart_sshd
+      command: bash -c "service sshd restart"
+
+

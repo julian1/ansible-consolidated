@@ -1,0 +1,7 @@
+
+cryptsetup luksOpen /dev/sda2 sda2_encrypted || exit
+
+cryptsetup status sda2_encrypted || exit
+
+mount /dev/mapper/sda2_encrypted /home
+

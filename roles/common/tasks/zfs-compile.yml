@@ -1,0 +1,40 @@
+- hosts: all
+  roles:
+  sudo: no
+  vars:
+  tasks:
+
+    # can't use redirection or piping or wildcards in commands. because it's parsed, instead use shell 
+    # TODO if git revision changes, we should recompile. 
+    # Maybe register a file, then have a step that does make clean etc
+
+    - git: repo=https://github.com/zfsonlinux/spl.git dest=/root/spl version=master
+    - apt: name=dh-autoreconf
+    - apt: name=alien
+    - command: ./autogen.sh chdir=/root/spl creates=configure
+    - command: ./configure chdir=/root/spl creates=Makefile
+    - shell: make deb-utils deb-kmod && touch ansible-compiled chdir=/root/spl creates=ansible-compiled
+    - shell: dpkg -i *.deb && touch ansible-installed chdir=/root/spl creates=ansible-installed
+
+
+    - git: repo=https://github.com/zfsonlinux/zfs.git dest=/root/zfs version=master
+    - apt: name=uuid-dev
+    - command: ./autogen.sh chdir=/root/zfs creates=configure
+    - command: ./configure chdir=/root/zfs creates=Makefile
+    - shell: make deb-utils deb-kmod && touch ansible-compiled chdir=/root/zfs creates=ansible-compiled
+    - shell: dpkg -i *.deb && touch ansible-installed chdir=/root/zfs creates=ansible-installed
+
+    - modprobe: name=zfs state=present
+
+    - template: src=templates/zfs-mount.j2 dest=/root/zfs-mount.sh mode=0755
+    - template: src=templates/zfs-unmount.j2 dest=/root/zfs-unmount.sh mode=0755
+
+
+
+# another way
+#    - shell: chdir=/root/zfs creates=ansible-done {{item}} 
+#      with_items:
+#      - ./autogen.sh 
+#      - ./configure 
+ 
+

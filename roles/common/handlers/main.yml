@@ -1,0 +1,29 @@
+
+  - name: reboot
+    command: /sbin/reboot
+
+  - name: reload-sysctl
+    command: /sbin/sysctl -p /etc/sysctl.conf
+
+  - name: restart-br0
+    command: sh -c "/sbin/ifdown br0 && /sbin/ifup br0"
+
+  - name: restart-eth0
+    command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
+
+  - name: restart-eth1
+    command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
+
+  - name: restart-eth2
+    command: sh -c "/sbin/ifdown eth2 && /sbin/ifup eth2"
+
+  - name: restart-wlan0
+    command: sh -c "/sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0"
+
+  - name: restart-dnsmasq
+    service: name=dnsmasq state=restarted
+    # command: systemctl restart dnsmasq
+
+  - name: restart-hostapd
+    service: name=hostapd state=restarted
+

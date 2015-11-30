@@ -1,0 +1,24 @@
+  
+we should have wiped the partion with /dev/urandom or /dev/zero
+
+ 
+less /backup/home/meteo/Config_Stuff2/notes/luks.txt 
+cryptsetup -y luksFormat /dev/sda2
+cryptsetup luksDump /dev/sda2
+cryptsetup luksOpen /dev/sda2  sda2-luks
+zpool create storage /dev/mapper/sda2-luks 
+mount
+history > history.txt
+
+
+zpool import backup
+zfs snapshot backup@right_now
+zfs send backup@right_now | zfs receive storage/bbbb
+
+zfs snapshot ....
+
+zfs send backup@right_now | zfs receive storage/bbbb
+
+
+
+

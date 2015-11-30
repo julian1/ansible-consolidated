@@ -1,0 +1,12 @@
+# container instance, using dhcp
+
+- hosts: all
+  tasks:
+    # include dhcp-hostname
+    - include: tasks/sources.yml template_src=debian-sources.j2 version=testing upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
+    - include: tasks/sudoers.yml 
+    - include: tasks/user.yml user=meteo
+    - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
+    - include: tasks/devenv.yml
+
+
