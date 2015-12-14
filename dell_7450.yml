@@ -6,8 +6,8 @@
   roles:
     - yaegashi.blockinfile
     - { role: distribution, template: debian.j2, version: testing, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
-    # - ansible-oracle-java  
 
+    # https://github.com/William-Yeh/ansible-oracle-java/tree/master/tasks
     - ansible-oracle-java  
 
   sudo: no
