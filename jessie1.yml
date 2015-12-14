@@ -11,7 +11,8 @@
     - geonetwork
     
   tasks:
-    - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
-    - include: "{{ctasks}}/devenv.yml"
+    - include: "{{ctasks}}/sudoers.yml"
     - include: "{{ctasks}}/user.yml user=meteo"
+    - include: "{{ctasks}}/devenv.yml"
+    - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
  
