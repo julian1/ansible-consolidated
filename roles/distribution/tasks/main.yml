@@ -1,0 +1,29 @@
+
+
+  # the template takes {{mirror}} and {{ ubuntu_version}} as an argument, 
+  # would be nice to pass directly
+ # {hostname: "test", ip: "127.0.0.1"}
+  # we can use set fact, and use a bag
+  # - set_fact: 
+  #    bag: { x: 123 }
+
+
+  # ansible requires aptitude to perform upgrade!
+  - apt: name=aptitude
+
+  - template: src={{template_src}} dest=/etc/apt/sources.list mode=0644 
+
+  - apt: state=latest update_cache=yes upgrade={{upgrade_type}}
+
+  # https://realguess.net/2014/12/21/ansible-update-servers-to-the-latest-and-reboot/
+  # http://docs.ansible.com/ansible/playbooks_conditionals.html
+  - name: Check reboot is required
+    register: file
+    stat: path=/var/run/reboot-required get_md5=no
+
+  # reboot before continuing - not in a handler
+  - name: Reboot the server
+    command: /sbin/reboot
+    when: file.stat.exists == true
+
+

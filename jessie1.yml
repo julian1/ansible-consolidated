@@ -5,6 +5,7 @@
 - hosts: all
 
   roles:
+    -  { role: distribution, template_src: debian-sources.j2, version: jessie, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
     - common
     - oracle-java
     - geonetwork
