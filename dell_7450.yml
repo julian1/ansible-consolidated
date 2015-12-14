@@ -5,7 +5,7 @@
 
   roles:
     - yaegashi.blockinfile
-    - { role: distribution, template_src: debian-sources.j2, version: testing, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
+    - { role: distribution, template: debian-sources.j2, version: testing, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
   sudo: no
   vars: 
     - common: ./roles/common
