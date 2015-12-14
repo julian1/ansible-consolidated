@@ -1,0 +1,21 @@
+
+  - name: set internal vars for 1.7.0_80
+    set_fact:
+      jdk_version:      1.7.0_80
+      jdk_tarball_file: jdk-7u80-linux-x64
+      jdk_tarball_url:  http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64
+      java_download_path: /home/meteo/imos/
+
+  - name: get JDK tarball (as tar.gz file)
+    command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie'  -o {{ jdk_tarball_file }}.tar.gz  {{ jdk_tarball_url }}.tar.gz
+    args:
+      creates: "{{ jdk_tarball_file }}.tar.gz"
+      chdir:   "{{ java_download_path }}"
+
+  - unarchive: src=/home/meteo/imos/{{ jdk_tarball_file }}.tar.gz dest=/home/meteo/imos/ owner=meteo creates={{java_download_path}}/jdk{{jdk_version}}
+
+  - file: state=touch dest=/home/meteo/paths
+
+  - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export JAVA_HOME={{java_download_path}}/jdk{{jdk_version}}'
+  - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export PATH=$JAVA_HOME/bin:$PATH'
+
