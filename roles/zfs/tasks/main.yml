@@ -26,8 +26,8 @@
 
     - modprobe: name=zfs state=present
 
-    - template: src=templates/zfs-mount.j2 dest=/root/zfs-mount.sh mode=0755
-    - template: src=templates/zfs-unmount.j2 dest=/root/zfs-unmount.sh mode=0755
+    - template: src=mount.j2 dest=/root/mount.sh mode=0755
+    - template: src=unmount.j2 dest=/root/unmount.sh mode=0755
 
 
 
