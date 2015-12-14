@@ -1,0 +1,18 @@
+# container instance, using dhcp
+# TODO change name to geonetwork
+
+---
+- hosts: all
+
+  roles:
+    - common
+    - oracle-java
+    - geonetwork
+
+  tasks:
+#    - include: tasks/sources.yml template_src=debian-sources.j2 version=jessie upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
+#    - include: tasks/sudoers.yml
+#    - include: tasks/user.yml user=meteo
+#    - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
+    - include: roles/common/tasks/devenv.yml
+
