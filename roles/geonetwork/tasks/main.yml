@@ -17,4 +17,8 @@
     - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/
     - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/
 
+
  
+    - apt: name=postgresql-9.4-postgis-2.1
+    - template: src=db.j2 dest=/tmp/db.sql
+    - command: sudo -u postgres psql -d postgres -f /tmp/db.sql 

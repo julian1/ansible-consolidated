@@ -1,20 +1,24 @@
 - hosts: 131.217.38.36
+
+  pre_tasks:
+    - command: echo my pretask
+
   roles:
     - yaegashi.blockinfile
     - { role: distribution, template_src: debian-sources.j2, version: testing, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
   sudo: no
   vars: 
-    - ctasks: ./roles/common/tasks
-    - chandlers: ./roles/common/handlers
+    - common: ./roles/common
   tasks:
     # hostname?
 
     # - role: zfs
     # - include: tasks/sources.yml template_src=debian-sources.j2 version=testing upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
-    - include: "{{ctasks}}/sudoers.yml"
-    - include: "{{ctasks}}/disable-shell-bell.yml"
-    - include: "{{ctasks}}/bridge.yml"
-    - include: "{{ctasks}}/chefdk.yml"
+    - include: "{{common}}/tasks/sudoers.yml"
+    - include: "{{common}}/tasks/disable-shell-bell.yml"
+    - include: "{{common}}/tasks/bridge.yml"
+    - include: "{{common}}/tasks/chefdk.yml"
+    - include: "{{common}}/tasks/oracle-java.yml"
 
     - apt: name=memtest86
     - apt: name=fail2ban
@@ -66,5 +70,5 @@
 
 
   handlers:
-    - include: "{{chandlers}}/main.yml"
+    - include: "{{common}}/handlers/main.yml"
 
