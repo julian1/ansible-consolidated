@@ -6,9 +6,20 @@
   roles:
     - yaegashi.blockinfile
     - { role: distribution, template: debian.j2, version: testing, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
+    # - ansible-oracle-java  
+
+    - ansible-oracle-java  
+
   sudo: no
   vars: 
     - common: ./roles/common
+
+    - java_version: 7
+    - java_subversion: 80
+    - java_download_path: /home/meteo/imos/myjava
+    # actually gets installed to /usr/java/default which is horrible 
+    - java_remove_download: false
+
   tasks:
     # hostname?
 
@@ -22,8 +33,9 @@
     - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
 
     - include: "{{common}}/tasks/chefdk.yml"
-    - include: "{{common}}/tasks/oracle-java.yml"
     - include: "{{common}}/tasks/grails-1.3.7.yml"
+
+    - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export JAVA_HOME=/usr/java/jdk1.7.0_80'
 
     - apt: name=memtest86
     - apt: name=fail2ban
