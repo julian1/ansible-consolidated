@@ -12,8 +12,8 @@
   tasks:
     # hostname?
 
+
     # - role: zfs
-    # - include: tasks/sources.yml template_src=debian-sources.j2 version=testing upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
     - include: "{{common}}/tasks/sudoers.yml"
     - include: "{{common}}/tasks/disable-shell-bell.yml"
     - include: "{{common}}/tasks/bridge.yml"
@@ -23,6 +23,7 @@
 
     - include: "{{common}}/tasks/chefdk.yml"
     - include: "{{common}}/tasks/oracle-java.yml"
+    - include: "{{common}}/tasks/grails-1.3.7.yml"
 
     - apt: name=memtest86
     - apt: name=fail2ban
