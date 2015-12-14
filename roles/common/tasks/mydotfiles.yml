@@ -1,14 +1,4 @@
 
-    - name: User
-      user: name={{user}} shell=/bin/bash groups=adm append=yes
-
-    # It's almost certainly better to do this manually
-    # authorized key
-    # - name: User key
-    #  authorized_key: user={{user}} key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
-
-    # Just, rsync ~/.ssh/id_rsa.pub root@wily:/home/meteo/.ssh/authorized_keys
-
     - apt: name=git
 
     - name: Checkout dotfiles

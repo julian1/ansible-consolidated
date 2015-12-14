@@ -5,7 +5,7 @@
 
   roles:
     - yaegashi.blockinfile
-    - { role: distribution, template: debian.j2, version: testing, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
+    - { role: distribution, template: debian.j2, version: testing, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
   sudo: no
   vars: 
     - common: ./roles/common
@@ -17,6 +17,10 @@
     - include: "{{common}}/tasks/sudoers.yml"
     - include: "{{common}}/tasks/disable-shell-bell.yml"
     - include: "{{common}}/tasks/bridge.yml"
+
+    - user: name=meteo shell=/bin/bash groups=adm append=yes
+    - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
+
     - include: "{{common}}/tasks/chefdk.yml"
     - include: "{{common}}/tasks/oracle-java.yml"
 
