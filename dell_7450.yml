@@ -15,12 +15,6 @@
   vars: 
     - common: ./roles/common
 
-    # - java_version: 7
-    # - java_subversion: 80
-    # - java_download_path: /home/meteo/imos/myjava
-    # actually gets installed to /usr/java/default which is horrible 
-    # - java_remove_download: false
-
   tasks:
     # hostname?
 
