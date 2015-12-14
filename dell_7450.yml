@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: 131.217.38.36
   roles:
     - yaegashi.blockinfile
     - { role: distribution, template_src: debian-sources.j2, version: testing, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "

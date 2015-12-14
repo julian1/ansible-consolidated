@@ -3,7 +3,8 @@
 
 ---
 - hosts: all
-
+  vars: 
+    - ctasks: ./roles/common/tasks
   roles:
     - { role: distribution, template_src: debian-sources.j2, version: jessie, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
     - oracle-java
@@ -11,6 +12,6 @@
     
   tasks:
     - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
-    - include: roles/common/tasks/devenv.yml
-    - include: roles/common/tasks/user.yml user=meteo
+    - include: "{{ctasks}}/devenv.yml"
+    - include: "{{ctasks}}/user.yml user=meteo"
  
