@@ -1,8 +1,10 @@
 
     - apt: name=git
 
+    # uggh, there's a problem with local changes - needed for chefdk grails-home path variables.
+    # who has authority to write...
     - name: Checkout dotfiles
-      git: repo=http://github.com/julian1/dotfiles.git dest=/home/{{user}}/dotfiles version=master
+      git: repo=http://github.com/julian1/dotfiles.git dest=/home/{{user}}/dotfiles version=master  force=yes
       sudo: true
       sudo_user: "{{user}}"
 

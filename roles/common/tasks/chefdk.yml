@@ -23,7 +23,7 @@
         - chef gem install berkshelf
         - touch ansible-chefdk-configured
 
-    - lineinfile: dest=/home/meteo/.bashrc backup=true state=present insertafter=EOF line='export PATH=$PATH:$HOME/.chefdk/gem/ruby/2.1.0/bin'
+    - lineinfile: dest=/home/meteo/paths backup=true state=present insertafter=EOF line='export PATH=$PATH:$HOME/.chefdk/gem/ruby/2.1.0/bin'
 
 
 
