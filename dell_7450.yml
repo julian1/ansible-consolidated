@@ -8,17 +8,18 @@
     - { role: distribution, template: debian.j2, version: testing, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
 
     # https://github.com/William-Yeh/ansible-oracle-java/tree/master/tasks
-    - ansible-oracle-java  
+    - { role: ansible-oracle-java, java_version: 7, java_subversion: 80, java_download_path: /home/meteo/imos/myjava, java_remove_download: false }
+
 
   sudo: no
   vars: 
     - common: ./roles/common
 
-    - java_version: 7
-    - java_subversion: 80
-    - java_download_path: /home/meteo/imos/myjava
+    # - java_version: 7
+    # - java_subversion: 80
+    # - java_download_path: /home/meteo/imos/myjava
     # actually gets installed to /usr/java/default which is horrible 
-    - java_remove_download: false
+    # - java_remove_download: false
 
   tasks:
     # hostname?
