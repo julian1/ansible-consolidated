@@ -8,7 +8,8 @@
     - common: ./roles/common
 
   pre_tasks:
-    - include: "{{common}}/tasks/jdk.yml" 
+    # actually we don't even need custom jdk - but will use open-jdk installed with tomcat7
+    # - include: "{{common}}/tasks/jdk.yml" 
       
 
   roles:
@@ -18,12 +19,13 @@
     
 
   tasks:
-    - user: name=meteo shell=/bin/bash groups=adm append=yes
-    - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
-    - authorized_key: user=meteo key="{{sshkey}}"
+#    - user: name=meteo shell=/bin/bash groups=adm append=yes
+#    - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
+#    - authorized_key: user=meteo key="{{sshkey}}"
 
-    - include: "{{common}}/tasks/sudoers.yml"
-    - include: "{{common}}/tasks/devenv.yml"
+#    - include: "{{common}}/tasks/sudoers.yml"
+#    - include: "{{common}}/tasks/devenv.yml"
 
 
- 
+    - command: sh -c "wget 'https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war' -O /var/lib/tomcat7/webapps/geonetwork.war" creates=/var/lib/tomcat7/webapps/geonetwork.war
+      
