@@ -6,15 +6,11 @@
 
   roles:
     - { role: distribution, template_src: debian-sources.j2, version: jessie, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
-    - { role: meteo, user: meteo } 
-    # - common
-#    - oracle-java
-#    - geonetwork
+    - oracle-java
+    - geonetwork
     
-
   tasks:
-#    - include: tasks/sudoers.yml
-#    - include: tasks/user.yml user=meteo
-#    - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
-#    - include: roles/common/tasks/devenv.yml
+    - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
+    - include: roles/common/tasks/devenv.yml
+    - include: roles/common/tasks/user.yml user=meteo
  
