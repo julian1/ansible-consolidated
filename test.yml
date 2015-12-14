@@ -14,10 +14,10 @@
     - name: get JDK tarball (as tar.gz file)
       command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie'  -o {{ jdk_tarball_file }}.tar.gz  {{ jdk_tarball_url }}.tar.gz
       args:
-        creates: "{{ java_download_path }}/jdk-tarball-{{ jdk_version }}"
+        creates: "{{ jdk_tarball_file }}.tar.gz"
         chdir:   "{{ java_download_path }}"
 
-    - unarchive: src=/home/meteo/imos/{{ jdk_tarball_file }}.tar.gz dest=/home/meteo/imos/ owner=meteo
+    - unarchive: src=/home/meteo/imos/{{ jdk_tarball_file }}.tar.gz dest=/home/meteo/imos/ owner=meteo creates={{java_download_path}}/jdk{{jdk_version}}
 
     - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export JAVA_HOME={{java_download_path}}/jdk{{jdk_version}}'
     - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export PATH=$JAVA_HOME/bin:$PATH'
