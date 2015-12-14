@@ -5,18 +5,25 @@
 - hosts: all
   vars: 
     - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
-    - common: ./roles/common/tasks
+    - common: ./roles/common
+
+  pre_tasks:
+    - include: "{{common}}/tasks/jdk.yml" 
+      
+
   roles:
-    - { role: distribution, template_src: debian-sources.j2, version: jessie, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
-    - oracle-java
+    - { role: distribution, template: debian.j2, version: jessie, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
+    # - { role: ansible-oracle-java, java_version: 7, java_subversion: 80, java_download_path: /home/meteo/imos/myjava, java_remove_download: false }
     - geonetwork
     
+
   tasks:
-    - include: "{{common}}/sudoers.yml"
-    - include: "{{common}}/user.yml user=meteo"
-    - include: "{{common}}/devenv.yml"
+    - user: name=meteo shell=/bin/bash groups=adm append=yes
+    - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
     - authorized_key: user=meteo key="{{sshkey}}"
 
+    - include: "{{common}}/tasks/sudoers.yml"
+    - include: "{{common}}/tasks/devenv.yml"
 
- 
+
  
