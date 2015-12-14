@@ -4,25 +4,21 @@
 - hosts: all
 
   vars:
-    - java_version: 7
-    - java_subversion: 80
-    - java_download_path: /home/meteo/imos/myjava
-    - java_remove_download: false
-
-  roles:
-    # - ansible-oracle-java  
+    - jdk_version:      1.7.0_80
+    - jdk_tarball_file: jdk-7u80-linux-x64
+    - jdk_tarball_url:  http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64
+    - java_download_path: /home/meteo/imos/
 
   tasks:
-
-    - name: set internal vars for 1.7.0_80
-      set_fact:
-        jdk_version:      1.7.0_80
-        jdk_tarball_file: jdk-7u80-linux-x64
-        jdk_tarball_url:  http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64
 
     - name: get JDK tarball (as tar.gz file)
       command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie'  -o {{ jdk_tarball_file }}.tar.gz  {{ jdk_tarball_url }}.tar.gz
       args:
         creates: "{{ java_download_path }}/jdk-tarball-{{ jdk_version }}"
         chdir:   "{{ java_download_path }}"
+
+    - unarchive: src=/home/meteo/imos/{{ jdk_tarball_file }}.tar.gz dest=/home/meteo/imos/ owner=meteo
+
+    - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export JAVA_HOME={{java_download_path}}/jdk{{jdk_version}}'
+    - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export PATH=$JAVA_HOME/bin:$PATH'
 
