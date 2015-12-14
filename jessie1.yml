@@ -4,15 +4,18 @@
 ---
 - hosts: all
   vars: 
-    - ctasks: ./roles/common/tasks
+    - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
+    - common: ./roles/common/tasks
   roles:
     - { role: distribution, template_src: debian-sources.j2, version: jessie, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
     - oracle-java
     - geonetwork
     
   tasks:
-    - include: "{{ctasks}}/sudoers.yml"
-    - include: "{{ctasks}}/user.yml user=meteo"
-    - include: "{{ctasks}}/devenv.yml"
-    - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
+    - include: "{{common}}/sudoers.yml"
+    - include: "{{common}}/user.yml user=meteo"
+    - include: "{{common}}/devenv.yml"
+    - authorized_key: user=meteo key="{{sshkey}}"
+
+    - apt: name=postgresql-9.4-postgis-2.1
  
