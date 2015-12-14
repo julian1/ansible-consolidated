@@ -1,14 +1,20 @@
 - hosts: all
   roles:
-     - yaegashi.blockinfile
+    - yaegashi.blockinfile
+    - { role: distribution, template_src: debian-sources.j2, version: testing, upgrade_type: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
   sudo: no
+  vars: 
+    - ctasks: ./roles/common/tasks
+    - chandlers: ./roles/common/handlers
   tasks:
     # hostname?
-    - include: tasks/sources.yml template_src=debian-sources.j2 version=testing upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
-    - include: tasks/sudoers.yml
-    - include: tasks/disable-shell-bell.yml
-    - include: tasks/bridge.yml
-    - include: tasks/chefdk.yml
+
+    # - role: zfs
+    # - include: tasks/sources.yml template_src=debian-sources.j2 version=testing upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
+    - include: "{{ctasks}}/sudoers.yml"
+    - include: "{{ctasks}}/disable-shell-bell.yml"
+    - include: "{{ctasks}}/bridge.yml"
+    - include: "{{ctasks}}/chefdk.yml"
 
     - apt: name=memtest86
     - apt: name=fail2ban
@@ -53,12 +59,12 @@
     # make sure systemd is installed
     - apt: name=systemd-container
       when: (ansible_distribution == "Debian" and ansible_distribution_major_version > "8")
-    
+
     - apt: name=debootstrap
 
     # TODO add devenv and desktop...
 
 
   handlers:
-    - include: handlers/main.yml
+    - include: "{{chandlers}}/main.yml"
 
