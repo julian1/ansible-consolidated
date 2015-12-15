@@ -9,8 +9,6 @@ ansible-galaxy install yaegashi.blockinfile -p ./roles/common
 # or
 sudo ansible-galaxy install yaegashi.blockinfile
 
-ansible-galaxy install https://github.com/William-Yeh/ansible-oracle-java
-
 
 Using root to provision is pretty convenient
 - sshd and rsync must be installed, and copy authorized_key into /roo/.ssh 
