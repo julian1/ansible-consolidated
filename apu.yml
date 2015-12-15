@@ -131,6 +131,10 @@
 
       # may need to restart wlan0 here? at least when install dnsmasq
 
+    - apt: name=minidnla
+ 
+    - apt: name=iptables-persistent
+
 
   handlers:
     - include: ./roles/common/handlers/main.yml
