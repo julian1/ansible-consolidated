@@ -12,6 +12,8 @@
   tasks:
     - hostname: name=apu
 
+    - include: ./roles/common/tasks/timezone.yml timezone=Australia/Tasmania
+
     # change name of sources to update?
     # - include: tasks/sources.yml template_src=debian-sources.j2 version=jessie upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
     - include: ./roles/common/tasks/sudoers.yml
