@@ -6,21 +6,24 @@
 
 - hosts: all
   roles:
-     - yaegashi.blockinfile
+    - yaegashi.blockinfile
+    - { role: distribution, template: debian.j2, version: jessie, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
+  vars: 
+    - common: ./roles/common
+
   tasks:
     - hostname: name=apu
 
     # change name of sources to update?
-    - include: tasks/sources.yml template_src=debian-sources.j2 version=jessie upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
-    - include: tasks/sudoers.yml
-    - include: tasks/user.yml user=meteo
-    # important - we should put the key locally.
+    # - include: tasks/sources.yml template_src=debian-sources.j2 version=jessie upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
+    - include: "{{common}}/tasks/sudoers.yml"
+
+    - user: name=meteo shell=/bin/bash groups=adm append=yes
+    - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
     - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
 
     - apt: name=vim
-
     - apt: name=ntp
-
     - apt: name=fail2ban
 
     # iwconfig - useful to check wlan0 state
@@ -132,7 +135,7 @@
 
 
   handlers:
-    - include: handlers/main.yml
+    - include: "{{common}}/handlers/main.yml"
 
 
 
