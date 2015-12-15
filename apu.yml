@@ -9,18 +9,16 @@
     - yaegashi.blockinfile
     - { role: distribution, template: debian.j2, version: jessie, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
   vars: 
-    - common: ./roles/common
-
   tasks:
     - hostname: name=apu
 
     # change name of sources to update?
     # - include: tasks/sources.yml template_src=debian-sources.j2 version=jessie upgrade_type=safe mirror="http://mirror.aarnet.edu.au/debian"
-    - include: "{{common}}/tasks/sudoers.yml"
+    - include: ./roles/common/tasks/sudoers.yml
 
     - user: name=meteo shell=/bin/bash groups=adm append=yes
-    - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
     - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
+    - include: ./roles/common/tasks/mydotfiles.yml user=meteo
 
     - apt: name=vim
     - apt: name=ntp
@@ -135,7 +133,7 @@
 
 
   handlers:
-    - include: "{{common}}/handlers/main.yml"
+    - include: ./roles/common/handlers/main.yml
 
 
 
