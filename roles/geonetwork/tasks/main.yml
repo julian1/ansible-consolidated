@@ -21,3 +21,8 @@
     - apt: name=postgresql-9.4-postgis-2.1
     - template: src=db.j2 dest=/tmp/db.sql
     - command: sudo -u postgres psql -d postgres -f /tmp/db.sql 
+
+    - file: path=/var/lib/tomcat7/overrides/ state=directory
+    - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml
+
+    

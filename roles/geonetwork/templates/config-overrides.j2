@@ -1,0 +1,124 @@
+<overrides>
+    <!-- include common ANZMEST/IMOS overrides -->
+
+    <import file="/WEB-INF/imos-config-overrides.xml"/>
+
+
+    <!-- set logging properties -->
+
+    <logging>
+        <logFile>/WEB-INF/log4j.cfg</logFile>
+        <logFile>/mnt/ebs/tomcat7/geonetwork_123/conf/geonetwork/log4j-overrides.cfg</logFile>
+    </logging>
+
+    <!-- set default map layers -->
+
+    <file name=".*WEB-INF/config-gui\.xml">
+        <replaceXML xpath="mapSearch/layers">
+            <layer server="http://geoserver-static.aodn.org.au/geoserver/wms" tocName="Borders"  params="{layers: 'gn:ne_50m_boundary_da,gn:ne_50m_boundary_lines_land,gn:ne_50m_coastline', transparent: 'true', format: 'image/png'}"  options="{}" />
+            <layer server="http://geoserver-static.aodn.org.au/geoserver/wms" tocName="Ortophoto" params="{layers: 'gn:world', format: 'image/jpeg'}" options="{isBaseLayer: true}" />
+        </replaceXML>
+        <replaceXML xpath="mapViewer/layers">
+            <layer server="http://geoserver-static.aodn.org.au/geoserver/wms" tocName="Borders"  params="{layers: 'gn:ne_50m_boundary_da,gn:ne_50m_boundary_lines_land,gn:ne_50m_coastline', transparent: 'true', format: 'image/png'}"  options="{}" />
+            <layer server="http://geoserver-static.aodn.org.au/geoserver/wms" tocName="Ortophoto" params="{layers: 'gn:world', format: 'image/jpeg'}" options="{isBaseLayer: true}" />
+        </replaceXML>
+    </file>
+
+    <!-- branding overrides -->
+    <file name=".*WEB-INF/config-gui\.xml">
+        <addXml xpath=".">
+            <banner>
+                <headerLeftImage>http://static.emii.org.au/images/mest/imos_123/AODN_123_logo_mest.png</headerLeftImage>
+                <headerRightImage>http://static.emii.org.au/images/mest/imos_123/IMOS-wide-logo-white.png</headerRightImage>
+            </banner>
+        </addXml>
+    </file>
+
+
+    <!-- configure geoserver endpoints -->
+
+    <file name=".*/WEB-INF/geoserver-nodes\.xml">
+        <replaceXML xpath="node">
+            <id>http___geoserver-static_aodn_org_au_geoserver</id>
+            <name>GeoServer (workspace: gn)</name>
+            <namespacePrefix>gn</namespacePrefix>
+            <namespaceUrl>http://geonetwork-opensource.org</namespaceUrl>
+            <adminUrl>http://geoserver-static.aodn.org.au/geoserver/rest</adminUrl>
+            <wmsUrl>http://geoserver-static.aodn.org.au/geoserver/wms</wmsUrl>
+            <wfsUrl>http://geoserver-static.aodn.org.au/geoserver/wfs</wfsUrl>
+            <wcsUrl>http://geoserver-static.aodn.org.au/geoserver/wcs</wcsUrl>
+            <stylerUrl>http://geoserver-static.aodn.org.au/geoserver/www/styler/index.html</stylerUrl>
+            <user>admin</user>
+            <password>geoserver</password>
+        </replaceXML>
+    </file>
+
+    <!-- set database connection details
+
+         We use an ordinary tomcat configured Jndi resource here, but
+         have to expose the url for Geotools which needs to know the
+         the connection details.
+    -->
+
+    <file name=".*/WEB-INF/config\.xml">
+        <replaceXML xpath="resources">
+            <resource enabled="true">
+                <name>main-db</name>
+                <provider>jeeves.resources.dbms.JNDIPool</provider>
+                <config>
+                    <context>java:/comp/env</context>
+                    <resourceName>jdbc/geonetwork</resourceName>
+                    <url>jdbc:postgresql_postGIS://localhost:5432/geonetwork?ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory</url>
+                    <provideDataStore>true</provideDataStore>
+                    <maxOpenPreparedStatements>300</maxOpenPreparedStatements>
+                </config>
+            </resource>
+        </replaceXML>
+
+        <addXML xpath="appHandler" attName="class" value="org.fao.geonet.Geonetwork">
+            <param name="LinkMonitorEnabled" value="true"/>
+            <param name="LinkMonitorClass" value="org.fao.geonet.monitor.link.LinkMonitorService"/>
+            <param name="LinkMonitorInitialDelaySeconds" value="5"/>
+            <param name="LinkMonitorFixedDelaySeconds" value="600"/>
+            <param name="LinkMonitorServiceReindexIntervalSeconds" value="1800"/>
+            <param name="LinkMonitorServiceMaxFailureRate" value="0.4"/>
+            <param name="LinkMonitorServiceMaxChecks" value="10"/>
+            <param name="LinkMonitorServiceTimeout" value="15"/>
+            <param name="LinkMonitorServiceFreshness" value="3600"/>
+            <param name="LinkMonitorServiceUnknownAsWorking" value="true"/>
+            <param name="LinkMonitorServiceBetweenChecksIntervalMs" value="2000"/>
+        </addXML>
+    </file>
+
+
+    <file name=".*WEB-INF/config-summary\.xml">
+        <replaceAtt xpath="dimensions/dimension[@name='parameterCategories']/param[@name='vocabularyScheme']" attName="value" value="http://vocab.aodn.org.au/def/discovery_parameter/1"/>
+        <replaceAtt xpath="dimensions/dimension[@name='parameterCategories']/param[@name='classificationScheme']" attName="value" value="http://vocab.aodn.org.au/def/parameter_classes/1"/>
+        <replaceAtt xpath="dimensions/dimension[@name='platformCategories']/param[@name='vocabularyScheme']" attName="value" value="http://vocab.aodn.org.au/def/platform/1"/>
+        <replaceAtt xpath="dimensions/dimension[@name='platformCategories']/param[@name='classificationScheme']" attName="value" value="http://vocab.aodn.org.au/def/platform_classes/1"/>
+    </file>
+
+    <file name=".*WEB-INF/config-gui\.xml">
+        <addXML xpath="">
+            <termSelector>
+                <element name="mcp:parameterName">
+                    <thesaurus>external.theme.pp_scheme_australiandiscoveryparametervocabulary</thesaurus>
+                    <typeCode>longName</typeCode>
+                </element>
+                <element name="mcp:parameterUnits">
+                    <thesaurus>external.theme.pp_scheme_aodnunitsofmeasurevocabulary</thesaurus>
+                    <typeCode>longName</typeCode>
+                </element>
+                <element name="mcp:parameterDeterminationInstrument">
+                    <thesaurus>external.theme.pp_scheme_aodninstrumentvocabulary</thesaurus>
+                    <typeCode>longName</typeCode>
+                </element>
+                <element name="mcp:platform">
+                    <thesaurus>external.theme.pp_scheme_aodnplatformvocabulary</thesaurus>
+                    <typeCode>longName</typeCode>
+                </element>
+            </termSelector>
+        </addXML>
+    </file>
+
+</overrides>
