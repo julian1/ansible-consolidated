@@ -22,11 +22,9 @@
 
   - name: restart-dnsmasq
     service: name=dnsmasq state=restarted
-    # command: systemctl restart dnsmasq
 
   - name: restart-hostapd
     service: name=hostapd state=restarted
-
 
   - name: update tzdata
     command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
