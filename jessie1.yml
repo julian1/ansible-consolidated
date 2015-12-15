@@ -27,5 +27,4 @@
 #    - include: "{{common}}/tasks/devenv.yml"
 
 
-    - command: sh -c "wget 'https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war' -O /var/lib/tomcat7/webapps/geonetwork.war" creates=/var/lib/tomcat7/webapps/geonetwork.war
-      
+

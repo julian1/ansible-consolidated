@@ -6,27 +6,58 @@
 
     - apt: name=tomcat7 update_cache=yes
 
-    # - template: src=context.j2 dest=/etc/tomcat7/context.xml
-    # - template: src=context.j2 dest=/etc/tomcat7/context.xml
+    # tomcat jndi
+    - template: src=context.j2 dest=/etc/tomcat7/context.xml owner=tomcat7
 
-    - template: src=context.j2 dest=/etc/tomcat7/context.xml
-    - template: src=tomcat7.j2 dest=/etc/default/tomcat7
+    # tomcat args
+    - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
 
-    - file: path=/var/lib/tomcat7/lib/ state=directory
   
-    - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/
-    - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/
+    # jdbc drivers
+    - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
 
-    # should postgis be here,?  
+    - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
+
+    - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/ owner=tomcat7
+
+    # postgres and gn database 
     - apt: name=postgresql-9.4-postgis-2.1
-    - template: src=db.j2 dest=/tmp/db.sql
-    - command: sudo -u postgres psql -d postgres -f /tmp/db.sql 
 
-    - file: path=/var/lib/tomcat7/overrides/ state=directory
-    - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml
+#    - template: src=db.j2 dest=/tmp/db.sql
+#
+#    - command: psql -d postgres -f /tmp/db.sql 
+#      become: yes
+#      become_user: postgres
 
-    - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml
+    # overides
+    - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
+  
+    - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
+
+    - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml owner=tomcat7
+
    
     # TODO permissions - make sure tomcat owns everything-  
 
-    # made geonetwork_data directory
+    # geonetwork_data directory
+    - file: path=var/lib/tomcat7/geonetwork_data/ state=directory owner=tomcat7
+
+
+    # geonetwork war
+    - command: sh -c "wget 'https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war' -O /var/lib/tomcat7/webapps/geonetwork.war" creates=/var/lib/tomcat7/webapps/geonetwork.war
+     
+
+    - locale_gen: name=en_AU.UTF-8 state=present 
+
+    # restore the db
+    - copy: src=gn.dump dest=/tmp
+
+    - shell: creates=/var/lib/postgresql/ansible-done-restore {{item}}
+      become: yes
+      become_user: postgres
+      with_items:
+        - psql -d postgres -c 'drop database if exists geonetwork'
+        - pg_restore -d postgres -C /tmp/gn.dump
+        - touch /var/lib/postgresql/ansible-done-restore
+
+
