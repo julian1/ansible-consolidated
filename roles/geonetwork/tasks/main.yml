@@ -23,8 +23,10 @@
     - command: sudo -u postgres psql -d postgres -f /tmp/db.sql 
 
     - file: path=/var/lib/tomcat7/overrides/ state=directory
-    - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml
+    - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml
 
-    - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml
+    - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml
    
     # TODO permissions - make sure tomcat owns everything-  
+
+    # made geonetwork_data directory
