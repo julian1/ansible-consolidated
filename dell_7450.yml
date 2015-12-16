@@ -26,6 +26,10 @@
     - include: ./roles/common/tasks/chefdk.yml
     - include: ./roles/common/tasks/grails-1.3.7.yml
 
+    # TODO add devenv and desktop...
+    - include: ./roles/common/tasks/devenv.yml
+
+
     # - include: "./roles/common/tasks/jdk.yml" 
     - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export JAVA_HOME=/usr/java/jdk1.7.0_80'
 
@@ -75,9 +79,6 @@
 
     - apt: name=debootstrap
 
-    # TODO add devenv and desktop...
-
-    - include: ./roles/common/tasks/devenv.yml
  
   handlers:
     - include: ./roles/common/handlers/main.yml
