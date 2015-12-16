@@ -1,4 +1,8 @@
 # TODO hide the passphrase
+# there's an issue with masquerade rules being recorded multiple times.
+# probably because up/down with the dpkg reconfigure. should move nat rules
+# from network/interfaces to firewall, and flush before use 
+
 # issues are - no public dns update, open ssh port, open dnsmasq port
 # printer would have to be on same eth. But maybe not if we bridged it?
 # ntp time
@@ -154,14 +158,17 @@
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
 
           # incoming http to enable apt-get update/upgrade 
+          # TODO, should only be state established,related
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
 
           # dnsmasq
-          # dns - allow incomming requests from lan to dnsmasq service
+          # incomming dns requests from lan to dnsmasq service
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
+
           # and dns request responses coming back from external servers
+          # TODO should be established, related. 
           iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
 
