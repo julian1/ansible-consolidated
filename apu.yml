@@ -8,11 +8,14 @@
   roles:
     - yaegashi.blockinfile
     - { role: distribution, template: debian.j2, version: jessie, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
-  vars: 
+  vars:
   tasks:
     - hostname: name=apu
 
     - include: ./roles/common/tasks/timezone.yml timezone=Australia/Tasmania
+
+    - apt: name=locales
+    - locale_gen: name=en_AU.UTF-8 state=present
 
     - include: ./roles/common/tasks/sudoers.yml
 
@@ -74,7 +77,7 @@
           # wan
           allow-hotplug eth0
           iface eth0 inet dhcp
-  
+
           # static
           auto eth1
           iface eth1 inet static
@@ -88,7 +91,7 @@
             netmask 255.255.255.0
             post-up iptables -t nat -A POSTROUTING -s 192.168.43.0/24 ! -d 192.168.43.0/24  -j MASQUERADE
             post-down iptables -t nat -D POSTROUTING -s 192.168.43.0/24 ! -d 192.168.43.0/24  -j MASQUERADE
-    
+
           # wireless lan
           auto wlan0
           iface wlan0 inet static
@@ -98,7 +101,7 @@
             post-up iptables -t nat -A POSTROUTING -s 192.168.42.0/24 ! -d 192.168.42.0/24  -j MASQUERADE
             post-down iptables -t nat -D POSTROUTING -s 192.168.42.0/24 ! -d 192.168.42.0/24  -j MASQUERADE
 
-      notify: 
+      notify:
         # will these all be run together
         - restart-eth0
         - restart-eth1
@@ -131,9 +134,47 @@
 
       # may need to restart wlan0 here? at least when install dnsmasq
 
-    - apt: name=minidnla
- 
+
     - apt: name=iptables-persistent
+
+    - blockinfile:
+        dest: /etc/iptables-rules
+        create: true
+        content: |
+          # TODO - should this be here, will interfere with fail2ban
+          iptables --flush -t filter
+
+          # input default policy
+          iptables -P INPUT DROP
+
+          # test interface listening on eth0
+          iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
+
+          # incoming lan ssh regardless of state
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
+
+          # incoming http to enable apt-get update/upgrade 
+          iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
+          iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
+
+          # dnsmasq
+          # dns - allow incomming requests from lan to dnsmasq service
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
+          # and dns request responses coming back from external servers
+          iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
+          iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
+
+          # dhcp coming in from lan
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 67 -j ACCEPT
+
+          # dlna from lan
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 8200 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
+      notify: reconfigure-iptables
+
+
+    - apt: name=minidlna
 
 
   handlers:
