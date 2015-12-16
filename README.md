@@ -3,8 +3,12 @@
 ```
 ansible-galaxy install yaegashi.blockinfile -p ./roles/common
 
+IMPORTANT - can still include tasks, and avoid roles if we want outside common.
+            we just have to include the file explicitly.
 
+          - test by moving main.yml to geonetwork.yml
 
+          - also move the distribution back to a task.
 
 # or
 sudo ansible-galaxy install yaegashi.blockinfile

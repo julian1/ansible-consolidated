@@ -23,3 +23,5 @@
     # - apt: name=sshfs  # container doesn't like
     - apt: name=rsync
 
+    - apt: name=libxml2-utils
+
