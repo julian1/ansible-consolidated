@@ -1,12 +1,5 @@
 # TODO hide the passphrase
-# there's an issue with masquerade rules being recorded multiple times.
-# probably because up/down with the dpkg reconfigure. should move nat rules
-# from network/interfaces to firewall, and flush before use 
-
-# issues are - no public dns update, open ssh port, open dnsmasq port
-# printer would have to be on same eth. But maybe not if we bridged it?
-# ntp time
-# use interface eth1, 172.16.210.254 to provision
+# it's easiest to use direct wired interface eth1, 172.16.210.254 to provision
 
 - hosts: all
   roles:
@@ -190,7 +183,5 @@
 
   handlers:
     - include: ./roles/common/handlers/main.yml
-
-
 
 
