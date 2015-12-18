@@ -180,7 +180,7 @@
 
     # - apt: name=minidlna
 
-    # smc route for multicast of minidlna udp on 1900
+    # multicast subnet routing for minidlna udp on 1900
     # Use, ip -s mroute to query status
     - apt: name=smcroute
 
