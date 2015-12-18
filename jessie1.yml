@@ -3,29 +3,19 @@
 
 ---
 - hosts: all
-  vars: 
+  vars:
     - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
-    - common: ./roles/common
-
-  pre_tasks:
-    # actually we don't even need custom jdk - but will use open-jdk installed with tomcat7
-    # - include: "{{common}}/tasks/jdk.yml" 
-  roles:
-    # - { role: distribution, template: debian.j2, version: jessie, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
-    # - { role: ansible-oracle-java, java_version: 7, java_subversion: 80, java_download_path: /home/meteo/imos/myjava, java_remove_download: false }
-    # - geonetwork
-    
 
   tasks:
-    - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian" 
-    - include: ./roles/geonetwork/tasks/main.yml 
+    - user: name=meteo shell=/bin/bash groups=adm append=yes
+    - include: ./roles/common/tasks/mydotfiles.yml user=meteo
+    - authorized_key: user=meteo key="{{sshkey}}"
 
-#    - user: name=meteo shell=/bin/bash groups=adm append=yes
-#    - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
-#    - authorized_key: user=meteo key="{{sshkey}}"
+    - include: ./roles/common/tasks/sudoers.yml
+    - include: ./roles/common/tasks/devenv.yml
 
-#    - include: "{{common}}/tasks/sudoers.yml"
-#    - include: "{{common}}/tasks/devenv.yml"
+    - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
+    - include: ./roles/geonetwork/tasks/main.yml
 
 
 
