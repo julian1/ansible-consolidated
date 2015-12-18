@@ -15,10 +15,12 @@
   roles:
     - { role: distribution, template: debian.j2, version: jessie, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" } # "
     # - { role: ansible-oracle-java, java_version: 7, java_subversion: 80, java_download_path: /home/meteo/imos/myjava, java_remove_download: false }
-    - geonetwork
+    # - geonetwork
     
 
   tasks:
+    - include: ./roles/geonetwork/tasks/main.yml 
+
 #    - user: name=meteo shell=/bin/bash groups=adm append=yes
 #    - include: "{{common}}/tasks/mydotfiles.yml user=meteo" 
 #    - authorized_key: user=meteo key="{{sshkey}}"
