@@ -57,7 +57,7 @@
       become_user: postgres
       with_items:
         - psql -d postgres -c 'drop database if exists geonetwork'
-        - pg_restore -d postgres -C /tmp/gn.dump
+        - pg_restore -d postgres -x -C /tmp/gn.dump
         - touch /var/lib/postgresql/ansible-done-restore
 
 
