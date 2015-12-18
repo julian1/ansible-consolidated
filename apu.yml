@@ -5,6 +5,7 @@
   roles:
     - yaegashi.blockinfile
   vars:
+    - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
   tasks:
     - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
     - hostname: name=apu
@@ -17,7 +18,8 @@
     - include: ./roles/common/tasks/sudoers.yml
 
     - user: name=meteo shell=/bin/bash groups=adm append=yes
-    - authorized_key: user=meteo key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
+    - authorized_key: user=meteo key="{{sshkey}}"
+
     - include: ./roles/common/tasks/mydotfiles.yml user=meteo
 
     - apt: name=vim
