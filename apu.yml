@@ -27,9 +27,7 @@
     # iwconfig - useful to check wlan0 state
     - apt: name=wireless-tools
 
-    # may just have needed a network restart
-    # reboot and Atheros AR9280 and wlan0 is seen and can do iwlist scan
-    # nope ap worked first time
+    # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
     - apt: name=firmware-realtek
 
     # ip forwarding
@@ -60,7 +58,7 @@
           rsn_pairwise=CCMP
       notify: restart-hostapd
 
-      # problem for first run, is that we want a clear network interfaces
+      # TODO issue for first run, is that we want a clear network interfaces
       # but we need the network up to be able to run ansible
 
     - blockinfile:
@@ -163,7 +161,7 @@
           # NAT PREROUTING RULES
           iptables --flush PREROUTING -t nat 
           # http://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables
-          # Best voip guide, note comment that should be able to limit stp to smaller port range
+          # Good voip guide, note the comment to limit stp to smaller port range
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
           # udp or tcp
           iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.10

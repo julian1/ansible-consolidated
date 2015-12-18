@@ -12,7 +12,7 @@
     # tomcat args
     - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
 
-  
+
     # jdbc drivers
     - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
 
@@ -20,24 +20,24 @@
 
     - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/ owner=tomcat7
 
-    # postgres and gn database 
+    # postgres and gn database
     - apt: name=postgresql-9.4-postgis-2.1
 
 #    - template: src=db.j2 dest=/tmp/db.sql
 #
-#    - command: psql -d postgres -f /tmp/db.sql 
+#    - command: psql -d postgres -f /tmp/db.sql
 #      become: yes
 #      become_user: postgres
 
     # overides
     - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
-  
+
     - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
 
     - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml owner=tomcat7
 
-   
-    # TODO permissions - make sure tomcat owns everything-  
+
+    # TODO permissions - make sure tomcat owns everything-
 
     # geonetwork_data directory
     - file: path=var/lib/tomcat7/geonetwork_data/ state=directory owner=tomcat7
@@ -45,14 +45,15 @@
 
     # geonetwork war
     - command: sh -c "wget 'https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war' -O /var/lib/tomcat7/webapps/geonetwork.war" creates=/var/lib/tomcat7/webapps/geonetwork.war
-     
+
 
     - apt: name=locales
-    - locale_gen: name=en_AU.UTF-8 state=present 
+    - locale_gen: name=en_AU.UTF-8 state=present
 
-    # restore the db
+    # copy db from host
     - copy: src=gn.dump dest=/tmp
 
+    # restore the db
     - shell: creates=/var/lib/postgresql/ansible-done-restore {{item}}
       become: yes
       become_user: postgres
@@ -60,5 +61,44 @@
         - psql -d postgres -c 'drop database if exists geonetwork'
         - pg_restore -d postgres -x -C /tmp/gn.dump
         - touch /var/lib/postgresql/ansible-done-restore
+
+    # might be better to create a tmp directory
+
+    # schema plugins
+    # what if we make local modifications?
+    # use git to symbolically link
+
+
+    # https://github.com/ansible/ansible/issues/7474 
+    - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
+
+    - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-sp version=master
+
+    - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
+
+
+    - shell: chdir=/var/lib/tomcat7 creates=xxx {{item}}
+      with_items:
+        - mkdir -p ./geonetwork_data/config/schema_plugins
+        - rm -rf ./geonetwork_data/config/schema_plugins/*
+
+        - ln -s $(pwd)/aodn-core-gn-sp/web/src/main/webapp/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
+
+        - ln -s $(pwd)/aodn-sp/iso19139.anzlic   $(pwd)/geonetwork_data/config/schema_plugins
+        - ln -s $(pwd)/aodn-sp/iso19139.mcp      $(pwd)/geonetwork_data/config/schema_plugins
+        - ln -s $(pwd)/aodn-sp/iso19139.mcp-2.0  $(pwd)/geonetwork_data/config/schema_plugins
+
+
+
+
+# csw-record   iso19110         iso19135         iso19139.mcp      labels.xsd
+# dublin-core  iso19115         iso19139         iso19139.mcp-1.4  README
+# fgdc-std     iso19115-1-2013  iso19139.anzlic  iso19139.mcp-2.0
+
+
+
+
+
+#    https://github.com/aodn/schema-plugins
 
 
