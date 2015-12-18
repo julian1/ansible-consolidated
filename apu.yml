@@ -4,9 +4,9 @@
 - hosts: all
   roles:
     - yaegashi.blockinfile
-    - { role: distribution, template: debian.j2, version: jessie, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
   vars:
   tasks:
+    - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
     - hostname: name=apu
 
     - include: ./roles/common/tasks/timezone.yml timezone=Australia/Tasmania
@@ -22,6 +22,7 @@
 
     - apt: name=vim
     - apt: name=ntp
+    - apt: name=tcpdump
     # - apt: name=fail2ban # not if there's no open ssh, since complicates iptables rules
 
     # iwconfig - useful to check wlan0 state
@@ -177,7 +178,22 @@
 
       notify: reconfigure-iptables
 
-    - apt: name=minidlna
+    # - apt: name=minidlna
+
+    # smc route for multicast of minidlna udp on 1900
+    # Use, ip -s mroute to query status
+    - apt: name=smcroute
+
+    - blockinfile:
+        dest: /etc/smcroute/startup.sh
+        mode: 0755
+        create: true
+        content: |
+          sleep 1
+          smcroute -a wlan0 0.0.0.0 239.255.255.250 eth2
+          # smcroute -a wlan1 192.168.42.14 239.255.255.250 eth2
+      notify: restart-smcroute
+
 
   handlers:
     - include: ./roles/common/handlers/main.yml

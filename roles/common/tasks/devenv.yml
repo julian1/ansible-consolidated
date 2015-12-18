@@ -23,6 +23,7 @@
     # - apt: name=sshfs  # container doesn't like
     - apt: name=rsync
     - apt: name=arp-scan
+    - apt: name=tcpdump
 
     - apt: name=libxml2-utils
 
