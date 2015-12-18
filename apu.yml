@@ -1,18 +1,18 @@
 # TODO hide the passphrase
-# issues are - no public dns update, open ssh port, open dnsmasq port
-# printer would have to be on same eth. But maybe not if we bridged it?
-# ntp time
-# use interface eth1, 172.16.210.254 to provision
+# it's easiest to use direct wired interface eth1, 172.16.210.254 to provision
 
 - hosts: all
   roles:
     - yaegashi.blockinfile
     - { role: distribution, template: debian.j2, version: jessie, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
-  vars: 
+  vars:
   tasks:
     - hostname: name=apu
 
     - include: ./roles/common/tasks/timezone.yml timezone=Australia/Tasmania
+
+    - apt: name=locales
+    - locale_gen: name=en_AU.UTF-8 state=present
 
     - include: ./roles/common/tasks/sudoers.yml
 
@@ -22,7 +22,7 @@
 
     - apt: name=vim
     - apt: name=ntp
-    - apt: name=fail2ban
+    # - apt: name=fail2ban # not if there's no open ssh, since complicates iptables rules
 
     # iwconfig - useful to check wlan0 state
     - apt: name=wireless-tools
@@ -74,7 +74,7 @@
           # wan
           allow-hotplug eth0
           iface eth0 inet dhcp
-  
+
           # static
           auto eth1
           iface eth1 inet static
@@ -86,19 +86,15 @@
           iface eth2 inet static
             address 192.168.43.1
             netmask 255.255.255.0
-            post-up iptables -t nat -A POSTROUTING -s 192.168.43.0/24 ! -d 192.168.43.0/24  -j MASQUERADE
-            post-down iptables -t nat -D POSTROUTING -s 192.168.43.0/24 ! -d 192.168.43.0/24  -j MASQUERADE
-    
+
           # wireless lan
           auto wlan0
           iface wlan0 inet static
             hostapd /etc/hostapd/hostapd.conf
             address 192.168.42.1
             netmask 255.255.255.0
-            post-up iptables -t nat -A POSTROUTING -s 192.168.42.0/24 ! -d 192.168.42.0/24  -j MASQUERADE
-            post-down iptables -t nat -D POSTROUTING -s 192.168.42.0/24 ! -d 192.168.42.0/24  -j MASQUERADE
 
-      notify: 
+      notify:
         # will these all be run together
         - restart-eth0
         - restart-eth1
@@ -128,17 +124,64 @@
           log-dhcp
       notify: restart-dnsmasq
 
-
       # may need to restart wlan0 here? at least when install dnsmasq
-
-    - apt: name=minidnla
- 
     - apt: name=iptables-persistent
 
+    - blockinfile:
+        dest: /etc/iptables-rules
+        create: true
+        content: |
+          #################
+          # FILTER INPUT RULES
+          # TODO - should this be here, will interfere with fail2ban
+          iptables --flush INPUT -t filter
+          # input default policy
+          iptables -P INPUT DROP
+          # test interface listening on eth0
+          iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
+          # incoming lan ssh regardless of state
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
+          # incoming http to enable apt-get update/upgrade 
+          # TODO, should only be state established,related
+          iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
+          iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
+          # dnsmasq
+          # incomming dns requests from lan to dnsmasq service
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
+          # and dns request responses coming back from external servers
+          # TODO should be conntrack established, related. 
+          iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
+          iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
+          # dhcp coming in from lan
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 67 -j ACCEPT
+          # dlna from lan
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 8200 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
+
+          #################
+          # NAT PREROUTING RULES
+          iptables --flush PREROUTING -t nat 
+          # http://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables
+          # Best voip guide, note comment that should be able to limit stp to smaller port range
+          # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
+          # udp or tcp
+          iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.10
+          iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.10
+
+          iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.10
+
+          #################
+          # NAT POSTROUTING RULES
+          iptables --flush POSTROUTING -t nat 
+          iptables -t nat -A POSTROUTING -s 192.168.42.0/24 ! -d 192.168.42.0/24 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.43.0/24 ! -d 192.168.43.0/24 -j MASQUERADE
+
+      notify: reconfigure-iptables
+
+    - apt: name=minidlna
 
   handlers:
     - include: ./roles/common/handlers/main.yml
-
-
 
 
