@@ -175,8 +175,8 @@
           #################
           # NAT POSTROUTING RULES
           iptables --flush POSTROUTING -t nat 
-          iptables -t nat -A POSTROUTING -s 192.168.42.0/24 ! -d 192.168.42.0/24 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 192.168.43.0/24 ! -d 192.168.43.0/24 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.42.0/24 ! -d 192.168.42.0/24 -o eth0 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.43.0/24 ! -d 192.168.43.0/24 -o eth0 -j MASQUERADE
 
       notify: reconfigure-iptables
 
@@ -193,6 +193,7 @@
         content: |
           sleep 1
           smcroute -a wlan0 0.0.0.0 239.255.255.250 eth2
+          smcroute -a eth2  0.0.0.0 239.255.255.250 wlan0
           # smcroute -a wlan1 192.168.42.14 239.255.255.250 eth2
       notify: restart-smcroute
 
