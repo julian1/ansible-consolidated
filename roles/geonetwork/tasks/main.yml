@@ -1,4 +1,7 @@
 
+# TODO remove request table from gn.
+
+
     # - java?
     # postgres?
 
@@ -83,12 +86,9 @@
         - rm -rf ./geonetwork_data/config/schema_plugins/*
 
         - ln -s $(pwd)/aodn-core-gn-sp/web/src/main/webapp/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
-
         - ln -s $(pwd)/aodn-sp/iso19139.anzlic   $(pwd)/geonetwork_data/config/schema_plugins
         - ln -s $(pwd)/aodn-sp/iso19139.mcp      $(pwd)/geonetwork_data/config/schema_plugins
         - ln -s $(pwd)/aodn-sp/iso19139.mcp-2.0  $(pwd)/geonetwork_data/config/schema_plugins
-
-
 
 
 # csw-record   iso19110         iso19135         iso19139.mcp      labels.xsd

@@ -1,12 +1,20 @@
 
-#  - set_fact:
-#      timezone: Australia/Tasmania
 
-  - name: set /etc/localtime
-    file: src=/usr/share/zoneinfo/{{ timezone }} dest=/etc/localtime # state=link
+    # Debian documentation indicates /etc/localtime cannot be a symbolic link.
+    # Since ansible file doesn't support copying local files, we must use command/shell
+    # this means manually computing whether we need to modify
+    # https://wiki.debian.org/TimeZoneChanges
 
-  - name: set /etc/timezone
-    template: src=timezone.j2 dest=/etc/timezone
-    notify: update tzdata
+  - shell: md5sum /etc/localtime | sed 's/ .*//'
+    register: current
 
+  - shell: md5sum /usr/share/zoneinfo/{{ timezone }} | sed 's/ .*//'
+    register: expected
+
+  - command: cp -f /usr/share/zoneinfo/{{ timezone }} /etc/localtime
+    when:  current.stdout != expected.stdout 
+    notify: reconfigure-tzdata
+
+  - template: src=timezone.j2 dest=/etc/timezone force=yes mode=0644
+    notify: reconfigure-tzdata
 
