@@ -1,8 +1,8 @@
 
 
     # Debian documentation indicates /etc/localtime cannot be a symbolic link.
-    # Since ansible file doesn't support copying local files, we have to use command/shell
-    # however this means manually computing whether state needs to be updated
+    # Since the ansible file module doesn't support copying local files, we have to use command/shell
+    # however this means we need to manually compute the state
     # https://wiki.debian.org/TimeZoneChanges
 
     # ok, so we can control whether something is counted as a change 
