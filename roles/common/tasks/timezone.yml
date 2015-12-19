@@ -5,14 +5,15 @@
     # this means manually computing whether we need to modify
     # https://wiki.debian.org/TimeZoneChanges
 
-  - shell: cat /etc/localtime | md5sum 
-    register: current
+    # ok, so we can control whether something is counted as a change 
 
-  - shell: cat /usr/share/zoneinfo/{{ timezone }} | md5sum
-    register: expected
+
+  - shell: "cmp --silent /etc/localtime /usr/share/zoneinfo/{{ timezone }}; echo $?"
+    register: files_the_same
+    changed_when: files_the_same.stdout != '0'
 
   - command: cp -f /usr/share/zoneinfo/{{ timezone }} /etc/localtime
-    when:  current.stdout != expected.stdout 
+    when:  files_the_same.stdout != '0'
     notify: reconfigure-tzdata
 
   - template: src=timezone.j2 dest=/etc/timezone force=yes mode=0644
