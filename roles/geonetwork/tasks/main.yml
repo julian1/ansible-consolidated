@@ -65,40 +65,36 @@
         - pg_restore -d postgres -x -C /tmp/gn.dump
         - touch /var/lib/postgresql/ansible-done-restore
 
-    # might be better to create a tmp directory
 
-    # schema plugins
-    # what if we make local modifications?
-    # use git to symbolically link
-
-
+    # Schema plugins
     # https://github.com/ansible/ansible/issues/7474 
     - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
 
+    # TODO change owner?
     - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-sp version=master
 
-    - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
+    - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no 
 
-
-    - shell: chdir=/var/lib/tomcat7 creates=xxx {{item}}
+    - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
       with_items:
         - mkdir -p ./geonetwork_data/config/schema_plugins
         - rm -rf ./geonetwork_data/config/schema_plugins/*
-
         - ln -s $(pwd)/aodn-core-gn-sp/web/src/main/webapp/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
-        - ln -s $(pwd)/aodn-sp/iso19139.anzlic   $(pwd)/geonetwork_data/config/schema_plugins
         - ln -s $(pwd)/aodn-sp/iso19139.mcp      $(pwd)/geonetwork_data/config/schema_plugins
         - ln -s $(pwd)/aodn-sp/iso19139.mcp-2.0  $(pwd)/geonetwork_data/config/schema_plugins
+        - ln -s $(pwd)/aodn-sp/iso19139.anzlic   $(pwd)/geonetwork_data/config/schema_plugins
+        - ln -s $(pwd)/aodn-sp/iso19135          $(pwd)/geonetwork_data/config/schema_plugins
+        - "chown -R tomcat7: ./geonetwork_data/config/schema_plugins"
+        - touch ansible-schema-plugins-deployed
+
+
+    # OK, need to try and see the vocab picker 
+    # which means getting vocab installed.
 
 
 # csw-record   iso19110         iso19135         iso19139.mcp      labels.xsd
 # dublin-core  iso19115         iso19139         iso19139.mcp-1.4  README
 # fgdc-std     iso19115-1-2013  iso19139.anzlic  iso19139.mcp-2.0
-
-
-
-
-
 #    https://github.com/aodn/schema-plugins
 
 
