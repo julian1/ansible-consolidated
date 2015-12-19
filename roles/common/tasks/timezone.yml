@@ -1,19 +1,19 @@
 
 
     # Debian documentation indicates /etc/localtime cannot be a symbolic link.
-    # Since ansible file doesn't support copying local files, we must use command/shell
-    # this means manually computing whether we need to modify
+    # Since ansible file doesn't support copying local files, we have to use command/shell
+    # however this means manually computing whether state needs to be updated
     # https://wiki.debian.org/TimeZoneChanges
 
     # ok, so we can control whether something is counted as a change 
 
 
   - shell: "cmp --silent /etc/localtime /usr/share/zoneinfo/{{ timezone }}; echo $?"
-    register: files_the_same
-    changed_when: files_the_same.stdout != '0'
+    register: identical
+    changed_when: identical.stdout != '0'
 
   - command: cp -f /usr/share/zoneinfo/{{ timezone }} /etc/localtime
-    when:  files_the_same.stdout != '0'
+    when:  identical.stdout != '0'
     notify: reconfigure-tzdata
 
   - template: src=timezone.j2 dest=/etc/timezone force=yes mode=0644
