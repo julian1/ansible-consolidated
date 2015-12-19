@@ -5,10 +5,10 @@
     # this means manually computing whether we need to modify
     # https://wiki.debian.org/TimeZoneChanges
 
-  - shell: md5sum /etc/localtime | sed 's/ .*//'
+  - shell: cat /etc/localtime | md5sum 
     register: current
 
-  - shell: md5sum /usr/share/zoneinfo/{{ timezone }} | sed 's/ .*//'
+  - shell: cat /usr/share/zoneinfo/{{ timezone }} | md5sum
     register: expected
 
   - command: cp -f /usr/share/zoneinfo/{{ timezone }} /etc/localtime
