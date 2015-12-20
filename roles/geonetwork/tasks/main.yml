@@ -64,25 +64,21 @@
 
     # can't see how to combine multiline shell commands with args... so use 
 
+    # tomcat needs to be stopped, but can't do this with postgres user uggh.
     - name: blah
-      shell: creates=/xxx {{item}} 
+      shell: "{{item}}"
       become: yes
       become_user: postgres
       with_items: 
-         - psql -d postgres -c "drop database if exists geonetwork"
-         - psql -d postgres -c "drop user if exists geonetwork"
-         - psql -d postgres -c > "
-          drop database if exists geonetwork;
-          drop user if exists geonetwork;
-          create user geonetwork password 'geonetwork'; 
-          create database geonetwork owner geonetwork; 
-          "
-
-
-
-
-
-
+        - psql -d postgres -c "drop database if exists geonetwork"
+        - | 
+          psql -d postgres -c "
+            drop user if exists geonetwork;
+            create user geonetwork password 'geonetwork';
+            " 
+        - psql -d postgres -c "create database geonetwork owner geonetwork"
+        - psql -d geonetwork -c " create extension postgis"
+        
 
     # communication is actually kind of horrid
     # copy db from host
