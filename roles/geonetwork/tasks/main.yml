@@ -26,15 +26,8 @@
     # postgres and gn database
     - apt: name=postgresql-9.4-postgis-2.1
 
-# use a block in file? 
 
-#    - template: src=db.j2 dest=/tmp/db.sql
-#
-#    - command: psql -d postgres -f /tmp/db.sql
-#      become: yes
-#      become_user: postgres
-
-    # overides
+    # config-overrides
     - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
 
     - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
@@ -137,14 +130,17 @@
         - "chown -R tomcat7: ./geonetwork_data/config/schema_plugins"
         - touch ansible-schema-plugins-deployed
 
+    # csw-record   iso19110         iso19135         iso19139.mcp      labels.xsd
+    # dublin-core  iso19115         iso19139         iso19139.mcp-1.4  README
+    # fgdc-std     iso19115-1-2013  iso19139.anzlic  iso19139.mcp-2.0
+    #    https://github.com/aodn/schema-plugins
+
 
     # OK, need to try and see the vocab picker 
     # which means getting vocab installed.
 
+    # thesauri
+    - copy: src=codelist dest=/var/lib/tomcat7/geonetwork_data/config/ owner=tomcat7
 
-# csw-record   iso19110         iso19135         iso19139.mcp      labels.xsd
-# dublin-core  iso19115         iso19139         iso19139.mcp-1.4  README
-# fgdc-std     iso19115-1-2013  iso19139.anzlic  iso19139.mcp-2.0
-#    https://github.com/aodn/schema-plugins
 
 
