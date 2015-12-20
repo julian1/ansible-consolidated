@@ -64,13 +64,21 @@
 
     # can't see how to combine multiline shell commands with args... so use 
 
-    # tomcat needs to be stopped, but can't do this with postgres user uggh.
+
+    # have we got gn database
+    - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
+      become: yes
+      become_user: postgres
+      register: have_gn_db
+      changed_when: false
+
+
+    # tomcat must be stopped - or connections killed
     - name: Fresh Geonetwork Database
-      shell: creates=/var/lib/postgresql/ansible-created-fresh-db {{item}}
+      shell: "{{item}}"
       become: yes
       become_user: postgres
       with_items: 
-        - psql -d postgres -c "drop database if exists geonetwork"
         - | 
           psql -d postgres -c "
             drop user if exists geonetwork;
@@ -78,7 +86,7 @@
             " 
         - psql -d postgres -c "create database geonetwork owner geonetwork"
         - psql -d geonetwork -c "create extension postgis"
-        - touch /var/lib/postgresql/ansible-created-fresh-db
+      # when: have_gn_db.stdout != "1" 
       when: false
         
 
@@ -86,13 +94,12 @@
     # copy db from host
     - copy: src=gn.dump dest=/tmp
 
-    # restore the db
+    # restore the db and hack an admin, admin account
     - name: Restore Geonetwork db
-      shell: creates=/var/lib/postgresql/ansible-done-restore {{item}}
+      shell: "{{item}}"
       become: yes
       become_user: postgres
       with_items:
-        - psql -d postgres -c "drop database if exists geonetwork"
         - | 
           psql -d postgres -c "
             drop user if exists geonetwork;
@@ -101,11 +108,12 @@
         - pg_restore -d postgres -x -C /tmp/gn.dump
         - | 
           psql -d geonetwork -c "
-            insert into users(id, name, username, profile, password) 
-            values(124, 'admin', 'admin', 'Administrator', '46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2')
+            update users
+            set password='46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2' 
+            where name='admin' 
             "
-        - touch /var/lib/postgresql/ansible-done-restore
-      when: true 
+      when: have_gn_db.stdout != "1" 
+      # when: false
 
 
     # Schema plugins
