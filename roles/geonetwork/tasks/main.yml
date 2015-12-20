@@ -65,8 +65,8 @@
     # can't see how to combine multiline shell commands with args... so use 
 
     # tomcat needs to be stopped, but can't do this with postgres user uggh.
-    - name: blah
-      shell: "{{item}}"
+    - name: Fresh Geonetwork Database
+      shell: creates=/var/lib/postgresql/ansible-created-fresh-db {{item}}
       become: yes
       become_user: postgres
       with_items: 
@@ -77,22 +77,35 @@
             create user geonetwork password 'geonetwork';
             " 
         - psql -d postgres -c "create database geonetwork owner geonetwork"
-        - psql -d geonetwork -c " create extension postgis"
+        - psql -d geonetwork -c "create extension postgis"
+        - touch /var/lib/postgresql/ansible-created-fresh-db
+      when: false
         
 
     # communication is actually kind of horrid
     # copy db from host
-    # - copy: src=gn.dump dest=/tmp
+    - copy: src=gn.dump dest=/tmp
 
     # restore the db
-    - shell: creates=/var/lib/postgresql/ansible-done-restore {{item}}
+    - name: Restore Geonetwork db
+      shell: creates=/var/lib/postgresql/ansible-done-restore {{item}}
       become: yes
       become_user: postgres
       with_items:
-        - psql -d postgres -c 'drop database if exists geonetwork'
+        - psql -d postgres -c "drop database if exists geonetwork"
+        - | 
+          psql -d postgres -c "
+            drop user if exists geonetwork;
+            create user geonetwork password 'geonetwork';
+            " 
         - pg_restore -d postgres -x -C /tmp/gn.dump
+        - | 
+          psql -d geonetwork -c "
+            insert into users(id, name, username, profile, password) 
+            values(124, 'admin', 'admin', 'Administrator', '46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2')
+            "
         - touch /var/lib/postgresql/ansible-done-restore
-      when: false
+      when: true 
 
 
     # Schema plugins
