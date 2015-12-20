@@ -26,6 +26,8 @@
     # postgres and gn database
     - apt: name=postgresql-9.4-postgis-2.1
 
+# use a block in file? 
+
 #    - template: src=db.j2 dest=/tmp/db.sql
 #
 #    - command: psql -d postgres -f /tmp/db.sql
@@ -53,8 +55,38 @@
     - apt: name=locales
     - locale_gen: name=en_AU.UTF-8 state=present
 
+
+    # using files and register variables to communicate is horrid
+    # restore the db
+    # - shell: creates=/var/lib/postgresql/ansible-done-db-create {{item}}
+    #  become: yes
+    #  become_user: postgres
+
+    # can't see how to combine multiline shell commands with args... so use 
+
+    - name: blah
+      shell: creates=/xxx {{item}} 
+      become: yes
+      become_user: postgres
+      with_items: 
+         - psql -d postgres -c "drop database if exists geonetwork"
+         - psql -d postgres -c "drop user if exists geonetwork"
+         - psql -d postgres -c > "
+          drop database if exists geonetwork;
+          drop user if exists geonetwork;
+          create user geonetwork password 'geonetwork'; 
+          create database geonetwork owner geonetwork; 
+          "
+
+
+
+
+
+
+
+    # communication is actually kind of horrid
     # copy db from host
-    - copy: src=gn.dump dest=/tmp
+    # - copy: src=gn.dump dest=/tmp
 
     # restore the db
     - shell: creates=/var/lib/postgresql/ansible-done-restore {{item}}
@@ -64,6 +96,7 @@
         - psql -d postgres -c 'drop database if exists geonetwork'
         - pg_restore -d postgres -x -C /tmp/gn.dump
         - touch /var/lib/postgresql/ansible-done-restore
+      when: false
 
 
     # Schema plugins
