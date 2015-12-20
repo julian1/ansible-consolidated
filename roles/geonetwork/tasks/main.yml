@@ -26,13 +26,8 @@
     # postgres and gn database
     - apt: name=postgresql-9.4-postgis-2.1
 
-#    - template: src=db.j2 dest=/tmp/db.sql
-#
-#    - command: psql -d postgres -f /tmp/db.sql
-#      become: yes
-#      become_user: postgres
 
-    # overides
+    # config-overrides
     - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
 
     - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
@@ -53,52 +48,99 @@
     - apt: name=locales
     - locale_gen: name=en_AU.UTF-8 state=present
 
+
+    # using files and register variables to communicate is horrid
+    # restore the db
+    # - shell: creates=/var/lib/postgresql/ansible-done-db-create {{item}}
+    #  become: yes
+    #  become_user: postgres
+
+    # can't see how to combine multiline shell commands with args... so use 
+
+
+    # have we got gn database
+    - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
+      become: yes
+      become_user: postgres
+      register: have_gn_db
+      changed_when: false
+
+
+    # tomcat must be stopped - or connections killed
+    - name: Fresh Geonetwork Database
+      shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      with_items: 
+        - | 
+          psql -d postgres -c "
+            drop user if exists geonetwork;
+            create user geonetwork password 'geonetwork';
+            " 
+        - psql -d postgres -c "create database geonetwork owner geonetwork"
+        - psql -d geonetwork -c "create extension postgis"
+      # when: have_gn_db.stdout != "1" 
+      when: false
+        
+
+    # communication is actually kind of horrid
     # copy db from host
     - copy: src=gn.dump dest=/tmp
 
-    # restore the db
-    - shell: creates=/var/lib/postgresql/ansible-done-restore {{item}}
+    # restore the db and hack an admin, admin account
+    - name: Restore Geonetwork db
+      shell: "{{item}}"
       become: yes
       become_user: postgres
       with_items:
-        - psql -d postgres -c 'drop database if exists geonetwork'
+        - | 
+          psql -d postgres -c "
+            drop user if exists geonetwork;
+            create user geonetwork password 'geonetwork';
+            " 
         - pg_restore -d postgres -x -C /tmp/gn.dump
-        - touch /var/lib/postgresql/ansible-done-restore
+        - | 
+          psql -d geonetwork -c "
+            update users
+            set password='46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2' 
+            where name='admin' 
+            "
+      when: have_gn_db.stdout != "1" 
+      # when: false
 
-    # might be better to create a tmp directory
 
-    # schema plugins
-    # what if we make local modifications?
-    # use git to symbolically link
-
-
+    # Schema plugins
     # https://github.com/ansible/ansible/issues/7474 
     - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
 
+    # TODO change owner?
     - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-sp version=master
 
-    - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
+    - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no 
 
-
-    - shell: chdir=/var/lib/tomcat7 creates=xxx {{item}}
+    - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
       with_items:
         - mkdir -p ./geonetwork_data/config/schema_plugins
         - rm -rf ./geonetwork_data/config/schema_plugins/*
-
         - ln -s $(pwd)/aodn-core-gn-sp/web/src/main/webapp/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
-        - ln -s $(pwd)/aodn-sp/iso19139.anzlic   $(pwd)/geonetwork_data/config/schema_plugins
         - ln -s $(pwd)/aodn-sp/iso19139.mcp      $(pwd)/geonetwork_data/config/schema_plugins
         - ln -s $(pwd)/aodn-sp/iso19139.mcp-2.0  $(pwd)/geonetwork_data/config/schema_plugins
+        - ln -s $(pwd)/aodn-sp/iso19139.anzlic   $(pwd)/geonetwork_data/config/schema_plugins
+        - ln -s $(pwd)/aodn-sp/iso19135          $(pwd)/geonetwork_data/config/schema_plugins
+        - "chown -R tomcat7: ./geonetwork_data/config/schema_plugins"
+        - touch ansible-schema-plugins-deployed
+
+    # csw-record   iso19110         iso19135         iso19139.mcp      labels.xsd
+    # dublin-core  iso19115         iso19139         iso19139.mcp-1.4  README
+    # fgdc-std     iso19115-1-2013  iso19139.anzlic  iso19139.mcp-2.0
+    #    https://github.com/aodn/schema-plugins
 
 
-# csw-record   iso19110         iso19135         iso19139.mcp      labels.xsd
-# dublin-core  iso19115         iso19139         iso19139.mcp-1.4  README
-# fgdc-std     iso19115-1-2013  iso19139.anzlic  iso19139.mcp-2.0
+    # OK, need to try and see the vocab picker 
+    # which means getting vocab installed.
 
+    # thesauri
+    - copy: src=codelist dest=/var/lib/tomcat7/geonetwork_data/config/ owner=tomcat7
 
-
-
-
-#    https://github.com/aodn/schema-plugins
 
 

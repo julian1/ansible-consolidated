@@ -13,12 +13,12 @@
 #    - include: ./roles/common/tasks/mydotfiles.yml user=meteo
 #    - authorized_key: user=meteo key="{{sshkey}}"
 
-    - include: ./roles/common/tasks/timezone.yml timezone=Australia/Hobart
+#    - include: ./roles/common/tasks/timezone.yml timezone=Australia/Hobart
 
-    - include: ./roles/common/tasks/sudoers.yml
+#    - include: ./roles/common/tasks/sudoers.yml
 #    - include: ./roles/common/tasks/devenv.yml
 
-#    - include: ./roles/geonetwork/tasks/main.yml
+    - include: ./roles/geonetwork/tasks/main.yml
 
  
   handlers:
