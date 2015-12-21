@@ -1,0 +1,51 @@
+- hosts: all 
+  roles:
+    - yaegashi.blockinfile
+  vars: 
+  tasks:
+    # - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=testing upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
+ 
+    # hostname?
+    # - role: zfs
+    - include: ./roles/common/tasks/sudoers.yml
+    - include: ./roles/common/tasks/disable-shell-bell.yml
+    # - include: ./roles/common/tasks/bridge.yml
+
+    - user: name=meteo shell=/bin/bash groups=adm append=yes
+#    - include: ./roles/common/tasks/mydotfiles.yml user=meteo
+
+    - apt: name=memtest86
+    # - apt: name=fail2ban
+
+    - apt: name=alsa-oss
+    - apt: name=alsa-utils
+    - apt: name=alsa-tools
+
+    - name: Setup soundcard
+      blockinfile:
+        dest: /etc/modprobe.d/alsa-base.conf
+        create: true
+        content: |
+          # http://darmawan-salihun.blogspot.com.au/2015/02/intel-pch-haswell-sound-alsa-problem.html
+          # Intel PCH
+          options snd-hda-intel index=0 enable=1 vid=8086 pid=9c20
+          # Intel HDMI
+          # test using: speaker-test -c 2 -D hdmi:HDMI
+          options snd-hda-intel index=1 enable=1 vid=8086 pid=0a0c
+          # hardware beep off
+          options snd_hda_intel beep_mode=0
+          blacklist pcspkr
+      notify: reboot
+
+    - name: Initialize alsa
+      # command: bash -c "/usr/sbin/alsactl"
+      # not sure if this should be with store or init
+      command: /usr/sbin/alsactl
+      args:
+        creates: /var/lib/alsa/asound.state
+      notify: reboot
+
+ 
+  handlers:
+    - include: ./roles/common/handlers/main.yml
+
