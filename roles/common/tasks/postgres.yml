@@ -1,0 +1,11 @@
+
+    # postgres and gn database
+    - apt: name=postgresql-9.4-postgis-2.1
+
+    - template: src=postgresql.conf.j2 dest=/etc/postgresql/9.4/main/postgresql.conf owner=postgres 
+      notify: restart-postgres
+
+    - template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.4/main/pg_hba.conf owner=postgres 
+      notify: restart-postgres
+
+
