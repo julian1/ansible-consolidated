@@ -16,15 +16,23 @@
     - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
 
 
+    # postgres and gn database
+    - apt: name=postgresql-9.4-postgis-2.1
+
+    - template: src=postgresql.conf.j2 dest=/etc/postgresql/9.4/main/postgresql.conf owner=postgres 
+      notify: restart-postgres
+
+    - template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.4/main/pg_hba.conf owner=postgres 
+      notify: restart-postgres
+
+
+
     # jdbc drivers
     - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
 
     - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
 
     - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/ owner=tomcat7
-
-    # postgres and gn database
-    - apt: name=postgresql-9.4-postgis-2.1
 
 
     # config-overrides

@@ -1,0 +1,41 @@
+
+  - hosts: jessie1
+    vars:
+      - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
+    roles:
+      - common
+    tasks:
+  #    - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
+
+  #    - user: name=meteo shell=/bin/bash groups=adm append=yes
+  #    - include: ./roles/common/tasks/mydotfiles.yml user=meteo
+  #    - authorized_key: user=meteo key="{{sshkey}}"
+
+  #    - include: ./roles/common/tasks/timezone.yml timezone=Australia/Hobart
+
+      - include: ./roles/common/tasks/sudoers.yml
+  #    - include: ./roles/common/tasks/devenv.yml
+
+      # - include: ./roles/geonetwork/tasks/main.yml
+
+    handlers:
+      - include: ./roles/common/handlers/main.yml
+
+
+# http://ftp.us.debian.org/debian/
+# http://mirror.aarnet.edu.au/debian/
+# http://ftp.us.debian.org/debian/
+
+  - hosts: geonetwork2
+    vars:
+      - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
+    roles:
+      - common
+    tasks:
+      - include: ./roles/distribution/tasks/main.yml 
+          template=debian.j2 version=jessie upgrade=safe mirror="http://ftp.us.debian.org/debian/" 
+      - include: ./roles/geonetwork/tasks/main.yml
+    handlers:
+      - include: ./roles/common/handlers/main.yml
+
+

@@ -1,0 +1,16 @@
+
+listen_addresses = '*'
+port = 5432
+max_connections = 100
+shared_buffers = '24MB'
+log_line_prefix = '%t %h %u %d %p %e'
+datestyle = 'iso, mdy'
+default_text_search_config = 'pg_catalog.english'
+ssl = on
+data_directory = '/var/lib/postgresql/9.4/main'
+hba_file = '/etc/postgresql/9.4/main/pg_hba.conf'
+
+ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+
+

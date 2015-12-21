@@ -42,4 +42,7 @@
   - name: restart-smcroute
     service: name=smcroute state=restarted
 
+  - name: restart-postgres
+    service: name=postgresql state=restarted
+
 
