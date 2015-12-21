@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thesaurus>
+   <name>Marine Community Profile of ISO19115 v1.4 Collection Methods Vocabulary (Annex C.1.3)</name>
+   <shortName>Mcp14Cmv</shortName>
+   <keywords>
+      <keyword>Acoustic Equipment/Echo Sounders</keyword>
+      <keyword>Aircraft/Airborne Equipment</keyword>
+      <keyword>Aircraft/Airborne Equipment | Aerial Surveys</keyword>
+      <keyword>Altimeters</keyword>
+      <keyword>Altimeters | Laser Altimeters</keyword>
+      <keyword>Altimeters | Radar Altimeters</keyword>
+      <keyword>Altimeters | Radar Altimeters POSEIDON-2 Radar Altimeter</keyword>
+      <keyword>Altimeters | Radar Altimeters ERS Radar Altimeter (RA)</keyword>
+      <keyword>Altimeters | Radar Altimeters Radar Altimeter-2 (RA-2)</keyword>
+      <keyword>Altimeters | Radar Altimeters TOPEX Radar Altimeter</keyword>
+      <keyword>Autoanalysers | Nutrient Analysers</keyword>
+      <keyword>Bathythermographs</keyword>
+      <keyword>Bathythermographs | Autonomous Pinniped Bathythermograph (APB)</keyword>
+      <keyword>Bathythermographs | Mechanical Bathythermographs (MBT)</keyword>
+      <keyword>Bathythermographs | Expendable Bathythermographs (XBT)</keyword>
+      <keyword>Boats and Small Vessels</keyword>
+      <keyword>Bunyip</keyword>
+      <keyword>Buoys</keyword>
+      <keyword>Buoys | Drifting Buoys</keyword>
+      <keyword>Buoys | Moored Buoys</keyword>
+      <keyword>Cages and Enclosures</keyword>
+      <keyword>Cameras</keyword>
+      <keyword>Cameras | Aerial Cameras</keyword>
+      <keyword>Cameras | Cine Cameras</keyword>
+      <keyword>Cameras | Still Cameras - surface</keyword>
+      <keyword>Cameras | Still Cameras - underwater</keyword>
+      <keyword>Cameras | Video Cameras - surface</keyword>
+      <keyword>Cameras | Video Cameras - underwater</keyword>
+      <keyword>Cell Counters/Particle Counters</keyword>
+      <keyword>Corers</keyword>
+      <keyword>CTD (Conductivity-Temperature-Depth</keyword>
+      <keyword>Profilers)</keyword>
+      <keyword>Current Meters/Profilers</keyword>
+      <keyword>Current Meters/Profilers | Acoustic Doppler Current Profiler (ADCP)</keyword>
+      <keyword>Data Loggers</keyword>
+      <keyword>Digital Imaging (acquisition and/or analysis)</keyword>
+      <keyword>DNA Sequencers</keyword>
+      <keyword>Dredges</keyword>
+      <keyword>Drift Bottles</keyword>
+      <keyword>Drift Cards</keyword>
+      <keyword>Field Surveys</keyword>
+      <keyword>Field Surveys | Shore Surveys</keyword>
+      <keyword>Field Surveys | Terrestrial Surveys</keyword>
+      <keyword>Field Surveys | Underwater Surveys</keyword>
+      <keyword>Fish Traps</keyword>
+      <keyword>Fluorometers</keyword>
+      <keyword>Gas Chromatographs</keyword>
+      <keyword>Gel Electrophoresis</keyword>
+      <keyword>Grabs</keyword>
+      <keyword>Growth Chambers</keyword>
+      <keyword>Handlines</keyword>
+      <keyword>Hand Sampling (specimens and/or tissue samples)</keyword>
+      <keyword>HPLC (High Performance Liquid Chromatography)</keyword>
+      <keyword>Imaging Radar Systems</keyword>
+      <keyword>Imaging Radar Systems | Synthetic Aperture Radar (SAR)</keyword>
+      <keyword>Incubators</keyword>
+      <keyword>Length-Frequency Measurements</keyword>
+      <keyword>LIDAR</keyword>
+      <keyword>Logbook/Catch Data</keyword>
+      <keyword>Longlines</keyword>
+      <keyword>Mass Spectrometers</keyword>
+      <keyword>Mesocosms</keyword>
+      <keyword>Meteorological Instruments</keyword>
+      <keyword>Microprobes</keyword>
+      <keyword>Microprobes | Electron Microprobes</keyword>
+      <keyword>Microprobes | Proton Microprobes</keyword>
+      <keyword>Microscopes | Optical Microscopes</keyword>
+      <keyword>Microscopes | Optical Microscopes | Fluorescence Microscopes</keyword>
+      <keyword>Microscopes | Optical Microscopes | Video Microscopes</keyword>
+      <keyword>Microscopes | Scanning Electron Microscopes</keyword>
+      <keyword>Microscopes | Transmission Electron Microscopes</keyword>
+      <keyword>Microwave Radiometers</keyword>
+      <keyword>Microwave Radiometers | Advanced Microwave Scanning Radiometer for EOS (AMSR-E)</keyword>
+      <keyword>Microwave Radiometers | Special Sensor Microwave/Imager (SSM/I)</keyword>
+      <keyword>Microwave Radiometers | TRMM Microwave Imager (TMI)</keyword>
+      <keyword>Microwave Scatterometers</keyword>
+      <keyword>Microwave Scatterometers | Quick Scatterometer (QuikSCAT)</keyword>
+      <keyword>Nansen Bottles</keyword>
+      <keyword>Nets</keyword>
+      <keyword>Nets | Gill Nets</keyword>
+      <keyword>Nets | Plankton Nets/Drop Nets</keyword>
+      <keyword>Nets | Plankton Nets/Drop Nets | Phytoplankton Nets</keyword>
+      <keyword>Nets | Plankton Nets/Drop Nets | Zooplankton Nets</keyword>
+      <keyword>Nets | Seine Nets</keyword>
+      <keyword>Nets | Surface Nets</keyword>
+      <keyword>Niskin Bottles</keyword>
+      <keyword>Pressure Gauges</keyword>
+      <keyword>Profiling Float</keyword>
+      <keyword>Profiling Float | Autonomous Profiling Float</keyword>
+      <keyword>Pumps</keyword>
+      <keyword>Radiation Sensors</keyword>
+      <keyword>Radiometers</keyword>
+      <keyword>Radiometers | Advanced Along-Track Scanning Radiometer (AATSR)</keyword>
+      <keyword>Radiometers | Advanced Very High Resolution Radiometer (AVHRR)</keyword>
+      <keyword>Radiometers | Coastal Zone Color Scanner (CZCS)</keyword>
+      <keyword>Radiometers | Sea-Viewing Wide Field-of-View Sensor (SEAWIFS)</keyword>
+      <keyword>Radiometers | Moderate Resolution Imaging SpectroRadiometer (MODIS)</keyword>
+      <keyword>Radiosondes</keyword>
+      <keyword>Scintillation Counters</keyword>
+      <keyword>SCUBA (observations and/or sampling)</keyword>
+      <keyword>Seabed Vehicles</keyword>
+      <keyword>SeaSoar</keyword>
+      <keyword>Secchi Discs</keyword>
+      <keyword>Sediment Traps</keyword>
+      <keyword>SLAR (Side-Looking Airborne Radar)</keyword>
+      <keyword>Sledges/Sleds</keyword>
+      <keyword>SONAR</keyword>
+      <keyword>Spectrometers</keyword>
+      <keyword>Spectrometers | Medium Resolution Imaging Spectrometer (MERIS)</keyword>
+      <keyword>Spectrophotometers</keyword>
+      <keyword>Swath Mappers</keyword>
+      <keyword>Tags and Tracking Devices</keyword>
+      <keyword>Thermistors</keyword>
+      <keyword>Thermometers</keyword>
+      <keyword>Thermosalinographs</keyword>
+      <keyword>Thin-Layer Chromatography</keyword>
+      <keyword>Tide Gauges</keyword>
+      <keyword>Trawls</keyword>
+      <keyword>Trawls | Beam Trawls</keyword>
+      <keyword>Trawls | Demersal Trawls</keyword>
+      <keyword>Trawls | Midwater Trawls</keyword>
+      <keyword>Trawls | Prawn Trawls</keyword>
+      <keyword>Turbulence Sensors</keyword>
+      <keyword>Visual Counts/Observations</keyword>
+      <keyword>Water Column Samplers</keyword>
+      <keyword>Wave Recorders</keyword>
+      <keyword>X-Ray Microanalysers</keyword>
+   </keywords>
+</thesaurus>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thesaurus>
+   <name>Marine Community Profile of ISO19115 v1.4 Geographic Extent Vocabulary (Annex C.1.2)</name>
+   <shortName>Mcp14Gev</shortName>
+   <keywords>
+      <keyword>Global / Oceans | World</keyword>
+      <keyword>Global / Oceans | World Ocean</keyword>
+      <keyword>Global / Oceans | Atlantic Ocean</keyword>
+      <keyword>Global / Oceans | Indian Ocean</keyword>
+      <keyword>Global / Oceans | Pacific Ocean</keyword>
+      <keyword>Global / Oceans | Southern Ocean</keyword>
+      <keyword>Regional Seas | Arafura Sea</keyword>
+      <keyword>Regional Seas | Bali Sea</keyword>
+      <keyword>Regional Seas | Banda Sea</keyword>
+      <keyword>Regional Seas | Bismarck Sea</keyword>
+      <keyword>Regional Seas | Celebes Sea</keyword>
+      <keyword>Regional Seas | Ceram Sea</keyword>
+      <keyword>Regional Seas | Coral Sea</keyword>
+      <keyword>Regional Seas | Flores Sea</keyword>
+      <keyword>Regional Seas | Gulf of Papua</keyword>
+      <keyword>Regional Seas | Gulf of Thailand</keyword>
+      <keyword>Regional Seas | Java Sea</keyword>
+      <keyword>Regional Seas | Makassar Strait</keyword>
+      <keyword>Regional Seas | Molucca Sea</keyword>
+      <keyword>Regional Seas | Savu Sea</keyword>
+      <keyword>Regional Seas | Solomon Sea</keyword>
+      <keyword>Regional Seas | South China Sea</keyword>
+      <keyword>Regional Seas | Tasman Sea</keyword>
+      <keyword>Regional Seas | Timor Sea</keyword>
+      <keyword>Continents | Antarctica</keyword>
+      <keyword>Countries | Australia</keyword>
+      <keyword>Countries | Timor-Leste</keyword>
+      <keyword>Countries | Indonesia</keyword>
+      <keyword>Countries | New Caledonia</keyword>
+      <keyword>Countries | New Zealand</keyword>
+      <keyword>Countries | Papua New Guinea</keyword>
+      <keyword>Countries | Solomon Islands</keyword>
+      <keyword>Countries | Vanuatu</keyword>
+      <keyword>States, Territories (Australia) | Australian Antarctic Territory</keyword>
+      <keyword>States, Territories (Australia) | Australian Capital Territory</keyword>
+      <keyword>States, Territories (Australia) | New South Wales</keyword>
+      <keyword>States, Territories (Australia) | Northern Territory</keyword>
+      <keyword>States, Territories (Australia) | Queensland</keyword>
+      <keyword>States, Territories (Australia) | South Australia</keyword>
+      <keyword>States, Territories (Australia) | Tasmania</keyword>
+      <keyword>States, Territories (Australia) | Victoria</keyword>
+      <keyword>States, Territories (Australia) | Western Australia</keyword>
+      <keyword>Offshore Islands (Australia) | Ashmore &amp; Cartier Islands</keyword>
+      <keyword>Offshore Islands (Australia) | Christmas Island</keyword>
+      <keyword>Offshore Islands (Australia) | Cocos (Keeling) Island</keyword>
+      <keyword>Offshore Islands (Australia) | Heard &amp; McDonald Islands</keyword>
+      <keyword>Offshore Islands (Australia) | Lord Howe Island</keyword>
+      <keyword>Offshore Islands (Australia) | Macquarie Island</keyword>
+      <keyword>Offshore Islands (Australia) | Norfolk Island</keyword>
+      <keyword>Marine Planning Regions (Australia) | Australian Antarctic</keyword>
+      <keyword>Marine Planning Regions (Australia) | East</keyword>
+      <keyword>Marine Planning Regions (Australia) | Kerguelen</keyword>
+      <keyword>Marine Planning Regions (Australia) | Lord Howe</keyword>
+      <keyword>Marine Planning Regions (Australia) | Macquarie</keyword>
+      <keyword>Marine Planning Regions (Australia) | Norfolk</keyword>
+      <keyword>Marine Planning Regions (Australia) | North</keyword>
+      <keyword>Marine Planning Regions (Australia) | North-east</keyword>
+      <keyword>Marine Planning Regions (Australia) | North-west</keyword>
+      <keyword>Marine Planning Regions (Australia) | South-east</keyword>
+      <keyword>Marine Planning Regions (Australia) | South-west</keyword>
+      <keyword>Marine Planning Regions (Australia) | Sunda</keyword>
+      <keyword>Marine Planning Regions (Australia) | Western-central</keyword>
+      <keyword>Marine Features (Australia) | Albatross Bay, QLD</keyword>
+      <keyword>Marine Features (Australia) | Australian North West Shelf, WA</keyword>
+      <keyword>Marine Features (Australia) | Bass Strait, TAS/VIC</keyword>
+      <keyword>Marine Features (Australia) | Botany Bay, NSW</keyword>
+      <keyword>Marine Features (Australia) | Broken Bay, NSW</keyword>
+      <keyword>Marine Features (Australia) | Derwent Estuary, TAS</keyword>
+      <keyword>Marine Features (Australia) | Exmouth Gulf, WA</keyword>
+      <keyword>Marine Features (Australia) | Flinders Bay, WA</keyword>
+      <keyword>Marine Features (Australia) | Flinders Island, TAS</keyword>
+      <keyword>Marine Features (Australia) | Fraser Island, QLD</keyword>
+      <keyword>Marine Features (Australia) | Geographe Bay, WA</keyword>
+      <keyword>Marine Features (Australia) | Great Australian Bight, SA/WA</keyword>
+      <keyword>Marine Features (Australia) | Great Barrier Reef, QLD</keyword>
+      <keyword>Marine Features (Australia) | Great Barrier Reef Cairns Section, QLD</keyword>
+      <keyword>Marine Features (Australia) | Great Barrier Reef Capricorn/Bunker Section, QLD</keyword>
+      <keyword>Marine Features (Australia) | Great Barrier Reef Central Section, QLD</keyword>
+      <keyword>Marine Features (Australia) | Great Barrier Reef Far North Section, QLD</keyword>
+      <keyword>Marine Features (Australia) | Great Barrier Reef Mackay Section, QLD</keyword>
+      <keyword>Marine Features (Australia) | Groote Eylandt, NT</keyword>
+      <keyword>Marine Features (Australia) | Gulf of Carpentaria, NT/QLD</keyword>
+      <keyword>Marine Features (Australia) | Gulf St. Vincent, SE</keyword>
+      <keyword>Marine Features (Australia) | Hervey Bay, QLD</keyword>
+      <keyword>Marine Features (Australia) | Jervis Bay, ACT</keyword>
+      <keyword>Marine Features (Australia) | Joseph Bonaparte Gulf, NT/WA</keyword>
+      <keyword>Marine Features (Australia) | Kangaroo Island, SA</keyword>
+      <keyword>Marine Features (Australia) | King Island, TAS</keyword>
+      <keyword>Marine Features (Australia) | King Sound, WA</keyword>
+      <keyword>Marine Features (Australia) | Macquarie Harbour, TAS</keyword>
+      <keyword>Marine Features (Australia) | Melville Island, NT</keyword>
+      <keyword>Marine Features (Australia) | Moreton Bay, QLD</keyword>
+      <keyword>Marine Features (Australia) | Mornington Island, QLD</keyword>
+      <keyword>Marine Features (Australia) | Port Hacking, NSW</keyword>
+      <keyword>Marine Features (Australia) | Port Phillip Bay, VIC</keyword>
+      <keyword>Marine Features (Australia) | Shark Bay, WA</keyword>
+      <keyword>Marine Features (Australia) | Spencer Gulf, SA</keyword>
+      <keyword>Marine Features (Australia) | Swan River, WA</keyword>
+      <keyword>Marine Features (Australia) | Torres Strait, QLD</keyword>
+      <keyword>Marine Features (Australia) | Van Diemen Gulf, NT</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Adelaide, SA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Albany, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Brisbane, QLD</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Broome, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Bunbury, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Bundaberg, QLD</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Burnie, TAS</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Cairns, QLD</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Darwin, NT</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Dampier, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Devonport, TAS</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Esperance, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Fremantle, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Geraldton, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Gladstone, QLD</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Hobart, TAS</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Launceston, TAS</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Mackay, QLD</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Melbourne, VIC</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Newcastle, NSW</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Perth, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Port Hedland, WA</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Portland, VIC</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Rockhampton, QLD</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Sydney, NSW</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Townsville, QLD</keyword>
+      <keyword>Coastal Cities / Towns (Australia) | Wollongong, NSW</keyword>
+      <keyword>Named Locations (Antarctica) | Amery Ice Shelf, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Casey Station, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Cook Ice Shelf, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Davis Sea, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Davis Station, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Dumont D'Urville Sea (France)</keyword>
+      <keyword>Named Locations (Antarctica) | Mawson Station, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Prydz Bay, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Publications Ice Shelf, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Shackleton Ice Shelf, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Vincennes Bay, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | Voyekov Ice Shelf, AAT</keyword>
+      <keyword>Named Locations (Antarctica) | West Ice Shelf, AAT</keyword>
+      <keyword>Global / Oceans | Southern Ocean/ Australia extension</keyword>
+   </keywords>
+</thesaurus>

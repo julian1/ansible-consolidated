@@ -55,7 +55,7 @@
     #  become: yes
     #  become_user: postgres
 
-    # can't see how to combine multiline shell commands with args... so use 
+    # can't see how to combine multiline shell commands with args... so use
 
 
     # have we got gn database
@@ -71,17 +71,17 @@
       shell: "{{item}}"
       become: yes
       become_user: postgres
-      with_items: 
-        - | 
+      with_items:
+        - |
           psql -d postgres -c "
             drop user if exists geonetwork;
             create user geonetwork password 'geonetwork';
-            " 
+            "
         - psql -d postgres -c "create database geonetwork owner geonetwork"
         - psql -d geonetwork -c "create extension postgis"
-      # when: have_gn_db.stdout != "1" 
+      # when: have_gn_db.stdout != "1"
       when: false
-        
+
 
     # communication is actually kind of horrid
     # copy db from host
@@ -93,30 +93,30 @@
       become: yes
       become_user: postgres
       with_items:
-        - | 
+        - |
           psql -d postgres -c "
             drop user if exists geonetwork;
             create user geonetwork password 'geonetwork';
-            " 
+            "
         - pg_restore -d postgres -x -C /tmp/gn.dump
-        - | 
+        - |
           psql -d geonetwork -c "
             update users
-            set password='46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2' 
-            where name='admin' 
+            set password='46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2'
+            where name='admin'
             "
-      when: have_gn_db.stdout != "1" 
+      when: have_gn_db.stdout != "1"
       # when: false
 
 
     # Schema plugins
-    # https://github.com/ansible/ansible/issues/7474 
+    # https://github.com/ansible/ansible/issues/7474
     - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
 
     # TODO change owner?
     - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-sp version=master
 
-    - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no 
+    - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
 
     - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
       with_items:
@@ -136,7 +136,7 @@
     #    https://github.com/aodn/schema-plugins
 
 
-    # OK, need to try and see the vocab picker 
+    # OK, need to try and see the vocab picker
     # which means getting vocab installed.
 
     # thesauri

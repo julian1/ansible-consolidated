@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thesauri>
+       <include href="GCMD_5.3.8_keywords.xml"/>
+       <include href="MCP_1.4_Geographic_Extent_Names.xml"/>
+       <include href="MCP_1.4_Collection_Methods.xml"/>
+</thesauri>
