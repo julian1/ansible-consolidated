@@ -49,6 +49,8 @@
     tasks:
       - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe 
 
+      - include: ./roles/common/tasks/sudoers.yml
+
       - user: name=meteo shell=/bin/bash groups=adm append=yes
       - include: ./roles/common/tasks/mydotfiles.yml user=meteo
       - authorized_key: user=meteo key="{{sshkey}}"
