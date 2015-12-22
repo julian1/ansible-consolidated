@@ -26,6 +26,7 @@
 # http://mirror.aarnet.edu.au/debian/
 # http://ftp.us.debian.org/debian/
 
+# see http://leucos.github.io/ansible-files-layout/
 
   # playbooks can include other playbooks, 
   # OK IT WORKED!!!!! but can we apply indirection to push into a lower directory ....
