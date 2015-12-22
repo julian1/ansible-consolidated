@@ -2,13 +2,13 @@
 ### Examples
 
 ```
-ansible-playbook imos.yml -i ./inventory/dev  -l geonetwork2  -v -u root
+ansible-playbook imos.yml -i ./inventory/dev -l geonetwork2 -v -u root
 
-# or
+ansible-playbook nodes/geonetwork.yml -i ./inventory/dev -v -u root
 
-ansible-playbook nodes/geonetwork.yml -i ./inventory/dev  -v -u root
+ansible-playbook nodes/aatams.yml -i ./inventory/dev -v -u root
 
-ansible-playbook nodes/aatams.yml  -i ./inventory/dev  -v -u root
+ansible-playbook nodes/julian-test-instance.yml -i ./inventory/dev -v -u debian --private-key ~/.ssh/julian3.pem
 
 # etc
 
@@ -19,25 +19,8 @@ ansible-playbook nodes/aatams.yml  -i ./inventory/dev  -v -u root
 ```
 ansible-galaxy install yaegashi.blockinfile -p ./roles/common
 
-IMPORTANT - can still include tasks, and avoid roles if we want outside common.
-            we just have to include the file explicitly.
-
-          - test by moving main.yml to geonetwork.yml
-
-          - also move the distribution back to a task.
-
 # or
 sudo ansible-galaxy install yaegashi.blockinfile
-
-
-Using root to provision is pretty convenient
-- sshd and rsync must be installed, and copy authorized_key into /roo/.ssh 
-  and edit /etc/ssh/sshd_config to permit root login
-
-ansible-playbook roles/common/wily.yml  -i laptop, -v -u root
-
-
-
 
 ```
 
