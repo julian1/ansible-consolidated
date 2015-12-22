@@ -1,19 +1,19 @@
 
     - apt: name=tomcat7 update_cache=yes
 
-    # tomcat jndi
+    # jdbc drivers
+    - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
+
+    - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
+
+
+    # jndi
     - template: src=context.j2 dest=/etc/tomcat7/context.xml owner=tomcat7
       notify: restart-tomcat7
 
     # tomcat opts
     - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
       notify: restart-tomcat7
-
-
-    # jdbc drivers
-    - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
-
-    - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
 
 
     # data directory
@@ -24,7 +24,12 @@
 
 
     # war
-    - command: sh -c "wget 'https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.16.0.war' -O /var/lib/tomcat7/webapps/aatams.war" creates=/var/lib/tomcat7/webapps/aatams.war
+    # - command: sh -c "wget 'https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.16.0.war' -O /var/lib/tomcat7/webapps/aatams.war" creates=/var/lib/tomcat7/webapps/aatams.war
+
+    # TODO owner?
+    - get_url: url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.15.0.war 
+        dest=/var/lib/tomcat7/webapps/aatams.war
+      notify: restart-tomcat7
 
 
     # have we already got a database
