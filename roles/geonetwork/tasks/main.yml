@@ -1,81 +1,44 @@
 
-# TODO remove request table from gn.
-
-
-    # - java?
-    # postgres?
-
-    # - include: tasks/oracle-java.yml
+# assume have postgres 
 
     - apt: name=tomcat7 update_cache=yes
 
-    # tomcat jndi
-    - template: src=context.j2 dest=/etc/tomcat7/context.xml owner=tomcat7
-
-    # tomcat args
-    - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
-
-
-    # postgres and gn database
-    - apt: name=postgresql-9.4-postgis-2.1
-
-    - template: src=postgresql.conf.j2 dest=/etc/postgresql/9.4/main/postgresql.conf owner=postgres 
-      notify: restart-postgres
-
-    - template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.4/main/pg_hba.conf owner=postgres 
-      notify: restart-postgres
-
-
-
-    # jdbc drivers
+    # jdbc
     - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
-
     - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
-
     - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/ owner=tomcat7
 
+    # jndi
+    - template: src=context.j2 dest=/etc/tomcat7/context.xml owner=tomcat7
+      notify: restart-tomcat7
+
+    # tomcat opts
+    - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
+      notify: restart-tomcat7
 
     # config-overrides
     - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
-
     - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
-
     - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml owner=tomcat7
-
 
     # TODO permissions - make sure tomcat owns everything-
 
     # geonetwork_data directory
     - file: path=var/lib/tomcat7/geonetwork_data/ state=directory owner=tomcat7
 
-
     # geonetwork war
-    - command: sh -c "wget 'https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war' -O /var/lib/tomcat7/webapps/geonetwork.war" creates=/var/lib/tomcat7/webapps/geonetwork.war
+    - get_url: url=https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war
+        dest=/var/lib/tomcat7/webapps/geonetwork.war
+      notify: restart-tomcat7
 
-
-    # TODO should not be here...
-    - apt: name=locales
-    - locale_gen: name=en_AU.UTF-8 state=present
-
-
-    # using files and register variables to communicate is horrid
-    # restore the db
-    # - shell: creates=/var/lib/postgresql/ansible-done-db-create {{item}}
-    #  become: yes
-    #  become_user: postgres
-
-    # can't see how to combine multiline shell commands with args... so use
-
-
-    # have we got gn database
+    # check for database
     - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
       become: yes
       become_user: postgres
       register: have_gn_db
       changed_when: false
 
-
-    # tomcat must be stopped - or connections killed
+    # fresh db
     - name: Fresh Geonetwork Database
       shell: "{{item}}"
       become: yes
@@ -90,7 +53,6 @@
         - psql -d geonetwork -c "create extension postgis"
       # when: have_gn_db.stdout != "1"
       when: false
-
 
     # communication is actually kind of horrid
     # copy db from host
@@ -121,10 +83,8 @@
     # Schema plugins
     # https://github.com/ansible/ansible/issues/7474
     - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
-
     # TODO change owner?
     - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-sp version=master
-
     - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
 
     - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
@@ -139,17 +99,8 @@
         - "chown -R tomcat7: ./geonetwork_data/config/schema_plugins"
         - touch ansible-schema-plugins-deployed
 
-    # csw-record   iso19110         iso19135         iso19139.mcp      labels.xsd
-    # dublin-core  iso19115         iso19139         iso19139.mcp-1.4  README
-    # fgdc-std     iso19115-1-2013  iso19139.anzlic  iso19139.mcp-2.0
-    #    https://github.com/aodn/schema-plugins
-
-
-    # OK, need to try and see the vocab picker
-    # which means getting vocab installed.
 
     # thesauri
     - copy: src=codelist dest=/var/lib/tomcat7/geonetwork_data/config/ owner=tomcat7
-
 
 
