@@ -24,7 +24,8 @@
     # TODO permissions - make sure tomcat owns everything-
 
     # geonetwork_data directory
-    - file: path=var/lib/tomcat7/geonetwork_data/ state=directory owner=tomcat7
+    - file: path=/var/lib/tomcat7/geonetwork_data/ state=directory owner=tomcat7
+    - file: path=/var/lib/tomcat7/geonetwork_data/config state=directory owner=tomcat7
 
     # geonetwork war
     - get_url: url=https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war
@@ -89,7 +90,7 @@
 
     - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
       with_items:
-        - mkdir -p ./geonetwork_data/config/schema_plugins
+        - mkdir ./geonetwork_data/config/schema_plugins
         - rm -rf ./geonetwork_data/config/schema_plugins/*
         - ln -s $(pwd)/aodn-core-gn-sp/web/src/main/webapp/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
         - ln -s $(pwd)/aodn-sp/iso19139.mcp      $(pwd)/geonetwork_data/config/schema_plugins
