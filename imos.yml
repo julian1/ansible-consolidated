@@ -30,7 +30,7 @@
   # playbooks can include other playbooks, 
   # OK IT WORKED!!!!! but can we apply indirection to push into a lower directory ....
   # the issue is that we cannot push down the search path...
-  - include: playbooks/geonetwork.yml
+  - include: nodes/geonetwork.yml
 
 
   - hosts: aatams

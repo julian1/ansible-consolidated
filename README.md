@@ -1,4 +1,18 @@
 
+### Examples
+
+```
+ansible-playbook imos.yml -i ./inventory/dev  -l geonetwork2  -v -u root
+
+# or
+
+ansible-playbook  ./playbooks/geonetwork.yml -l geonetwork2  -v -u root
+
+# etc
+
+``` 
+
+
 ### Prepare
 ```
 ansible-galaxy install yaegashi.blockinfile -p ./roles/common
