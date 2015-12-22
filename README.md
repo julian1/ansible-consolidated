@@ -57,6 +57,10 @@ ansible all -i nc2, -c local -m ping
 
 ### Resources
 
+http://stackoverflow.com/questions/30192490/include-tasks-from-another-role-in-ansible-playbook
+
+
+
 https://github.com/phred/5minbootstrap/blob/master/bootstrap.yml
 
 http://www.mechanicalfish.net/start-learning-ansible-with-one-line-and-no-files/

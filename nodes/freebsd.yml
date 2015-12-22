@@ -1,8 +1,10 @@
 - hosts: all
+
   gather_facts: yes
   # no sudo since this creates user
   sudo: no
   vars:
+    - sshkey: "{{ lookup('file', '../resources/keys') }}"
     - user: meteo
   tasks:
 
@@ -17,8 +19,7 @@
       # wheel gives su
       user: name={{user}} shell=/usr/local/bin/bash  groups=wheel append=yes
 
-    - authorized_key: user={{user}} key="{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}" # "
-
+    - authorized_key: user=meteo key="{{sshkey}}"
  
     - pkgng: name=git
 

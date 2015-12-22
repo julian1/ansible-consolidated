@@ -1,7 +1,7 @@
 
   - hosts: aatams
     vars:
-      - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
+      - sshkey: "{{ lookup('file', '../resources/keys') }}"
       - mirror: "http://mirror.aarnet.edu.au/debian/"
     roles:
       - common

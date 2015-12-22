@@ -5,7 +5,7 @@
   roles:
     - yaegashi.blockinfile
   vars:
-    - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
+    - sshkey: "{{ lookup('file', '../resources/keys') }}"
   tasks:
     - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
     - hostname: name=apu

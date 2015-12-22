@@ -2,11 +2,14 @@
 
   - hosts: geonetwork2
     vars:
-      - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
+      - sshkey: "{{ lookup('file', '../resources/keys') }}"
       - mirror: "http://mirror.aarnet.edu.au/debian/"
 #    roles:
 #      - common
+#      - distribution
     tasks:
+      # IMPORTANT - looks like the tasks search path is different to the roles search path
+
       - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe 
 
       - include: ../roles/common/tasks/sudoers.yml
