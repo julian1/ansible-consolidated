@@ -1,0 +1,27 @@
+
+  - hosts: aatams
+    vars:
+      - sshkey: "{{ lookup('file', '/home/meteo/.ssh/id_rsa.pub') }}"
+      - mirror: "http://mirror.aarnet.edu.au/debian/"
+    roles:
+      - common
+    tasks:
+      - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe 
+
+      - include: ../roles/common/tasks/sudoers.yml
+
+      - user: name=meteo shell=/bin/bash groups=adm append=yes
+      - include: ../roles/common/tasks/mydotfiles.yml user=meteo
+      - authorized_key: user=meteo key="{{sshkey}}"
+
+      - include: ../roles/common/tasks/timezone.yml timezone=Australia/Hobart
+
+      - apt: name=locales
+      - locale_gen: name=en_AU.UTF-8 state=present
+
+      - include: ../roles/common/tasks/postgres.yml
+      - include: ../roles/aatams/tasks/main.yml
+    handlers:
+      - include: ../roles/common/handlers/main.yml
+
+

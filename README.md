@@ -6,7 +6,9 @@ ansible-playbook imos.yml -i ./inventory/dev  -l geonetwork2  -v -u root
 
 # or
 
-ansible-playbook  ./playbooks/geonetwork.yml -l geonetwork2  -v -u root
+ansible-playbook nodes/geonetwork.yml -i ./inventory/dev  -v -u root
+
+ansible-playbook nodes/aatams.yml  -i ./inventory/dev  -v -u root
 
 # etc
 
