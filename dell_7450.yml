@@ -8,7 +8,7 @@
     - { role: distribution, template: debian.j2, version: testing, upgrade: safe, mirror: "http://mirror.aarnet.edu.au/debian" }
 
   sudo: no
-  vars: 
+  vars:
     - common: ./roles/common
 
   tasks:
@@ -28,9 +28,10 @@
 
     # TODO add devenv and desktop...
     - include: ./roles/common/tasks/devenv.yml
+    - apt: name=maven
+    - apt: name=postgresql-client-9.4
 
-
-    # - include: "./roles/common/tasks/jdk.yml" 
+    # - include: "./roles/common/tasks/jdk.yml"
     - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export JAVA_HOME=/usr/java/jdk1.7.0_80'
 
     - apt: name=memtest86
@@ -79,7 +80,7 @@
 
     - apt: name=debootstrap
 
- 
+
   handlers:
     - include: ./roles/common/handlers/main.yml
 
