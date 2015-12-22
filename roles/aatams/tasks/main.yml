@@ -22,17 +22,14 @@
     - template: src=aatams.groovy.j2 dest=/var/lib/tomcat7/aatams_data/aatams.groovy owner=tomcat7
       notify: restart-tomcat7
 
-
     # war
-    # - command: sh -c "wget 'https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.16.0.war' -O /var/lib/tomcat7/webapps/aatams.war" creates=/var/lib/tomcat7/webapps/aatams.war
-
     # TODO owner?
     - get_url: url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.15.0.war 
         dest=/var/lib/tomcat7/webapps/aatams.war
       notify: restart-tomcat7
 
 
-    # have we already got a database
+    # check for database
     - shell: psql -tAc "select 1 from pg_database where datname='aatams'"
       become: yes
       become_user: postgres
