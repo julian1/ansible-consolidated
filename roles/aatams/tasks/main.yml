@@ -1,6 +1,8 @@
 
 # assume have postgres 
 
+# just about hoist this up into the aatams node?
+
     - apt: name=tomcat7 update_cache=yes
 
     # jdbc
