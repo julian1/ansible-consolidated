@@ -23,11 +23,10 @@
       notify: restart-tomcat7
 
     # war
-    # TODO owner?
+    # TODO owner - use file?
     - get_url: url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.15.0.war 
         dest=/var/lib/tomcat7/webapps/aatams.war
       notify: restart-tomcat7
-
 
     # check for database
     - shell: psql -tAc "select 1 from pg_database where datname='aatams'"
@@ -36,10 +35,8 @@
       register: have_aatams_db
       changed_when: false
 
-
-    # tomcat must be stopped - alternatively kill the db connections
-    - name: Fresh Geonetwork Database
-      shell: "{{item}}"
+    # fresh database 
+    - shell: "{{item}}"
       become: yes
       become_user: postgres
       with_items:
@@ -56,7 +53,4 @@
             alter database aatams set search_path to 'aatams','public';
             "
       when: have_aatams_db.stdout != "1"
-
-
-
 
