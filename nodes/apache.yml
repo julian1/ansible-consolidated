@@ -1,11 +1,14 @@
 
   - hosts: apache
+
+    roles:
+      - yaegashi.blockinfile
     vars:
       - user: meteo
       - sshkey: "{{ lookup('file', '../resources/keys') }}"
       - mirror: "http://mirror.aarnet.edu.au/debian/"
     tasks:
-      - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe 
+      - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
 
       - include: ../roles/common/tasks/sudoers.yml
 
@@ -21,7 +24,39 @@
 
       - include: ../roles/common/tasks/devenv-lite.yml
 
+      # apache
       - apt: name=apache2
+      - apt: name=libapache2-mod-proxy-html
+
+      # install proxy
+      - command: a2enmod proxy proxy_http
+
+      # root@apache:/etc/apache2# a2ensite aatams
+      # root@apache:/etc/apache2# service apache2 reload
+      # root@apache:/etc/apache2# ls sites-available/
+
+      - blockinfile:
+          dest: /etc/apache2/sites-available/aatams.conf
+          create: true
+          content: |
+            <VirtualHost *:80>
+              DocumentRoot /aatams
+
+              # proxy and reverse proxy handling
+              #  ProxyPreserveHost On
+              #  Enable proxying (disabled by default)
+              #  <Proxy *>
+              #    Order deny,allow
+              #    Deny from all
+              #    Allow from all
+              #  </Proxy>
+
+              ProxyPass /aatams               http://aatams:8080/aatams
+              ProxyPassReverse /aatams        http://aatams:8080/aatams
+            </VirtualHost>
+        notify: reload-apache2
+
+      - command: a2ensite aatams
 
 
 
