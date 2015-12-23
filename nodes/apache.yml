@@ -32,6 +32,7 @@
       # enable proxy
       - command: a2enmod proxy proxy_http
 
+      # TODO ordering,
       # disable default site
       - command: a2dissite 000-default.conf
 
