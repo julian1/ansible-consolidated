@@ -67,20 +67,6 @@
       # aatams enable
       - command: a2ensite default
 
-      # SO IT works with one, but when we have two it doesn't work.
-      # OK, because the DocumentRoot is actually refering to a directory...
-      # and it's not discriminating at all...
-      # so everything is going to the first <VirtualHost> that's created...
-
-      # VERY IMPORTANT
-      # Ahhh maybe we have just the one VirtualHost
-      # and then proxy for the different hosts inside that...
-
-      # maybe the VirtualHost won't work?
-
-      # not working for some reason?
-      # geonetwork2 reverse proxy
-
 
     handlers:
       - include: ../roles/common/handlers/main.yml
