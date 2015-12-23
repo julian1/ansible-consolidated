@@ -1,6 +1,5 @@
 
   - hosts: apache
-
     roles:
       - yaegashi.blockinfile
     vars:
@@ -26,39 +25,30 @@
 
       # apache
       - apt: name=apache2
+
+      # mod proxy
       - apt: name=libapache2-mod-proxy-html
 
-      # install proxy
+      # enable proxy
       - command: a2enmod proxy proxy_http
 
-      # root@apache:/etc/apache2# a2ensite aatams
-      # root@apache:/etc/apache2# service apache2 reload
-      # root@apache:/etc/apache2# ls sites-available/
+      # disable default site
+      - command: a2dissite 000-default.conf
 
+      # aatams reverse proxy
       - blockinfile:
           dest: /etc/apache2/sites-available/aatams.conf
           create: true
           content: |
             <VirtualHost *:80>
-              DocumentRoot /aatams
-
-              # proxy and reverse proxy handling
-              #  ProxyPreserveHost On
-              #  Enable proxying (disabled by default)
-              #  <Proxy *>
-              #    Order deny,allow
-              #    Deny from all
-              #    Allow from all
-              #  </Proxy>
-
-              ProxyPass /aatams               http://aatams:8080/aatams
-              ProxyPassReverse /aatams        http://aatams:8080/aatams
+              DocumentRoot      /aatams
+              ProxyPass         /aatams http://aatams:8080/aatams
+              ProxyPassReverse  /aatams http://aatams:8080/aatams
             </VirtualHost>
         notify: reload-apache2
 
+      # aatams enable
       - command: a2ensite aatams
-
-
 
     handlers:
       - include: ../roles/common/handlers/main.yml
