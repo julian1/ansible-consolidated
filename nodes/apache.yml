@@ -29,6 +29,7 @@
       # mod proxy
       - apt: name=libapache2-mod-proxy-html
 
+      # TODO this is not idempotent
       # enable proxy
       - command: a2enmod proxy proxy_http
 
@@ -43,13 +44,33 @@
           content: |
             <VirtualHost *:80>
               DocumentRoot      /aatams
+              # Require all granted
               ProxyPass         /aatams http://aatams:8080/aatams
               ProxyPassReverse  /aatams http://aatams:8080/aatams
+
+              ProxyPass         /geonetwork2 http://geonetwork2:8080/geonetwork
+              ProxyPassReverse  /geonetwork2 http://geonetwork2:8080/geonetwork
+
             </VirtualHost>
         notify: reload-apache2
 
       # aatams enable
       - command: a2ensite aatams
+
+      # SO IT works with one, but when we have two it doesn't work.
+      # OK, because the DocumentRoot is actually refering to a directory...
+      # and it's not discriminating at all...
+      # so everything is going to the first <VirtualHost> that's created...
+
+      # VERY IMPORTANT
+      # Ahhh maybe we have just the one VirtualHost 
+      # and then proxy for the different hosts inside that...
+
+      # maybe the VirtualHost won't work?
+
+      # not working for some reason?
+      # geonetwork2 reverse proxy
+
 
     handlers:
       - include: ../roles/common/handlers/main.yml
