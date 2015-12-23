@@ -1,0 +1,31 @@
+
+  - hosts: apache
+    vars:
+      - user: meteo
+      - sshkey: "{{ lookup('file', '../resources/keys') }}"
+      - mirror: "http://mirror.aarnet.edu.au/debian/"
+    tasks:
+      - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe 
+
+      - include: ../roles/common/tasks/sudoers.yml
+
+      - user: name=meteo shell=/bin/bash groups=adm append=yes
+      - include: ../roles/common/tasks/mydotfiles.yml user=meteo
+      - authorized_key: user=meteo key="{{sshkey}}"
+
+      - include: ../roles/common/tasks/timezone.yml timezone=Australia/Hobart
+
+      - apt: name=locales
+      - locale_gen: name=en_AU.UTF-8 state=present
+
+
+      - include: ../roles/common/tasks/devenv-lite.yml
+
+      - apt: name=apache2
+
+
+
+    handlers:
+      - include: ../roles/common/handlers/main.yml
+
+
