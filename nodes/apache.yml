@@ -39,11 +39,12 @@
 
       # aatams reverse proxy
       - blockinfile:
-          dest: /etc/apache2/sites-available/aatams.conf
+          dest: /etc/apache2/sites-available/default.conf
           create: true
           content: |
             <VirtualHost *:80>
-              DocumentRoot      /aatams
+
+              # DocumentRoot      /aatams
               # Require all granted
               ProxyPass         /aatams http://aatams:8080/aatams
               ProxyPassReverse  /aatams http://aatams:8080/aatams
@@ -55,7 +56,7 @@
         notify: reload-apache2
 
       # aatams enable
-      - command: a2ensite aatams
+      - command: a2ensite default
 
       # SO IT works with one, but when we have two it doesn't work.
       # OK, because the DocumentRoot is actually refering to a directory...
