@@ -32,6 +32,7 @@
       # TODO this is not idempotent
       # enable proxy
       - command: a2enmod proxy proxy_http
+      - command: a2enmod proxy proxy_html
 
       # TODO ordering,
       # disable default site
@@ -49,8 +50,16 @@
               ProxyPass         /aatams http://aatams:8080/aatams
               ProxyPassReverse  /aatams http://aatams:8080/aatams
 
-              ProxyPass         /geonetwork2 http://geonetwork2:8080/geonetwork
-              ProxyPassReverse  /geonetwork2 http://geonetwork2:8080/geonetwork
+              # this should be ok.
+              ProxyPass         /geonetwork http://geonetwork2:8080/geonetwork
+              ProxyPassReverse  /geonetwork http://geonetwork2:8080/geonetwork
+
+              # Rewriting URLs in hyperlinks
+              # ProxyHTMLEnable On
+              # ProxyHTMLExtended On
+              # ProxyHTMLURLMap http://apache/geonetwork2  /geonetwork 
+
+              
 
             </VirtualHost>
         notify: reload-apache2
@@ -64,7 +73,7 @@
       # so everything is going to the first <VirtualHost> that's created...
 
       # VERY IMPORTANT
-      # Ahhh maybe we have just the one VirtualHost 
+      # Ahhh maybe we have just the one VirtualHost
       # and then proxy for the different hosts inside that...
 
       # maybe the VirtualHost won't work?
