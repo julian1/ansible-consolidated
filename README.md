@@ -2,6 +2,8 @@
 ### Examples
 
 ```
+ansible-playbook nodes/apu.yml -i 192.168.42.1, -v -u root
+
 ansible-playbook imos.yml -i ./inventory/dev -l geonetwork2 -v -u root
 
 ansible-playbook nodes/geonetwork.yml -i ./inventory/dev -v -u root

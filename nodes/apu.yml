@@ -1,26 +1,27 @@
 # TODO hide the passphrase
 # it's easiest to use direct wired interface eth1, 172.16.210.254 to provision
 
-- hosts: all
+- hosts: 192.168.42.1
   roles:
     - yaegashi.blockinfile
   vars:
+    - user: meteo
     - sshkey: "{{ lookup('file', '../resources/keys') }}"
   tasks:
-    - include: ./roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
+    - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
     - hostname: name=apu
 
-    - include: ./roles/common/tasks/timezone.yml timezone=Australia/Tasmania
+    - include: ../roles/common/tasks/timezone.yml timezone=Australia/Tasmania
 
     - apt: name=locales
     - locale_gen: name=en_AU.UTF-8 state=present
 
-    - include: ./roles/common/tasks/sudoers.yml
+    - include: ../roles/common/tasks/sudoers.yml
 
-    - user: name=meteo shell=/bin/bash groups=adm append=yes
-    - authorized_key: user=meteo key="{{sshkey}}"
+    - user: name="{{user}}" shell=/bin/bash groups=adm append=yes
+    - authorized_key: user="{{user}}" key="{{sshkey}}"
 
-    - include: ./roles/common/tasks/mydotfiles.yml user=meteo
+    - include: ../roles/common/tasks/mydotfiles.yml user=meteo
 
     - apt: name=vim
     - apt: name=ntp
@@ -200,6 +201,6 @@
 
 
   handlers:
-    - include: ./roles/common/handlers/main.yml
+    - include: ../roles/common/handlers/main.yml
 
 
