@@ -5,23 +5,15 @@
       - sshkey: "{{ lookup('file', '../resources/keys') }}"
       - mirror: "http://mirror.aarnet.edu.au/debian/"
     tasks:
-      # - include: ../roles/common/tasks/basic.yml
       - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
-
       - include: ../roles/common/tasks/sudoers.yml
-
       - include: ../roles/common/tasks/timezone.yml timezone=Australia/Hobart
-
       - apt: name=locales
-
       - locale_gen: name=en_AU.UTF-8 state=present
-
       - user: name="{{user}}" shell=/bin/bash groups=adm append=yes
-
-        # just about get rid of this and incorporate directly
       - include: ../roles/common/tasks/mydotfiles.yml #user="{{user}}"
-
       - authorized_key: user="{{user}}" key="{{sshkey}}"
+
 
       - include: ../roles/common/tasks/postgres.yml
       - include: ../roles/geonetwork/tasks/main.yml
