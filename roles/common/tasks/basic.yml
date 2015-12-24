@@ -2,7 +2,7 @@
   # change name to server or somthing similar.
   # IMPORTANT - looks like the tasks search path is different to the roles search path
 
-  - include: distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
+  - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
 
   - include: tasks/sudoers.yml
 
