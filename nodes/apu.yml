@@ -112,6 +112,7 @@
           dhcp-range=192.168.42.10,192.168.42.20,255.255.255.0,12h
           dhcp-ignore-names
 
+          address=/apu/192.168.42.1
           dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.42.14
 
           log-queries
@@ -126,6 +127,7 @@
           dhcp-range=192.168.43.10,192.168.43.20,255.255.255.0,12h
           dhcp-ignore-names
 
+          address=/apu/192.168.43.1
           dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10 
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.43.16
 
