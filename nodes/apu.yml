@@ -144,12 +144,14 @@
         content: |
           #################
           # FILTER INPUT RULES
-          # TODO - should this be here, will interfere with fail2ban
+          # TODO - flush will conflict with fail2ban
           iptables --flush INPUT -t filter
           # input default policy
           iptables -P INPUT DROP
+          # allow ping/icmp
+          iptables -I INPUT 1 -p icmp -j ACCEPT
           # test interface listening on eth0
-          iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
+          # iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
           # incoming lan ssh regardless of state
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
           # incoming http to enable apt-get update/upgrade 
@@ -184,10 +186,9 @@
 
           #################
           # NAT POSTROUTING RULES
-          # TODO remove the ! -d rules, which shouldn't be needed with -o
           iptables --flush POSTROUTING -t nat 
-          iptables -t nat -A POSTROUTING -s 192.168.42.0/24 ! -d 192.168.42.0/24 -o eth0 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 192.168.43.0/24 ! -d 192.168.43.0/24 -o eth0 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.42.0/24 -o eth0 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.43.0/24 -o eth0 -j MASQUERADE
 
       notify: reconfigure-iptables
 
