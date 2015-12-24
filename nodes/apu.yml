@@ -128,7 +128,7 @@
           dhcp-ignore-names
 
           address=/apu/192.168.43.1
-          dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10 
+          dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.43.16
 
           log-queries
@@ -148,13 +148,13 @@
           iptables --flush INPUT -t filter
           # input default policy
           iptables -P INPUT DROP
-          # allow ping/icmp
-          iptables -I INPUT 1 -p icmp -j ACCEPT
+          # allow lan ping/icmp
+          iptables -I INPUT 1 ! -i eth0 -p icmp -j ACCEPT
           # test interface listening on eth0
           # iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
           # incoming lan ssh regardless of state
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
-          # incoming http to enable apt-get update/upgrade 
+          # incoming http responses to support apt-get update/upgrade
           # TODO, should only be state established,related
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
@@ -163,7 +163,7 @@
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
           # and dns request responses coming back from external servers
-          # TODO should be conntrack established, related. 
+          # TODO should be conntrack established, related.
           iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
           # dhcp coming in from lan
@@ -174,7 +174,7 @@
 
           #################
           # NAT PREROUTING RULES
-          iptables --flush PREROUTING -t nat 
+          iptables --flush PREROUTING -t nat
           # http://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables
           # Good voip guide, note the comment to limit stp to smaller port range
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
@@ -186,7 +186,7 @@
 
           #################
           # NAT POSTROUTING RULES
-          iptables --flush POSTROUTING -t nat 
+          iptables --flush POSTROUTING -t nat
           iptables -t nat -A POSTROUTING -s 192.168.42.0/24 -o eth0 -j MASQUERADE
           iptables -t nat -A POSTROUTING -s 192.168.43.0/24 -o eth0 -j MASQUERADE
 
