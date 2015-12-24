@@ -1,0 +1,21 @@
+
+  # change name to server or somthing similar.
+  # IMPORTANT - looks like the tasks search path is different to the roles search path
+
+  - include: distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
+
+  - include: tasks/sudoers.yml
+
+  - include: tasks/timezone.yml timezone=Australia/Hobart
+
+  - apt: name=locales
+
+  - locale_gen: name=en_AU.UTF-8 state=present
+
+  - user: name=meteo shell=/bin/bash groups=adm append=yes
+
+  - include: ../roles/common/tasks/mydotfiles.yml user=meteo
+
+  - authorized_key: user=meteo key="{{sshkey}}"
+
+

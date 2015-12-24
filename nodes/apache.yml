@@ -60,7 +60,6 @@
               # ProxyHTMLURLMap http://apache/geonetwork2  /geonetwork 
 
               
-
             </VirtualHost>
         notify: reload-apache2
 

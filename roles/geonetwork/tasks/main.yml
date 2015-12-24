@@ -1,6 +1,14 @@
 
 # assume have postgres 
 
+# We want to parametize this...
+# actually lets just run it up and copy the db?
+
+# actually why not split it up into different tasks - then can factor out the war deployment...
+# from everything else...
+
+# or we drive it with variables...
+
     - apt: name=tomcat7 update_cache=yes
 
     # jdbc
