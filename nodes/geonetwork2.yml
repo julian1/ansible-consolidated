@@ -1,6 +1,7 @@
 
   - hosts: geonetwork2
     vars:
+      - user: meteo
       - sshkey: "{{ lookup('file', '../resources/keys') }}"
       - mirror: "http://mirror.aarnet.edu.au/debian/"
     tasks:

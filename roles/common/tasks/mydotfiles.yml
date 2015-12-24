@@ -4,16 +4,14 @@
     # uggh, there's a problem with local changes - needed for chefdk grails-home path variables.
     # who has authority to write... so we use force=yes, but should not...
     # 
-    - name: Checkout dotfiles
-      git: repo=http://github.com/julian1/dotfiles.git dest=/home/{{user}}/dotfiles version=master force=yes
+    - git: repo=http://github.com/julian1/dotfiles.git "dest=/home/{{user}}/dotfiles" version=master force=yes
       sudo: true
       sudo_user: "{{user}}"
 
-    - name: Install dotfiles
-      shell: ./install.sh 2> installed.txt
+    - shell: ./install.sh 2> installed.txt
       sudo: true
       sudo_user: "{{user}}"
       args:
-        chdir: /home/{{user}}/dotfiles/
+        chdir: "/home/{{user}}/dotfiles/"
         creates: installed.txt
 

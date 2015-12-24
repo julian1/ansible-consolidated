@@ -12,10 +12,11 @@
 
   - locale_gen: name=en_AU.UTF-8 state=present
 
-  - user: name=meteo shell=/bin/bash groups=adm append=yes
+  - user: name="{{user}}" shell=/bin/bash groups=adm append=yes
 
-  - include: ../roles/common/tasks/mydotfiles.yml user=meteo
+    # just about get rid of this and incorporate directly
+  - include: tasks/mydotfiles.yml user="{{user}}"
 
-  - authorized_key: user=meteo key="{{sshkey}}"
+  - authorized_key: user="{{user}}" key="{{sshkey}}"
 
 
