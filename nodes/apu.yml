@@ -159,6 +159,11 @@
           # TODO, should only be state established,related
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
+  
+          # tftp - /etc/default/tftpd-hpa, TFTP_OPTIONS="--secure  --port-range 1024:1025"           
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 69 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1024 -j ACCEPT
+
           # dnsmasq
           # incomming dns requests from lan to dnsmasq service
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
@@ -176,10 +181,12 @@
           #################
           # NAT PREROUTING RULES
           iptables --flush PREROUTING -t nat
+          # voip
           # http://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables
           # Good voip guide, note the comment to limit stp to smaller port range
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
           # udp or tcp
+          # TODO remove multiport for 5060
           iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
           iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
 
