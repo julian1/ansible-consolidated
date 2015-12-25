@@ -130,6 +130,7 @@
           address=/apu/192.168.43.1
           dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.43.16
+          dhcp-host=00:04:13:37:1a:f1,snom,192.168.43.20
 
           log-queries
           log-dhcp
@@ -179,10 +180,11 @@
           # Good voip guide, note the comment to limit stp to smaller port range
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
           # udp or tcp
-          iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.10
-          iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.10
+          iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
+          iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
 
-          iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.10
+          # 35000-44999
+          iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.20
 
           #################
           # NAT POSTROUTING RULES
