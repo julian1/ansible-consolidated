@@ -23,7 +23,7 @@
         - curl -O https://cmake.org/files/v3.4/cmake-3.4.0.tar.gz 
         - tar -C ~/ -xzf cmake-3.4.0.tar.gz 
 
-    - shell: creates=xxx chdir=cmake-3.4.0 {{item}}
+    - shell: creates=/usr/local/bin/cmake chdir=cmake-3.4.0 {{item}}
       with_items:
         - ./configure --prefix=/usr/local
         - make 
