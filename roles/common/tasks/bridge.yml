@@ -34,15 +34,14 @@
           # the interface
           interface=br0
           # Set up your local domain here
-          domain=julian.home
-          dhcp-ignore-names
+          # domain=julian.home
           # goes to /var/log/syslog
           log-queries
           log-dhcp
           # range for leases
           dhcp-range=br0,10.1.1.10,10.1.1.20,4h
           # entries
-          dhcp-host=00:01:04:1b:2C:1A,jessie1,10.1.1.19
+          dhcp-host=00:01:04:1b:2C:1A,jessie,10.1.1.19
           # dhcp-host=00:01:04:1b:2C:1B,jessie,10.1.1.18
 
       notify: restart-dnsmasq
