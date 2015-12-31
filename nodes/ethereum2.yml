@@ -12,12 +12,22 @@
     # - include: ../roles/common/tasks/basic.yml
 
 
-     
-    - git: repo=https://github.com/mmoss/cryptopp dest=~/cryptopp version=2772f7b
     - apt: name=scons
     - apt: name=g++
+    - git: repo=https://github.com/mmoss/cryptopp dest=cryptopp version=2772f7b
     - shell: scons --shared --prefix=/usr/local chdir=cryptopp creates=target
 
+
+    - shell: creates=cmake-3.4.0 {{item}}
+      with_items:
+        - curl -O https://cmake.org/files/v3.4/cmake-3.4.0.tar.gz 
+        - tar -C ~/ -xzf cmake-3.4.0.tar.gz 
+
+    - shell: creates=xxx chdir=cmake-3.4.0 {{item}}
+      with_items:
+        - ./configure --prefix=/usr/local
+        - make 
+        - make install
 
 
 
