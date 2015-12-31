@@ -1,0 +1,27 @@
+
+- hosts: all
+  roles:
+    - yaegashi.blockinfile
+  vars:
+    - sshkey: "{{ lookup('file', '../resources/keys') }}"
+  tasks:
+    # - include: | 
+    #    ../roles/distribution/tasks/main.yml template=debian.j2 
+    #    version=testing upgrade=safe mirror="http://mirror.aarnet.edu.au/debian" 
+
+    # - include: ../roles/common/tasks/basic.yml
+
+
+     
+    - git: repo=https://github.com/mmoss/cryptopp dest=~/cryptopp version=2772f7b
+    - apt: name=scons
+    - apt: name=g++
+    - shell: scons --shared --prefix=/usr/local chdir=cryptopp creates=target
+
+
+
+
+
+  handlers:
+    - include: ../roles/common/handlers/main.yml
+
