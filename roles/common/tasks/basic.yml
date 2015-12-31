@@ -1,0 +1,14 @@
+
+    - include: sudoers.yml
+
+    - user: name=meteo shell=/bin/bash groups=adm append=yes
+
+    - include: mydotfiles.yml user=meteo
+    - authorized_key: user=meteo key="{{sshkey}}"
+
+    - include: timezone.yml timezone=Australia/Hobart
+
+    - apt: name=locales
+    - locale_gen: name=en_AU.UTF-8 state=present
+
+    - apt: name=vim
