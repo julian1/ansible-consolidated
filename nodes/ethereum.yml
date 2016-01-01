@@ -7,6 +7,8 @@
         ../roles/distribution/tasks/main.yml template=debian.j2 version=testing upgrade=safe 
         mirror="http://mirror.aarnet.edu.au/debian" 
 
+    - file: path=/root state=directory mode=0755
+
     # - include: ../roles/common/tasks/basic.yml
     # - include: ../roles/ethereum/tasks/cpp-ethereum.yml
     # - include: ../roles/ethereum/tasks/go-ethereum.yml
