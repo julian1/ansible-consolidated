@@ -21,6 +21,7 @@
 
       - include: ../roles/common/tasks/postgres.yml
       - include: ../roles/aatams/tasks/main.yml
+
     handlers:
       - include: ../roles/common/handlers/main.yml
 
