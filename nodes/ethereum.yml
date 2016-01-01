@@ -15,13 +15,7 @@
 
     - include: ../roles/ethereum/tasks/node.yml
 
-
-
-    # TODO chmod /root  to 755 to allow us to run symbolically linked binaries
-
-    # OK. we want enough of node, to be able to connect to running geth instance 
-    # and get the last block.
-    # dapple
+    # TODO dapple
 
   handlers:
     - include: ../roles/common/handlers/main.yml
