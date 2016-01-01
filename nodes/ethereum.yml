@@ -6,36 +6,11 @@
     - sshkey: "{{ lookup('file', '../resources/keys') }}"
   tasks:
     - include: | 
-        ../roles/distribution/tasks/main.yml template=debian.j2 
-        version=testing upgrade=safe mirror="http://mirror.aarnet.edu.au/debian" 
+        ../roles/distribution/tasks/main.yml template=debian.j2 version=testing upgrade=safe 
+        mirror="http://mirror.aarnet.edu.au/debian" 
 
-    # - include: ../roles/common/tasks/basic.yml
 
-    - apt: name=curl
-
-    # TODO chdir should be relative path, so can build under other accounts
-
-    # could use get_url except for unpacking
-    - shell: creates=/root/go {{item}}
-      with_items:
-        - curl -O https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
-        - tar -C ~/ -xzf go1.4.2.linux-amd64.tar.gz
-
-    - lineinfile: |
-        dest=~/.bashrc backup=true state=present
-        insertafter=EOF line='export PATH=$PATH:/root/go/bin'
-
-    - git: repo=https://github.com/ethereum/go-ethereum dest=~/go-ethereum version=master
-
-    - apt: name=make
-    - apt: name=gcc
-    - apt: name=libgmp-dev
-
-    - shell: make creates=build/bin/geth chdir=~/go-ethereum
-
-    - lineinfile: |
-        dest=~/.bashrc backup=true state=present
-        insertafter=EOF line='export PATH=$PATH:/root/go-ethereum/build/bin/'
+    - include: ../roles/ethereum/tasks/cpp-ethereum.yml
 
   handlers:
     - include: ../roles/common/handlers/main.yml

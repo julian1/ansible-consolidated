@@ -1,0 +1,104 @@
+
+
+  # helps debug
+  - apt: name=vim
+  - apt: name=mlocate
+
+
+  # cryptopp
+  - apt: name=git
+  - apt: name=scons
+  - apt: name=g++
+  - git: repo=https://github.com/mmoss/cryptopp dest=cryptopp version=2772f7b
+  - shell: scons --shared --prefix=/usr/local chdir=cryptopp creates=target
+
+
+  # cmake
+  - apt: name=make
+  - get_url: url=https://cmake.org/files/v3.4/cmake-3.4.0.tar.gz dest=./cmake-3.4.0.tar.gz 
+  - unarchive: src=/root/cmake-3.4.0.tar.gz dest=/root copy=no
+  - shell: creates=/usr/local/bin/cmake chdir=cmake-3.4.0 {{item}}
+    with_items:
+      - ./configure --prefix=/usr/local
+      - make
+      - make install
+
+
+  # libjson-rpc-cpp
+  - apt: name=libjsoncpp-dev
+  - apt: name=libargtable2-dev
+  - apt: name=libcurl3-dev  
+  - apt: name=libmicrohttpd-dev
+  - git: repo=https://github.com/cinemast/libjson-rpc-cpp dest=libjson-rpc-cpp version="tags/v0.6.0"
+  # will download catch.hpp during cmake and make
+  - shell: creates=/usr/local/lib/libjsonrpccpp-client.so chdir=libjson-rpc-cpp {{item}}
+    with_items:
+      - rm -rf build 
+      - mkdir build
+      - cd build && cmake .. && make install
+      - ldconfig
+
+
+  # third-party ethereum libraries
+  - apt: name=libboost-all-dev  # 1.58
+  - git: repo=https://github.com/ethereum/webthree-helpers dest=webthree-helpers version=release
+  - shell: creates=build/libscrypt/libscrypt.so chdir=webthree-helpers/utils {{item}}
+    with_items:
+      - rm -rf build 
+      - mkdir build
+      - cd build && cmake .. && make -j 8
+
+
+  # libweb3core
+  - git: repo=https://github.com/ethereum/libweb3core dest=libweb3core version=release
+  - shell: creates=build/libp2p/libp2p.so chdir=libweb3core {{item}}
+    with_items:
+      - rm -rf build 
+      - mkdir build
+      - cd build && cmake .. && make -j 8
+
+
+  # libethereum
+  - apt: name=libleveldb-dev 
+  - apt: name=libminiupnpc-dev
+  # - apt: name=cpuid
+  - git: repo=https://github.com/ethereum/libethereum dest=libethereum version=release
+  - shell: creates=build/libevm/libevm.so chdir=libethereum {{item}}
+    with_items:
+      - rm -rf build 
+      - mkdir build
+      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 8
+
+
+  # solidity
+  - git: repo=https://github.com/ethereum/solidity dest=solidity version=release
+  - shell: creates=build/solc/solc chdir=solidity {{item}}
+    with_items:
+      - rm -rf build 
+      - mkdir build
+      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 8
+
+
+  # web3.js
+  - git: repo=https://github.com/ethereum/web3.js dest=web3.js version=release
+  
+
+  # webthree eth
+  # Need https://github.com/ethereum/webthree/pull/95 
+  - apt: name=libv8-dev
+  - git: repo=https://github.com/ethereum/webthree dest=webthree version=release
+  - shell: creates=build/eth/eth chdir=webthree {{item}}
+    with_items:
+      - git fetch
+      - git checkout -b fix
+      - git cherry-pick b073219
+      - rm -rf build 
+      - mkdir build
+      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 8
+
+  # link executables
+  # TODO lll
+  - file: src=/root/webthree/build/eth/eth dest=/usr/local/bin/eth state=link
+  - file: src=/root/solidity/build/solc/solc dest=/usr/local/bin/solc state=link
+  - file: src=/root/solidity/build/solc/libsoljson.so dest=/usr/local/bin/libsoljson.so state=link
+
