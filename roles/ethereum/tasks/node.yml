@@ -1,0 +1,29 @@
+
+
+  # npm
+  - shell: |
+      curl -sL https://deb.nodesource.com/setup | bash -
+      creates=/etc/apt/sources.list.d/nodesource.list
+
+  - apt: name=nodejs
+  - apt: name=npm
+
+  # TODO use the github web3.js installed for cpp-ethereum
+  - shell: npm install web3
+
+  - file: path=/root/examples state=directory
+  - copy: src=last_block.js dest=/root/examples
+  - copy: src=token.js dest=/root/examples
+  - copy: src=token.solc dest=/root/examples
+
+
+# gulp
+# RUN npm install -g gulp
+
+## dont really need this.
+# express
+# RUN npm install express body-parser
+
+# websockets
+# RUN apt-get -y install python g++
+# RUN npm install ws

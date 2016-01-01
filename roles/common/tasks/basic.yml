@@ -4,7 +4,7 @@
     - user: name=meteo shell=/bin/bash groups=adm append=yes
 
     - include: mydotfiles.yml user=meteo
-    - authorized_key: user=meteo key="{{ lookup('file', '../resources/keys') }}"
+    - authorized_key: user=meteo key="{{ lookup('file', '../resources/keys') }}" #"
 
     - include: timezone.yml timezone=Australia/Hobart
 
