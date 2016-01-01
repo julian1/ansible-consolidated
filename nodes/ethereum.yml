@@ -10,7 +10,9 @@
         mirror="http://mirror.aarnet.edu.au/debian" 
 
 
-    - include: ../roles/ethereum/tasks/cpp-ethereum.yml
+    # - include: ../roles/ethereum/tasks/cpp-ethereum.yml
+
+    - include: ../roles/ethereum/tasks/go-ethereum.yml
 
   handlers:
     - include: ../roles/common/handlers/main.yml

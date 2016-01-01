@@ -1,28 +1,21 @@
 
   # TODO chdir should be relative path, so can build under other accounts
 
-  - apt: name=curl
+  # Go
+  # install to /usr/local/go because that is default for GOROOT
+  - get_url: |
+      url=https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
+      dest=./go1.4.2.linux-amd64.tar.gz
+  - unarchive: src=/root/go1.4.2.linux-amd64.tar.gz dest=/usr/local copy=no
+  - file: src=/usr/local/go/bin/go dest=/usr/local/bin/go state=link
 
-  # could use get_url except for unpacking
-  - shell: creates=/root/go {{item}}
-    with_items:
-      - curl -O https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
-      - tar -C ~/ -xzf go1.4.2.linux-amd64.tar.gz
 
-  - lineinfile: |
-      dest=~/.bashrc backup=true state=present
-      insertafter=EOF line='export PATH=$PATH:/root/go/bin'
-
-  - git: repo=https://github.com/ethereum/go-ethereum dest=~/go-ethereum version=master
-
+  # Geth
   - apt: name=make
   - apt: name=gcc
   - apt: name=libgmp-dev
-
-  - shell: make creates=build/bin/geth chdir=~/go-ethereum
-
-  - lineinfile: |
-      dest=~/.bashrc backup=true state=present
-      insertafter=EOF line='export PATH=$PATH:/root/go-ethereum/build/bin/'
+  - git: repo=https://github.com/ethereum/go-ethereum dest=/root/go-ethereum version=master
+  - shell: make creates=build/bin/geth chdir=/root/go-ethereum
 
 
+  - file: src=/root/go-ethereum/build/bin/geth dest=/usr/local/bin/geth state=link
