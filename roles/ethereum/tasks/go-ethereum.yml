@@ -2,7 +2,7 @@
   # TODO chdir should be relative path, so can build under other accounts
 
   # Go
-  # install to /usr/local/go because that is default for GOROOT
+  # install to /usr/local/go since it's the default for GOROOT
   - get_url: |
       url=https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
       dest=./go1.4.2.linux-amd64.tar.gz
