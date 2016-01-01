@@ -106,7 +106,11 @@
         - mkdir build
         - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 8
 
-
+    # link executables
+    # TODO lll
+    - file: src=/root/webthree/build/eth/eth dest=/usr/local/bin/eth state=link
+    - file: src=/root/solidity/build/solc/solc dest=/usr/local/bin/solc state=link
+    - file: src=/root/solidity/build/solc/libsoljson.so dest=/usr/local/bin/libsoljson.so state=link
    
   handlers:
     - include: ../roles/common/handlers/main.yml
