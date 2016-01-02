@@ -1,0 +1,25 @@
+
+  # npm
+
+#  - apt: name=curl
+#  - shell: |
+#      curl -sL https://deb.nodesource.com/setup | bash -
+#      creates=/etc/apt/sources.list.d/nodesource.list
+
+  - apt: name=nodejs
+  - apt: name=npm
+
+  # debian legacy workaround
+  - file: src=/usr/bin/nodejs dest=/usr/bin/node state=link
+
+  # upgrade to latest npm 3.5.2
+  - npm: name=npm global=true
+
+  # upgrade/ensure using nodejs 4.2.4. 4.2.0 is the LTS 
+  - npm: name=nodejs global=true
+
+# upgrade npm to 3.5.2
+# nodejs is 4.2.4 which is the LTS 
+# npm install nodejs -g
+
+

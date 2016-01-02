@@ -1,24 +1,10 @@
 
 
-  # npm
-  - shell: |
-      curl -sL https://deb.nodesource.com/setup | bash -
-      creates=/etc/apt/sources.list.d/nodesource.list
-
-  - apt: name=nodejs
-  - apt: name=npm
-
-# upgrade npm to 3.5.2
-#    292  ln -s /usr/bin/nodejs  /usr/bin/node
-#  293  npm install npm -g
-
-# nodejs is 4.2.4 which is LTS
-# npm install nodejs -g
-
   # TODO use the github web3.js installed for cpp-ethereum
   - shell: npm install web3
 
-  - file: path=/root/exAMPLEs state=directory
+  # this isn't node specific
+  - file: path=/root/examples state=directory
   - copy: src=last_block.js dest=/root/examples
   - copy: src=token.js dest=/root/examples
   - copy: src=token.solc dest=/root/examples
