@@ -1,6 +1,6 @@
 
 
-  # TODO use the github web3.js installed for cpp-ethereum
+  # TODO perhaps use web3.js for building cpp-ethereum
   - shell: npm install web3
 
   # this isn't node specific
@@ -10,13 +10,4 @@
   - copy: src=token.solc dest=/root/examples
 
 
-# gulp
-# RUN npm install -g gulp
 
-## dont really need this.
-# express
-# RUN npm install express body-parser
-
-# websockets
-# RUN apt-get -y install python g++
-# RUN npm install ws

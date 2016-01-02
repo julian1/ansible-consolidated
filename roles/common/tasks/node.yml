@@ -18,8 +18,15 @@
   # upgrade/ensure using nodejs 4.2.4. 4.2.0 is the LTS 
   - npm: name=nodejs global=true
 
-# upgrade npm to 3.5.2
-# nodejs is 4.2.4 which is the LTS 
-# npm install nodejs -g
+
+# RUN npm install -g gulp
+
+## dont really need this.
+# express
+# RUN npm install express body-parser
+
+# websockets
+# RUN apt-get -y install python g++
+# RUN npm install ws
 
 
