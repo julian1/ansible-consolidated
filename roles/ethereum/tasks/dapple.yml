@@ -1,0 +1,9 @@
+
+  # git clone https://github.com/NexusDevelopment/dapple && cd dapple && npm install -g
+
+  # user doesn't matter because installed globally
+
+  - git: repo=https://github.com/NexusDevelopment/dapple dest=dapple version=master
+
+  - shell: cd dapple && npm install -g creates=/usr/bin/dapple
+

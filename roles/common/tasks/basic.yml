@@ -12,3 +12,6 @@
     - locale_gen: name=en_AU.UTF-8 state=present
 
     - apt: name=vim
+    - apt: name=screen
+    - apt: name=mlocate
+

@@ -11,9 +11,9 @@
     - apt: name=curl
     - apt: name=dnsutils   # dig, nslookup
     - apt: name=sudo
-      # - apt: name=nettools
+    # - apt: name=nettools
     - apt: name=time
-    - apt: name=psmisc    # pstree
+    # - apt: name=psmisc    # pstree
     - apt: name=iftop
     - apt: name=iotop
     - apt: name=lsof   # or fuser

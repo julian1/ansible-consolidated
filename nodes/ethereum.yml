@@ -17,7 +17,7 @@
     - include: ../roles/common/tasks/node.yml
 
 
-    # dapple
+    - include: ../roles/ethereum/tasks/dapple.yml
 
   handlers:
     - include: ../roles/common/handlers/main.yml
