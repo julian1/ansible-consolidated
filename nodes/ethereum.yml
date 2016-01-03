@@ -11,7 +11,7 @@
 
     - include: ../roles/common/tasks/basic.yml
 
-    # - include: ../roles/ethereum/tasks/cpp-ethereum.yml
+    - include: ../roles/ethereum/tasks/cpp-ethereum.yml
     # - include: ../roles/ethereum/tasks/go-ethereum.yml
 
     - include: ../roles/common/tasks/node.yml

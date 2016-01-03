@@ -1,9 +1,8 @@
 
 
-  # helps debug
+  # useful for debugging
   - apt: name=vim
   - apt: name=mlocate
-
 
   # cryptopp
   - apt: name=git
@@ -12,7 +11,8 @@
   - git: repo=https://github.com/mmoss/cryptopp dest=cryptopp version=2772f7b
   - shell: scons --shared --prefix=/usr/local chdir=cryptopp creates=target
 
-  # TODO may not need - cmake in jessie now at version 3.4.1
+  # TODO may not need for debian - cmake now at version 3.4.1
+  # need for ubuntu?
   # cmake - need 3.4 version
 #  - apt: name=make
 #  - get_url: url=https://cmake.org/files/v3.4/cmake-3.4.0.tar.gz dest=./cmake-3.4.0.tar.gz 
@@ -22,6 +22,8 @@
 #      - ./configure --prefix=/usr/local
 #      - make
 #      - make install
+
+  - apt: name=cmake
 
 
   # libjson-rpc-cpp
@@ -50,6 +52,7 @@
 
 
   # libweb3core
+  - apt: name=libleveldb-dev 
   - git: repo=https://github.com/ethereum/libweb3core dest=libweb3core version=release
   - shell: creates=build/libp2p/libp2p.so chdir=libweb3core {{item}}
     with_items:
@@ -59,7 +62,6 @@
 
 
   # libethereum
-  - apt: name=libleveldb-dev 
   - apt: name=libminiupnpc-dev
   # - apt: name=cpuid
   - git: repo=https://github.com/ethereum/libethereum dest=libethereum version=release
@@ -89,6 +91,8 @@
   - git: repo=https://github.com/ethereum/webthree dest=webthree version=release
   - shell: creates=build/eth/eth chdir=webthree {{item}}
     with_items:
+      - git config user.name "someone"
+      - git config user.email "someone@someplace.com"
       - git fetch
       - git checkout -b fix
       - git cherry-pick b073219
