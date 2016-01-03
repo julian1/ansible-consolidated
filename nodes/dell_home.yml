@@ -9,7 +9,11 @@
     # - role: zfs
     - include: ../roles/common/tasks/sudoers.yml
     - include: ../roles/common/tasks/disable-shell-bell.yml
+
     - include: ../roles/common/tasks/bridge.yml
+
+    # TODO remove domain-name-servers from /etc/dhcp/dhclient.conf
+    # if want to run bridge
 
     - user: name=meteo shell=/bin/bash groups=adm append=yes
 #    - include: ../roles/common/tasks/mydotfiles.yml user=meteo
