@@ -1,0 +1,26 @@
+
+
+  # check for database
+  - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
+    become: yes
+    become_user: postgres
+    register: have_db
+    changed_when: false
+
+  # TODO Factor db creation out into separate tasks, to avoid using a switch variable...
+  # fresh db
+  - name: Fresh Geonetwork Database
+    shell: "{{item}}"
+    become: yes
+    become_user: postgres
+    with_items:
+      - |
+        psql -d postgres -c "
+          drop user if exists geonetwork;
+          create user geonetwork password 'geonetwork';
+          "
+      - psql -d postgres -c "create database geonetwork owner geonetwork"
+      - psql -d geonetwork -c "create extension postgis"
+    when: have_db.stdout != "1"
+
+
