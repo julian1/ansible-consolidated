@@ -1,24 +1,36 @@
 
-  - hosts: geonetwork2
-    vars:
-      - user: meteo
-      - sshkey: "{{ lookup('file', '../resources/keys') }}"
-      - mirror: "http://mirror.aarnet.edu.au/debian/"
-    tasks:
-      - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
-      - include: ../roles/common/tasks/sudoers.yml
-      - include: ../roles/common/tasks/timezone.yml timezone=Australia/Hobart
-      - apt: name=locales
-      - locale_gen: name=en_AU.UTF-8 state=present
-      - user: name="{{user}}" shell=/bin/bash groups=adm append=yes
-      - include: ../roles/common/tasks/mydotfiles.yml #user="{{user}}"
-      - authorized_key: user="{{user}}" key="{{sshkey}}"
+- hosts: geonetwork2
+  vars:
+    # - user: meteo
+    # - sshkey: "{{ lookup('file', '../resources/keys') }}"
+    # - mirror: "http://mirror.aarnet.edu.au/debian/"
+  tasks:
+
+    - include: |
+        ../roles/distribution/tasks/main.yml template=debian.j2 version=testing upgrade=safe
+        mirror="http://mirror.aarnet.edu.au/debian"
+
+    # - file: path=/root state=directory mode=0755
+
+    - include: ../roles/common/tasks/basic.yml
 
 
-      - include: ../roles/common/tasks/postgres.yml
-      - include: ../roles/geonetwork/tasks/main.yml
+    # - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
+    # - include: ../roles/common/tasks/sudoers.yml
+    #- include: ../roles/common/tasks/timezone.yml timezone=Australia/Hobart
+    #- apt: name=locales
+    #- locale_gen: name=en_AU.UTF-8 state=present
+    # - user: name="{{user}}" shell=/bin/bash groups=adm append=yes
+    # - include: ../roles/common/tasks/mydotfiles.yml #user="{{user}}"
+    # - authorized_key: user="{{user}}" key="{{sshkey}}"
 
-    handlers:
-      - include: ../roles/common/handlers/main.yml
+
+    # should have fresh-db versus backup as a clean task...
+
+    - include: ../roles/common/tasks/postgres.yml
+    - include: ../roles/geonetwork/tasks/main.yml
+
+  handlers:
+    - include: ../roles/common/handlers/main.yml
 
 

@@ -9,107 +9,114 @@
 
 # or we drive it with variables...
 
-    - apt: name=tomcat7 update_cache=yes
+  - apt: name=tomcat7 update_cache=yes
 
-    # jdbc
-    - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
-    - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
-    - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/ owner=tomcat7
+  # jdbc
+  - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
+  - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
+  - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/ owner=tomcat7
 
-    # jndi
-    - template: src=context.j2 dest=/etc/tomcat7/context.xml owner=tomcat7
-      notify: restart-tomcat7
+  # jndi
+  - template: src=context.j2 dest=/etc/tomcat7/context.xml owner=tomcat7
+    notify: restart-tomcat7
 
-    # tomcat opts
-    - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
-      notify: restart-tomcat7
+  # tomcat opts
+  - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
+    notify: restart-tomcat7
 
-    # config-overrides
-    - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
-    - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
-    - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml owner=tomcat7
+  # config-overrides
+  - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
+  - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
+  - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml owner=tomcat7
 
-    # TODO permissions - make sure tomcat owns everything-
+  # TODO permissions - make sure tomcat owns everything-
 
-    # geonetwork_data directory
-    - file: path=/var/lib/tomcat7/geonetwork_data/ state=directory owner=tomcat7
-    - file: path=/var/lib/tomcat7/geonetwork_data/config state=directory owner=tomcat7
+  # geonetwork_data directory
+  - file: path=/var/lib/tomcat7/geonetwork_data/ state=directory owner=tomcat7
+  - file: path=/var/lib/tomcat7/geonetwork_data/config state=directory owner=tomcat7
 
-    # geonetwork war
-    - get_url: url=https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war
-        dest=/var/lib/tomcat7/webapps/geonetwork.war
-      notify: restart-tomcat7
+  # geonetwork war
+  - get_url: url=https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war
+      dest=/var/lib/tomcat7/webapps/geonetwork.war
+    notify: restart-tomcat7
 
-    # check for database
-    - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
-      become: yes
-      become_user: postgres
-      register: have_gn_db
-      changed_when: false
+  # check for database
+  - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
+    become: yes
+    become_user: postgres
+    register: have_gn_db
+    changed_when: false
 
-    # fresh db
-    - name: Fresh Geonetwork Database
-      shell: "{{item}}"
-      become: yes
-      become_user: postgres
-      with_items:
-        - |
-          psql -d postgres -c "
-            drop user if exists geonetwork;
-            create user geonetwork password 'geonetwork';
-            "
-        - psql -d postgres -c "create database geonetwork owner geonetwork"
-        - psql -d geonetwork -c "create extension postgis"
-      # when: have_gn_db.stdout != "1"
-      when: false
+  # fresh db
+  - name: Fresh Geonetwork Database
+    shell: "{{item}}"
+    become: yes
+    become_user: postgres
+    with_items:
+      - |
+        psql -d postgres -c "
+          drop user if exists geonetwork;
+          create user geonetwork password 'geonetwork';
+          "
+      - psql -d postgres -c "create database geonetwork owner geonetwork"
+      - psql -d geonetwork -c "create extension postgis"
+    # when: have_gn_db.stdout != "1"
+    when: false
 
-    # communication is actually kind of horrid
-    # copy db from host
-    - copy: src=gn.dump dest=/tmp
+  # communication is actually kind of horrid
+  # copy db from host
+  - copy: src=gn.dump dest=/tmp
 
-    # restore the db and hack an admin, admin account
-    - name: Restore Geonetwork db
-      shell: "{{item}}"
-      become: yes
-      become_user: postgres
-      with_items:
-        - |
-          psql -d postgres -c "
-            drop user if exists geonetwork;
-            create user geonetwork password 'geonetwork';
-            "
-        - pg_restore -d postgres -x -C /tmp/gn.dump
-        - |
-          psql -d geonetwork -c "
-            update users
-            set password='46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2'
-            where name='admin'
-            "
-      when: have_gn_db.stdout != "1"
-      # when: false
-
-
-    # Schema plugins
-    # https://github.com/ansible/ansible/issues/7474
-    - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
-    # TODO change owner?
-    - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-sp version=master
-    - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
-
-    - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
-      with_items:
-        - mkdir ./geonetwork_data/config/schema_plugins
-        - rm -rf ./geonetwork_data/config/schema_plugins/*
-        - ln -s $(pwd)/aodn-core-gn-sp/web/src/main/webapp/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
-        - ln -s $(pwd)/aodn-sp/iso19139.mcp      $(pwd)/geonetwork_data/config/schema_plugins
-        - ln -s $(pwd)/aodn-sp/iso19139.mcp-2.0  $(pwd)/geonetwork_data/config/schema_plugins
-        - ln -s $(pwd)/aodn-sp/iso19139.anzlic   $(pwd)/geonetwork_data/config/schema_plugins
-        - ln -s $(pwd)/aodn-sp/iso19135          $(pwd)/geonetwork_data/config/schema_plugins
-        - "chown -R tomcat7: ./geonetwork_data/config/schema_plugins"
-        - touch ansible-schema-plugins-deployed
+  # restore the db and hack an admin, admin account
+  - name: Restore Geonetwork db
+    shell: "{{item}}"
+    become: yes
+    become_user: postgres
+    with_items:
+      - |
+        psql -d postgres -c "
+          drop user if exists geonetwork;
+          create user geonetwork password 'geonetwork';
+          "
+      - pg_restore -d postgres -x -C /tmp/gn.dump
+      - |
+        psql -d geonetwork -c "
+          update users
+          set password='46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2'
+          where name='admin'
+          "
+    when: have_gn_db.stdout != "1"
+    # when: false
 
 
-    # thesauri
-    - copy: src=codelist dest=/var/lib/tomcat7/geonetwork_data/config/ owner=tomcat7
+  # Schema plugins
+  # https://github.com/ansible/ansible/issues/7474
+  - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
+  # TODO change owner?
+  - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-sp version=master
+  - git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
 
+  - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
+    with_items:
+      - mkdir ./geonetwork_data/config/schema_plugins
+      - rm -rf ./geonetwork_data/config/schema_plugins/*
+      - ln -s $(pwd)/aodn-core-gn-sp/web/src/main/webapp/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
+      - ln -s $(pwd)/aodn-sp/iso19139.mcp      $(pwd)/geonetwork_data/config/schema_plugins
+      - ln -s $(pwd)/aodn-sp/iso19139.mcp-2.0  $(pwd)/geonetwork_data/config/schema_plugins
+      - ln -s $(pwd)/aodn-sp/iso19139.anzlic   $(pwd)/geonetwork_data/config/schema_plugins
+      - ln -s $(pwd)/aodn-sp/iso19135          $(pwd)/geonetwork_data/config/schema_plugins
+      - "chown -R tomcat7: ./geonetwork_data/config/schema_plugins"
+      - touch ansible-schema-plugins-deployed
+
+
+  # thesauri
+  #- copy: src=codelist dest=/var/lib/tomcat7/geonetwork_data/config/ owner=tomcat7
+
+  # TODO set owner/perms
+  - git: repo=https://github.com/aodn/codelist dest=/var/lib/tomcat7/geonetwork_data/config/ version=master
+
+  - file: path=/var/lib/tomcat7/geonetwork_data/config/codelist owner=tomcat7 
+
+  # TODO set perms
+  # Uggh http://stackoverflow.com/questions/28778738/ansible-mode-755-for-directories-and-644-for-files-recursively
 
