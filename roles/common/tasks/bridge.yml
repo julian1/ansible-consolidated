@@ -47,12 +47,12 @@
 
   # Just getting dhcpclient to add the extra dns is a lot simpler than installing resolvconf 
   # add to bridge
+  # TODO rerun dhcpclient - issue is we don't know which interface wlan0 or eth0 
   - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present insertafter='#prepend' line='prepend domain-name-servers 10.1.1.1;'
 
 
   # we don't want this anymore 
   # prevent from being overwritten by host dhcp
-  # TODO don't think this works
   # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present backrefs=yes regexp='(.*)domain-name-servers,(.*)' line='\1\2'
 
   # ip forwarding for nat - debian only?
