@@ -29,6 +29,10 @@
           set password='46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2'
           where name='admin'
           "
+      - psql -d postgres -c "
+          alter database geonetwork owner to geonetwork;
+          "
+ 
     when: have_db.stdout != "1"
     # when: false
 
