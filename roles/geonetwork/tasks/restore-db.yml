@@ -1,4 +1,8 @@
 
+  # communication is actually kind of horrid
+  # copy db from host
+  - copy: src=gn.dump dest=/tmp
+
   # check for database
   - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
     become: yes
@@ -6,10 +10,6 @@
     register: have_db
     changed_when: false
 
-
-  # communication is actually kind of horrid
-  # copy db from host
-  - copy: src=gn.dump dest=/tmp
 
   # restore the db and hack an admin, admin account
   - name: Restore Geonetwork db
