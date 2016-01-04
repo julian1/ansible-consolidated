@@ -1,11 +1,12 @@
 
-    # postgres with default postgresql.conf and pg_hba.conf 
-    - apt: name=postgresql-9.4-postgis-2.1
+    # postgres with default postgresql.conf and pg_hba.conf
+    # - apt: name=postgresql-9.4-postgis-2.1
+    - apt: name=postgresql-9.4-postgis-2.2
 
-    - template: src=postgresql.conf.j2 dest=/etc/postgresql/9.4/main/postgresql.conf owner=postgres 
+    - template: src=postgresql.conf.j2 dest=/etc/postgresql/9.4/main/postgresql.conf owner=postgres
       notify: restart-postgres
 
-    - template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.4/main/pg_hba.conf owner=postgres 
+    - template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.4/main/pg_hba.conf owner=postgres
       notify: restart-postgres
 
 
