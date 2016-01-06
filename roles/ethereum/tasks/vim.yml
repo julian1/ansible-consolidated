@@ -5,3 +5,6 @@
 
   - file: src=/root/vim-solidity/syntax/solidity.vim dest=/usr/share/vim/vim74/syntax/solidity.vim  state=link
 
+  # Need in vimrc
+  #  au BufNewFile,BufRead *.sol setf solidity 
+
