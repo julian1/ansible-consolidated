@@ -42,9 +42,8 @@
     notify: restart-tomcat7
 
 
-  # We need to unpack the war to make iso19139 available
+  # Unpack the \.war to make iso19139 available
   - apt: name=unzip
-  # - unarchive: src=/var/lib/tomcat7/webapps/geonetwork.war dest=/var/lib/tomcat7/webapps/geonetwork copy=no 
   - file: path=/var/lib/tomcat7/webapps/geonetwork state=directory
   - unarchive: src=/var/lib/tomcat7/webapps/geonetwork.war dest=/var/lib/tomcat7/webapps/geonetwork copy=no 
   - file: path=/var/lib/tomcat7/webapps/geonetwork owner=tomcat7 group=tomcat7 recurse=yes
@@ -54,7 +53,7 @@
   # https://github.com/ansible/ansible/issues/7474
   - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
   - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-schema-plugins version=master
-    register: git_schema_plugins
+    register: aodn_schema_plugins
   - file: path=/var/lib/tomcat7/aodn-schema-plugins owner=tomcat7 group=tomcat7 recurse=yes
 
 
@@ -63,7 +62,7 @@
 
   # - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
   - shell: chdir=/var/lib/tomcat7 {{item}}
-    when: git_schema_plugins.changed
+    when: aodn_schema_plugins.changed
     with_items:
       - mkdir -p ./geonetwork_data/config/schema_plugins
       - rm -rf ./geonetwork_data/config/schema_plugins/*
