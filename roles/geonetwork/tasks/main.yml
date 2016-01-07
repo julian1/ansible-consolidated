@@ -42,7 +42,7 @@
     notify: restart-tomcat7
 
 
-  # unpack war to make available iso19139
+  # We need to unpack the war to make iso19139 available
   - apt: name=unzip
   # - unarchive: src=/var/lib/tomcat7/webapps/geonetwork.war dest=/var/lib/tomcat7/webapps/geonetwork copy=no 
   - file: path=/var/lib/tomcat7/webapps/geonetwork state=directory
