@@ -7,7 +7,7 @@
       dest: /etc/iptables-rules
       create: true
       content: |
-        iptables --flush PREROUTING -t nat
+        iptables -t nat --flush PREROUTING 
         iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
     notify: reconfigure-iptables
 
