@@ -21,13 +21,18 @@
     notify: restart-tomcat7
 
   # tomcat opts
+  # TODO remove config-overrides from here, and instead define in context.xml
   - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
     notify: restart-tomcat7
+
+  # IMPORTANT NOTE THE SYM-LINK # /var/lib/tomcat7/conf -> /etc/tomcat7
+  # TODO overrides stuff and perhaps geonetwork_data should go in /var/lib/tomcat7/conf
 
   # config-overrides
   - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
   - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
   - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml owner=tomcat7
+
 
   # TODO permissions - make sure tomcat owns everything-
 
