@@ -23,8 +23,12 @@
 
 
 
+  - file: path=/var/lib/tomcat7/      state=directory owner=tomcat7 group=tomcat7
+  - file: path=/var/lib/tomcat7/lib/  state=directory owner=tomcat7 group=tomcat7
+  - file: path=/var/lib/tomcat7/conf/ state=directory owner=tomcat7 group=tomcat7
+
   # jdbc libs
-  - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
+  # - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
   - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
   - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/ owner=tomcat7
 
@@ -33,20 +37,17 @@
     notify: restart-tomcat7
 
   # tomcat opts
-  # TODO remove config-conf/overrides from here, and instead define in context.xml
+  # TODO maybe remove config-conf/overrides from here, and instead define in context.xml
   - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
     notify: restart-tomcat7
 
   # IMPORTANT NOTE THE SYM-LINK # /var/lib/tomcat7/conf -> /etc/tomcat7
-  # TODO conf/overrides stuff and perhaps conf/geonetwork_data should go in /var/lib/tomcat7/conf
 
   # config-conf/overrides
   - file: path=/var/lib/tomcat7/conf/overrides/ state=directory owner=tomcat7
   - template: src=config-overrides.j2 dest=/var/lib/tomcat7/conf/overrides/config-overrides.xml owner=tomcat7
   - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/conf/overrides/log4j-overrides.xml owner=tomcat7
 
-
-  # TODO permissions - make sure tomcat owns everything-
 
   # conf/geonetwork_data directory
   - file: path=/var/lib/tomcat7/conf/geonetwork_data/ state=directory owner=tomcat7 group=tomcat7
