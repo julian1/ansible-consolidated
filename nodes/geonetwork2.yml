@@ -1,5 +1,8 @@
 
 - hosts: geonetwork2
+  roles:
+    - yaegashi.blockinfile
+
   tasks:
     #- include: |
     #    ../roles/distribution/tasks/main.yml template=debian.j2 version=testing upgrade=safe

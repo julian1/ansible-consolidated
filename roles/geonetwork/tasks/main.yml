@@ -11,6 +11,18 @@
 
   - apt: name=tomcat7 update_cache=yes
 
+  # port forward to tomcat7
+  - apt: name=iptables-persistent
+  - blockinfile:
+      dest: /etc/iptables-rules
+      create: true
+      content: |
+        iptables --flush PREROUTING -t nat
+        iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
+    notify: reconfigure-iptables
+
+
+
   # jdbc libs
   - file: path=/var/lib/tomcat7/lib/ state=directory owner=tomcat7
   - copy: src=postgresql-9.1-901.jdbc4.jar dest=/var/lib/tomcat7/lib/ owner=tomcat7
