@@ -2,7 +2,6 @@
 
   - apt: name=tomcat7 update_cache=yes
 
-
   - apt: name=iptables-persistent
   - blockinfile:
       dest: /etc/iptables-rules
@@ -11,8 +10,6 @@
         iptables --flush PREROUTING -t nat
         iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
     notify: reconfigure-iptables
-
-
 
   # TODO make war source configurable
   - get_url: url=https://jenkins.aodn.org.au/job/portal_4_prod/lastSuccessfulBuild/artifact/target/aodn-portal-4.19.4-production.war
