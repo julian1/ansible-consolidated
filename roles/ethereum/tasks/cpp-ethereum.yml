@@ -11,19 +11,21 @@
   - git: repo=https://github.com/mmoss/cryptopp dest=cryptopp version=2772f7b
   - shell: scons --shared --prefix=/usr/local chdir=cryptopp creates=target
 
+  # using cmake/testing in jessie wants 484MB deps so it's easier to build
+  # cmake jessie is 3.0.2
   # TODO may not need for debian - cmake now at version 3.4.1
   # need for ubuntu?
   # cmake - need 3.4 version
-#  - apt: name=make
-#  - get_url: url=https://cmake.org/files/v3.4/cmake-3.4.0.tar.gz dest=./cmake-3.4.0.tar.gz 
-#  - unarchive: src=/root/cmake-3.4.0.tar.gz dest=/root copy=no
-#  - shell: creates=/usr/local/bin/cmake chdir=cmake-3.4.0 {{item}}
-#    with_items:
-#      - ./configure --prefix=/usr/local
-#      - make
-#      - make install
+  - apt: name=make
+  - get_url: url=https://cmake.org/files/v3.4/cmake-3.4.0.tar.gz dest=./cmake-3.4.0.tar.gz 
+  - unarchive: src=/root/cmake-3.4.0.tar.gz dest=/root copy=no
+  - shell: creates=/usr/local/bin/cmake chdir=cmake-3.4.0 {{item}}
+    with_items:
+      - ./configure --prefix=/usr/local
+      - make
+      - make install
 
-  - apt: name=cmake
+  # - apt: name=cmake
 
 
   # libjson-rpc-cpp
@@ -40,9 +42,12 @@
       - cd build && cmake .. && make install
       - ldconfig
 
-
+  # Needs cmake 3.4
   # third-party ethereum libraries
   - apt: name=libboost-all-dev  # 1.58
+
+  - apt: name=libgmp-dev
+
   - git: repo=https://github.com/ethereum/webthree-helpers dest=webthree-helpers version=release
   - shell: creates=build/libscrypt/libscrypt.so chdir=webthree-helpers/utils {{item}}
     with_items:
