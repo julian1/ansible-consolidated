@@ -1,0 +1,205 @@
+grails.serverURL = "https://imos.aodn.org.au/imos123"
+spatialsearch.url = "http://search-123.aodn.org.au/search/search/index"
+wmsScanner.url = "http://wmsscanner.aodn.org.au/wmsscanner/"
+wfsScanner.url = "http://wfsscanner.aodn.org.au/wfsscanner/"
+gogoduck.url = "https://gogoduck.aodn.org.au/gogoduck"
+geonetwork.url = "https://catalogue-123.aodn.org.au/geonetwork"
+depthService.url = "https://depthservice.aodn.org.au/depth"
+aodaacAggregator.url = "http://aodaac.aodn.org.au"
+
+featureToggles {
+        geonetworkLinkMonitor = true
+}
+
+
+knownServers = [
+  [
+    id: "aodn_geoserver_123",
+    uri: "http://geoserver-123.aodn.org.au/geoserver/wms",
+    wmsVersion: "1.1.1",
+    type: "GeoServer",
+    csvDownloadFormat: "csv-with-metadata-header",
+    supportsCsvMetadataHeaderOutputFormat: true,
+    urlListDownloadSubstitutions: [
+      '^/mnt/imos-t3/': "http://data.aodn.org.au/",
+      '^/mnt/opendap/2/SRS/': "http://thredds.aodn.org.au/thredds/fileServer/IMOS/SRS/",
+      '^IMOS/': "http://imos-data.aodn.org.au/IMOS/"
+    ]
+  ], 
+  [
+    id: "aodn_geoserver_ncwms_123",
+    uri: "http://geoserver-123.aodn.org.au/geoserver/ncwms",
+    wmsVersion: "1.3.0",
+    type: "ncWMS"
+  ], 
+  [
+    id: "aodn_ncwms",
+    uri: "http://ncwms.aodn.org.au/ncwms/wms",
+    wmsVersion: "1.1.1",
+    type: "ncWMS",
+    urlListDownloadSubstitutions: [
+      '^/mnt/imos-t3/IMOS/opendap/': "http://thredds.aodn.org.au/thredds/fileServer/IMOS/"
+    ]
+  ], 
+  [
+    id: "catami_geoserver",
+    uri: "http://catami.org/geoserver/catami/wms",
+    wmsVersion: "1.3.0",
+    type: "GeoServer"
+  ], 
+  [
+    id: "csiro_ncwms",
+    uri: "http://rs-data1-mel.csiro.au/ncWMS/wms",
+    wmsVersion: "1.1.1",
+    type: "ncWMS"
+  ], 
+  [
+    id: "imas_geoserver",
+    uri: "http://geoserver.imas.utas.edu.au/geoserver/wms",
+    wmsVersion: "1.1.1",
+    type: "GeoServer"
+  ], 
+  [
+    id: "rls_geoserver",
+    uri: "http://geoserver-rls.imas.utas.edu.au/geoserver/wms",
+    wmsVersion: "1.1.1",
+    type: "GeoServer"
+  ], 
+  [
+    id: "niwa_geoserver",
+    uri: "http://aodn.niwa.co.nz/geoserver/wms",
+    wmsVersion: "1.1.1",
+    type: "GeoServer"
+  ]
+]
+
+
+enabledFacets = [
+  [
+    id: "parameterFilter",
+    name: "parameterFilter",
+    key: "Measured parameter"
+  ], 
+  [
+    id: "organisationFilter",
+    name: "organisationFilter",
+    key: "Organisation",
+    collapsedByDefault: true
+  ], 
+  [
+    id: "platformFilter",
+    name: "platformFilter",
+    key: "Platform"
+  ], 
+  [
+    id: "dateFilter",
+    name: "dateFilter",
+    classId: "Portal.search.DateSelectionPanel"
+  ], 
+  [
+    id: "geoFilter",
+    name: "geoFilter",
+    classId: "Portal.search.GeoSelectionPanel"
+  ], 
+  [
+    id: "freetextFilter",
+    name: "freetextFilter",
+    key: "freetextFilter",
+    classId: "Portal.search.FreeTextSearchPanel"
+  ]
+]
+
+// 
+// googleAnalytics.trackingId = 'xxxxxxx'
+
+downloadAuth {
+    whitelistClients = [
+        /131\.217\.38\..+/
+    ]
+
+    blacklistClients = [
+        
+    ]
+}
+
+
+
+portal {
+
+    instance {
+        // The name is used to load instance specific data migrations, in most
+        // cases this should not be an issue for you so feel free to put any
+        // suitable name for your instance here. The application will default
+        // to IMOS if no name is set
+        name = "IMOS"
+
+        // URL to serve your site CSS from, this does not have to be from within
+        // portal's context e.g. http://me.example.com/static/css/portal.css
+        css = "/imos123/css/IMOS.css"
+    }
+
+    header {
+        logo = "IMOS_logo.png"
+    }
+
+    // Change authentication emails for IMOS
+    systemEmail {
+        fromAddress = "info@emii.org.au"
+    }
+}
+
+    grails.mail.default.from = "emiioffice@emii.org.au"
+
+    grails {
+        mail {
+//            host = "smtp.sendgrid.net"
+//            port = 587
+//            props = [ "mail.smtp.auth": "true" ]
+//            username = "imos"
+//            password = "xxxxxxx"
+//            disabled = false
+        }
+    }
+
+log4j = {
+
+    appenders {
+        console name: 'stdout', layout: pattern(conversionPattern: "%d %-5p [%-12t] [%X{username}] %c  - %m%n")
+    }
+
+    root {
+        info 'stdout'
+    }
+
+    error   'org.codehaus.groovy.grails.web.servlet',  //  controllers
+            'org.codehaus.groovy.grails.web.pages', //  GSP
+            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+            'org.codehaus.groovy.grails.web.mapping', // URL mapping
+            'org.codehaus.groovy.grails.commons', // core / classloading
+            'org.codehaus.groovy.grails.plugins', // plugins
+            'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+            'org.springframework',
+            'org.hibernate',
+            'net.sf.ehcache.hibernate',
+            'org.grails.plugin.resource.ResourceMeta'
+
+    warn    'org.mortbay.log'
+
+    info    'grails.app.tagLib.au.org.emii.portal.UserTagLib',
+            'grails.app.tagLib.au.org.emii.portal.MessageOfTheDayTagLib',
+            'grails.app.filters.shiro.SecurityFilters',
+            'grails.app.controller.au.org.emii.portal.LayerController',
+            'grails.app.controller.au.org.emii.portal.AuthController',
+            'grails.app.service.au.org.emii.portal.LayerService',
+            'au.org.emii.portal.display.MenuJsonCache',
+            'org.apache.shiro',
+            'grails.app.controller'
+
+    debug   'grails.app.job',
+            'grails.app.tagLib',
+            'grails.app.service.au.org.emii.portal.AodaacAggregatorService',
+            'grails.app.controller.au.org.emii.portal.SystemController',
+            'grails.app.domain',
+            'grails.app.realms'
+}

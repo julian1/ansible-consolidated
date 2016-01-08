@@ -1,0 +1,19 @@
+
+
+  - apt: name=tomcat7 update_cache=yes
+
+  # TODO make war source configurable
+  - get_url: url=https://jenkins.aodn.org.au/job/portal_4_prod/lastSuccessfulBuild/artifact/target/aodn-portal-4.19.4-production.war
+      dest=/var/lib/tomcat7/webapps/portal.war
+    notify: restart-tomcat7
+
+  # IMPORTANT NOTE THE SYM-LINK # /var/lib/tomcat7/conf -> /etc/tomcat7
+
+  - template: src=context.j2 dest=/var/lib/tomcat7/conf/context.xml owner=tomcat7 group=tomcat7
+    notify: restart-tomcat7
+
+  - template: src=Portal.groovy.j2 dest=/var/lib/tomcat7/conf/Portal.groovy owner=tomcat7 group=tomcat7
+    notify: restart-tomcat7
+
+
+
