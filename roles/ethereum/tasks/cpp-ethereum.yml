@@ -45,9 +45,7 @@
   # Needs cmake 3.4
   # third-party ethereum libraries
   - apt: name=libboost-all-dev  # 1.58
-
   - apt: name=libgmp-dev
-
   - git: repo=https://github.com/ethereum/webthree-helpers dest=webthree-helpers version=release
   - shell: creates=build/libscrypt/libscrypt.so chdir=webthree-helpers/utils {{item}}
     with_items:
