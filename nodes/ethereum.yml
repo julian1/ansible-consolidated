@@ -4,7 +4,7 @@
     - yaegashi.blockinfile
   tasks:
     - include: | 
-        ../roles/distribution/tasks/main.yml template=debian.j2 version=testing upgrade=safe 
+        ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe 
         mirror="http://mirror.aarnet.edu.au/debian" 
 
 #    - file: path=/root state=directory mode=0755
