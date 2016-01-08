@@ -29,28 +29,28 @@
   - copy: src=postgis-jdbc-1.3.3.jar       dest=/var/lib/tomcat7/lib/ owner=tomcat7
 
   # jndi
-  - template: src=context.j2 dest=/etc/tomcat7/context.xml owner=tomcat7
+  - template: src=context.j2 dest=/var/lib/tomcat7/conf/context.xml owner=tomcat7
     notify: restart-tomcat7
 
   # tomcat opts
-  # TODO remove config-overrides from here, and instead define in context.xml
+  # TODO remove config-conf/overrides from here, and instead define in context.xml
   - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
     notify: restart-tomcat7
 
   # IMPORTANT NOTE THE SYM-LINK # /var/lib/tomcat7/conf -> /etc/tomcat7
-  # TODO overrides stuff and perhaps geonetwork_data should go in /var/lib/tomcat7/conf
+  # TODO conf/overrides stuff and perhaps conf/geonetwork_data should go in /var/lib/tomcat7/conf
 
-  # config-overrides
-  - file: path=/var/lib/tomcat7/overrides/ state=directory owner=tomcat7
-  - template: src=config-overrides.j2 dest=/var/lib/tomcat7/overrides/config-overrides.xml owner=tomcat7
-  - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/overrides/log4j-overrides.xml owner=tomcat7
+  # config-conf/overrides
+  - file: path=/var/lib/tomcat7/conf/overrides/ state=directory owner=tomcat7
+  - template: src=config-overrides.j2 dest=/var/lib/tomcat7/conf/overrides/config-overrides.xml owner=tomcat7
+  - template: src=log4j-overrides.j2 dest=/var/lib/tomcat7/conf/overrides/log4j-overrides.xml owner=tomcat7
 
 
   # TODO permissions - make sure tomcat owns everything-
 
-  # geonetwork_data directory
-  - file: path=/var/lib/tomcat7/geonetwork_data/ state=directory owner=tomcat7 group=tomcat7
-  - file: path=/var/lib/tomcat7/geonetwork_data/config state=directory owner=tomcat7 group=tomcat7
+  # conf/geonetwork_data directory
+  - file: path=/var/lib/tomcat7/conf/geonetwork_data/ state=directory owner=tomcat7 group=tomcat7
+  - file: path=/var/lib/tomcat7/conf/geonetwork_data/config state=directory owner=tomcat7 group=tomcat7
 
   # TODO make war source configurable
   # geonetwork war
@@ -69,22 +69,20 @@
   # Schema plugins
   # https://github.com/ansible/ansible/issues/7474
   - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
-  - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/aodn-schema-plugins version=master
+  - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/conf/aodn-schema-plugins version=master
     register: aodn_schema_plugins
-  - file: path=/var/lib/tomcat7/aodn-schema-plugins owner=tomcat7 group=tomcat7 recurse=yes
+  - file: path=/var/lib/tomcat7/conf/aodn-schema-plugins owner=tomcat7 group=tomcat7 recurse=yes
 
 
   #- git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
   #- file: path=/var/lib/tomcat7/aodn-core-gn-sp owner=tomcat7 group=tomcat7 recurse=yes
 
   # - shell: chdir=/var/lib/tomcat7 creates=ansible-schema-plugins-deployed {{item}}
-  - shell: chdir=/var/lib/tomcat7 {{item}}
+  - shell: chdir=/var/lib/tomcat7/conf {{item}}
     when: aodn_schema_plugins.changed
     with_items:
       - mkdir -p ./geonetwork_data/config/schema_plugins
       - rm -rf ./geonetwork_data/config/schema_plugins/*
-      # - ln -s $(pwd)/aodn-core-gn-sp/web/src/main/webapp/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
-      # - ln -s $(pwd)/aodn-schema-plugins/iso19139         $(pwd)/geonetwork_data/config/schema_plugins
       - ln -s /var/lib/tomcat7/webapps/geonetwork/WEB-INF/data/config/schema_plugins/iso19139 $(pwd)/geonetwork_data/config/schema_plugins
       - ln -s $(pwd)/aodn-schema-plugins/iso19139.mcp       $(pwd)/geonetwork_data/config/schema_plugins
       - ln -s $(pwd)/aodn-schema-plugins/iso19139.mcp-2.0   $(pwd)/geonetwork_data/config/schema_plugins
@@ -94,16 +92,16 @@
 #      - touch ansible-schema-plugins-deployed
 
 # doesn't seem to work because symbolic?
-#  - file: path=/var/lib/tomcat7/geonetwork_data/config/schema_plugins owner=tomcat7 group=tomcat7 recurse=yes
+#  - file: path=/var/lib/tomcat7/conf/geonetwork_data/config/schema_plugins owner=tomcat7 group=tomcat7 recurse=yes
 
 
   # thesauri
-  #- copy: src=codelist dest=/var/lib/tomcat7/geonetwork_data/config/ owner=tomcat7
+  #- copy: src=codelist dest=/var/lib/tomcat7/conf/geonetwork_data/config/ owner=tomcat7
 
   # TODO owner/perms
   # Ughh http://stackoverflow.com/questions/28778738/ansible-mode-755-for-directories-and-644-for-files-recursively
-  - git: repo=https://github.com/aodn/codelist dest=/var/lib/tomcat7/geonetwork_data/config/codelist version=master force=yes
-  - file: path=/var/lib/tomcat7/geonetwork_data/config/codelist owner=tomcat7 group=tomcat7 recurse=yes
+  - git: repo=https://github.com/aodn/codelist dest=/var/lib/tomcat7/conf/geonetwork_data/config/codelist version=master force=yes
+  - file: path=/var/lib/tomcat7/conf/geonetwork_data/config/codelist owner=tomcat7 group=tomcat7 recurse=yes
 
   # Ughh Gn writes the vocabulary files updaing the publish date, and schema order  
 

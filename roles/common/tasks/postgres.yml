@@ -1,7 +1,7 @@
 
     # postgres with default postgresql.conf and pg_hba.conf
-    # - apt: name=postgresql-9.4-postgis-2.1
-    - apt: name=postgresql-9.4-postgis-2.2
+    - apt: name=postgresql-9.4-postgis-2.1    # debian jessie
+    #- apt: name=postgresql-9.4-postgis-2.2  # debian testing
 
     - template: src=postgresql.conf.j2 dest=/etc/postgresql/9.4/main/postgresql.conf owner=postgres
       notify: restart-postgres
