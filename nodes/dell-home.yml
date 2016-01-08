@@ -1,20 +1,15 @@
 - hosts: dell-home
   roles:
     - yaegashi.blockinfile
-  vars: 
+  vars:
   tasks:
     # - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=testing upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
 
     - include: ../roles/common/tasks/basic.yml
- 
+
     # hostname?
     # - role: zfs
-    # - include: ../roles/common/tasks/sudoers.yml
     - include: ../roles/common/tasks/disable-shell-bell.yml
-
-    # - include: ../roles/common/tasks/bridge.yml
-#    - user: name=meteo shell=/bin/bash groups=adm append=yes
-#    - include: ../roles/common/tasks/mydotfiles.yml user=meteo
 
     ###################################
 
@@ -51,7 +46,7 @@
 
     ###################################
 
-    # ip forwarding for nat - debian only?
+    # ip forwarding needed for nat - debian only?
     - lineinfile: dest=/etc/sysctl.conf backup=true state=present regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward = 1'
       notify: reload-sysctl
 
@@ -61,19 +56,12 @@
         backup: yes
         content: |
           auto br0
-          # whoot  whoot whoot whoot whoot
           iface br0 inet static
             address 10.1.1.1
             netmask 255.255.255.0
             bridge_ports dummy0
             bridge_stp off
             bridge_fd 0
-            # post-up echo 1 > /proc/sys/net/ipv4/ip_forward
-            # Simplify syntax and use the -o interface flag?
-            # post-up   iptables -t nat -A POSTROUTING -s '10.1.1.0/24' -j MASQUERADE
-            # post-down iptables -t nat -D POSTROUTING -s '10.1.1.0/24' -j MASQUERADE
-            # post-up   iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
-            # post-down iptables -t mangle -D POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
       notify: restart-br0
 
     - apt: name=dnsmasq
@@ -90,18 +78,30 @@
           dhcp-host=00:01:04:1b:2C:1A,ethereum,10.1.1.19
       notify: restart-dnsmasq
 
-    # Just getting dhcpclient to add the extra dns is a lot simpler than installing resolvconf 
+    - apt: name=iptables-persistent
+    - blockinfile:
+        dest: /etc/iptables-rules
+        create: true
+        content: |
+          # iptables -t nat --flush PREROUTING
+          # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
+          iptables -t nat --flush POSTROUTING
+          iptables -t nat -A POSTROUTING -s '10.1.1.0/24' -j MASQUERADE
+          # TODO - should fill in checksums for all udp...
+          iptables -t mangle --flush POSTROUTING
+          iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
+      notify: reconfigure-iptables
+
+    # Making dhcpclient add the extra dns entry is a lot simpler than installing resolvconf
     # add to bridge
-    # TODO rerun dhcpclient - issue is we don't know which interface wlan0 or eth0 
+    # TODO rerun dhcpclient - issue is we don't know which interface wlan0 or eth0
     - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present insertafter='#prepend' line='prepend domain-name-servers 10.1.1.1;'
 
-    # we don't want this anymore 
-    # prevent from being overwritten by host dhcp
+    # don't want this anymore
+    # remove domain-name-servers from dhcp config
     # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present backrefs=yes regexp='(.*)domain-name-servers,(.*)' line='\1\2'
 
 
-
- 
   handlers:
     - include: ../roles/common/handlers/main.yml
 
