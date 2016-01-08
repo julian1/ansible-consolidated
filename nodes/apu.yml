@@ -111,8 +111,12 @@
           interface=wlan0
           dhcp-range=192.168.42.10,192.168.42.20,255.255.255.0,12h
           dhcp-ignore-names
+          # will expand dhcp entries (not apu)
+          expand-hosts
+          domain=localnet
 
           address=/apu/192.168.42.1
+          # address=/apu.localnet/192.168.42.1
           dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.42.14
           dhcp-host=00:19:e3:10:53:89,imac,192.168.42.15
           dhcp-host=60:57:18:75:3b:cc,asus,192.168.42.17
@@ -128,8 +132,12 @@
           interface=eth2
           dhcp-range=192.168.43.10,192.168.43.20,255.255.255.0,12h
           dhcp-ignore-names
+          # will expand dhcp entries (not apu)
+          expand-hosts
+          domain=localnet
 
           address=/apu/192.168.43.1
+          # address=/apu.localnet/192.168.43.1
           dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10
           dhcp-host=00:80:77:34:55:96,brother,192.168.43.15
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.43.16
