@@ -64,19 +64,28 @@
             bridge_fd 0
       notify: restart-br0
 
+    # local dns is now authoritative
     - apt: name=dnsmasq
     - blockinfile:
         dest: /etc/dnsmasq.d/container-dns
         create: true
         content: |
-          interface=br0
+          # interface=br0
           log-queries
           log-dhcp
+          server=192.168.42.1
           # range for leases
           dhcp-range=br0,10.1.1.10,10.1.1.20,4h
           # entries
           dhcp-host=00:01:04:1b:2C:1A,ethereum,10.1.1.19
       notify: restart-dnsmasq
+
+    # TODO - this doesn't clear the file first
+    - blockinfile:
+        dest: /etc/resolv.conf
+        create: true
+        content: |
+          nameserver 10.1.1.1
 
     - apt: name=iptables-persistent
     - blockinfile:
@@ -96,11 +105,11 @@
     # Making dhcpclient add the extra dns entry is a lot simpler than installing resolvconf
     # add to bridge
     # TODO rerun dhcpclient - issue is we don't know which interface wlan0 or eth0
-    - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present insertafter='#prepend' line='prepend domain-name-servers 10.1.1.1;'
+    # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present insertafter='#prepend' line='prepend domain-name-servers 10.1.1.1;'
 
     # don't want this anymore
     # remove domain-name-servers from dhcp config
-    # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present backrefs=yes regexp='(.*)domain-name-servers,(.*)' line='\1\2'
+    - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present backrefs=yes regexp='(.*)domain-name-servers,(.*)' line='\1\2'
 
 
   handlers:
