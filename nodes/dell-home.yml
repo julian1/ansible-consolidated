@@ -115,7 +115,8 @@
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
           iptables -t nat --flush POSTROUTING
           iptables -t nat -A POSTROUTING -s '10.1.1.0/24' -j MASQUERADE
-          # TODO - should fill in checksums for all udp...
+          # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=717217
+          # TODO - fill in checksums for all udp...
           iptables -t mangle --flush POSTROUTING
           iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
       notify: reconfigure-iptables
