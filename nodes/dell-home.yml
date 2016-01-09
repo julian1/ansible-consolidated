@@ -84,7 +84,8 @@
       notify: restart-dnsmasq
 
     # TODO - this doesn't clear the file first
-    # also domain, search?
+    # maybe change nameserver to 127.0.0.1
+    # also add domain, search?
     - blockinfile:
         dest: /etc/resolv.conf
         create: true
