@@ -64,6 +64,7 @@
             bridge_fd 0
       notify: restart-br0
 
+    # Using local dnsmasq as a wholesale replacement for using resolvconf is a lot simpler
     # issue is we want to ping containers from the host,
     # so make local dns authoritative
     - apt: name=dnsmasq
@@ -83,11 +84,25 @@
       notify: restart-dnsmasq
 
     # TODO - this doesn't clear the file first
+    # also domain, search?
     - blockinfile:
         dest: /etc/resolv.conf
         create: true
         content: |
           nameserver 10.1.1.1
+
+    # IMPORTANT for complete files not just blocks, could simply use shell maybe with <<-EOF type stuff
+
+    # http://unix.stackexchange.com/questions/174349/what-overwrites-etc-resolv-conf-on-every-boot
+    - blockinfile:
+        dest: /etc/dhcp/dhclient-enter-hooks.d/nodnsupdate
+        create: true
+        mode: 0777
+        content: |
+          #!/bin/sh
+          make_resolv_conf() {
+              :
+          }
 
     - apt: name=iptables-persistent
     - blockinfile:
@@ -104,14 +119,11 @@
           iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
       notify: reconfigure-iptables
 
-    # Making dhcpclient add the extra dns entry is a lot simpler than installing resolvconf
-    # add to bridge
-    # TODO rerun dhcpclient - issue is we don't know which interface wlan0 or eth0
+
     # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present insertafter='#prepend' line='prepend domain-name-servers 10.1.1.1;'
 
-    # don't want this anymore
     # remove domain-name-servers from dhcp config
-    - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present backrefs=yes regexp='(.*)domain-name-servers,(.*)' line='\1\2'
+    # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present backrefs=yes regexp='(.*)domain-name-servers,(.*)' line='\1\2'
 
 
   handlers:
