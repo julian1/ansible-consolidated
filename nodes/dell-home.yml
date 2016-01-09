@@ -64,15 +64,17 @@
             bridge_fd 0
       notify: restart-br0
 
-    # local dns is now authoritative
+    # issue is we want to ping containers from the host,
+    # so make local dns authoritative
     - apt: name=dnsmasq
     - blockinfile:
         dest: /etc/dnsmasq.d/container-dns
         create: true
         content: |
-          # interface=br0
+          interface=br0
           log-queries
           log-dhcp
+          no-resolv
           server=192.168.42.1
           # range for leases
           dhcp-range=br0,10.1.1.10,10.1.1.20,4h
