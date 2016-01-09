@@ -11,17 +11,7 @@
     - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe mirror="http://mirror.aarnet.edu.au/debian"
     - hostname: name=apu
 
-    - include: ../roles/common/tasks/timezone.yml timezone=Australia/Tasmania
-
-    - apt: name=locales
-    - locale_gen: name=en_AU.UTF-8 state=present
-
-    - include: ../roles/common/tasks/sudoers.yml
-
-    - user: name="{{user}}" shell=/bin/bash groups=adm append=yes
-    - authorized_key: user="{{user}}" key="{{sshkey}}"
-
-    - include: ../roles/common/tasks/mydotfiles.yml user=meteo
+    - include: ../roles/common/tasks/basic.yml
 
     - apt: name=vim
     - apt: name=ntp
