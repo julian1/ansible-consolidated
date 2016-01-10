@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: freebsd
 
   gather_facts: yes
   # no sudo since this creates user

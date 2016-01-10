@@ -2,11 +2,11 @@
 ### Examples
 
 ```
-ansible-playbook nodes/dell-home.yml -i dell-home, -v -u root
+ansible-playbook dell-home.yml -v -u root
+
+ansible-playbook nodes/geonetwork2.yml -v -u root
 
 ansible-playbook nodes/apu.yml -i 192.168.42.1, -v -u root
-
-ansible-playbook nodes/geonetwork.yml -i ./inventory/dev -v -u root
 
 ansible-playbook nodes/aatams.yml -i ./inventory/dev -v -u root
 
