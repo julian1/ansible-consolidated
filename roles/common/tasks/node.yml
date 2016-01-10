@@ -1,22 +1,30 @@
 
-  # npm
+  # deb.nodesource.com needed for jessie 
+  # eg. npm upgrade nodejs only gives version 0.10.29
 
-#  - apt: name=curl
-#  - shell: |
-#      curl -sL https://deb.nodesource.com/setup | bash -
-#      creates=/etc/apt/sources.list.d/nodesource.list
+  # https://nodejs.org/en/download/package-manager/
+  - apt: name=curl
+  - shell: |
+      curl -sL https://deb.nodesource.com/setup_4.x | bash -
+      creates=/etc/apt/sources.list.d/nodesource.list
 
-  - apt: name=nodejs
-  - apt: name=npm
+  - apt: name=nodejs                        # node/nodejs v4.2.4
+  - npm: name=npm state=latest global=true  # 2.14.12 -> 3.5.3
 
+
+#################
+
+#  - apt: name=npm
+  # Don't need when using deb.nodesource.com ...
   # debian legacy workaround
-  - file: src=/usr/bin/nodejs dest=/usr/bin/node state=link
+  # - file: src=/usr/bin/nodejs dest=/usr/bin/node state=link
 
+  #  - apt: name=npm
   # upgrade to latest npm 3.5.2
-  - npm: name=npm global=true
+  # - npm: name=npm global=true
 
   # upgrade/ensure using nodejs 4.2.4. 4.2.0 is the LTS 
-  - npm: name=nodejs global=true
+  # - npm: name=nodejs global=true
 
 
 # RUN npm install -g gulp
