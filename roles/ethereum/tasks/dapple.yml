@@ -4,7 +4,13 @@
   # user doesn't matter because installed globally
 
   # - git: repo=https://github.com/NexusDevelopment/dapple dest=dapple version=master
+
+
   - git: repo=https://github.com/julian1/dapple dest=dapple version=master
+
+  # For secp256k1 maybe more
+  - apt: name=make
+  - apt: name=g++
 
   - shell: cd dapple && npm install -g creates=/usr/bin/dapple
 
