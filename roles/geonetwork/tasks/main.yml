@@ -47,7 +47,7 @@
 #  - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
   - file: path={{schema_plugins}}   state=directory owner=tomcat7 group=tomcat7 recurse=yes
 #  - file: path={{codelist}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes should be done after git?
-#  - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes
+  - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes  # must create 
 
 
   # jdbc libs
@@ -56,6 +56,7 @@
   # core-geonetwork/eng/users/source/admin/advanced-configuration/index.rst
   # - copy: src=postgresql-9.1-901.jdbc4.jar dest={{lib}} owner=tomcat7 group=tomcat7
   - copy: src=postgresql-9.1-901.jdbc3.jar dest={{lib}} owner=tomcat7 group=tomcat7
+
   # - copy: src=postgresql-9.4-1201-jdbc41.jar dest={{lib}} owner=tomcat7 group=tomcat7
   - copy: src=postgis-jdbc-1.3.3.jar       dest={{lib}} owner=tomcat7 group=tomcat7
 
