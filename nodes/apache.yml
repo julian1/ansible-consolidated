@@ -9,19 +9,8 @@
     tasks:
       - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
 
-      - include: ../roles/common/tasks/sudoers.yml
+      # - include: ../roles/common/tasks/basic.yml
 
-      - user: name=meteo shell=/bin/bash groups=adm append=yes
-      - include: ../roles/common/tasks/mydotfiles.yml user=meteo
-      - authorized_key: user=meteo key="{{sshkey}}"
-
-      - include: ../roles/common/tasks/timezone.yml timezone=Australia/Hobart
-
-      - apt: name=locales
-      - locale_gen: name=en_AU.UTF-8 state=present
-
-
-      - include: ../roles/common/tasks/devenv-lite.yml
 
       # apache
       - apt: name=apache2
@@ -50,16 +39,18 @@
               ProxyPass         /aatams http://aatams:8080/aatams
               ProxyPassReverse  /aatams http://aatams:8080/aatams
 
-              # this should be ok.
+              ProxyPass         /portal http://portal:8080/portal
+              ProxyPassReverse  /portal http://portal:8080/portal
+
               ProxyPass         /geonetwork http://geonetwork2:8080/geonetwork
               ProxyPassReverse  /geonetwork http://geonetwork2:8080/geonetwork
 
               # Rewriting URLs in hyperlinks
               # ProxyHTMLEnable On
               # ProxyHTMLExtended On
-              # ProxyHTMLURLMap http://apache/geonetwork2  /geonetwork 
+              # ProxyHTMLURLMap http://apache/geonetwork2  /geonetwork
 
-              
+
             </VirtualHost>
         notify: reload-apache2
 
