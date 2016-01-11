@@ -9,7 +9,7 @@
         version=jessie 
         upgrade=safe 
 
-    # - include: ../roles/common/tasks/basic.yml
+    - include: ../roles/common/tasks/basic.yml
 
   handlers:
     - include: ../roles/common/handlers/main.yml

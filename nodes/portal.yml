@@ -10,7 +10,6 @@
         version=jessie 
         upgrade=safe 
 
-
     - include: ../roles/common/tasks/basic.yml
 
     - include: ../roles/portal/tasks/main.yml
