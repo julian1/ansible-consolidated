@@ -2,13 +2,13 @@
 ### Examples
 
 ```
-ansible-playbook dell-home.yml -v -u root
+ansible-playbook dell-home.yml
 
-ansible-playbook nodes/geonetwork2.yml -v -u root
+ansible-playbook nodes/geonetwork2.yml -v
 
-ansible-playbook nodes/apu.yml -i 192.168.42.1, -v -u root
+ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
 
-ansible-playbook nodes/aatams.yml -i ./inventory/dev -v -u root
+ansible-playbook nodes/aatams.yml -i ./inventory/dev -v
 
 ansible-playbook nodes/julian-test-instance.yml -i ./inventory/dev -v -u debian --private-key ~/.ssh/julian3.pem
 
