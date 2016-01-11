@@ -51,6 +51,7 @@
 
 
   # jdbc libs
+  # https://www.mulesoft.com/tcat/tomcat-classpath
   # https://github.com/postgis/postgis-java/tree/master/jdbc
   # core-geonetwork/eng/users/source/admin/advanced-configuration/index.rst
   # - copy: src=postgresql-9.1-901.jdbc4.jar dest={{lib}} owner=tomcat7 group=tomcat7
