@@ -92,7 +92,7 @@
 
   - file: src={{aodn_schema_plugins}}/iso19139.mcp     dest={{schema_plugins}}/iso19139.mcp      state=link owner=tomcat7 group=tomcat7
   - file: src={{aodn_schema_plugins}}/iso19139.mcp-2.0 dest={{schema_plugins}}/iso19139.mcp-2.0  state=link owner=tomcat7 group=tomcat7
-  - file: src={{aodn_schema_plugins}}/iso19139.anzlic  dest={{schema_plugins}}/anzlic            state=link owner=tomcat7 group=tomcat7
+  - file: src={{aodn_schema_plugins}}/iso19139.anzlic  dest={{schema_plugins}}/iso19139.anzlic   state=link owner=tomcat7 group=tomcat7
   - file: src={{aodn_schema_plugins}}/iso19135         dest={{schema_plugins}}/iso19135          state=link owner=tomcat7 group=tomcat7
 
   #- git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
