@@ -8,9 +8,9 @@ ansible-playbook nodes/geonetwork2.yml -v
 
 ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
 
-ansible-playbook nodes/aatams.yml -i ./inventory/dev -v
+ansible-playbook nodes/aatams.yml -v
 
-ansible-playbook nodes/julian-test-instance.yml -i ./inventory/dev -v -u debian --private-key ~/.ssh/julian3.pem
+ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.ssh/julian3.pem -s
 
 # etc
 
@@ -28,6 +28,7 @@ sudo ansible-galaxy install yaegashi.blockinfile
 
 ### Useful flags
 ```
+-s force use of sudo for all plays even if not marked as such
 --private-key ~/.ssh/id_rsa
 --ask-sudo-pass
 -k ask pass
