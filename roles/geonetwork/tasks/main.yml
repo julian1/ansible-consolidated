@@ -28,10 +28,10 @@
   - set_fact: conf={{tomcat7}}/conf
   - set_fact: lib={{tomcat7}}/lib
   - set_fact: webapps={{tomcat7}}/webapps
-  - set_fact: overrides={{conf}}/overrides 
+  - set_fact: overrides={{conf}}/overrides
   - set_fact: geonetwork_data={{conf}}/geonetwork_data
   - set_fact: config={{geonetwork_data}}/config
-  - set_fact: aodn_schema_plugins={{conf}}/aodn-schema-plugins 
+  - set_fact: aodn_schema_plugins={{conf}}/aodn-schema-plugins
   - set_fact: schema_plugins={{config}}/schema_plugins
   - set_fact: codelist={{config}}/codelist
 
@@ -77,7 +77,7 @@
   # Unpack war to make iso19139 available
   - apt: name=unzip
   - file: path={{webapps}}/geonetwork state=directory
-  - unarchive: src={{webapps}}/geonetwork.war dest={{webapps}}/geonetwork copy=no 
+  - unarchive: src={{webapps}}/geonetwork.war dest={{webapps}}/geonetwork copy=no
   - file: path={{webapps}}/geonetwork owner=tomcat7 group=tomcat7 recurse=yes
 
 
@@ -85,14 +85,13 @@
   # Schema plugins
   # https://github.com/ansible/ansible/issues/7474
   - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
-  - git: repo=https://github.com/aodn/schema-plugins  dest={{aodn_schema_plugins}} version=master
-    #  - git: repo=https://github.com/aodn/schema-plugins  dest={{aodn_schema_plugins}} version=merge-imos-to-2.10.x
+  - git: repo=https://github.com/aodn/schema-plugins  dest={{aodn_schema_plugins}} version=master # master  version=merge-imos-to-2.10.x
     notify: restart-tomcat7
   - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
 
-
-  - file: > 
-      src={{webapps}}/geonetwork/WEB-INF/data/config/schema_plugins/iso19139 
+  # Only link needed schema-plugins
+  - file: >
+      src={{webapps}}/geonetwork/WEB-INF/data/config/schema_plugins/iso19139
       dest={{schema_plugins}}/iso19139
       state=link owner=tomcat7 group=tomcat7
 
@@ -102,12 +101,10 @@
   - file: src={{aodn_schema_plugins}}/iso19135         dest={{schema_plugins}}/iso19135          state=link owner=tomcat7 group=tomcat7
 
 
-  # TODO owner/perms
-  # Ughh http://stackoverflow.com/questions/28778738/ansible-mode-755-for-directories-and-644-for-files-recursively
+  # codelists
   - git: repo=https://github.com/aodn/codelist dest={{codelist}} version=master force=yes
   - file: path={{codelist}} owner=tomcat7 group=tomcat7 recurse=yes
 
-  # Ughh Gn writes the vocabulary files updaing the publish date, and schema order  
 
 
 
