@@ -67,32 +67,33 @@
   - file: path=/var/lib/tomcat7/webapps/geonetwork owner=tomcat7 group=tomcat7 recurse=yes
 
 
+  - set_fact: conf=/var/lib/tomcat7/conf
+  - set_fact: aodn_schema_plugins={{conf}}/aodn-schema-plugins 
+
   # Schema plugins
   # https://github.com/ansible/ansible/issues/7474
   - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
-  - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/conf/aodn-schema-plugins version=master
-#  - git: repo=https://github.com/aodn/schema-plugins  dest=/var/lib/tomcat7/conf/aodn-schema-plugins version=merge-imos-to-2.10.x
-    register: aodn_schema_plugins
+  - git: repo=https://github.com/aodn/schema-plugins  dest={{aodn_schema_plugins}} version=master
+    #  - git: repo=https://github.com/aodn/schema-plugins  dest={{aodn_schema_plugins}} version=merge-imos-to-2.10.x
     notify: restart-tomcat7
 
-  # IMPORTANT use setfact
-  # TODO use file and with_items to simplify 
-  - set_fact: conf=/var/lib/tomcat7/conf
-  - set_fact: geonetwork_data={{conf}}/geonetwork_data
+  - file: path={{aodn_schema_plugins}} owner=tomcat7 group=tomcat7 recurse=yes
 
-  - file: path={{conf}}/aodn-schema-plugins owner=tomcat7 group=tomcat7 recurse=yes
-  
-  - file: path={{conf}}/geonetwork_data/schema_plugins state=directory owner=tomcat7 group=tomcat7 recurse=yes
+  # TODO use file and with_items to simplify 
+  - set_fact: geonetwork_data={{conf}}/geonetwork_data
+  - set_fact: schema_plugins={{geonetwork_data}}/config/schema_plugins
+
+  - file: path={{schema_plugins}} state=directory owner=tomcat7 group=tomcat7 recurse=yes
 
   - file: > 
       src=/var/lib/tomcat7/webapps/geonetwork/WEB-INF/data/config/schema_plugins/iso19139 
-      dest={{geonetwork_data}}/schema_plugins/iso19139
+      dest={{schema_plugins}}/iso19139
       state=link owner=tomcat7 group=tomcat7
 
-  - file: src={{conf}}/aodn-schema-plugins/iso19139.mcp     dest={{geonetwork_data}}/schema_plugins/iso19139.mcp      state=link owner=tomcat7 group=tomcat7
-  - file: src={{conf}}/aodn-schema-plugins/iso19139.mcp-2.0 dest={{geonetwork_data}}/schema_plugins/iso19139.mcp-2.0  state=link owner=tomcat7 group=tomcat7
-  - file: src={{conf}}/aodn-schema-plugins/iso19139.anzlic  dest={{geonetwork_data}}/schema_plugins/anzlic            state=link owner=tomcat7 group=tomcat7
-  - file: src={{conf}}/aodn-schema-plugins/iso19135         dest={{geonetwork_data}}/schema_plugins/iso19135          state=link owner=tomcat7 group=tomcat7
+  - file: src={{aodn_schema_plugins}}/iso19139.mcp     dest={{schema_plugins}}/iso19139.mcp      state=link owner=tomcat7 group=tomcat7
+  - file: src={{aodn_schema_plugins}}/iso19139.mcp-2.0 dest={{schema_plugins}}/iso19139.mcp-2.0  state=link owner=tomcat7 group=tomcat7
+  - file: src={{aodn_schema_plugins}}/iso19139.anzlic  dest={{schema_plugins}}/anzlic            state=link owner=tomcat7 group=tomcat7
+  - file: src={{aodn_schema_plugins}}/iso19135         dest={{schema_plugins}}/iso19135          state=link owner=tomcat7 group=tomcat7
 
   #- git: repo=https://github.com/aodn/core-geonetwork dest=/var/lib/tomcat7/aodn-core-gn-sp version=2.10.x-imos recursive=no
   #- file: path=/var/lib/tomcat7/aodn-core-gn-sp owner=tomcat7 group=tomcat7 recurse=yes
