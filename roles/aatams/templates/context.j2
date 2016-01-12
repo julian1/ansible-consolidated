@@ -7,7 +7,8 @@
 
     <Resource
 
-        factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+        factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+ 
         name="jdbc/aatams"
         auth="Container"
         type="javax.sql.DataSource"
@@ -31,6 +32,7 @@
 
     factory="org.apache.commons.dbcp.BasicDataSourceFactory"
              org.apache.commons.dbcp.BasicDataSourceFactory
+
     factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
 -->
 
