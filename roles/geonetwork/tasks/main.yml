@@ -1,11 +1,11 @@
 
-
-# We want to parametize this...
+  # TODO maybe parametize
 
   # NOTE the symbolic-link /var/lib/tomcat7/conf -> /etc/tomcat7
 
   - apt: name=tomcat7 update_cache=yes
 
+  # TODO maybe move into the node definition
   # port forward to tomcat7
   - apt: name=iptables-persistent
   - blockinfile:
@@ -35,9 +35,9 @@
   - file: path={{overrides}}        state=directory owner=tomcat7 group=tomcat7
   - file: path={{geonetwork_data}}  state=directory owner=tomcat7 group=tomcat7
   - file: path={{config}}           state=directory owner=tomcat7 group=tomcat7
-#  - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
+  # - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
   - file: path={{schema_plugins}}   state=directory owner=tomcat7 group=tomcat7 recurse=yes
-#  - file: path={{codelist}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes should be done after git?
+  # - file: path={{codelist}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes should be done after git?
   - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes  # must create 
 
 
