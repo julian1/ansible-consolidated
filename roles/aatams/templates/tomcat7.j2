@@ -7,9 +7,7 @@ TOMCAT7_USER=tomcat7
 TOMCAT7_GROUP=tomcat7
 
 
-# JAVA_OPTS="${JAVA_OPTS} -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -DGEOSERVER_DATA_DIR=/root/geoserver-config"
-
-JAVA_OPTS="${JAVA_OPTS} -Dgeonetwork.jeeves.configuration.overrides.file=/var/lib/tomcat7/overrides/config-overrides.xml  -Dgeonetwork.dir=/var/lib/tomcat7/geonetwork_data   -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n "
+JAVA_OPTS="${JAVA_OPTS} -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n "
 
 
 
