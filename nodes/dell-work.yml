@@ -29,7 +29,6 @@
     - apt: name=postgresql-client-9.4
 
     # - include: "./roles/common/tasks/jdk.yml"
-    - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export JAVA_HOME=/usr/java/jdk1.7.0_80'
 
 
     ###################################
