@@ -10,7 +10,8 @@
 
     - include: ../roles/common/tasks/basic.yml
 
-    - include: ../roles/common/tasks/postgres.yml
+    - include: ../roles/postgres/tasks/main.yml
+
     # - include: ../roles/geonetwork/tasks/drop-db.yml
     - include: ../roles/geonetwork/tasks/restore-db.yml
 
