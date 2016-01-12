@@ -4,6 +4,9 @@ port = 5432
 max_connections = 100
 shared_buffers = '24MB'
 log_line_prefix = '%t %h %u %d %p %e'
+
+log_statement = all
+
 datestyle = 'iso, mdy'
 default_text_search_config = 'pg_catalog.english'
 ssl = on
