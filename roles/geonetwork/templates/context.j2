@@ -33,16 +33,34 @@
     -->
 
 <!--   type="javax.sql.DataSource" driverClassName="org.postgresql.Driver" 
-
-
-      
           postgis-jdbc-1.3.3.jar ->   postgis-jdbc-1.3.3.jar
-
           type="javax.sql.DataSource" driverClassName="org.postgis.DriverWrapper"
+
+  <Resource name="jdbc/geonetwork"
+    auth="Container"
+    type="javax.sql.DataSource"
+    username="system"
+    password="oracle"
+    factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+    driverClassName="oracle.jdbc.OracleDriver"             
+    url="jdbc:oracle:thin:@localhost:1521:XE"
+    maxActive="10"
+    maxIdle="10"
+    removeAbandoned="true"
+    removeAbandonedTimeout="3600"
+    logAbandoned="true"
+    testOnBorrow="true"
+    defaultAutoCommit="false" 
+    validationQuery="SELECT 1 FROM DUAL"
+    accessToUnderlyingConnectionAllowed="true"
+  />
+
+
   -->
 
 
         <Resource name="jdbc/geonetwork" auth="Container"
+            factory="org.apache.commons.dbcp.BasicDataSourceFactory"
             type="javax.sql.DataSource" driverClassName="org.postgis.DriverWrapper"
             url="jdbc:postgresql_postGIS://localhost:5432/geonetwork?ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"
             validationQuery="SELECT 1"
@@ -55,7 +73,7 @@
             defaultAutoCommit="false"
         />
 
-	<!-- TODO use this instead of /etc/default/tomcat -->
+    <!-- TODO use this instead of /etc/default/tomcat -->
     <Environment name="aodn.configuration" value="/var/lib/tomcat7/conf/overrides/config-overrides.xml" type="java.lang.String" override="true"/>
 
 
