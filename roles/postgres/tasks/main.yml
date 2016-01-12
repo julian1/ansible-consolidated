@@ -1,4 +1,6 @@
 
+    # TODO move restart-postgres handlers in here rather than ./roles/common ...
+
     # postgres with default postgresql.conf and pg_hba.conf
     - apt: name=postgresql-9.4-postgis-2.1    # debian jessie
     #- apt: name=postgresql-9.4-postgis-2.2  # debian testing
