@@ -1,15 +1,8 @@
 
-# assume have postgres
 
 # We want to parametize this...
-# actually lets just run it up and copy the db?
 
-# actually why not split it up into different tasks - then can factor out the war deployment...
-# from everything else...
-
-# or we drive it with variables...
-
-  # IMPORTANT NOTE THE SYM-LINK # /var/lib/tomcat7/conf -> /etc/tomcat7
+  # NOTE the symbolic-link /var/lib/tomcat7/conf -> /etc/tomcat7
 
   - apt: name=tomcat7 update_cache=yes
 
@@ -26,7 +19,6 @@
 
   - set_fact: tomcat7=/var/lib/tomcat7
   - set_fact: conf={{tomcat7}}/conf
-  - set_fact: lib={{tomcat7}}/lib
   - set_fact: webapps={{tomcat7}}/webapps
   - set_fact: overrides={{conf}}/overrides
   - set_fact: geonetwork_data={{conf}}/geonetwork_data
@@ -39,7 +31,6 @@
 
   - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
   # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7
-  - file: path={{lib}}              state=directory owner=tomcat7 group=tomcat7
   - file: path={{webapps}}          state=directory owner=tomcat7 group=tomcat7
   - file: path={{overrides}}        state=directory owner=tomcat7 group=tomcat7
   - file: path={{geonetwork_data}}  state=directory owner=tomcat7 group=tomcat7
@@ -48,18 +39,6 @@
   - file: path={{schema_plugins}}   state=directory owner=tomcat7 group=tomcat7 recurse=yes
 #  - file: path={{codelist}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes should be done after git?
   - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes  # must create 
-
-
-  # jdbc libs
-  # https://www.mulesoft.com/tcat/tomcat-classpath
-  # https://github.com/postgis/postgis-java/tree/master/jdbc
-  # ../core-geonetwork/docs/eng/users/source/admin/advanced-configuration/index.rst
-  # - copy: src=postgresql-9.1-901.jdbc4.jar dest={{lib}} owner=tomcat7 group=tomcat7
-  - copy: src=postgresql-9.1-901.jdbc3.jar dest={{lib}} owner=tomcat7 group=tomcat7
-
-  # - copy: src=postgresql-9.4-1201-jdbc41.jar dest={{lib}} owner=tomcat7 group=tomcat7
-  - copy: src=postgis-jdbc-1.3.3.jar       dest={{lib}} owner=tomcat7 group=tomcat7
-
 
 
   # jndi
@@ -92,11 +71,10 @@
   - file: path={{geonetwork}} owner=tomcat7 group=tomcat7 recurse=yes
 
 
-
   # Schema plugins
   # https://github.com/ansible/ansible/issues/7474
   - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
-  - git: repo=https://github.com/aodn/schema-plugins  dest={{aodn_schema_plugins}} version=merge-imos-to-2.10.x # master  version=merge-imos-to-2.10.x
+  - git: repo=https://github.com/aodn/schema-plugins  dest={{aodn_schema_plugins}} version=master # # master  version=merge-imos-to-2.10.x
     notify: restart-tomcat7
   - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
 
