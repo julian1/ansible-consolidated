@@ -2,11 +2,13 @@
 - hosts: geonetwork2
   roles:
     - yaegashi.blockinfile
-
   tasks:
-    - include: |
-        ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
-        mirror="http://mirror.aarnet.edu.au/debian"
+    - include: >
+        ../roles/distribution/tasks/main.yml
+        mirror=http://mirror.aarnet.edu.au/debian
+        template=debian.j2
+        version=testing
+        upgrade=safe
 
     - include: ../roles/common/tasks/basic.yml
 
