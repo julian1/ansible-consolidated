@@ -27,3 +27,5 @@
 
     - apt: name=libxml2-utils
 
+    - apt: name=ipcalc   # for subnets 
+    
