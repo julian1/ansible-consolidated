@@ -7,14 +7,14 @@
         ../roles/distribution/tasks/main.yml
         mirror=http://mirror.aarnet.edu.au/debian
         template=debian.j2
-        version=testing
+        version=jessie
         upgrade=safe
 
     - include: ../roles/common/tasks/basic.yml
 
     - include: ../roles/postgres/tasks/main.yml
 
-    # - include: ../roles/geonetwork/tasks/drop-db.yml
+    - include: ../roles/geonetwork/tasks/drop-db.yml
     - include: ../roles/geonetwork/tasks/restore-db.yml
 
     - include: ../roles/geonetwork/tasks/main.yml
