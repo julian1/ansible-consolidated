@@ -14,7 +14,7 @@
 
     - include: ../roles/postgres/tasks/main.yml
 
-    - include: ../roles/geonetwork/tasks/drop-db.yml
+    # - include: ../roles/geonetwork/tasks/drop-db.yml
     - include: ../roles/geonetwork/tasks/restore-db.yml
 
     - include: ../roles/geonetwork/tasks/main.yml
