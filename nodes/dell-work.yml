@@ -122,7 +122,7 @@
           dhcp-host=00:01:04:1b:2C:1E,apache,10.1.1.16
           dhcp-host=00:01:04:1b:2C:1D,aatams,10.1.1.17
           dhcp-host=00:01:04:1b:2C:1B,geonetwork2,10.1.1.18
-          dhcp-host=00:01:04:1b:2C:1A,jessie1,10.1.1.19
+          dhcp-host=00:01:04:1b:2C:1A,jessie,10.1.1.19
       notify: restart-dnsmasq
 
     # TODO - this doesn't clear the file first
