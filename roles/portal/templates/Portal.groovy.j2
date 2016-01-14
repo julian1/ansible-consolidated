@@ -14,6 +14,39 @@ featureToggles {
         geonetworkLinkMonitor = true
 }
 
+enabledFacets = [
+    [
+        name: 'parameterFilter',
+        key: 'Measured parameter'
+    ],
+    [
+        name: 'organisationFilter',
+        key: 'Organisation',
+        collapsedByDefault: true
+    ],
+    [
+        name: 'platformFilter',
+        key: 'Platform'
+    ],
+    [
+        name: 'temporalResolutionFilter',
+        key: 'Temporal Resolution',
+        collapsedByDefault: true
+    ],
+    [
+        classId: 'Portal.search.DateSelectionPanel',
+        name: 'dateFilter'
+    ],
+    [
+        classId: 'Portal.search.GeoSelectionPanel',
+        name: 'geoFilter'
+    ],
+    [
+        classId: 'Portal.search.FreeTextSearchPanel',
+        name: 'freetextFilter',
+        key: 'freetextFilter'
+    ]
+]
 
 knownServers = [
   [
@@ -77,40 +110,6 @@ knownServers = [
 ]
 
 
-enabledFacets = [
-  [
-    id: "parameterFilter",
-    name: "parameterFilter",
-    key: "Measured parameter"
-  ], 
-  [
-    id: "organisationFilter",
-    name: "organisationFilter",
-    key: "Organisation",
-    collapsedByDefault: true
-  ], 
-  [
-    id: "platformFilter",
-    name: "platformFilter",
-    key: "Platform"
-  ], 
-  [
-    id: "dateFilter",
-    name: "dateFilter",
-    classId: "Portal.search.DateSelectionPanel"
-  ], 
-  [
-    id: "geoFilter",
-    name: "geoFilter",
-    classId: "Portal.search.GeoSelectionPanel"
-  ], 
-  [
-    id: "freetextFilter",
-    name: "freetextFilter",
-    key: "freetextFilter",
-    classId: "Portal.search.FreeTextSearchPanel"
-  ]
-]
 
 // 
 // googleAnalytics.trackingId = 'xxxxxxx'
