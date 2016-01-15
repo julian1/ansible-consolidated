@@ -29,3 +29,4 @@
 
     - apt: name=ipcalc   # for subnets 
     
+    - apt: name=a2ps # printing

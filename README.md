@@ -53,4 +53,8 @@ http://www.mechanicalfish.net/start-learning-ansible-with-one-line-and-no-files/
 
 http://docs.ansible.com/ansible/playbooks_best_practices.html
 
+### TODO
+  
+http auth on reverse proxy
+
 
