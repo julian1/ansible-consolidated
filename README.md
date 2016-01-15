@@ -54,9 +54,23 @@ http://www.mechanicalfish.net/start-learning-ansible-with-one-line-and-no-files/
 http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
+
+reverse-proxy kind of belongs on same node as the dns and dhcp
   
 http authentication on reverse proxy
 
 containerise dns and dhcp services? issue of dhcp relay / dhcp multicast?
 
+smb with only port 445
+
+vpn
+
+node definition for catalyst switch
+
+add a routing entry for container subnet in the apu to route to the laptop that hosts container. 
+  - then other devices on lan can interact with container.
+  - perhaps also make apu dns delegate to container dns.
+
+  - if we can add a static routing entry on any client, then we should be able to access container subnet
+  - probably point at the subnet dns as well
 
