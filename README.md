@@ -55,6 +55,8 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
   
-http auth on reverse proxy
+http authentication on reverse proxy
+
+containerise dns and dhcp services? issue of dhcp relay / dhcp multicast?
 
 
