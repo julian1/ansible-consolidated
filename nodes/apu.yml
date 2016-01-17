@@ -136,6 +136,7 @@
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.43.16
           dhcp-host=08:17:35:34:c9:c0,cisco,192.168.43.18
           dhcp-host=00:04:13:37:1a:f1,snom,192.168.43.20
+          dhcp-host=b8:2a:72:c9:fe:d2,dell-home-wired,192.168.43.19
 
           log-queries
           log-dhcp
