@@ -55,6 +55,8 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
 
+email, tftp, anon ftp  
+
 reverse-proxy kind of belongs on same node as the dns and dhcp
   
 http authentication on reverse proxy
