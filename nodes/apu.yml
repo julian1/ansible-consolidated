@@ -134,6 +134,7 @@
           dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10
           dhcp-host=00:80:77:34:55:96,brother,192.168.43.15
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.43.16
+          dhcp-host=b8:ae:ed:7b:b5:b9,nuc,192.168.43.17
           dhcp-host=08:17:35:34:c9:c0,cisco,192.168.43.18
           dhcp-host=00:04:13:37:1a:f1,snom,192.168.43.20
           dhcp-host=b8:2a:72:c9:fe:d2,dell-home-wired,192.168.43.19
