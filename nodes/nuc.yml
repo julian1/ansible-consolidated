@@ -31,6 +31,7 @@
     # start x as root, can then run mplayer with
     # export DISPLAY=:0 && mplayer file.mp4
     - apt: name=mplayer
+    - apt: name=pciutils   # lspci
 
 
   handlers:
