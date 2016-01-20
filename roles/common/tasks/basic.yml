@@ -15,4 +15,5 @@
     - apt: name=screen
     - apt: name=mlocate
     - apt: name=unzip  # for wars
+    - apt: name=less
 
