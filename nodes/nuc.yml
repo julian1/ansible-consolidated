@@ -1,0 +1,38 @@
+- hosts: nuc
+  roles:
+    - yaegashi.blockinfile
+  tasks:
+    # have to set append acpi=off in syslinux boot
+
+    # nic renaming, http://forums.debian.net/viewtopic.php?f=19&t=122795
+
+#    - include: >
+#        ../roles/distribution/tasks/main.yml
+#        mirror=http://mirror.aarnet.edu.au/debian
+#        template=debian.j2
+#        version=testing
+#        upgrade=safe
+
+    - hostname: name=nuc
+
+    # non zfs, requires the fs to be created
+    # reboot?
+    - blockinfile:
+        dest: /etc/fstab
+        content: |
+          UUID=9e4b1079-7b30-4dfb-960c-3a376a22b1ff /home ext4 noatime,errors=remount-ro 0 1
+
+
+#    - include: ../roles/common/tasks/basic.yml
+
+    # xinit launches, via ssh when root after installing xorg.
+    - apt: name=xorg
+
+    # start x as root, can then run mplayer with
+    # export DISPLAY=:0 && mplayer file.mp4
+    - apt: name=mplayer
+
+
+  handlers:
+    - include: ../roles/common/handlers/main.yml
+
