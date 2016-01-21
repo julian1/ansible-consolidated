@@ -1,3 +1,4 @@
+
 - hosts: all
   roles:
   sudo: no
@@ -7,6 +8,8 @@
     # can't use redirection or piping or wildcards in commands. because it's parsed, instead use shell 
     # TODO if git revision changes, we should recompile. 
     # Maybe register a file, then have a step that does make clean etc
+
+    # probably shouldn't be using master here.
 
     - git: repo=https://github.com/zfsonlinux/spl.git dest=/root/spl version=master
     - apt: name=dh-autoreconf

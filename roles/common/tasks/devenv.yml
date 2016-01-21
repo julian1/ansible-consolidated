@@ -13,7 +13,7 @@
     - apt: name=sudo
     # - apt: name=nettools
     - apt: name=time
-    # - apt: name=psmisc    # pstree
+    # - apt: name=psmisc    # pstree. use ps auxf instead
     - apt: name=iftop
     - apt: name=iotop
     - apt: name=lsof   # or fuser

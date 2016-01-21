@@ -6,12 +6,15 @@
 
     # nic renaming, http://forums.debian.net/viewtopic.php?f=19&t=122795
 
-#    - include: >
-#        ../roles/distribution/tasks/main.yml
-#        mirror=http://mirror.aarnet.edu.au/debian
-#        template=debian.j2
-#        version=testing
-#        upgrade=safe
+    # http://ftp.us.debian.org/debian
+    # http://mirror.aarnet.edu.au/debian
+
+    - include: >
+        ../roles/distribution/tasks/main.yml
+        mirror=http://ftp.us.debian.org/debian
+        template=debian.j2
+        version=testing
+        upgrade=safe
 
     - hostname: name=nuc
 
@@ -22,6 +25,8 @@
         content: |
           UUID=9e4b1079-7b30-4dfb-960c-3a376a22b1ff /home ext4 noatime,errors=remount-ro 0 1
 
+    # IMPORTANT Think we need to move .xinitrc out of dotfiles and make it non-generic for displays 
+    # we probably also need a wm as well as xorg, so probably makes sense to try xmonad. 
 
 #    - include: ../roles/common/tasks/basic.yml
 
@@ -34,6 +39,35 @@
     - apt: name=pciutils   # lspci
 
 
+    - apt: name=alsa-oss
+    - apt: name=alsa-utils
+    - apt: name=alsa-tools
+
+    - name: Setup soundcard
+      blockinfile:
+        dest: /etc/modprobe.d/alsa-base.conf
+        create: true
+        content: |
+          # blacklist snd_hda_codec_realtek
+
+          # hardware beep off
+          options snd_hda_intel beep_mode=0
+          blacklist pcspkr
+      notify: reboot
+
+    - name: Initialize alsa
+      # command: bash -c "/usr/sbin/alsactl"
+      command: /usr/sbin/alsactl
+      args:
+        creates: /var/lib/alsa/asound.state
+      notify: reboot
+
+    # install intel wifi, to clean up dmesg firmware logs, and because 
+    # it looks like wifi might be getting assigned to sound
+    # wlp2s0 gets recognized
+    - apt: name=firmware-iwlwifi
+
   handlers:
     - include: ../roles/common/handlers/main.yml
+      notify: reboot
 
