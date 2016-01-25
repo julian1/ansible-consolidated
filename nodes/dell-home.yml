@@ -72,10 +72,11 @@
         dest: /etc/dnsmasq.d/container-dns
         create: true
         content: |
-          interface=br0
+          # interface=br0
           log-queries
           log-dhcp
           no-resolv
+          # server=8.8.8.8
           server=192.168.42.1
           #server=192.168.43.1
           expand-hosts
@@ -84,6 +85,9 @@
           dhcp-host=00:01:04:1b:2C:1A,ethereum,10.1.1.19
       notify: restart-dnsmasq
 
+    # IMPORTANT - if change /etc/resolv.conf, then I think we
+    # need to restart dnsmasq because it will read it to get upstream servers
+
     # TODO - this doesn't clear the file first
     # maybe change nameserver to 127.0.0.1
     # also add domain, search?
@@ -91,7 +95,8 @@
         dest: /etc/resolv.conf
         create: true
         content: |
-          nameserver 10.1.1.1
+          # nameserver 10.1.1.1
+          nameserver 127.0.0.1
 
     # IMPORTANT for complete files not just blocks, could simply use shell maybe with <<-EOF type stuff
 
