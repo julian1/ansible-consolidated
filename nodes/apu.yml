@@ -1,7 +1,7 @@
 # TODO hide the passphrase
 # it's easiest to use direct wired interface eth1, 172.16.210.254 to provision
 
-- hosts: 192.168.42.1
+- hosts: apu
   roles:
     - yaegashi.blockinfile
   tasks:
@@ -19,7 +19,6 @@
     - apt: name=vim
     - apt: name=ntp
     - apt: name=tcpdump
-    # - apt: name=fail2ban # not if there's no open ssh, since complicates iptables rules
 
     # iwconfig - useful to check wlan0 state
     - apt: name=wireless-tools
@@ -151,9 +150,9 @@
         create: true
         content: |
           #################
-          # FILTER INPUT RULES
-          # TODO - flush will conflict with fail2ban
-          iptables --flush INPUT -t filter
+          # filter
+          iptables -t filter --flush
+
           # input default policy
           iptables -P INPUT DROP
           # allow lan ping/icmp
@@ -186,8 +185,10 @@
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
 
           #################
-          # NAT PREROUTING RULES
-          iptables --flush PREROUTING -t nat
+          # nat
+          iptables -t nat --flush
+
+          # pre-routing
           # voip
           # http://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables
           # Good voip guide, note the comment to limit stp to smaller port range
@@ -196,15 +197,17 @@
           # TODO remove multiport for 5060
           iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
           iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
-
           # 35000-44999
           iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.20
 
+          # post-routing
+          # nat for subnets
+          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -o eth0 -j MASQUERADE
+
           #################
-          # NAT POSTROUTING RULES
-          iptables --flush POSTROUTING -t nat
-          iptables -t nat -A POSTROUTING -s 192.168.42.0/24 -o eth0 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 192.168.43.0/24 -o eth0 -j MASQUERADE
+          # mangle
+          iptables -t mangle --flush
 
       notify: reconfigure-iptables
 
