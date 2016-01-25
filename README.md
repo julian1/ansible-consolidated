@@ -55,6 +55,8 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
 
+zfs build to use fixed release instead of master
+
 email, tftp, anon ftp  
 
 reverse-proxy kind of belongs on same node as the dns and dhcp
