@@ -55,6 +55,10 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
 
+IMPORTANT - copy module can take a content argument, which makes it nicer 
+            than blockinfile for general deployment   
+            - it also supports template arg expansion
+
 zfs build to use fixed release instead of master
 
 email, tftp, anon ftp  

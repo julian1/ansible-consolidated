@@ -140,6 +140,27 @@
     # remove domain-name-servers from dhcp config
     # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present backrefs=yes regexp='(.*)domain-name-servers,(.*)' line='\1\2'
 
+    ###################################
+    # Support bridge addif for qemu
+    # tunctl is only for permissions, not strictly needed
+    # - apt: name=uml-utilities
+    - copy:
+        dest: /etc/qemu-ifup
+        content: |
+          #!/bin/sh
+          # whoot - deployed by ansible
+          set -x
+          switch=br0
+          if [ -n "$1" ];then
+              # tunctl -u `whoami` -t $1
+              ip link set $1 up
+              sleep 0.5s
+              brctl addif $switch $1
+              exit 0
+          else
+              echo "Error: no interface specified"
+              exit 1
+          fi
 
   handlers:
     - include: ../roles/common/handlers/main.yml
