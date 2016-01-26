@@ -91,19 +91,17 @@
     # TODO - this doesn't clear the file first
     # maybe change nameserver to 127.0.0.1
     # also add domain, search?
-    - blockinfile:
+    - copy:
         dest: /etc/resolv.conf
-        create: true
         content: |
-          # nameserver 10.1.1.1
           nameserver 127.0.0.1
 
     # IMPORTANT for complete files not just blocks, could simply use shell maybe with <<-EOF type stuff
 
     # http://unix.stackexchange.com/questions/174349/what-overwrites-etc-resolv-conf-on-every-boot
-    - blockinfile:
+    - copy:
         dest: /etc/dhcp/dhclient-enter-hooks.d/nodnsupdate
-        create: true
+        #create: true
         mode: 0777
         content: |
           #!/bin/sh
@@ -112,9 +110,8 @@
           }
 
     - apt: name=iptables-persistent
-    - blockinfile:
+    - copy:
         dest: /etc/iptables-rules
-        create: true
         content: |
           # iptables -t nat --flush PREROUTING
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
@@ -142,10 +139,10 @@
 
     ###################################
     # Support bridge addif for qemu
-    # tunctl is only for permissions, not strictly needed
-    # - apt: name=uml-utilities
+    # tunctl from uml-utilities only needed for permissions, not strictly needed
     - copy:
         dest: /etc/qemu-ifup
+        mode: 0755
         content: |
           #!/bin/sh
           # whoot - deployed by ansible
