@@ -90,7 +90,7 @@
         dest: /etc/dnsmasq.d/container-dns
         content: |
           # deployed by ansible
-          # interface=br0
+          interface=br0
           log-queries
           log-dhcp
           no-resolv
@@ -110,7 +110,8 @@
         dest: /etc/resolv.conf
         content: |
           # deployed by ansible
-          nameserver 127.0.0.1
+          # nameserver 127.0.0.1
+          nameserver 10.1.1.1
 
 
     # http://unix.stackexchange.com/questions/174349/what-overwrites-etc-resolv-conf-on-every-boot
