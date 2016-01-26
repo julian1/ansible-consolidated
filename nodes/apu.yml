@@ -14,6 +14,8 @@
 
     - hostname: name=apu
 
+    - lineinfile: dest=/etc/hosts state=present  line='127.0.1.1       apu'
+
     - include: ../roles/common/tasks/basic.yml
 
     - apt: name=vim
@@ -108,7 +110,7 @@
           expand-hosts
           domain=localnet
 
-          address=/apu/192.168.42.1
+          # address=/apu/192.168.42.1  should come from /etc/host
           # address=/apu.localnet/192.168.42.1
           dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.42.14
           dhcp-host=00:19:e3:10:53:89,imac,192.168.42.15
@@ -129,7 +131,8 @@
           expand-hosts
           domain=localnet
 
-          address=/apu/192.168.43.1
+          # address=/apu/192.168.43.1
+          # address=/apu/192.168.42.3  should come from /etc/host
           # address=/apu.localnet/192.168.43.1
           dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10
           dhcp-host=00:80:77:34:55:96,brother,192.168.43.15
