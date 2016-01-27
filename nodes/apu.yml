@@ -77,10 +77,12 @@
           #            netmask 255.255.255.0
 
           # lan
-          #          auto eth2
-          #            iface eth2 inet static
-          #            address 192.168.43.1
-          #            netmask 255.255.255.0
+          # TODO enable hotplug???
+          # allow-hotplug eth2
+          auto eth2
+            iface eth2 inet static
+            address 192.168.43.1
+            netmask 255.255.255.0
 
           # wireless lan
           auto wlan0
@@ -99,9 +101,12 @@
         - restart-wlan0
 
     - apt: name=dnsmasq
+    
     - copy:
         dest: /etc/dnsmasq.d/wifi
         content: |
+          # deployed by ansible
+          # https://wiki.debian.org/HowTo/dnsmasq
           dhcp-ignore-names
           # will expand dhcp entries (not apu)
           expand-hosts
@@ -110,7 +115,7 @@
           log-dhcp
 
           interface=wlan0
-          dhcp-range=192.168.42.10,192.168.42.20,255.255.255.0,12h
+          dhcp-range=wlan0,192.168.42.10,192.168.42.20,255.255.255.0,12h
           # address=/apu/192.168.42.1  should come from /etc/host
           # address=/apu.localnet/192.168.42.1
           dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.42.14
@@ -118,7 +123,7 @@
           dhcp-host=60:57:18:75:3b:cc,asus,192.168.42.17
 
           interface=eth2
-          dhcp-range=192.168.43.10,192.168.43.20,255.255.255.0,12h
+          dhcp-range=eth2,192.168.43.10,192.168.43.20,255.255.255.0,12h
           dhcp-ignore-names
           # will expand dhcp entries (not apu)
           # expand-hosts
