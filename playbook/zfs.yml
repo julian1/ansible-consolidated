@@ -1,0 +1,11 @@
+
+# Usage. ansible-playbook -i localhost, playbook/zfs.yml  -k  -vvvv
+
+- hosts: all
+  tasks:
+    - include: ../roles/zfs/tasks/main.yml
+
+  handlers:
+    - include: ../roles/common/handlers/main.yml
+
+
