@@ -1,5 +1,5 @@
 
-# Usage. ansible-playbook -i localhost, playbook/zfs.yml  -k  -vvvv
+# Usage.  ansible-playbook -i localhost, playbook/zfs.yml -k  -vvvv
 
 - hosts: all
   tasks:
