@@ -7,9 +7,9 @@
   tasks:
     - include: >
         ../roles/distribution/tasks/main.yml
-        mirror=http://mirror.aarnet.edu.au/debian
+        mirror=http://mirror.internode.on.net/pub/debian
         template=debian.j2
-        version=jessie
+        version=testing
         upgrade=safe
 
     - hostname: name=apu
@@ -101,7 +101,7 @@
         - restart-wlan0
 
     - apt: name=dnsmasq
-    
+
     - copy:
         dest: /etc/dnsmasq.d/wifi
         content: |
@@ -111,7 +111,7 @@
           # will expand dhcp entries (not apu)
           expand-hosts
           domain=localnet
-          log-queries
+          # log-queries
           log-dhcp
 
           interface=wlan0
@@ -176,35 +176,36 @@
           iptables -t filter --flush
 
           # input default policy
-          iptables -P INPUT DROP
-          # allow lan ping/icmp
-          iptables -I INPUT 1 ! -i eth0 -p icmp -j ACCEPT
-          # test interface listening on eth0
-          # iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
-          # incoming lan ssh regardless of state
-          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
-          # incoming http responses to support apt-get update/upgrade
-          # TODO, should only be state established,related
-          iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
-          iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
+          iptables -P INPUT ACCEPT
 
-          # tftp - /etc/default/tftpd-hpa, TFTP_OPTIONS="--secure  --port-range 1024:1025"
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 69 -j ACCEPT
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1024 -j ACCEPT
-
-          # dnsmasq
-          # incomming dns requests from lan to dnsmasq service
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
-          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
-          # and dns request responses coming back from external servers
-          # TODO should be conntrack established, related.
-          iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
-          iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
-          # dhcp coming in from lan
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 67 -j ACCEPT
-          # dlna from lan
-          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 8200 -j ACCEPT
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
+          #          # allow lan ping/icmp
+          #          iptables -I INPUT 1 ! -i eth0 -p icmp -j ACCEPT
+          #          # test interface listening on eth0
+          #          # iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
+          #          # incoming lan ssh regardless of state
+          #          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
+          #          # incoming http responses to support apt-get update/upgrade
+          #          # TODO, should only be state established,related
+          #          iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
+          #          iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
+          #
+          #          # tftp - /etc/default/tftpd-hpa, TFTP_OPTIONS="--secure  --port-range 1024:1025"
+          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 69 -j ACCEPT
+          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1024 -j ACCEPT
+          #
+          #          # dnsmasq
+          #          # incomming dns requests from lan to dnsmasq service
+          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
+          #          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
+          #          # and dns request responses coming back from external servers
+          #          # TODO should be conntrack established, related.
+          #          iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
+          #          iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
+          #          # dhcp coming in from lan
+          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 67 -j ACCEPT
+          #          # dlna from lan
+          #          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 8200 -j ACCEPT
+          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
 
           #################
           # nat
@@ -217,15 +218,19 @@
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
           # udp or tcp
           # TODO remove multiport for 5060
-          iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
-          iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
-          # 35000-44999
-          iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.20
+
+
+          #          iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
+          #          iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
+          #          # 35000-44999
+          #          iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.20
 
           # post-routing
           # nat for subnets
           iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0 -j MASQUERADE
           iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -o eth0 -j MASQUERADE
+          #iptables -t nat -A POSTROUTING -s 192.168.42.0/24 -o eth0 -j MASQUERADE
+          #iptables -t nat -A POSTROUTING -s 192.168.43.0/24 -o eth0 -j MASQUERADE
 
           #################
           # mangle
@@ -247,7 +252,7 @@
           sleep 1
           smcroute -a wlan0 0.0.0.0 239.255.255.250 eth2
           smcroute -a eth2  0.0.0.0 239.255.255.250 wlan0
-          # smcroute -a wlan1 192.168.42.14 239.255.255.250 eth2
+          # smcroute -a wlan0 192.168.42.14 239.255.255.250 eth2
       notify: restart-smcroute
 
 
