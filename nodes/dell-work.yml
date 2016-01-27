@@ -33,7 +33,6 @@
 
 
     ###################################
-
     - apt: name=memtest86
 
     - apt: name=alsa-oss
@@ -73,6 +72,7 @@
     - apt: name=wicd-curses
 
 
+    ###################################
     # make sure systemd is installed
     - apt: name=systemd-container
       when: (ansible_distribution == "Debian" and ansible_distribution_major_version > "8")
@@ -81,7 +81,6 @@
 
 
     ###################################
-
     # ip forwarding needed for nat - debian only?
     - lineinfile: dest=/etc/sysctl.conf backup=true state=present regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward = 1'
       notify: reload-sysctl
@@ -169,7 +168,6 @@
 
 
     ###################################
-
     - copy:
         dest: /home/meteo/.xinitrc
         content: |
@@ -203,7 +201,25 @@
           xmonad
 
 
+    ###################################
     - apt: name=cups
+
+    - shell: lpstat -p | grep -q ImosLexmark
+      register: have_printer 
+      ignore_errors: yes
+      changed_when: "have_printer.rc != 0"
+
+    # > will concat to single line, and the comment will dominate
+    - shell: |
+        # install
+        lpadmin \
+          -p 'ImosLexmark' \
+          -v 'socket://10.76.8.20:9100' \
+          -P '/home/meteo/imos/lexmark.ppd' \
+          -E
+        # set default
+        lpadmin -d ImosLexmark
+      when: "have_printer.rc != 0"
 
 
   handlers:
