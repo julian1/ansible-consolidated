@@ -77,10 +77,10 @@
           #            netmask 255.255.255.0
 
           # lan
-#          auto eth2
-#            iface eth2 inet static
-#            address 192.168.43.1
-#            netmask 255.255.255.0
+          #          auto eth2
+          #            iface eth2 inet static
+          #            address 192.168.43.1
+          #            netmask 255.255.255.0
 
           # wireless lan
           auto wlan0
