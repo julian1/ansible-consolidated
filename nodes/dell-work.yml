@@ -9,11 +9,12 @@
     # - include: >
     #    ../roles/distribution/tasks/main.yml
     #    mirror=http://mirror.aarnet.edu.au/debian
-    #    template=debian.j2 
+    #    template=debian.j2
     #    version=testing
-    #    upgrade=safe 
+    #    upgrade=safe
 
 
+    # zfs playbook is run before have local mount
     # - role: zfs
 
     - include: ../roles/common/tasks/basic.yml
@@ -165,6 +166,43 @@
           iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
       notify: reconfigure-iptables
 
+
+    ###################################
+
+    - copy:
+        dest: /home/meteo/.xinitrc
+        content: |
+          xrdb -merge <<- EOF
+            XTerm*selectToClipboard: true
+            XTerm*faceName: DejaVu Sans Mono
+            XTerm*faceSize: 10 ! desktop
+            ! XTerm*faceSize: 15   ! laptop
+            XTerm*Background: white
+            XTerm*Foreground: black
+          EOF
+
+          xmodmap - <<- EOF
+            keycode 90 = Insert NoSymbol Insert
+          EOF
+
+          if true; then
+            # this can be confusing because xmonad won't open anything on the window
+            xrandr --auto --output DP1-1 --mode 1920x1200 --primary
+            xrandr --auto --output DP1-2 --mode 1280x1024 --right-of DP1-1
+            xrandr --output eDP1 --off
+           desktop
+          fi
+
+          # xrandr --output eDP1 --brightness .65
+          # xset -dpms; xset s off
+          # to turn on trackpad tap to select/button
+          synclient TapButton1=1
+          xset b off
+          # xset q | grep bell
+          xmonad
+
+
+    - apt: name=cups
 
 
   handlers:
