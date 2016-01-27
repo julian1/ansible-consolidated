@@ -20,6 +20,10 @@
   - name: restart-wlan0
     command: sh -c "/sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0"
 
+  - name: restart-wlan1
+    command: sh -c "/sbin/ifdown wlan1 && sleep 1 && /sbin/ifup wlan1"
+
+
   - name: restart-dnsmasq
     service: name=dnsmasq state=restarted
 
