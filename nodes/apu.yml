@@ -76,11 +76,11 @@
           #            address 172.16.210.254
           #            netmask 255.255.255.0
 
-          #          # lan
-          #          auto eth2
-          #          iface eth2 inet static
-          #            address 192.168.43.1
-          #            netmask 255.255.255.0
+          # lan
+#          auto eth2
+#            iface eth2 inet static
+#            address 192.168.43.1
+#            netmask 255.255.255.0
 
           # wireless lan
           auto wlan0
@@ -94,30 +94,43 @@
       notify:
         # will these all be run together
         - restart-eth0
-        - restart-eth1
+        # - restart-eth1
         - restart-eth2
         - restart-wlan0
 
     - apt: name=dnsmasq
-    - blockinfile:
+    - copy:
         dest: /etc/dnsmasq.d/wifi
-        create: true
         content: |
-          interface=wlan0
-          dhcp-range=192.168.42.10,192.168.42.20,255.255.255.0,12h
           dhcp-ignore-names
           # will expand dhcp entries (not apu)
           expand-hosts
           domain=localnet
+          log-queries
+          log-dhcp
 
+          interface=wlan0
+          dhcp-range=192.168.42.10,192.168.42.20,255.255.255.0,12h
           # address=/apu/192.168.42.1  should come from /etc/host
           # address=/apu.localnet/192.168.42.1
           dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.42.14
           dhcp-host=00:19:e3:10:53:89,imac,192.168.42.15
           dhcp-host=60:57:18:75:3b:cc,asus,192.168.42.17
 
-          log-queries
-          log-dhcp
+          interface=eth2
+          dhcp-range=192.168.43.10,192.168.43.20,255.255.255.0,12h
+          dhcp-ignore-names
+          # will expand dhcp entries (not apu)
+          # expand-hosts
+          # domain=localnet
+          dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10
+          dhcp-host=00:80:77:34:55:96,brother,192.168.43.15
+          dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.43.16
+          dhcp-host=b8:ae:ed:7b:b5:b9,nuc,192.168.43.17
+          dhcp-host=08:17:35:34:c9:c0,cisco,192.168.43.18
+          dhcp-host=00:04:13:37:1a:f1,snom,192.168.43.20
+          dhcp-host=b8:2a:72:c9:fe:d2,dell-home-wired,192.168.43.19
+
       notify: restart-dnsmasq
 
 #    - blockinfile:
