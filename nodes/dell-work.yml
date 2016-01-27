@@ -157,6 +157,8 @@
           # redirect to apache
           iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
           # bridge postrouting
+        
+          # TODO genericize NAT postrouting with appropriate subnetwork masks
           iptables -t nat --flush POSTROUTING
           iptables -t nat -A POSTROUTING -s '10.1.1.0/24' -j MASQUERADE
           # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=717217
