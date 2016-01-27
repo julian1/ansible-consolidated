@@ -35,7 +35,6 @@
     ###################################
 
     - apt: name=memtest86
-    - apt: name=fail2ban
 
     - apt: name=alsa-oss
     - apt: name=alsa-utils
