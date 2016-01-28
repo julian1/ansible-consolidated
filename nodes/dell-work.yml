@@ -1,8 +1,6 @@
 
 - hosts: 131.217.38.36
 
-  roles:
-    - yaegashi.blockinfile
   tasks:
     # hostname?
 
@@ -24,16 +22,45 @@
     ###################################
     - apt: name=memtest86
 
+
+    ###################################
+    - lineinfile: dest=/etc/sysctl.conf backup=true state=present regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward = 1'
+      notify: reload-sysctl
+
+    - apt: name=bridge-utils
+
+    - copy:
+        dest: /etc/network/interfaces
+        content: |
+          # deployed by ansible!
+          # The loopback network interface
+          auto lo
+          iface lo inet loopback
+
+          # The primary network interface
+          allow-hotplug eth0
+          iface eth0 inet dhcp
+
+          auto br0
+          iface br0 inet static
+            address 10.1.1.1
+            netmask 255.255.255.0
+            bridge_ports dummy0
+            bridge_stp off
+            bridge_fd 0
+
+      notify: restart-br0
+
+
     ###################################
     - apt: name=alsa-oss
     - apt: name=alsa-utils
     - apt: name=alsa-tools
 
-    - name: Setup soundcard
-      blockinfile:
+    - copy:
         dest: /etc/modprobe.d/alsa-base.conf
-        create: true
         content: |
+          # deployed by ansible!
           # hdmi and cth reversed
           options snd_hda_intel enable=0,1
 
@@ -67,6 +94,7 @@
     - copy:
         dest: /home/meteo/.xinitrc
         content: |
+          # deployed by ansible!
           xrdb -merge <<- EOF
             XTerm*selectToClipboard: true
             XTerm*faceName: DejaVu Sans Mono
@@ -163,33 +191,15 @@
     - apt: name=debootstrap
 
 
-    ###################################
-    # ip forwarding needed for nat - debian only?
-    - lineinfile: dest=/etc/sysctl.conf backup=true state=present regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward = 1'
-      notify: reload-sysctl
-
-    - apt: name=bridge-utils
-    - blockinfile:
-        dest: /etc/network/interfaces
-        backup: yes
-        content: |
-          auto br0
-          iface br0 inet static
-            address 10.1.1.1
-            netmask 255.255.255.0
-            bridge_ports dummy0
-            bridge_stp off
-            bridge_fd 0
-      notify: restart-br0
 
     # Using local dnsmasq as a wholesale replacement for using resolvconf is a lot simpler
     # issue is we want to ping containers from the host,
     # so make local dns authoritative
     - apt: name=dnsmasq
-    - blockinfile:
+    - copy:
         dest: /etc/dnsmasq.d/container-dns
-        create: true
         content: |
+          # deployed by ansible!
           interface=br0
           log-queries
           log-dhcp
@@ -210,30 +220,30 @@
     # TODO - this doesn't clear the file first
     # maybe change nameserver to 127.0.0.1
     # also add domain, search?
-    - blockinfile:
+    - copy:
         dest: /etc/resolv.conf
-        create: true
         content: |
+          # deployed by ansible!
           nameserver 10.1.1.1
 
     # IMPORTANT for complete files not just blocks, could simply use shell maybe with <<-EOF type stuff
 
     # http://unix.stackexchange.com/questions/174349/what-overwrites-etc-resolv-conf-on-every-boot
-    - blockinfile:
+    - copy:
         dest: /etc/dhcp/dhclient-enter-hooks.d/nodnsupdate
-        create: true
         mode: 0777
         content: |
           #!/bin/sh
+          # deployed by ansible!
           make_resolv_conf() {
               :
           }
 
     - apt: name=iptables-persistent
-    - blockinfile:
+    - copy:
         dest: /etc/iptables-rules
-        create: true
         content: |
+          # deployed by ansible!
           iptables -t nat --flush PREROUTING
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
           # redirect to apache
