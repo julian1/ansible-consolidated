@@ -124,7 +124,7 @@
 
           interface=eth2
           dhcp-range=eth2,192.168.43.10,192.168.43.20,255.255.255.0,12h
-          dhcp-ignore-names
+          # dhcp-ignore-names
           # will expand dhcp entries (not apu)
           # expand-hosts
           # domain=localnet
@@ -176,36 +176,44 @@
           iptables -t filter --flush
 
           # input default policy
-          iptables -P INPUT ACCEPT
+          iptables -P INPUT DROP
 
-          #          # allow lan ping/icmp
-          #          iptables -I INPUT 1 ! -i eth0 -p icmp -j ACCEPT
-          #          # test interface listening on eth0
-          #          # iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
-          #          # incoming lan ssh regardless of state
-          #          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
-          #          # incoming http responses to support apt-get update/upgrade
-          #          # TODO, should only be state established,related
-          #          iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
-          #          iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
-          #
-          #          # tftp - /etc/default/tftpd-hpa, TFTP_OPTIONS="--secure  --port-range 1024:1025"
-          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 69 -j ACCEPT
-          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1024 -j ACCEPT
-          #
-          #          # dnsmasq
-          #          # incomming dns requests from lan to dnsmasq service
-          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
-          #          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
-          #          # and dns request responses coming back from external servers
-          #          # TODO should be conntrack established, related.
-          #          iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
-          #          iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
-          #          # dhcp coming in from lan
-          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 67 -j ACCEPT
-          #          # dlna from lan
-          #          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 8200 -j ACCEPT
-          #          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
+          # Incoming from WAN/eth0 (TODO state conntrack established, related).
+          # TODO remove the 1
+
+          # http responses from outside (needed for apt-get update/upgrade)
+          iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
+          iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
+
+          # dns responses from outside
+          iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
+          iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
+
+          # ping/icmp
+          iptables -I INPUT 1 -p icmp -j ACCEPT
+
+          # Internal traffic
+
+          # incoming test port
+          # iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
+
+          # ssh
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
+
+          # tftp - /etc/default/tftpd-hpa, TFTP_OPTIONS="--secure  --port-range 1024:1025"
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 69 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1024 -j ACCEPT
+
+          # dns
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
+
+          # dhcp
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 67 -j ACCEPT
+
+          # dlna
+          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 8200 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
 
           #################
           # nat
@@ -219,18 +227,16 @@
           # udp or tcp
           # TODO remove multiport for 5060
 
-
           #          iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
           #          iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
           #          # 35000-44999
           #          iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.20
 
           # post-routing
-          # nat for subnets
+          # private subnet nat
+          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o eth0 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o eth0 -j MASQUERADE
           iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 10.0.0.0/8 -o eth0 -j MASQUERADE
-          #iptables -t nat -A POSTROUTING -s 192.168.42.0/24 -o eth0 -j MASQUERADE
-          #iptables -t nat -A POSTROUTING -s 192.168.43.0/24 -o eth0 -j MASQUERADE
 
           #################
           # mangle
