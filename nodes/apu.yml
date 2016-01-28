@@ -148,47 +148,36 @@
           #################
           # filter
           iptables -t filter --flush
-
           # input default policy
           iptables -P INPUT DROP
 
           # Incoming from WAN/eth0 (TODO state conntrack established, related).
           # TODO remove the 1
-
           # http responses from outside (needed for apt-get update/upgrade)
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
-
           # dns responses from outside
           iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
-
           # ping/icmp
           iptables -I INPUT 1 -p icmp -j ACCEPT
 
           # voip 35000-44999
           # iptables -I INPUT 1 -p udp --match multiport --dport 35000:49999 -j ACCEPT
 
-
           # Internal traffic
-
           # incoming test port
           # iptables -I INPUT 1 -p tcp --dport 82 -j ACCEPT
-
           # ssh
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
-
           # tftp - /etc/default/tftpd-hpa, TFTP_OPTIONS="--secure  --port-range 1024:1025"
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 69 -j ACCEPT
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 1024 -j ACCEPT
-
           # dns
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
-
           # dhcp
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 67 -j ACCEPT
-
           # dlna
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 8200 -j ACCEPT
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
@@ -204,6 +193,8 @@
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
           # udp or tcp
           # TODO remove multiport for 5060
+
+          # VERY IMPORTANT - for 15000 we may distinguish from dns using ! port 53 rule. or just use high source port range
 
           # 15000: # 35000-44999
           # iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
