@@ -14,7 +14,7 @@
     #    upgrade=safe
 
 
-    # zfs playbook is run before have local mount
+    # zfs playbook must be from /root
     # - role: zfs
 
     - include: ../roles/common/tasks/basic.yml
