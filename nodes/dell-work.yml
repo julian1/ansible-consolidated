@@ -78,6 +78,7 @@
 
 
     ###################################
+    # TODO get rid of name
     - name: Wifi firmware
       apt: name=firmware-iwlwifi
 
