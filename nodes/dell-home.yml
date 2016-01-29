@@ -45,6 +45,35 @@
         creates: /var/lib/alsa/asound.state
       notify: reboot
 
+
+    ###################################
+    - copy:
+        dest: /home/meteo/.xinitrc
+        content: |
+          xrdb -merge <<- EOF
+            XTerm*selectToClipboard: true
+            XTerm*faceName: DejaVu Sans Mono
+            ! XTerm*faceSize: 10 ! desktop
+            XTerm*faceSize: 15   ! laptop
+            XTerm*Background: white
+            XTerm*Foreground: black
+          EOF
+
+          xmodmap - <<- EOF
+            keycode 90 = Insert NoSymbol Insert
+          EOF
+
+          xrandr --output eDP1 --brightness .65
+
+          # xset -dpms; xset s off
+          # to turn on trackpad tap to select/button
+          synclient TapButton1=1
+          xset b off
+          # xset q | grep bell
+          xmonad
+
+
+
     ###################################
 
     # ip forwarding needed for nat - debian only?
