@@ -45,6 +45,8 @@ ansible all -i nc2, -c local -m ping
 
 ### Resources
 
+http://codeheaven.io/15-things-you-should-know-about-ansible/
+
 https://raymii.org/s/tutorials/Ansible_-_Only-do-something-if-another-action-changed.html
 
 http://stackoverflow.com/questions/30192490/include-tasks-from-another-role-in-ansible-playbook
