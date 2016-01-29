@@ -28,6 +28,7 @@ sudo ansible-galaxy install yaegashi.blockinfile
 
 ### Useful flags
 ```
+ --list-tasks  show tasks that will be run
 -s force use of sudo for all plays even if not marked as such
 --private-key ~/.ssh/id_rsa
 --ask-sudo-pass
