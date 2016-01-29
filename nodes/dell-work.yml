@@ -188,6 +188,9 @@
           export A=$HOME/ansible-tests
           alias a="cd $A"
 
+          export H=$HOME
+          alias h="cd $H"
+
 
     - apt: name=maven
     - apt: name=postgresql-client-9.4
