@@ -19,11 +19,12 @@
     - include: ../roles/common/tasks/basic.yml
 
     - apt: name=vim
+
     - apt: name=ntp
     - apt: name=tcpdump
-
-    # iwconfig - useful to check wlan0 state
-    - apt: name=wireless-tools
+    - apt: name=netstat-nat     # nat connections
+    - apt: name=dnsutils        # dig, whois
+    - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
 
     # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
     - apt: name=firmware-realtek
@@ -192,35 +193,20 @@
           # Good voip guide, note the comment to limit stp to smaller port range
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
           # udp or tcp
-          # TODO remove multiport for 5060
 
-          
           # VERY IMPORTANT - for 15000 we may distinguish from dns using ! port 53 rule. or only redirect if high source port range
           # VERY IMPORTANT  if use apu dns service then it will be non-NAT and won't be affected.
 
           # 15000: # 35000-44999
-          #          iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
-          #          iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
-          #          iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.20
+          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
+          # iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
+          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.20
 
           # with nat punch-through we may not even need
+          # or at least tcp on 5060?
+          # port forward may even confuse
           iptables -t nat -A PREROUTING -p udp -s 203.55.231.0/24 -i eth0 -j DNAT --to 192.168.43.20
           iptables -t nat -A PREROUTING -p tcp -s 203.55.231.0/24 -i eth0 -j DNAT --to 192.168.43.20
-
-          # sip tcp/udp sip.tas.iinet.net.au
-          #  --dport 5060
-          # tcpdump -n -s 0 -l  src  203.55.231.200 -i eth0
-
-          # IMPORTANT
-          # OK, sip stuff is initiated from the phone to sip server ...
-          # therefore we don't need to port-forward, and port-forward may confuse
-          # nat traversal.
-
-          # this should forward everything... from
-          # iptables -t nat -A PREROUTING --source 203.55.231.200 -i eth0 -j DNAT --to 192.168.43.20
-
-          # this will kill udp...
-          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 35000:49999 -i eth0 -j DNAT --to 192.168.43.20
 
           # post-routing
           # private subnet nat
