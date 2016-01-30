@@ -28,7 +28,9 @@ sudo ansible-galaxy install yaegashi.blockinfile
 
 ### Useful flags
 ```
--s force use of sudo for all plays even if not marked as such
+--list-tasks  show tasks that will be run
+--check       report what would have done only
+-s            force use of sudo for all plays even if not marked as such
 --private-key ~/.ssh/id_rsa
 --ask-sudo-pass
 -k ask pass
@@ -42,6 +44,8 @@ ansible all -i nc2, -c local -m ping
 ```
 
 ### Resources
+
+http://codeheaven.io/15-things-you-should-know-about-ansible/
 
 https://raymii.org/s/tutorials/Ansible_-_Only-do-something-if-another-action-changed.html
 

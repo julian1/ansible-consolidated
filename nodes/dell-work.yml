@@ -1,8 +1,6 @@
 
 - hosts: 131.217.38.36
 
-  roles:
-    - yaegashi.blockinfile
   tasks:
     # hostname?
 
@@ -14,35 +12,55 @@
     #    upgrade=safe
 
 
-    # zfs playbook is run before have local mount
+    # zfs playbook must be from /root
     # - role: zfs
 
     - include: ../roles/common/tasks/basic.yml
-
     - include: ../roles/common/tasks/disable-shell-bell.yml
 
-    - include: ../roles/common/tasks/grails-1.3.7.yml
 
-    # TODO add devenv and desktop...
-    # - include: ./roles/common/tasks/devenv.yml
-
-    - apt: name=maven
-    - apt: name=postgresql-client-9.4
-
-    # - include: "./roles/common/tasks/jdk.yml"
-
+    ###################################
     - apt: name=memtest86
+
+
+    ###################################
+    - lineinfile: dest=/etc/sysctl.conf backup=true state=present regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward = 1'
+      notify: reload-sysctl
+
+    - apt: name=bridge-utils
+
+    - copy:
+        dest: /etc/network/interfaces
+        content: |
+          # deployed by ansible!
+          # The loopback network interface
+          auto lo
+          iface lo inet loopback
+
+          # The primary network interface
+          allow-hotplug eth0
+          iface eth0 inet dhcp
+
+          auto br0
+          iface br0 inet static
+            address 10.1.1.1
+            netmask 255.255.255.0
+            bridge_ports dummy0
+            bridge_stp off
+            bridge_fd 0
+
+      notify: restart-br0
+
 
     ###################################
     - apt: name=alsa-oss
     - apt: name=alsa-utils
     - apt: name=alsa-tools
 
-    - name: Setup soundcard
-      blockinfile:
+    - copy:
         dest: /etc/modprobe.d/alsa-base.conf
-        create: true
         content: |
+          # deployed by ansible!
           # hdmi and cth reversed
           options snd_hda_intel enable=0,1
 
@@ -60,6 +78,7 @@
 
 
     ###################################
+    # TODO get rid of name
     - name: Wifi firmware
       apt: name=firmware-iwlwifi
 
@@ -72,8 +91,110 @@
     - apt: name=wpasupplicant
     - apt: name=wicd-curses
 
+    ###################################
+    - copy:
+        dest: /home/meteo/.xinitrc
+        content: |
+          # deployed by ansible!
+          xrdb -merge <<- EOF
+            XTerm*selectToClipboard: true
+            XTerm*faceName: DejaVu Sans Mono
+            XTerm*faceSize: 10 ! desktop
+            ! XTerm*faceSize: 15   ! laptop
+            XTerm*Background: white
+            XTerm*Foreground: black
+          EOF
+
+          xmodmap - <<- EOF
+            keycode 90 = Insert NoSymbol Insert
+          EOF
+
+          if true; then
+            # Warning - turns off laptop display!
+            xrandr --auto --output DP1-1 --mode 1920x1200 --primary
+            xrandr --auto --output DP1-2 --mode 1280x1024 --right-of DP1-1
+            xrandr --output eDP1 --off
+           desktop
+          fi
+
+          # xrandr --output eDP1 --brightness .65
+          # xset -dpms; xset s off
+          # to turn on trackpad tap to select/button
+          synclient TapButton1=1
+          xset b off
+          # xset q | grep bell
+          xmonad
+
 
     ###################################
+    - apt: name=cups
+
+    - shell: lpstat -p | grep -q ImosLexmark
+      register: have_printer
+      ignore_errors: yes
+      changed_when: "have_printer.rc != 0"
+
+    # TODO a more relative path?
+    - copy: src=../roles/common/files/lexmark.ppd dest=/tmp
+
+    - shell: |
+        # install
+        lpadmin \
+          -p 'ImosLexmark' \
+          -v 'socket://10.76.8.20:9100' \
+          -P '/tmp/lexmark.ppd' \
+          -E
+        # set default
+        lpadmin -d ImosLexmark
+      when: "have_printer.rc != 0"
+
+
+    ###################################
+    - include: ../roles/common/tasks/grails-1.3.7.yml
+    - include: ../roles/common/tasks/intellij.yml
+
+    # - include: "./roles/common/tasks/jdk.yml"
+
+    # TODO add devenv and desktop...
+    # - include: ./roles/common/tasks/devenv.yml
+
+
+    ###################################
+    # pulled in by .bashrc
+    - copy:
+        dest: /home/meteo/paths
+        content: |
+          # deployed by ansible!
+          . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+          export I=$HOME/imos
+          alias i="cd $I"
+
+          export BERKS_HOME=$HOME/.chefdk/gem/ruby/2.1.0/bin
+          export PATH="$BERKS_HOME:$PATH"
+
+          export JAVA_HOME=$I/jdk1.7.0_80
+          export PATH="$JAVA_HOME/bin:$PATH"
+
+          export GRAILS_HOME=$I/grails-1.3.7/
+          export PATH="$PATH:$GRAILS_HOME/bin"
+
+          export INTELLIJ_HOME=$I/idea-IU-143.1821.5/
+          export PATH="$PATH:$INTELLIJ_HOME/bin"
+
+          export HISTTIMEFORMAT="%T " # "
+
+          # locations
+          export A=$HOME/ansible-tests
+          alias a="cd $A"
+
+          export H=$HOME
+          alias h="cd $H"
+
+
+    - apt: name=maven
+    - apt: name=postgresql-client-9.4
+
     # make sure systemd is installed
     - apt: name=systemd-container
       when: (ansible_distribution == "Debian" and ansible_distribution_major_version > "8")
@@ -81,33 +202,15 @@
     - apt: name=debootstrap
 
 
-    ###################################
-    # ip forwarding needed for nat - debian only?
-    - lineinfile: dest=/etc/sysctl.conf backup=true state=present regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward = 1'
-      notify: reload-sysctl
-
-    - apt: name=bridge-utils
-    - blockinfile:
-        dest: /etc/network/interfaces
-        backup: yes
-        content: |
-          auto br0
-          iface br0 inet static
-            address 10.1.1.1
-            netmask 255.255.255.0
-            bridge_ports dummy0
-            bridge_stp off
-            bridge_fd 0
-      notify: restart-br0
 
     # Using local dnsmasq as a wholesale replacement for using resolvconf is a lot simpler
     # issue is we want to ping containers from the host,
     # so make local dns authoritative
     - apt: name=dnsmasq
-    - blockinfile:
+    - copy:
         dest: /etc/dnsmasq.d/container-dns
-        create: true
         content: |
+          # deployed by ansible!
           interface=br0
           log-queries
           log-dhcp
@@ -128,36 +231,36 @@
     # TODO - this doesn't clear the file first
     # maybe change nameserver to 127.0.0.1
     # also add domain, search?
-    - blockinfile:
+    - copy:
         dest: /etc/resolv.conf
-        create: true
         content: |
+          # deployed by ansible!
           nameserver 10.1.1.1
 
     # IMPORTANT for complete files not just blocks, could simply use shell maybe with <<-EOF type stuff
 
     # http://unix.stackexchange.com/questions/174349/what-overwrites-etc-resolv-conf-on-every-boot
-    - blockinfile:
+    - copy:
         dest: /etc/dhcp/dhclient-enter-hooks.d/nodnsupdate
-        create: true
         mode: 0777
         content: |
           #!/bin/sh
+          # deployed by ansible!
           make_resolv_conf() {
               :
           }
 
     - apt: name=iptables-persistent
-    - blockinfile:
+    - copy:
         dest: /etc/iptables-rules
-        create: true
         content: |
+          # deployed by ansible!
           iptables -t nat --flush PREROUTING
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
           # redirect to apache
           iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
           # bridge postrouting
-        
+
           # TODO genericize NAT postrouting with appropriate subnetwork masks
           iptables -t nat --flush POSTROUTING
           iptables -t nat -A POSTROUTING -s '10.1.1.0/24' -j MASQUERADE
@@ -167,60 +270,6 @@
           iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
       notify: reconfigure-iptables
 
-
-    ###################################
-    - copy:
-        dest: /home/meteo/.xinitrc
-        content: |
-          xrdb -merge <<- EOF
-            XTerm*selectToClipboard: true
-            XTerm*faceName: DejaVu Sans Mono
-            XTerm*faceSize: 10 ! desktop
-            ! XTerm*faceSize: 15   ! laptop
-            XTerm*Background: white
-            XTerm*Foreground: black
-          EOF
-
-          xmodmap - <<- EOF
-            keycode 90 = Insert NoSymbol Insert
-          EOF
-
-          if true; then
-            # this can be confusing because xmonad won't open anything on the window
-            xrandr --auto --output DP1-1 --mode 1920x1200 --primary
-            xrandr --auto --output DP1-2 --mode 1280x1024 --right-of DP1-1
-            xrandr --output eDP1 --off
-           desktop
-          fi
-
-          # xrandr --output eDP1 --brightness .65
-          # xset -dpms; xset s off
-          # to turn on trackpad tap to select/button
-          synclient TapButton1=1
-          xset b off
-          # xset q | grep bell
-          xmonad
-
-
-    ###################################
-    - apt: name=cups
-
-    - shell: lpstat -p | grep -q ImosLexmark
-      register: have_printer 
-      ignore_errors: yes
-      changed_when: "have_printer.rc != 0"
-
-    # > will concat to single line, and the comment will dominate
-    - shell: |
-        # install
-        lpadmin \
-          -p 'ImosLexmark' \
-          -v 'socket://10.76.8.20:9100' \
-          -P '/home/meteo/imos/lexmark.ppd' \
-          -E
-        # set default
-        lpadmin -d ImosLexmark
-      when: "have_printer.rc != 0"
 
 
   handlers:

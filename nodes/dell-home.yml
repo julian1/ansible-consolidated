@@ -11,7 +11,8 @@
     - include: ../roles/common/tasks/basic.yml
 
     # hostname?
-    # - role: zfs
+
+    # zfs playbook must be from /root
     - include: ../roles/common/tasks/disable-shell-bell.yml
 
     ###################################

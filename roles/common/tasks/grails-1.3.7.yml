@@ -7,6 +7,7 @@
 
   - unarchive: src=/home/meteo/imos/grails-1.3.7.zip dest=/home/meteo/imos/ owner=meteo
 
-  - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export GRAILS_HOME=/home/meteo/imos/grails-1.3.7/'
-  - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export PATH="$PATH:$GRAILS_HOME/bin"' 
+  # do this explicitly
+  # - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export GRAILS_HOME=/home/meteo/imos/grails-1.3.7/'
+  # - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export PATH="$PATH:$GRAILS_HOME/bin"'
 

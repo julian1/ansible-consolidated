@@ -1,0 +1,6 @@
+
+  # Intellij ultimate
+  - get_url: url='https://d1opms6zj7jotq.cloudfront.net/idea/ideaIU-15.0.3.tar.gz' dest=/home/meteo/imos/ideaIU-15.0.3.tar.gz
+  - unarchive: src=/home/meteo/imos/ideaIU-15.0.3.tar.gz  dest=/home/meteo/imos/ owner=meteo
+
+
