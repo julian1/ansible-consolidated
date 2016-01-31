@@ -1,13 +1,14 @@
 - hosts: dell-home
   vars:
   tasks:
-    # TODO change to internode...
-    # - include: >
-    #    ../roles/distribution/tasks/main.yml
-    #    mirror=http://mirror.aarnet.edu.au/debian
-    #    template=debian.j2
-    #    version=testing
-    #    upgrade=safe
+
+    - include: >
+        ../roles/distribution/tasks/main.yml
+        mirror=http://mirror.internode.on.net/pub/debian
+        template=debian.j2
+        version=testing
+        upgrade=safe
+
 
     - include: ../roles/common/tasks/basic.yml
 
@@ -203,6 +204,10 @@
           fi
 
     #####
+    - apt: name=dnsutils
+    - apt: name=ffmpeg
+
+    #####
     # pulled in by .bashrc
     - copy:
         dest: /home/meteo/paths
@@ -213,29 +218,40 @@
 
           export HISTTIMEFORMAT="%T " # "
           export EDITOR=vim
+
           # locations
           export H=$HOME
           export A=$HOME/ansible-tests
           export C=$HOME/Config_Stuff2
+          #export L=/var/log
 
           alias a="cd $A"
           alias c="cd $C"
-          alias dmesg='dmesg -T --color=always'
           alias e='cd /etc'
-          alias g='git'
           alias h="cd $HOME"
-          # alias hs="history"
+
+          alias dmesg='dmesg -T --color=always'
           alias less='less -R'
+          alias vim='vim -p'
+          alias top='top -d .7'
+
+          # alias hs="history" # conflict with h=home
           alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
           alias pong="ping 8.8.8.8 -c 4"
           alias pw='head -c 18 /dev/urandom | base64'
           alias pr='a2ps -1 -R -f 9'
-          alias p=ping
-          alias s=sudo
           alias t='export T=$(mktemp -d); pushd $T'
-          alias top='top -d .7'
+          alias as='aptitude search'    # conflicts with gnu as
+          alias au='apt-get update'
+          alias rec="ffmpeg -f x11grab -s 1920x1080 -r 25 -i :0.0 output.mkv"
+
+          alias p=ping
+          alias g=git
           # alias ps='ps auxf'
-          alias vim='vim -p'
+          alias v='vim -p'
+          alias s=sudo
+          alias sv="sudo vim -p"
+          alias ss="sudo -s"
 
           alias ls='ls --group-directories-first --color=always'
 
@@ -249,7 +265,8 @@
                 print
               }'
           }
-
+          
+          # systemd specific
           function start()    { sudo systemctl start $@;   }
           function stop()     { sudo systemctl stop $@;    }
           function restart()  { sudo systemctl restart $@; }
