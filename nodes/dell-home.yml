@@ -1,12 +1,13 @@
 - hosts: dell-home
   vars:
   tasks:
+    # TODO change to internode...
     # - include: >
     #    ../roles/distribution/tasks/main.yml
     #    mirror=http://mirror.aarnet.edu.au/debian
-    #    template=debian.j2 
+    #    template=debian.j2
     #    version=testing
-    #    upgrade=safe 
+    #    upgrade=safe
 
     - include: ../roles/common/tasks/basic.yml
 
@@ -72,8 +73,12 @@
           xmonad
 
     #####
-    # ip forwarding needed for nat - debian only?
-    - lineinfile: dest=/etc/sysctl.conf backup=true state=present regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward = 1'
+    # ip forwarding
+    - lineinfile: >
+        dest=/etc/sysctl.conf
+        state=present
+        regexp='.*net.ipv4.ip_forward.*'
+        line='net.ipv4.ip_forward = 1'
       notify: reload-sysctl
 
     - apt: name=bridge-utils
@@ -86,6 +91,7 @@
           auto lo
           iface lo inet loopback
 
+          # vlan
           # auto eth0.2
           # iface eth0.2 inet static
           #  address 192.168.2.1
@@ -126,6 +132,7 @@
           domain=container
           dhcp-range=br0,10.1.1.10,10.1.1.20,4h
           dhcp-host=00:01:04:1b:2C:1A,ethereum,10.1.1.19
+
       notify: restart-dnsmasq
 
     # IMPORTANT - changes to /etc/resolv.conf, need dnsmasq restart to re-read upstream servers
@@ -194,6 +201,24 @@
               echo "Error: no interface specified"
               exit 1
           fi
+
+    #####
+    # pulled in by .bashrc
+    - copy:
+        dest: /home/meteo/paths
+        content: |
+          # deployed by ansible!
+          . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+          export HISTTIMEFORMAT="%T " # "
+
+          # locations
+          export A=$HOME/ansible-tests
+          alias a="cd $A"
+
+          export H=$HOME
+          alias h="cd $H"
+
 
   handlers:
     - include: ../roles/common/handlers/main.yml
