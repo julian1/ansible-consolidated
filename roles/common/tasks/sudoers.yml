@@ -1,7 +1,0 @@
-
-    - apt: name=sudo
-
-    - name: Add group adm to sudoers
-      lineinfile: "dest=/etc/sudoers validate='visudo -cf %s' state=present insertafter=EOF line='%adm ALL=(ALL) NOPASSWD: ALL'"
-
-

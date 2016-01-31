@@ -1,19 +1,48 @@
 
-    - include: sudoers.yml
+  - set_fact: user=meteo
 
-    - user: name=meteo shell=/bin/bash groups=adm append=yes
+  - apt: name=sudo
 
-    - include: mydotfiles.yml user=meteo
-    - authorized_key: user=meteo key="{{ lookup('file', '../resources/keys') }}" #"
+  - lineinfile: >
+      dest=/etc/sudoers
+      validate='visudo -cf %s'
+      state=present
+      insertafter=EOF
+      "line=%adm ALL=(ALL) NOPASSWD: ALL"
 
-    - include: timezone.yml timezone=Australia/Hobart
+  - user: > 
+      name={{user}} 
+      shell=/bin/bash 
+      groups=adm 
+      append=yes
 
-    - apt: name=locales
-    - locale_gen: name=en_AU.UTF-8 state=present
+  - authorized_key: user={{user}} key="{{ lookup('file', '../resources/keys') }}" #"
 
-    - apt: name=vim
-    - apt: name=screen
-    - apt: name=mlocate
-    - apt: name=unzip  # for wars
-    - apt: name=less
+  - include: timezone.yml timezone=Australia/Hobart
+
+  - apt: name=locales
+  - locale_gen: name=en_AU.UTF-8 state=present
+
+  - apt: name=vim
+  - apt: name=screen
+  - apt: name=mlocate
+  - apt: name=unzip       # for wars
+  - apt: name=less
+
+  - apt: name=git
+
+  - git: >
+      repo=http://github.com/julian1/dotfiles.git
+      dest=/home/{{user}}/dotfiles
+      version=master
+      force=yes
+    sudo: true
+    sudo_user: "{{user}}"
+
+  - shell: ./install.sh 2> installed.txt
+    sudo: true
+    sudo_user: "{{user}}"
+    args:
+      chdir: /home/{{user}}/dotfiles/
+      creates: installed.txt
 

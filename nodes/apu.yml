@@ -26,6 +26,9 @@
     - apt: name=dnsutils        # dig, whois
     - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
 
+    - apt: name=pciutils        # lspci 
+    - apt: name=usbutils        # lsusb
+
     # sensors
     - apt: name=lm-sensors
     - shell: creates=ansible-lm-sensors {{item}}
