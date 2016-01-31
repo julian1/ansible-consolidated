@@ -15,8 +15,7 @@
     # zfs playbook must be from /root
     - include: ../roles/common/tasks/disable-shell-bell.yml
 
-    ###################################
-
+    #####
     - apt: name=memtest86
 
     - apt: name=alsa-oss
@@ -26,7 +25,7 @@
     - copy:
         dest: /etc/modprobe.d/alsa-base.conf
         content: |
-          # deployed by ansible
+          # deployed by ansibl
           # http://darmawan-salihun.blogspot.com.au/2015/02/intel-pch-haswell-sound-alsa-problem.html
           # Intel PCH
           options snd-hda-intel index=0 enable=1 vid=8086 pid=9c20
@@ -46,8 +45,7 @@
         creates: /var/lib/alsa/asound.state
       notify: reboot
 
-
-    ###################################
+    #####
     - copy:
         dest: /home/meteo/.xinitrc
         content: |
@@ -73,10 +71,7 @@
           # xset q | grep bell
           xmonad
 
-
-
-    ###################################
-
+    #####
     # ip forwarding needed for nat - debian only?
     - lineinfile: dest=/etc/sysctl.conf backup=true state=present regexp='.*net.ipv4.ip_forward.*' line='net.ipv4.ip_forward = 1'
       notify: reload-sysctl
@@ -143,7 +138,6 @@
           # nameserver 127.0.0.1
           nameserver 10.1.1.1
 
-
     # http://unix.stackexchange.com/questions/174349/what-overwrites-etc-resolv-conf-on-every-boot
     - copy:
         dest: /etc/dhcp/dhclient-enter-hooks.d/nodnsupdate
@@ -179,7 +173,7 @@
           # dpkg-reconfigure iptables-persistent
       notify: reconfigure-iptables
 
-    ###################################
+    #####
     # Support bridge addif for qemu
     # tunctl from uml-utilities only needed for permissions, not strictly needed
     - copy:
