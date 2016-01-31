@@ -20,6 +20,7 @@
 
     - apt: name=vim
 
+    - apt: name=lm-sensors      # sensors. Have to run sensors-detect
     - apt: name=ntp
     - apt: name=tcpdump
     - apt: name=netstat-nat     # nat connections
