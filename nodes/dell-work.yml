@@ -85,6 +85,7 @@
     - name: Modprobe
       modprobe: name=iwlwifi state=present
 
+    # TODO make this idempotent or just remove - maybe ansible has interface
     - name: Bring up interface
       command: /sbin/ifconfig wlp2s0 up
 
