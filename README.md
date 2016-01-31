@@ -2,16 +2,12 @@
 ### Examples
 
 ```
-ansible-playbook dell-home.yml
-
+ansible-playbook nodes/dell-home.yml
 ansible-playbook nodes/geonetwork2.yml -v
-
 ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
-
 ansible-playbook nodes/aatams.yml -v
-
 ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.ssh/julian3.pem -s
-
+ansible-playbook playbook/zfs..yml
 # etc
 
 ``` 
@@ -53,15 +49,10 @@ ansible all -i nc2, -c local -m ping
 ### Resources
 
 http://codeheaven.io/15-things-you-should-know-about-ansible/
-
 https://raymii.org/s/tutorials/Ansible_-_Only-do-something-if-another-action-changed.html
-
 http://stackoverflow.com/questions/30192490/include-tasks-from-another-role-in-ansible-playbook
-
 https://github.com/phred/5minbootstrap/blob/master/bootstrap.yml
-
 http://www.mechanicalfish.net/start-learning-ansible-with-one-line-and-no-files/
-
 http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
@@ -70,7 +61,7 @@ IMPORTANT - copy module can take a content argument, which makes it nicer
             than blockinfile for general deployment   
             - it also supports template arg expansion
 
-zfs build to use fixed release instead of master
+done - zfs build to use fixed release instead of master
 
 email, tftp, anon ftp  
 
