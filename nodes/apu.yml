@@ -1,5 +1,5 @@
 
-# TODO hide the passphrase
+# TODO hide hostap passphrase
 
 - hosts: 192.168.42.1
   tasks:

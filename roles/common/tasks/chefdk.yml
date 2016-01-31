@@ -1,39 +1,26 @@
 
 
-# needs var of user to install for should be configured for user meteo...
+  # needs var of user to install for should be configured for user meteo...
 
+  - file: path=/root/chef_install state=directory
 
-    - file: path=/root/chef_install state=directory
+  - shell: chdir=/root/chef_install creates=chefdk-installed {{item}}
+    when: ansible_distribution == 'Debian'
+    with_items:
+      - dpkg --purge chefdk
+      - wget https://opscode-omnibus-packages.s3.amazonaws.com/debian/6/x86_64/chefdk_0.9.0-1_amd64.deb
+      - dpkg -i chefdk_0.9.0-1_amd64.deb
+      - touch chefdk-installed
 
-    - shell: chdir=/root/chef_install creates=chefdk-installed {{item}}
-      when: ansible_distribution == 'Debian'
-      with_items:
-        - dpkg --purge chefdk
-        - wget https://opscode-omnibus-packages.s3.amazonaws.com/debian/6/x86_64/chefdk_0.9.0-1_amd64.deb
-        - dpkg -i chefdk_0.9.0-1_amd64.deb
-        - touch chefdk-installed
+  - shell: chdir=/home/meteo creates=ansible-chefdk-configured {{item}}
+    become: yes
+    become_user: meteo
+    with_items:
+      - rm -rf .chef .chefdk/
+      - chef gem install knife-solo
+      - chef gem install berkshelf
+      - touch ansible-chefdk-configured
 
-
-    - shell: chdir=/home/meteo creates=ansible-chefdk-configured {{item}}
-      become: yes
-      become_user: meteo
-      with_items:
-        - rm -rf .chef .chefdk/
-        - chef gem install knife-solo
-        - chef gem install berkshelf
-        - touch ansible-chefdk-configured
-
-    - lineinfile: dest=/home/meteo/paths backup=true state=present insertafter=EOF line='export PATH=$PATH:$HOME/.chefdk/gem/ruby/2.1.0/bin'
-
-
-
-
-
-#  sudo: yes
-#  sudo_user: some_user
-
-#      - touch chefdk-installed
-
-
-# - wget https://opscode-omnibus-packages.s3.amazonaws.com/ubuntu/12.04/x86_64/chefdk_0.9.0-1_amd64.deb
+  # do this in ~/paths
+  # - lineinfile: dest=/home/meteo/paths backup=true state=present insertafter=EOF line='export PATH=$PATH:$HOME/.chefdk/gem/ruby/2.1.0/bin'
 
