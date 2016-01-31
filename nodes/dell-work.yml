@@ -1,5 +1,7 @@
 
 - hosts: 131.217.38.36
+  roles:
+    - yaegashi.blockinfile
 
   tasks:
     # hostname?
@@ -159,12 +161,10 @@
 
     #####
     # pulled in by .bashrc
-    - copy:
-        dest: /home/meteo/paths
+    - blockinfile:
+        dest: /home/meteo/.bash_aliases
+        insertafter: EOF
         content: |
-          # deployed by ansible!
-          . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
-
           export I=$HOME/imos
           alias i="cd $I"
 
@@ -180,14 +180,6 @@
           export INTELLIJ_HOME=$I/idea-IU-143.1821.5/
           export PATH="$PATH:$INTELLIJ_HOME/bin"
 
-          export HISTTIMEFORMAT="%T " # "
-
-          # locations
-          export A=$HOME/ansible-tests
-          alias a="cd $A"
-
-          export H=$HOME
-          alias h="cd $H"
 
     - apt: name=maven
     - apt: name=postgresql-client-9.4
