@@ -20,12 +20,18 @@
 
     - apt: name=vim
 
-    - apt: name=lm-sensors      # sensors. Have to run sensors-detect
     - apt: name=ntp
     - apt: name=tcpdump
     - apt: name=netstat-nat     # nat connections
     - apt: name=dnsutils        # dig, whois
     - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
+
+    # sensors
+    - apt: name=lm-sensors      
+    - shell: creates=ansible-lm-sensors {{item}}
+      with_items:
+        - sensors-detect --auto
+        - touch ansible-lm-sensors 
 
     # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
     - apt: name=firmware-realtek
