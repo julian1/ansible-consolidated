@@ -16,6 +16,13 @@ ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.s
 
 ``` 
 
+### Mirrors
+```
+  http://ftp.us.debian.org/debian
+  http://mirror.aarnet.edu.au/debian
+  http://mirror.internode.on.net/pub/debian
+```
+
 
 ### Prepare
 ```

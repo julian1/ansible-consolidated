@@ -3,14 +3,12 @@
     - yaegashi.blockinfile
   vars:
   tasks:
-
     - include: >
         ../roles/distribution/tasks/main.yml
         mirror=http://mirror.internode.on.net/pub/debian
         template=debian.j2
         version=testing
         upgrade=safe
-
 
     - include: ../roles/common/tasks/basic.yml
 
