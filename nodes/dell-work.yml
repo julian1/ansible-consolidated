@@ -4,16 +4,14 @@
     - yaegashi.blockinfile
 
   tasks:
+    - include: >
+        ../roles/distribution/tasks/main.yml
+        mirror=http://mirror.internode.on.net/pub/debian
+        template=debian.j2
+        version=testing
+        upgrade=safe
+
     # hostname?
-
-    # TODO change mirror to internode
-    # - include: >
-    #    ../roles/distribution/tasks/main.yml
-    #    mirror=http://mirror.aarnet.edu.au/debian
-    #    template=debian.j2
-    #    version=testing
-    #    upgrade=safe
-
 
     # zfs playbook must be from /root
     # - role: zfs
