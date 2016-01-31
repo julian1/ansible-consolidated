@@ -2,8 +2,6 @@
 # it's easiest to use direct wired interface eth1, 172.16.210.254 to provision
 
 - hosts: 192.168.42.1
-  roles:
-    - yaegashi.blockinfile
   tasks:
     - include: >
         ../roles/distribution/tasks/main.yml
@@ -14,7 +12,9 @@
 
     - hostname: name=apu
 
-    - lineinfile: dest=/etc/hosts state=present  line='127.0.1.1       apu'
+    - lineinfile: >
+        dest=/etc/hosts state=present
+        line='127.0.1.1       apu'
 
     - include: ../roles/common/tasks/basic.yml
 
@@ -27,11 +27,11 @@
     - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
 
     # sensors
-    - apt: name=lm-sensors      
+    - apt: name=lm-sensors
     - shell: creates=ansible-lm-sensors {{item}}
       with_items:
         - sensors-detect --auto
-        - touch ansible-lm-sensors 
+        - touch ansible-lm-sensors
 
     # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
     - apt: name=firmware-realtek
@@ -43,10 +43,10 @@
     - apt: name=hostapd
 
     # put hostapd first because the file is referred to in /etc/network/interfaces
-    - blockinfile:
+    - copy:
         dest: /etc/hostapd/hostapd.conf
-        create: true
         content: |
+          # deployed by ansible!
           interface=wlan0
           ssid=My_AP3
           hw_mode=g
@@ -64,12 +64,10 @@
           rsn_pairwise=CCMP
       notify: restart-hostapd
 
-      # TODO issue for first run, is that we want a clear network interfaces
-      # but we need the network up to be able to run ansible
-
     - copy:
         dest: /etc/network/interfaces
         content: |
+          # deployed by ansible!
           # loopback
           auto lo
           iface lo inet loopback
@@ -78,33 +76,33 @@
           allow-hotplug eth0
           iface eth0 inet dhcp
 
-          #          # static
-          #          auto eth1
-          #          iface eth1 inet static
-          #            address 172.16.210.254
-          #            netmask 255.255.255.0
+          # TODO do we need to enable hotplug?
+          # admin
+          auto eth1
+          iface eth1 inet static
+            address 172.16.1.1
+            netmask 255.255.255.0
 
-          # lan
-          # TODO enable hotplug???
-          # allow-hotplug eth2
+          # wired-lan
           auto eth2
             iface eth2 inet static
             address 192.168.43.1
             netmask 255.255.255.0
 
-          # wireless lan
+          # wireless-lan
           auto wlan0
           iface wlan0 inet static
             hostapd /etc/hostapd/hostapd.conf
             address 192.168.42.1
             netmask 255.255.255.0
-            # TODO Nicer way to persist this???
+            # TODO A cleaner way to persist this?
             post-up ip route add 10.0.0.0/8 via 192.168.42.14
 
       notify:
         # will these all be run together
+        # TODO - restart networking generally?
         - restart-eth0
-        # - restart-eth1
+        - restart-eth1
         - restart-eth2
         - restart-wlan0
 
@@ -113,7 +111,7 @@
     - copy:
         dest: /etc/dnsmasq.d/wifi
         content: |
-          # deployed by ansible
+          # deployed by ansible!
           # https://wiki.debian.org/HowTo/dnsmasq
           dhcp-ignore-names
           # will expand dhcp entries (not apu)
@@ -149,9 +147,8 @@
       # may need to restart wlan0 here? at least when install dnsmasq
     - apt: name=iptables-persistent
 
-    - blockinfile:
+    - copy:
         dest: /etc/iptables-rules
-        create: true
         content: |
           #################
           # filter
@@ -233,10 +230,9 @@
     # Use, ip -s mroute to query status
     - apt: name=smcroute
 
-    - blockinfile:
+    - copy:
         dest: /etc/smcroute/startup.sh
         mode: 0755
-        create: true
         content: |
           sleep 1
           smcroute -a wlan0 0.0.0.0 239.255.255.250 eth2
