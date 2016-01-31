@@ -3,44 +3,39 @@
 
 ```
 ansible-playbook nodes/dell-home.yml
-ansible-playbook nodes/geonetwork2.yml -v
-ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
 ansible-playbook nodes/aatams.yml -v
+ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
 ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.ssh/julian3.pem -s
-ansible-playbook playbook/zfs..yml
-# etc
-
-``` 
+ansible-playbook playbook/zfs.yml
+```
 
 ### Mirrors
 ```
-  http://ftp.us.debian.org/debian
-  http://mirror.aarnet.edu.au/debian
-  http://mirror.internode.on.net/pub/debian
+http://ftp.us.debian.org/debian
+http://mirror.internode.on.net/pub/debian
+http://mirror.aarnet.edu.au/debian
 ```
-
 
 ### Prepare
 ```
+# local
 ansible-galaxy install yaegashi.blockinfile -p ./roles/common
 
-# or
+# or global
 sudo ansible-galaxy install yaegashi.blockinfile
-
 ```
 
 ### Useful flags
 ```
---list-tasks  show tasks that will be run
---check       report what would have done only
--s            force use of sudo for all plays even if not marked as such
+--list-tasks    # show tasks that will be run
+--check         # report what would have been done only
+-s              # force use of sudo for all plays even if not marked as such
 --private-key ~/.ssh/id_rsa
 --ask-sudo-pass
--k ask pass
--u specify username 
+-k ask pass     # useful before keys installed
+-u specify username
 -v verbose
-# don't use ssh
--c local
+-c local        # no ssh, spawn local shell
 
 # Use ping module
 ansible all -i nc2, -c local -m ping
@@ -62,30 +57,30 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
 
-IMPORTANT - copy module can take a content argument, which makes it nicer 
-            than blockinfile for general deployment   
-            - it also supports template arg expansion
 
-done - zfs build to use fixed release instead of master
-
-email, tftp, anon ftp  
+email, tftp, anon ftp
 
 reverse-proxy kind of belongs on same node as the dns and dhcp
-  
+
 http authentication on reverse proxy
 
 containerise dns and dhcp services? issue of dhcp relay / dhcp multicast?
 
-smb with only port 445
+smb using only port 445
 
 vpn
 
 node definition for catalyst switch
 
-add a routing entry for container subnet in the apu to route to the laptop that hosts container. 
-  - then other devices on lan can interact with container.
-  - perhaps also make apu dns delegate to container dns.
+perhaps make router dns delegate to container dns.
 
-  - if we can add a static routing entry on any client, then we should be able to access container subnet
-  - probably point at the subnet dns as well
+done  - get rid of double-NAT
+  - use a routing entry for container subnet in the apu to route to the container host.
+  - permits other devices on lan to also interact with container
+
+done - copy module can take a content argument, which makes it a lot nicer
+            than blockinfile for general deployment
+            - it also supports template arg expansion
+
+done - zfs build to use fixed release instead of master
 
