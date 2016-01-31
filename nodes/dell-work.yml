@@ -150,10 +150,9 @@
       when: "have_printer.rc != 0"
 
     #####
+    # - include: "./roles/common/tasks/jdk.yml"
     - include: ../roles/common/tasks/grails-1.3.7.yml
     - include: ../roles/common/tasks/intellij.yml
-
-    # - include: "./roles/common/tasks/jdk.yml"
 
     # TODO add devenv and desktop...
     # - include: ./roles/common/tasks/devenv.yml
@@ -169,10 +168,10 @@
           export I=$HOME/imos
           alias i="cd $I"
 
-          export BERKS_HOME=$HOME/.chefdk/gem/ruby/2.1.0/bin
-          export PATH="$BERKS_HOME:$PATH"
+          export BERKS_HOME=$HOME/.chefdk/gem/ruby/2.1.0/
+          export PATH="$BERKS_HOME/bin:$PATH"
 
-          export JAVA_HOME=$I/jdk1.7.0_80
+          export JAVA_HOME=$I/jdk1.7.0_80/
           export PATH="$JAVA_HOME/bin:$PATH"
 
           export GRAILS_HOME=$I/grails-1.3.7/
