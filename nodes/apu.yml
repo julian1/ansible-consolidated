@@ -18,8 +18,6 @@
 
     - include: ../roles/common/tasks/basic.yml
 
-    - apt: name=vim
-
     - apt: name=ntp             # network time
     - apt: name=tcpdump
     - apt: name=netstat-nat     # nat connections
@@ -121,15 +119,18 @@
           # deployed by ansible!
           # https://wiki.debian.org/HowTo/dnsmasq
           dhcp-ignore-names
-          # will expand dhcp entries (not apu)
+          # will expand dhcp entries. not address entries (eg. apu)
           expand-hosts
           domain=localnet
           # log-queries
           # dhcp-ignore-names
           log-dhcp
 
-          # address=/apu/192.168.42.1  should come from /etc/host
-          # address=/apu.localnet/192.168.42.1
+          # it doesn't matter which interface ip we use here
+          # we need no-hosts to avoid returning the 127.0.0.1 entry in /etc/hosts
+          no-hosts
+          address=/apu/192.168.42.1
+          address=/apu.localnet/192.168.42.1
 
           interface=wlan0
           dhcp-range=wlan0,192.168.42.10,192.168.42.20,255.255.255.0,12h
