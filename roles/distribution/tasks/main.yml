@@ -2,7 +2,7 @@
 
   # the template takes {{mirror}} and {{ ubuntu_version}} as an argument, 
   # would be nice to pass directly
- # {hostname: "test", ip: "127.0.0.1"}
+  # {hostname: "test", ip: "127.0.0.1"}
   # we can use set fact, and use a bag
   # - set_fact: 
   #    bag: { x: 123 }
