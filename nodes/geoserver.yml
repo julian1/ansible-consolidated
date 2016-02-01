@@ -1,0 +1,24 @@
+
+- hosts: geoserver
+  roles:
+    - yaegashi.blockinfile
+  tasks:
+    - include: >
+        ../roles/distribution/tasks/main.yml
+        mirror=http://mirror.internode.on.net/pub/debian
+        template=debian.j2
+        version=jessie
+        upgrade=safe
+
+    - include: ../roles/common/tasks/basic.yml
+
+    # - include: ../roles/postgres/tasks/main.yml
+
+    # - include: ../roles/geonetwork/tasks/drop-db.yml
+    # - include: ../roles/geonetwork/tasks/restore-db.yml
+
+    # - include: ../roles/geonetwork/tasks/main.yml
+
+  handlers:
+    - include: ../roles/common/handlers/main.yml
+
