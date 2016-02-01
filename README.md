@@ -64,11 +64,18 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 email, tftp, anon ftp
 
+snmp
+
 reverse-proxy kind of belongs on same node as the dns and dhcp
 
 http authentication on reverse proxy
 
-containerise dns and dhcp services? issue of dhcp relay / dhcp multicast?
+routing to aws box
+
+containerise dns and dhcp services
+  - issue of dhcp relay / dhcp broadcast? - no because all on same subnet
+  - gateway (host bridge) at 10.0.0.1, but dns and dhcp at 10.0.0.2
+  - upstream dns can just be set manually.
 
 smb using only port 445
 
