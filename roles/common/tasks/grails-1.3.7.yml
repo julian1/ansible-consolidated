@@ -5,9 +5,9 @@
 
   - apt: name=unzip
 
-  - unarchive: src=/home/meteo/imos/grails-1.3.7.zip dest=/home/meteo/imos/ owner=meteo
+  - unarchive: src=/home/meteo/imos/grails-1.3.7.zip dest=/home/meteo/imos/ owner=meteo creates=/home/meteo/imos/grails-1.3.7/LICENSE
 
-  # do this explicitly
+  # do this explicitly in .bash_aliases
   # - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export GRAILS_HOME=/home/meteo/imos/grails-1.3.7/'
   # - lineinfile: dest=/home/meteo/paths state=present insertafter=EOF line='export PATH="$PATH:$GRAILS_HOME/bin"'
 
