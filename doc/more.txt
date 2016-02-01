@@ -1,0 +1,64 @@
+
+ 1 
+  2 ii  ansible                                      1.9.4-1                                all          Configuration management, deployment, and task execution system
+  3 
+  4 ii  a2ps                                         1:4.14-1.3                             amd64        GNU a2ps - 'Anything to PostScript' converter and pretty-printer
+  5 ii  ansible                                      1.9.4-1                                all          Configuration management, deployment, and task execution system
+  6 ii  aspell                                       0.60.7~20110707-3                      amd64        GNU Aspell spell-checker
+  7 ii  autoconf                                     2.69-9                                 all          automatic configure script builder
+  8 ii  automake                                     1:1.15-3                               all          Tool for generating GNU Standards-compliant Makefiles
+  9 ii  autotools-dev                                20150820.1                             all          Update infrastructure for config.{guess,sub} files
+ 10 
+ 11 ii  bundler                                      1.10.6-2                               all          Manage Ruby application dependencies
+ 12 
+ 13 ii  bzip2                                        1.0.6-8                                amd64        high-quality block-sorting file compressor - utilities
+ 14 ii  chefdk                                       0.9.0-1                                amd64        The full stack of chefdk
+ 15 
+ 16 ii  chromium                                     46.0.2490.71-1                         amd64        web browser
+ 17 
+ 18 # should be from source
+ 19 ii  docker.io                                    1.8.3~ds1-2                            amd64        Linux container runtime
+ 20 
+ 21 ii  ethtool                                      1:4.2-1                                amd64        display or change Ethernet device settings
+ 22 ii  evince                                       3.18.1-1                               amd64        Document (PostScript, PDF) viewer
+ 23 
+ 24 ii  ghc                                          7.8.4-9                                amd64        The Glasgow Haskell Compilation system
+ 25 
+ 26 rc  gimp                                         2.8.14-1+b1                            amd64        The GNU Image Manipulation Program
+ 27 ii  graphviz                                     2.38.0-11                              amd64        rich set of graph drawing tools
+ 28 
+ 29 ii  iceweasel                                    38.2.1esr-1~deb8u1                     amd64        Web browser based on Firefox
+ 30 
+ 31 rc  imagemagick                                  8:6.8.9.9-5                            amd64        image manipulation programs -- binaries
+ 32 
+ 33 
+ 34 ii  keepassx                                     0.4.3+dfsg-0.1                         amd64        Cross Platform Password Manager
+ 35 
+ 36 ii  make                                         4.0-8.2                                amd64        utility for directing compilation
+ 37 
+ 38 rc  meld                                         3.12.3-1                               all          graphical tool to diff and merge files
+ 39 ii  memtest86                                    4.3.7-3                                amd64        thorough real-mode memory tester
+ 40 ii  memtest86+                                   5.01-3                                 amd64        thorough real-mode memory tester
+ 41 ii  mplayer2                                     2.0-728-g2c378c7-4+b2                  amd64        next generation movie player for Unix-like systems
+ 42 
+ 43 ii  netcat-traditional                           1.10-41                                amd64        TCP/IP swiss army knife
+ 44 r
+ 45 node
+ 46 npm
+ 47 
+ 48 ii  ntp                                          1:4.2.8p4+dfsg-3+b1                    amd64        Network Time Protocol daemon and utility programs
+ 49 
+ 50 ii  virtualbox                                   5.0.8-dfsg-1+b1                        amd64        x86 virtualization solution - base binaries
+ 51 ii  wicd                                         1.7.2.4-4.2                            all          wired and wireless network manager - metapackage
+ 52 ii  wicd-curses                                  1.7.2.4-4.2                            all          wired and wireless network manager - Curses client
+ 53 
+ 54 ii  xchat                                        2.8.8-7.3+b1                           amd64        IRC client for X similar to AmIRC
+ 55 
+ 56 ii  s3cmd                                        1.6.0-2                                all          command-line Amazon S3 client
+ 57 
+ 58 ii  tshark                                       1.12.8+g5b6e543-2                      amd64        network traffic analyzer - console version
+ 59 
+ 60 unrar
+ 61 
+
+
