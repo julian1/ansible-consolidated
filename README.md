@@ -64,6 +64,7 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 email, tftp, anon ftp
 
+
 snmp
 
 reverse-proxy kind of belongs on same node as the dns and dhcp
@@ -84,6 +85,8 @@ vpn
 node definition for catalyst switch
 
 perhaps make router dns delegate to container dns.
+
+done - tftp on apu
 
 done  - get rid of double-NAT
   - use a routing entry for container subnet in the apu to route to the container host.

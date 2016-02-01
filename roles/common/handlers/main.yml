@@ -57,4 +57,7 @@
   - name: reload-apache2
     command: service apache2 reload
 
+  - name: restart-tftpd-hpa
+    service: name=tftpd-hpa state=restarted
+
 

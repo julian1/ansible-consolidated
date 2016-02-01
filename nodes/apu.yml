@@ -24,7 +24,6 @@
     - apt: name=netstat-nat     # nat connections
     - apt: name=dnsutils        # dig, whois
     - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
-
     - apt: name=pciutils        # lspci
     - apt: name=usbutils        # lsusb
 
@@ -48,7 +47,7 @@
 
     - apt: name=hostapd
 
-    # put hostapd.conf first since referred to in /etc/network/interfaces
+    # hostapd.conf goes first since referred to by /etc/network/interfaces
     - copy:
         dest: /etc/hostapd/hostapd.conf
         content: |
@@ -128,7 +127,7 @@
           log-dhcp
 
           # it doesn't matter which interface ip we use here
-          # we need no-hosts to avoid returning the 127.0.0.1 entry in /etc/hosts
+          # no-hosts is required to avoid returning the 127.0.0.1 entry in /etc/hosts
           no-hosts
           address=/apu/192.168.42.1
           address=/apu.localnet/192.168.42.1
@@ -157,29 +156,33 @@
     - copy:
         dest: /etc/iptables-rules
         content: |
+          # deployed by ansible!
           #####
           # filter
           iptables -t filter --flush
+          iptables -t nat --flush
+          iptables -t mangle --flush
+
+          #####
           # input default policy
           iptables -P INPUT DROP
 
-          # Incoming from WAN/eth0 (TODO state conntrack established, related).
+          # Incoming from WAN/eth0 (TODO state conntrack established, related in forward)
           # TODO remove the 1
-          # http responses from outside (needed for apt-get update/upgrade)
+          # http responses - required for apt-get update/upgrade
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
-          # dns responses from outside
+          # dns responses
           iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
-          # ping/icmp
+          # ping/icmp responses
           iptables -I INPUT 1 -p icmp -j ACCEPT
 
           # Internal
           # ssh
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
-          # tftp - /etc/default/tftpd-hpa, TFTP_OPTIONS="--secure  --port-range 1024:1025"
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 69 -j ACCEPT
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1024 -j ACCEPT
+          # tftp - port-range is inclusive
+          iptables -I INPUT 1 ! -i eth0 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
           # dns
           iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
           iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
@@ -191,8 +194,6 @@
 
           #####
           # nat
-          iptables -t nat --flush
-
           # pre-routing
           # voip
           # http://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables
@@ -218,7 +219,6 @@
 
           #####
           # mangle
-          iptables -t mangle --flush
 
       notify: reconfigure-iptables
 
@@ -226,15 +226,28 @@
     # multicast subnet routing. for example minidlna udp on 1900
     # Use, ip -s mroute to query status
     - apt: name=smcroute
-
     - copy:
         dest: /etc/smcroute/startup.sh
         mode: 0755
         content: |
+          # deployed by ansible!
           sleep 1
           smcroute -a wlan0 0.0.0.0 239.255.255.250 eth2
           smcroute -a eth2  0.0.0.0 239.255.255.250 wlan0
       notify: restart-smcroute
+
+
+    - apt: name=tftp
+    - copy:
+        dest: /etc/default/tftpd-hpa
+        mode: 0644
+        content: |
+          # deployed by ansible!
+          TFTP_USERNAME="tftp"
+          TFTP_DIRECTORY="/srv/tftp"
+          TFTP_ADDRESS="0.0.0.0:69"
+          TFTP_OPTIONS="--secure --port-range 1024:1034"
+      notify: restart-tftpd-hpa
 
 
   handlers:
