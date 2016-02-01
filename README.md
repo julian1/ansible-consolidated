@@ -66,6 +66,8 @@ email, tftp, anon ftp
 
 apu - vlans and qos
 
+git server
+
 snmp
 
 reverse-proxy kind of belongs on same node as the dns and dhcp
