@@ -7,6 +7,8 @@ ansible-playbook nodes/aatams.yml -v
 ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
 ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.ssh/julian3.pem -s
 ansible-playbook playbook/zfs.yml
+ansible --list-hosts all
+ansible -i inventory/imos --list-hosts all
 ```
 
 ### Mirrors
@@ -27,6 +29,8 @@ sudo ansible-galaxy install yaegashi.blockinfile
 
 ### Useful flags
 ```
+
+
 --list-tasks    # show tasks that will be run
 --check         # report what would have been done only
 -s              # force use of sudo for all plays even if not marked as such
