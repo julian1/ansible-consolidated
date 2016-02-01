@@ -1,0 +1,29 @@
+
+  - apt: name=tomcat7 update_cache=yes
+
+  - apt: name=iptables-persistent
+  - blockinfile:
+      dest: /etc/iptables-rules
+      create: true
+      content: |
+        iptables -t nat --flush
+        iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
+    notify: reconfigure-iptables
+
+  - set_fact: tomcat7=/var/lib/tomcat7
+  - set_fact: conf={{tomcat7}}/conf
+  - set_fact: webapps={{tomcat7}}/webapps
+
+  - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
+  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7
+  - file: path={{webapps}}          state=directory owner=tomcat7 group=tomcat7
+
+  # war
+  # TODO make war source configurable
+  - get_url: >
+      url=https://jenkins.aodn.org.au/job/geoserver_prod/lastSuccessfulBuild/artifact/au.org.emii/main/1.0.0/main-1.0.0.war
+      dest={{webapps}}/geoserver.war
+    notify: restart-tomcat7
+
+
+
