@@ -1,6 +1,5 @@
 
   # TODO maybe parametize
-
   # NOTE the symbolic-link /var/lib/tomcat7/conf -> /etc/tomcat7
 
   - apt: name=tomcat7 update_cache=yes
@@ -12,7 +11,7 @@
       dest: /etc/iptables-rules
       create: true
       content: |
-        iptables --flush PREROUTING -t nat
+        iptables -t nat --flush
         iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
     notify: reconfigure-iptables
 
@@ -38,7 +37,7 @@
   # - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
   - file: path={{schema_plugins}}   state=directory owner=tomcat7 group=tomcat7 recurse=yes
   # - file: path={{codelist}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes should be done after git?
-  - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes  # must create 
+  - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes  # must create
 
 
   # jndi
@@ -59,7 +58,8 @@
 
   # war
   # TODO make war source configurable
-  - get_url: url=https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war
+  - get_url: >
+      url=https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war
       dest={{webapps}}/geonetwork.war
     notify: restart-tomcat7
 
