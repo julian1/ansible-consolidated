@@ -79,16 +79,12 @@
       notify: reboot
 
     #####
-    # TODO get rid of name
-    - name: Wifi firmware
-      apt: name=firmware-iwlwifi
+    - apt: name=firmware-iwlwifi
 
-    - name: Modprobe
-      modprobe: name=iwlwifi state=present
+    - modprobe: name=iwlwifi state=present
 
     # TODO make idempotent or remove - perhaps ansible has interface module?
-    - name: Bring up interface
-      command: /sbin/ifconfig wlp2s0 up
+    -  command: /sbin/ifconfig wlp2s0 up
 
     - apt: name=wpasupplicant
     - apt: name=wicd-curses
@@ -198,7 +194,7 @@
         content: |
           # deployed by ansible!
           interface=br0
-          log-queries
+          # log-queries
           log-dhcp
           no-resolv
           server=131.217.0.19
@@ -241,19 +237,22 @@
     - copy:
         dest: /etc/iptables-rules
         content: |
-          # deployed by ansible!
-          iptables -t nat --flush PREROUTING
-          # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
-          # redirect to apache
-          iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
-          # bridge postrouting
+          # deployed by ansible
+          iptables -t filter --flush
+          iptables -t nat --flush
+          iptables -t mangle --flush
 
-          # TODO genericize NAT postrouting with appropriate subnetwork masks
-          iptables -t nat --flush POSTROUTING
-          iptables -t nat -A POSTROUTING -s '10.1.1.0/24' -j MASQUERADE
+          # redirect to apache
+          # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
+          iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
+
+          # bridge postrouting
+          iptables -t nat -A POSTROUTING -s '10.0.0.0/8' -j MASQUERADE
+
+          #####
+          # mangle
           # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=717217
           # TODO - fill in checksums for all udp...
-          iptables -t mangle --flush POSTROUTING
           iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
       notify: reconfigure-iptables
 
