@@ -1,0 +1,36 @@
+
+Developer oriented, container-based stack. Advantages compared with chef/vagrant are, 
+
+- Fast, boot instance in 2 to 10 seconds
+
+- Reduced ram/cpu system resources
+
+- shell tools vim, screen, mlocate
+
+- Flexible bridged subnet with local dns and dhcp services
+
+- Mix and match of production GS,GN,Portal with developer instances as needed.
+
+- Subnet separation allows production GS,GN, Portal to continue to be accessible from host (eg. no need to globally override /etc/hosts)
+
+- No need to pack all webapps GS,GN, Portal into a single tomcat7 instance like po box
+
+- complex configuration not necessary for development removed
+	- eg reverse-proxy, squid caching, ssl termination, firewall, system roles, db roles etc 
+
+- Apps configured with debug configuration - eg. intelij debug ports enabled in tomcat7, postgres listens on 0.0.0.0, logging turned on
+
+- Pre-configured test data (only for gn records, vocab, picker)
+
+- Faster provisioning with Ansible
+
+- container filesystem exposed on host
+
+- Zero-cost transactional snapshots when combined with Zfs - equivalent to Docker unionfs
+
+
+Limitations,
+	- Host much be Linux
+	- Configuration less localized
+
+
