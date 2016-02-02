@@ -84,7 +84,8 @@
     - modprobe: name=iwlwifi state=present
 
     # TODO make idempotent or remove - perhaps ansible has interface module?
-    -  command: /sbin/ifconfig wlp2s0 up
+    # Not sure we even need, since should bring up automatically
+    # -  command: /sbin/ifconfig wlp2s0 up
 
     - apt: name=wpasupplicant
     - apt: name=wicd-curses
@@ -154,7 +155,7 @@
     # - include: ./roles/common/tasks/devenv.yml
 
     #####
-    # pulled in by .bashrc
+    # local changes not in dotfiles for .bashrc
     - blockinfile:
         dest: /home/meteo/.bash_aliases
         insertafter: EOF
