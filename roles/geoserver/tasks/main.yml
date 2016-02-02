@@ -44,18 +44,22 @@
             <!-- Default set of monitored resources -->
             <WatchedResource>WEB-INF/web.xml</WatchedResource>
 
-            <Resource name="jdbc/harvest_read" auth="Container"
-                    type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
-                    url="jdbc:postgresql://db-2-aws-syd.aodn.org.au:5432/harvest?loginTimeout=1000&amp;ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"
-                    validationQuery="SELECT 1"
-                    username="" password=""
-                    maxActive="10" maxIdle="5" maxWait="-1"
-                    testOnBorrow="true" testWhileIdle="true" testOnReturn="true"
-                    timeBetweenEvictionRunsMillis="30000"
-                    numTestsPerEvictionRun="3"
-                    minEvictableIdleTimeMillis="60000"
-                    defaultAutoCommit="true"
-                />
+            <Resource 
+                name="jdbc/harvest_read" 
+                auth="Container"
+                factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+                type="javax.sql.DataSource" 
+                driverClassName="org.postgresql.Driver"
+                url="jdbc:postgresql://db-2-aws-syd.aodn.org.au:5432/harvest?loginTimeout=1000&amp;ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"
+                validationQuery="SELECT 1"
+                username="" password=""
+                maxActive="10" maxIdle="5" maxWait="-1"
+                testOnBorrow="true" testWhileIdle="true" testOnReturn="true"
+                timeBetweenEvictionRunsMillis="30000"
+                numTestsPerEvictionRun="3"
+                minEvictableIdleTimeMillis="60000"
+                defaultAutoCommit="true"
+            />
         </Context>
     notify: restart-tomcat7
 
