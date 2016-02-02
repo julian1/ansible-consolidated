@@ -29,7 +29,7 @@
 
 
   - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
-  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7
+  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7  # it's a symbolic link
   - file: path={{webapps}}          state=directory owner=tomcat7 group=tomcat7
   - file: path={{overrides}}        state=directory owner=tomcat7 group=tomcat7
   - file: path={{geonetwork_data}}  state=directory owner=tomcat7 group=tomcat7

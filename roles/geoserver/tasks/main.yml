@@ -13,10 +13,65 @@
   - set_fact: tomcat7=/var/lib/tomcat7
   - set_fact: conf={{tomcat7}}/conf
   - set_fact: webapps={{tomcat7}}/webapps
+  - set_fact: geoserver_config={{conf}}/geoserver-config
 
   - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
-  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7
+  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7   already a link
   - file: path={{webapps}}          state=directory owner=tomcat7 group=tomcat7
+
+  - copy:
+      dest: /etc/default/tomcat7
+      owner: tomcat7
+      group: tomcat7
+      content: |
+        # deployed by ansible!
+        TOMCAT7_USER=tomcat7
+        TOMCAT7_GROUP=tomcat7
+        JAVA_OPTS="${JAVA_OPTS} -DGEOSERVER_DATA_DIR={{geoserver_config}} \
+          -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError \
+          -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+    notify: restart-tomcat7
+
+
+  - copy:
+      dest: "{{conf}}/context.xml"
+      owner: tomcat7
+      group: tomcat7
+      content: |
+        <?xml version='1.0' encoding='utf-8'?>
+        <!-- deployed by ansible! -->
+        <Context>
+            <!-- Default set of monitored resources -->
+            <WatchedResource>WEB-INF/web.xml</WatchedResource>
+
+            <Resource name="jdbc/harvest_read" auth="Container"
+                    type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
+                    url="jdbc:postgresql://db-2-aws-syd.aodn.org.au:5432/harvest?loginTimeout=1000&amp;ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"
+                    validationQuery="SELECT 1"
+                    username="" password=""
+                    maxActive="10" maxIdle="5" maxWait="-1"
+                    testOnBorrow="true" testWhileIdle="true" testOnReturn="true"
+                    timeBetweenEvictionRunsMillis="30000"
+                    numTestsPerEvictionRun="3"
+                    minEvictableIdleTimeMillis="60000"
+                    defaultAutoCommit="true"
+                />
+        </Context>
+    notify: restart-tomcat7
+
+
+  # geoserver config
+  - git: > 
+      repo=https://github.com/aodn/geoserver-config 
+      dest={{geoserver_config}} 
+      version=master
+    notify: restart-tomcat7
+
+  - file: path={{geoserver_config}} state=directory owner=tomcat7 group=tomcat7
+
+
+  # important should we put the tomcat template stuff in the top level?
+
 
   # war
   # TODO make war source configurable
