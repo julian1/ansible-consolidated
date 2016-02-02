@@ -207,7 +207,7 @@
     - apt: name=ffmpeg
 
 
-    # pulled in by .bashrc
+    # local changes not in dotfiles for .bashrc
     - blockinfile:
         dest: /home/meteo/.bash_aliases
         insertafter: EOF
