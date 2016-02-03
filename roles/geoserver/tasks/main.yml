@@ -60,7 +60,6 @@
         <Context>
             <!-- Default set of monitored resources -->
             <WatchedResource>WEB-INF/web.xml</WatchedResource>
-
             <Resource
                 name="jdbc/harvest_read"
                 auth="Container"
@@ -71,7 +70,9 @@
                 validationQuery="SELECT 1"
                 username="" password=""
                 maxActive="5" maxIdle="3" maxWait="-1"
-                testOnBorrow="true" testWhileIdle="true" testOnReturn="true"
+                testOnBorrow="true" 
+                testWhileIdle="true" 
+                testOnReturn="true"
                 timeBetweenEvictionRunsMillis="30000"
                 numTestsPerEvictionRun="3"
                 minEvictableIdleTimeMillis="60000"
