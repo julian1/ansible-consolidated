@@ -29,7 +29,6 @@
   - copy:
       dest: "{{lib}}/tomcat-dbcp.jar"
       src: ../roles/geoserver/files/tomcat-dbcp.jar
-      backup: yes
       owner: tomcat7
       group: tomcat7
 
@@ -85,15 +84,17 @@
 
 
 
-
+  # allow geoserver to modify
+  # NOPE _ override
   # geoserver config
   - git: >
       repo=https://github.com/aodn/geoserver-config
       dest={{geoserver_config}}
       version=master
+      force=yes
     notify: restart-tomcat7
 
-  - file: path={{geoserver_config}} state=directory owner=tomcat7 group=tomcat7
+  - file: path={{geoserver_config}} state=directory owner=tomcat7 group=tomcat7 recurse=yes
 
 
   # important should we put the tomcat template stuff in the top level?
