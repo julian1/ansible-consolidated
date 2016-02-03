@@ -97,6 +97,23 @@
   - file: path={{geoserver_config}} state=directory owner=tomcat7 group=tomcat7 recurse=yes
 
 
+  - copy:
+      dest: "{{geoserver_config}}/security/usergroup/default/users.xml"
+      backup: yes
+      owner: tomcat7
+      group: tomcat7
+      content: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <userRegistry xmlns="http://www.geoserver.org/security/users" version="1.0">
+          <users>
+                <user enabled="true" name="admin" password="plain:admin"/>
+          </users>
+          <groups>
+          </groups>
+        </userRegistry>
+
+
+
   # important should we put the tomcat template stuff in the top level?
 
 
