@@ -249,6 +249,8 @@
           TFTP_OPTIONS="--secure --port-range 1024:1034"
       notify: restart-tftpd-hpa
 
+    # support for xmodem protocol over serial 
+    - apt: name=lrzsz
 
   handlers:
     - include: ../roles/common/handlers/main.yml
