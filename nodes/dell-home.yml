@@ -244,11 +244,9 @@
       ignore_errors: yes
       changed_when: "have_printer.rc != 0"
 
-    # TODO a more relative path?
+    # TODO better paths?
     - copy: src=../roles/common/files/BRHL16_2_GPL.ppd dest=/tmp
 
-      # brother.localnet
-      # 192.168.43.15
     - shell: |
         # install
         lpadmin \

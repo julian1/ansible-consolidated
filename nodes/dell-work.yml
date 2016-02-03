@@ -126,13 +126,14 @@
 
     #####
     - apt: name=cups
+    - service: name=cups state=started
 
     - shell: lpstat -p | grep -q ImosLexmark
       register: have_printer
       ignore_errors: yes
       changed_when: "have_printer.rc != 0"
 
-    # TODO a more relative path?
+    # TODO better paths?
     - copy: src=../roles/common/files/lexmark.ppd dest=/tmp
 
     - shell: |
