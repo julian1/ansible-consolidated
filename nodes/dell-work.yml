@@ -113,7 +113,6 @@
             xrandr --auto --output DP1-1 --mode 1920x1200 --primary
             xrandr --auto --output DP1-2 --mode 1280x1024 --right-of DP1-1
             xrandr --output eDP1 --off
-           desktop
           fi
 
           # xrandr --output eDP1 --brightness .65
