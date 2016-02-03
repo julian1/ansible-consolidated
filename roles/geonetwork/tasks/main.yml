@@ -2,7 +2,6 @@
   # TODO maybe parametize
   # NOTE the symbolic-link /var/lib/tomcat7/conf -> /etc/tomcat7
 
-  - apt: name=tomcat7 update_cache=yes
 
   # TODO maybe move into the node definition
   # port forward to tomcat7
@@ -16,6 +15,7 @@
         iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
     notify: reconfigure-iptables
 
+  - apt: name=tomcat7 update_cache=yes
 
   - set_fact: tomcat7=/var/lib/tomcat7
   - set_fact: conf={{tomcat7}}/conf
@@ -28,6 +28,8 @@
   - set_fact: codelist={{config}}/codelist
   - set_fact: geonetwork={{webapps}}/geonetwork
 
+
+  # TODO change this to use with_items
 
   - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
   # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7  # it's a symbolic link

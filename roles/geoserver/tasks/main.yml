@@ -1,6 +1,4 @@
 
-  - apt: name=tomcat7 update_cache=yes
-
   - apt: name=iptables-persistent
   - blockinfile:
       dest: /etc/iptables-rules
@@ -10,6 +8,8 @@
         iptables -t nat --flush
         iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
     notify: reconfigure-iptables
+
+  - apt: name=tomcat7 update_cache=yes
 
   - set_fact: tomcat7=/var/lib/tomcat7
   - set_fact: conf={{tomcat7}}/conf
@@ -21,12 +21,12 @@
 
 
   - file: path={{tomcat7}}    state=directory owner=tomcat7 group=tomcat7
-  # - file: path={{conf}}     state=directory owner=tomcat7 group=tomcat7   already a link
+  # - file: path={{conf}}     state=directory owner=tomcat7 group=tomcat7   sym-link
   - file: path={{webapps}}    state=directory owner=tomcat7 group=tomcat7
   - file: path={{lib}}        state=directory owner=tomcat7 group=tomcat7
 
-  # this is the ubuntu version of the db connection pool. using commons has bug
-  # probbably class loader related, where throws with can't find Cursor on timer
+  # use apache/ubuntu connection pool jar. commons has bug, probably class loader 
+  # related, where pool throws on class load failre of Cursor
   - copy:
       dest: "{{lib}}/tomcat-dbcp.jar"
       src: ../roles/geoserver/files/tomcat-dbcp.jar
@@ -102,7 +102,7 @@
         <?xml version="1.0" encoding="UTF-8"?>
         <userRegistry xmlns="http://www.geoserver.org/security/users" version="1.0">
           <users>
-                <user enabled="true" name="admin" password="plain:admin"/>
+            <user enabled="true" name="admin" password="plain:admin"/>
           </users>
           <groups>
           </groups>
