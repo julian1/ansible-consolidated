@@ -6,7 +6,7 @@
   # TODO maybe move into the node definition
   # port forward to tomcat7
   - apt: name=iptables-persistent
-  - blockinfile:
+  - copy:
       dest: /etc/iptables-rules
       create: true
       content: |

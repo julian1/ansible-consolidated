@@ -1,7 +1,5 @@
 
 - hosts: geoserver
-  roles:
-    - yaegashi.blockinfile
   tasks:
     - include: >
         ../roles/distribution/tasks/main.yml
@@ -9,6 +7,8 @@
         template=debian.j2
         version=jessie
         upgrade=safe
+
+    - include_vars: credentials.yml
 
     - include: ../roles/common/tasks/basic.yml
 

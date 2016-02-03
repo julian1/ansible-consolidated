@@ -1,8 +1,7 @@
 
   - apt: name=iptables-persistent
-  - blockinfile:
+  - copy:
       dest: /etc/iptables-rules
-      create: true
       content: |
         # deployed by ansible!
         iptables -t nat --flush
@@ -20,10 +19,11 @@
   # TODO change this to use with_items
 
 
-  - file: path={{tomcat7}}    state=directory owner=tomcat7 group=tomcat7
-  # - file: path={{conf}}     state=directory owner=tomcat7 group=tomcat7   sym-link
-  - file: path={{webapps}}    state=directory owner=tomcat7 group=tomcat7
-  - file: path={{lib}}        state=directory owner=tomcat7 group=tomcat7
+  - file: path={{item}} state=directory owner=tomcat7 group=tomcat7
+    with_items:
+      - "{{tomcat7}}" 
+      - "{{webapps}}" 
+      - "{{lib}}" 
 
   # use apache/ubuntu connection pool jar. commons has bug, probably class loader 
   # related, where pool throws on class load failre of Cursor
@@ -66,9 +66,9 @@
                 type="javax.sql.DataSource"
                 factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
                 driverClassName="org.postgresql.Driver"
-                url="jdbc:postgresql://db-2-aws-syd.aodn.org.au:5432/harvest?loginTimeout=1000&amp;ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"
+                url="{{geoserver.jndi.url}}"
+                username="{{geoserver.jndi.username}}" password="{{geoserver.jndi.password}}"
                 validationQuery="SELECT 1"
-                username="" password=""
                 maxActive="5" maxIdle="3" maxWait="-1"
                 testOnBorrow="true" 
                 testWhileIdle="true" 
