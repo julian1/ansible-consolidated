@@ -6,6 +6,7 @@
       dest: /etc/iptables-rules
       create: true
       content: |
+        # deployed by ansible!
         iptables -t nat --flush
         iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
     notify: reconfigure-iptables
@@ -19,10 +20,10 @@
   # TODO change this to use with_items
 
 
-  - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
-  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7   already a link
-  - file: path={{webapps}}          state=directory owner=tomcat7 group=tomcat7
-  - file: path={{lib}}          state=directory owner=tomcat7 group=tomcat7
+  - file: path={{tomcat7}}    state=directory owner=tomcat7 group=tomcat7
+  # - file: path={{conf}}     state=directory owner=tomcat7 group=tomcat7   already a link
+  - file: path={{webapps}}    state=directory owner=tomcat7 group=tomcat7
+  - file: path={{lib}}        state=directory owner=tomcat7 group=tomcat7
 
   # this is the ubuntu version of the db connection pool. using commons has bug
   # probbably class loader related, where throws with can't find Cursor on timer
@@ -46,10 +47,8 @@
           -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
     notify: restart-tomcat7
 
-
     # factory="org.apache.commons.dbcp.BasicDataSourceFactory"        # debian
     # factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"    # ubuntu
-
   - copy:
       dest: "{{conf}}/context.xml"
       backup: yes
@@ -82,11 +81,7 @@
     notify: restart-tomcat7
 
 
-
-
   # allow geoserver to modify
-  # NOPE _ override
-  # geoserver config
   - git: >
       repo=https://github.com/aodn/geoserver-config
       dest={{geoserver_config}}
@@ -111,10 +106,6 @@
           <groups>
           </groups>
         </userRegistry>
-
-
-
-  # important should we put the tomcat template stuff in the top level?
 
 
   # war
