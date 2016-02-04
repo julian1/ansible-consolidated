@@ -7,3 +7,4 @@
 target
 harcopy.0
 roles/common/yaegashi.blockinfile
+nodes/credentials.yml
