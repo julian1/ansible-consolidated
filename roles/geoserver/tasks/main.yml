@@ -109,11 +109,14 @@
 
 
   # war
-  # TODO make war source configurable
-  - get_url: >
-      url=https://jenkins.aodn.org.au/job/geoserver_prod/lastSuccessfulBuild/artifact/au.org.emii/main/1.0.0/main-1.0.0.war
+#  # TODO make war source configurable
+#  - get_url: >
+#      url=https://jenkins.aodn.org.au/job/geoserver_prod/lastSuccessfulBuild/artifact/au.org.emii/main/1.0.0/main-1.0.0.war
+#      dest={{webapps}}/geoserver.war
+#    notify: restart-tomcat7
+
+  - copy:
       dest={{webapps}}/geoserver.war
+      src=/home/meteo/imos/geoserver/src/web/app/target/geoserver.war
     notify: restart-tomcat7
-
-
 
