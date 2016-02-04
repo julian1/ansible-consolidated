@@ -22,6 +22,8 @@
       - "{{webapps}}"
       - "{{lib}}"
 
+  - file: path=/var/log/tomcat7/catalina.out mode=0666
+
   # use apache/ubuntu connection pool jar. commons has bug, probably class loader
   # related, where pool throws on class load failre of Cursor
   - copy:
@@ -107,6 +109,8 @@
           </groups>
         </userRegistry>
 
+
+  # TODO turn on wps
 
   # war
 #  # TODO make war source configurable
