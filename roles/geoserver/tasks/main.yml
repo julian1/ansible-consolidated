@@ -16,20 +16,18 @@
   - set_fact: geoserver_config={{conf}}/geoserver-config
   - set_fact: lib={{tomcat7}}/lib
 
-  # TODO change this to use with_items
-
-
   - file: path={{item}} state=directory owner=tomcat7 group=tomcat7
     with_items:
-      - "{{tomcat7}}" 
-      - "{{webapps}}" 
-      - "{{lib}}" 
+      - "{{tomcat7}}"
+      - "{{webapps}}"
+      - "{{lib}}"
 
-  # use apache/ubuntu connection pool jar. commons has bug, probably class loader 
+  # use apache/ubuntu connection pool jar. commons has bug, probably class loader
   # related, where pool throws on class load failre of Cursor
   - copy:
       dest: "{{lib}}/tomcat-dbcp.jar"
-      src: ../roles/geoserver/files/tomcat-dbcp.jar
+      # src: ../roles/geoserver/files/tomcat-dbcp.jar
+      src: tomcat-dbcp.jar
       owner: tomcat7
       group: tomcat7
 
@@ -67,11 +65,12 @@
                 factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
                 driverClassName="org.postgresql.Driver"
                 url="{{geoserver.jndi.url}}"
-                username="{{geoserver.jndi.username}}" password="{{geoserver.jndi.password}}"
+                username="{{geoserver.jndi.username}}"
+                password="{{geoserver.jndi.password}}"
                 validationQuery="SELECT 1"
                 maxActive="5" maxIdle="3" maxWait="-1"
-                testOnBorrow="true" 
-                testWhileIdle="true" 
+                testOnBorrow="true"
+                testWhileIdle="true"
                 testOnReturn="true"
                 timeBetweenEvictionRunsMillis="30000"
                 numTestsPerEvictionRun="3"
