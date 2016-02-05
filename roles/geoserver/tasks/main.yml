@@ -110,6 +110,33 @@
         </userRegistry>
 
 
+  - apt: name=libsaxonhe-java
+  - copy:
+      dest: "/tmp/wps-enable.xslt"
+      content: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" exclude-result-prefixes="xsl">
+          <xsl:template match="wps/enabled">
+            <enabled>true</enabled>
+          </xsl:template>
+          <xsl:template match="@*|node()">
+            <xsl:copy>
+              <xsl:apply-templates select="@*|node()"/>
+            </xsl:copy>
+          </xsl:template>
+        </xsl:stylesheet>
+
+  # uggh, git will overwrite it... but it won't get run again....
+
+  - shell: chdir={{geoserver_config}} creates=wps-new.xml {{item}}
+    with_items:
+      - java -jar /usr/share/maven-repo/net/sf/saxon/Saxon-HE/debian/Saxon-HE-debian.jar wps.xml /tmp/wps-enable.xslt > wps-new.xml
+      - cp wps-new.xml wps.xml
+
+
+  # java -jar /usr/share/maven-repo/net/sf/saxon/Saxon-HE/debian/Saxon-HE-debian.jar
+
+
   # TODO turn on wps
 
   # war
