@@ -1,4 +1,6 @@
 
+# apu router with wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, tftp, xmodem serial
+
 # TODO hide hostap passphrase
 
 - hosts: 192.168.42.1
@@ -103,18 +105,19 @@
             address 172.16.1.1
             netmask 255.255.255.0
 
-          # lan1 is 43
+          # lan1 is 43 on eth2
           auto eth2
           iface eth2 inet static
             address 192.168.43.1
             netmask 255.255.255.0
 
-          # wireless-lan
+          # wireless-lan on wlan0
           auto wlan0
           iface wlan0 inet static
             hostapd /etc/hostapd/hostapd.conf
             address 192.168.42.1
             netmask 255.255.255.0
+            # gateway to 10.0.0.0 via dell-home
             # TODO A cleaner way to persist routing entries?
             post-up ip route add 10.0.0.0/8 via 192.168.42.14
 
@@ -129,6 +132,7 @@
     - apt: name=dnsmasq
 
     - copy:
+        # TODO change this filename!
         dest: /etc/dnsmasq.d/wifi
         content: |
           # deployed by ansible!
@@ -175,10 +179,8 @@
           # dhcp-host=00:08:30:1e:dd:c0,cisco100,192.168.200.11
           address=/cisco100/192.168.200.11
           address=/cisco100.localnet/192.168.200.11
-
-
-
       notify: restart-dnsmasq
+
 
       # may need to restart wlan0 here? at least when install dnsmasq
     - apt: name=iptables-persistent
@@ -285,7 +287,7 @@
       # chmod 644 $( find /srv/tftp -type f )
 
 
-    # support for xmodem protocol over serial
+    # xmodem protocol support over serial for switch firmware
     - apt: name=lrzsz
 
   handlers:
