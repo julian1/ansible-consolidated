@@ -215,7 +215,7 @@
           # TODO remove the 1
           # http responses - required for apt-get update/upgrade
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
-          iptables -I INPUT 1 -p tcp --sport 442 -j ACCEPT
+          iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
           # dns responses
           iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
