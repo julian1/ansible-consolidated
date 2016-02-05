@@ -170,8 +170,13 @@
           dhcp-range=eth0.200,192.168.200.10,192.168.200.20,255.255.255.0,12h
           # Note, increased brother dhcp retries to 10 due slow switch startup
           dhcp-host=00:80:77:34:55:96,brother,192.168.200.15
-          # cisco switch management interface actually configured statically
-          dhcp-host=00:08:30:1e:dd:c0,cisco100,192.168.200.11
+
+          # cisco switch has static assignment on vlan200
+          # dhcp-host=00:08:30:1e:dd:c0,cisco100,192.168.200.11
+          address=/cisco100/192.168.200.11
+          address=/cisco100.localnet/192.168.200.11
+
+
 
       notify: restart-dnsmasq
 
