@@ -78,8 +78,23 @@
           iface lo inet loopback
 
           # wan
-          allow-hotplug eth0
-          iface eth0 inet dhcp
+          # allow-hotplug eth0
+          #   iface eth0 inet dhcp
+
+          # http://www.cyberciti.biz/tips/howto-configure-linux-virtual-local-area-network-vlan.html
+          # just had to do /sbin/ifup eth0.100.100
+
+          # wan is vlan100
+          auto eth0.100
+          iface eth0.100 inet dhcp
+            vlan-raw-device eth0
+
+          # wired lan2 is vlan200
+          auto eth0.200
+          iface eth0.200 inet static
+            address 192.168.200.1
+            netmask 255.255.255.0
+            vlan-raw-device eth0
 
           # TODO do we need to enable hotplug?
           # admin
@@ -88,9 +103,9 @@
             address 172.16.1.1
             netmask 255.255.255.0
 
-          # wired-lan
+          # lan1 is 43
           auto eth2
-            iface eth2 inet static
+          iface eth2 inet static
             address 192.168.43.1
             netmask 255.255.255.0
 
@@ -106,7 +121,7 @@
       notify:
         # will these all be run together
         # TODO - restart networking generally?
-        - restart-eth0
+        # TODO restart-eth0.100 and 200
         - restart-eth1
         - restart-eth2
         - restart-wlan0
@@ -132,22 +147,31 @@
           address=/apu/192.168.42.1
           address=/apu.localnet/192.168.42.1
 
+          # wireless
           interface=wlan0
           dhcp-range=wlan0,192.168.42.10,192.168.42.20,255.255.255.0,12h
           dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.42.14
           dhcp-host=00:19:e3:10:53:89,imac,192.168.42.15
           dhcp-host=60:57:18:75:3b:cc,asus,192.168.42.17
 
+          # lan1
           interface=eth2
           dhcp-range=eth2,192.168.43.10,192.168.43.20,255.255.255.0,12h
           dhcp-host=78:a0:51:5c:75:53,budii,192.168.43.10
-          dhcp-host=00:80:77:34:55:96,brother,192.168.43.15
+          # dhcp-host=00:80:77:34:55:96,brother,192.168.43.15
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.43.16
           dhcp-host=b8:ae:ed:7b:b5:b9,nuc,192.168.43.17
           dhcp-host=08:17:35:34:c9:c0,cisco1000,192.168.43.18
           dhcp-host=00:04:13:37:1a:f1,snom,192.168.43.20
           dhcp-host=b8:2a:72:c9:fe:d2,dell-home-wired,192.168.43.19
-          dhcp-host=00:08:30:1e:dd:c0,cisco100,192.168.43.11
+
+          # lan2 on vlan200
+          interface=eth0.200
+          dhcp-range=eth0.200,192.168.200.10,192.168.200.20,255.255.255.0,12h
+          # Note, increased brother dhcp retries to 10 due slow switch startup
+          dhcp-host=00:80:77:34:55:96,brother,192.168.200.15
+          # cisco switch management interface actually configured statically
+          dhcp-host=00:08:30:1e:dd:c0,cisco100,192.168.200.11
 
       notify: restart-dnsmasq
 
@@ -168,7 +192,7 @@
           # input default policy
           iptables -P INPUT DROP
 
-          # Incoming from WAN/eth0 (TODO state conntrack established, related in forward)
+          # Incoming from WAN/eth0.100 (TODO state conntrack established, related in forward)
           # TODO remove the 1
           # http responses - required for apt-get update/upgrade
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
@@ -181,17 +205,17 @@
 
           # Internal
           # ssh
-          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 22 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0.100 -p tcp --dport 22 -j ACCEPT
           # tftp - port-range is inclusive
-          iptables -I INPUT 1 ! -i eth0 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0.100 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
           # dns
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 53 -j ACCEPT
-          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 53 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0.100 -p udp --dport 53 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0.100 -p tcp --dport 53 -j ACCEPT
           # dhcp
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 67 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0.100 -p udp --dport 67 -j ACCEPT
           # dlna
-          iptables -I INPUT 1 ! -i eth0 -p tcp --dport 8200 -j ACCEPT
-          iptables -I INPUT 1 ! -i eth0 -p udp --dport 1900 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0.100 -p tcp --dport 8200 -j ACCEPT
+          iptables -I INPUT 1 ! -i eth0.100 -p udp --dport 1900 -j ACCEPT
 
           #####
           # nat
@@ -202,21 +226,21 @@
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
 
           # 15000: # 35000-44999
-          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
-          # iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0 -j DNAT --to 192.168.43.20
-          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0 -j DNAT --to 192.168.43.20
+          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0.100 -j DNAT --to 192.168.43.20
+          # iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0.100 -j DNAT --to 192.168.43.20
+          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0.100 -j DNAT --to 192.168.43.20
 
           # with nat punch-through it's not clear we even need all this
           # or at least tcp on 5060?
           # port forward may even confuse
-          iptables -t nat -A PREROUTING -p udp -s 203.55.231.0/24 -i eth0 -j DNAT --to 192.168.43.20
-          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.0/24 -i eth0 -j DNAT --to 192.168.43.20
+          iptables -t nat -A PREROUTING -p udp -s 203.55.231.0/24 -i eth0.100 -j DNAT --to 192.168.43.20
+          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.0/24 -i eth0.100 -j DNAT --to 192.168.43.20
 
           # post-routing
           # private subnet nat
-          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o eth0 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o eth0 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o eth0.100 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o eth0.100 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0.100 -j MASQUERADE
 
           #####
           # mangle
@@ -249,6 +273,12 @@
           TFTP_ADDRESS="0.0.0.0:69"
           TFTP_OPTIONS="--secure --port-range 1024:1034"
       notify: restart-tftpd-hpa
+
+      # /srv/tftp cannot just be owned by tftp. instead must have global read permissions
+      # chown -R root:root /srv/tftp
+      # chmod 755 $( find /srv/tftp -type d )
+      # chmod 644 $( find /srv/tftp -type f )
+
 
     # support for xmodem protocol over serial
     - apt: name=lrzsz

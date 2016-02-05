@@ -237,6 +237,7 @@
 
     #####
     - apt: name=cups
+    # seems to be an issue with cups not starting...
     - service: name=cups state=started
 
     - shell: lpstat -p | grep -q Brother
