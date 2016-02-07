@@ -1,0 +1,29 @@
+
+
+  # ansible requires aptitude to perform upgrade!
+  - apt: name=aptitude
+
+  - template: src={{template}} dest=/etc/apt/sources.list mode=0644 
+
+  - apt: state=latest update_cache=yes upgrade={{upgrade}}
+
+  # https://realguess.net/2014/12/21/ansible-update-servers-to-the-latest-and-reboot/
+  # http://docs.ansible.com/ansible/playbooks_conditionals.html
+  - name: Check reboot is required
+    register: file
+    stat: path=/var/run/reboot-required get_md5=no
+
+  # reboot before continuing - not in a handler
+  - name: Reboot the server
+    command: /sbin/reboot
+    when: file.stat.exists == true
+
+
+#  - include: >
+#      ../roles/distribution/tasks/main.yml
+#      mirror=http://mirror.internode.on.net/pub/debian
+#      template=debian.j2
+#      version=jessie
+#      upgrade=safe
+
+
