@@ -126,8 +126,8 @@
           log-dhcp
           no-resolv
           # server=8.8.8.8
-          server=192.168.42.1
-          #server=192.168.43.1
+          # server=192.168.42.1
+          server=192.168.43.1
           expand-hosts
           domain=container
           dhcp-range=br0,10.1.1.10,10.1.1.20,4h
@@ -237,6 +237,7 @@
 
     #####
     - apt: name=cups
+    # seems to be an issue with cups not starting...
     - service: name=cups state=started
 
     - shell: lpstat -p | grep -q Brother

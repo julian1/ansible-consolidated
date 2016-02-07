@@ -1,0 +1,64 @@
+
+to buy
+  - apu power supply. without adaptor
+  - 1/2m and 1m patch cable
+  - rubber feet
+  - label stickers
+
+----
+
+- can't just route to aws, because gateway has to be isp. must be tunnel.
+
+- create a bridge, but connected to eth0 on laptop and see if it will broadcast, and
+  we can make a container interact with router dhc
+- what is hairpining?
+- fixup the network interface restarts in ansible
+- understand svi..
+- cisco2 use fa0/1 for trunk instead of fa0/4
+- combine vlan 200 and 201, and separate out voice
+
+- dns isn't working on switches - eg. when try to ping www.google.com or use ntp.
+
+- get a container/vm doing vlan tagging and interacting with trunks.
+- setup git server / container.
+- get ntp running again / dns - because it's good to get logs
+
+-----
+
+done - integrate second switch
+  - advantages of using 1g switch.
+    - view of mac table, packets
+    - router on stick config
+    - remove a wire
+    - get to try router <-> trunk <-> trunk config
+    - put voip on separate vlan
+    - free the unmanaged cisco for use with the htpc
+    - ergonomic, lower, not on table.
+
+  - done - create two trunk ports for 100,120,200. then plug the router in, and wan in.
+  - done then create management interface on 100
+  - done then ssh, scp
+  - done decide put wired on separate vlan? or just 200 , why not different.
+  - done - add vlan201 to switch
+  - done - add access ports to 201
+  - done move cables.
+  - done provision /
+  - done restart router, ,
+
+done - show the L2 macs at the end of the ports? show mac address-table
+done - remove the two ethernet connections to bravia and nuc, and use unmanaged switch.
+    - replace the longer ethernet connector with a shorter one
+    - can tidy the power away too.
+done - test with netgear,
+done - swap 42 and 43 if we ever swap to vlan there won't be an issue?
+done - ok, we just need to get the config backed up
+done - move the management interface to another vlan. or move the brother to something else.
+done - backup cisco100 config
+done - check laptop comes up?.
+done - Try router reboot. and check if the vlans come up.
+done - set up ssh and management interface - so can easily connect, when won't have cable
+done - try switch reboot. and check if it all comes up.
+done - iptables -p
+
+no - buy cisco unmanaged switch? - maybe no
+
