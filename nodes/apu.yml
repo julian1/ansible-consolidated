@@ -167,7 +167,12 @@
           address=/apu/192.168.43.1
           address=/apu.localnet/192.168.43.1
 
+          # IMPORTANT - TODO even though there are no dhcp entries, dhcpmasq needs to know
+          # it must serve dns on this interface. for the switches to resolve ntp dns.
+        
           # vlan 100
+          interface=eth0.100
+
           # cisco switches have static assignment on vlan100
           address=/cisco2/192.168.100.11
           address=/cisco2.localnet/192.168.100.11
