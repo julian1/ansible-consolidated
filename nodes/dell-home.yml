@@ -1,21 +1,29 @@
 - hosts: dell-home
+  vars:
+    - user: meteo
+    - timezone: Australia/Hobart
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: testing
+    - upgrade: safe
+
+    - printer:
+        name: Brother
+        url: socket://brother:9100
+        ppd: BRHL16_2_GPL.ppd
+
+  vars_files:
+    - credentials.yml
+
   roles:
     - yaegashi.blockinfile
-  vars:
+    - debian
+    - timezone
+    - basic
+    - forwarding
+    - printer
+
+
   tasks:
-    - include: >
-        ../roles/distribution/tasks/main.yml
-        mirror=http://mirror.internode.on.net/pub/debian
-        template=debian.j2
-        version=testing
-        upgrade=safe
-
-    - include: ../roles/common/tasks/basic.yml
-
-    # hostname?
-
-    # zfs playbook must be from /root
-    - include: ../roles/common/tasks/disable-shell-bell.yml
 
     #####
     - apt: name=memtest86
@@ -234,30 +242,6 @@
         insertafter: EOF
         content: |
           # ansible test
-
-    #####
-    - apt: name=cups
-    # seems to be an issue with cups not starting...
-    - service: name=cups state=started
-
-    - shell: lpstat -p | grep -q Brother
-      register: have_printer
-      ignore_errors: yes
-      changed_when: "have_printer.rc != 0"
-
-    # TODO better paths?
-    - copy: src=../roles/common/files/BRHL16_2_GPL.ppd dest=/tmp
-
-    - shell: |
-        # install
-        lpadmin \
-          -p 'Brother' \
-          -v 'socket://brother:9100' \
-          -P '/tmp/BRHL16_2_GPL.ppd' \
-          -E
-        # set default
-        lpadmin -d Brother
-      when: "have_printer.rc != 0"
 
 
   handlers:

@@ -7,6 +7,11 @@
     - version: testing
     - upgrade: safe
 
+    - printer:
+        name: ImosLexmark
+        url: socket://10.76.8.20:9100
+        ppd: lexmark.ppd
+
   vars_files:
     - credentials.yml
 
@@ -16,6 +21,7 @@
     - timezone
     - basic
     - forwarding
+    - printer
 
     # TODO cups, grails, intelij  should be factored into roles
 
@@ -117,27 +123,28 @@
           xmonad
 
     #####
-    - apt: name=cups
-    - service: name=cups state=started
-
-    - shell: lpstat -p | grep -q ImosLexmark
-      register: have_printer
-      ignore_errors: yes
-      changed_when: "have_printer.rc != 0"
-
-    # TODO better paths?
-    - copy: src=../roles/common/files/lexmark.ppd dest=/tmp
-
-    - shell: |
-        # install
-        lpadmin \
-          -p 'ImosLexmark' \
-          -v 'socket://10.76.8.20:9100' \
-          -P '/tmp/lexmark.ppd' \
-          -E
-        # set default
-        lpadmin -d ImosLexmark
-      when: "have_printer.rc != 0"
+#    - apt: name=cups
+#    - service: name=cups state=started
+#
+#    - shell: lpstat -p | grep -q ImosLexmark
+#      register: have_printer
+#      ignore_errors: yes
+#      changed_when: "have_printer.rc != 0"
+#
+#    # TODO better paths?
+#    - copy: src=../roles/common/files/lexmark.ppd dest=/tmp
+#
+#    - shell: |
+#        # install
+#        lpadmin \
+#          -p 'ImosLexmark' \
+#          -v 'socket://10.76.8.20:9100' \
+#          -P '/tmp/lexmark.ppd' \
+#          -E
+#        # set default
+#        lpadmin -d ImosLexmark
+#      when: "have_printer.rc != 0"
+#
 
     #####
     # - include: "./roles/common/tasks/jdk.yml"
