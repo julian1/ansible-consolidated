@@ -1,23 +1,23 @@
 
 - hosts: 131.217.38.36
+  vars:
+    - user: meteo
+    - timezone: Australia/Hobart
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: testing
+    - upgrade: safe
+
+  vars_files:
+    - credentials.yml
+
   roles:
     - yaegashi.blockinfile
+    - debian
+    - timezone
+    - basic
+ 
 
   tasks:
-    - include: >
-        ../roles/distribution/tasks/main.yml
-        mirror=http://mirror.internode.on.net/pub/debian
-        template=debian.j2
-        version=testing
-        upgrade=safe
-
-    # hostname?
-
-    # zfs playbook must be from /root
-    # - role: zfs
-
-    - include: ../roles/common/tasks/basic.yml
-    - include: ../roles/common/tasks/disable-shell-bell.yml
 
     #####
     - apt: name=memtest86

@@ -41,7 +41,7 @@ http://mirror.aarnet.edu.au/debian
 ### Prepare
 ```
 # local
-ansible-galaxy install yaegashi.blockinfile -p ./roles/common
+ansible-galaxy install yaegashi.blockinfile -p ./roles
 
 # or global
 sudo ansible-galaxy install yaegashi.blockinfile
