@@ -19,8 +19,12 @@
     - basic
     - ip-forwarding
     - printer
+
   tasks:
     #####
+
+    - include: ../roles/common/tasks/devenv-lite.yml
+
     - apt: name=memtest86
 
     #####

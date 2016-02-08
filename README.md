@@ -10,6 +10,14 @@ It may be that the indirection between node, and role for the node is a bit usel
   but is that really be an issue. the benefit is the much cleaner lookup paths
 
 
+  - It has to be a task to use the include statement
+  - and a play with full dir structure to use in a role
+  - and a play to call directly from ansible-playbook (which is very useful)
+  - but there doesn't seem to be a way to use  
+
+  - BUT - can do both ... very easily 
+
+
 ### Dir structure
   Good practice to have a generalized play that can be run against all hosts...
   versus specific plays

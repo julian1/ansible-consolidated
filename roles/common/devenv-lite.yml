@@ -1,12 +1,8 @@
- 
-  - hosts: all
-    tasks:
-    - apt: name=vim
-    - apt: name=git
-    - apt: name=screen
-    - apt: name=less
-    - apt: name=aptitude
-    - apt: name=mlocate
-    - apt: name=sudo
+
+# Ok, this is a play that invokes a task of the same name... 
+# which allows it to be used standalone, or as an include elsewhere... 
+- hosts: all
+  tasks:
+    - include: tasks/devenv-lite.yml
 
 
