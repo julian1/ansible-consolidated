@@ -93,18 +93,23 @@
         </Context>
     notify: restart-tomcat7
 
+  # git module seems buggy, so force
+  # need to allow local modifications
+  #  - git: >
+  #      repo=https://github.com/aodn/geoserver-config
+  #      dest={{geoserver_config}}
+  #      version=master
+  #      force=no
+  #    notify: restart-tomcat7
 
-  # allow geoserver to modify
-  - git: >
-      repo=https://github.com/aodn/geoserver-config
-      dest={{geoserver_config}}
-      version=master
-      force=yes
+  - shell: creates={{geoserver_config}}/git-done {{item}}
+    with_items:
+      - git clone https://github.com/aodn/geoserver-config {{geoserver_config}}
+      - cd {{geoserver_config}} && git checkout master
+      - touch {{geoserver_config}}/git-done
     notify: restart-tomcat7
 
-  - file: path={{geoserver_config}} state=directory owner=tomcat7 group=tomcat7 recurse=yes
-
-
+  # TODO use stylesheet for this...
   - copy:
       dest: "{{geoserver_config}}/security/usergroup/default/users.xml"
       backup: yes
@@ -139,16 +144,18 @@
 
   # uggh, git will overwrite it... but it won't get run again....
 
-  - shell: chdir={{geoserver_config}} creates=wps-new.xml {{item}}
+  - shell: chdir={{geoserver_config}} creates=wps-enabled {{item}}
     with_items:
       - java -jar /usr/share/maven-repo/net/sf/saxon/Saxon-HE/debian/Saxon-HE-debian.jar wps.xml /tmp/wps-enable.xslt > wps-new.xml
       - cp wps-new.xml wps.xml
+      - touch wps-enabled
+
+
+  - file: path={{geoserver_config}} state=directory owner=tomcat7 group=tomcat7 recurse=yes
+
 
 
   # java -jar /usr/share/maven-repo/net/sf/saxon/Saxon-HE/debian/Saxon-HE-debian.jar
-
-
-  # TODO turn on wps
 
   # war
 #  # TODO make war source configurable
