@@ -3,7 +3,7 @@
 
 # TODO hide hostap passphrase
 
-  # Use ip not dns, because if dns fails, we'll end up with 127.0.0.1
+  # Use ip not dns, because if dns goes wrong, we can end up trying to provision 127.0.0.1
 - hosts: 192.168.100.1
   vars:
     - user: meteo
@@ -28,8 +28,6 @@
         state=present
         line='127.0.1.1       apu'
 
-    # - include: ../roles/common/tasks/basic.yml
-
     - apt: name=ntp             # network time
     - apt: name=tcpdump
     - apt: name=netstat-nat     # nat connections
@@ -38,7 +36,7 @@
     - apt: name=pciutils        # lspci
     - apt: name=usbutils        # lsusb
 
-    # TODO factor into a role...
+    # TODO factor into a role if use more than here...
     # sensors
     - apt: name=lm-sensors
     - shell: creates=ansible-lm-sensors {{item}}
@@ -48,7 +46,6 @@
 
     # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
     - apt: name=firmware-realtek
-
 
     - apt: name=hostapd
 
@@ -170,10 +167,8 @@
           address=/apu/192.168.43.1
           address=/apu.localnet/192.168.43.1
 
-          # IMPORTANT - TODO even though there are no dhcp entries, dhcpmasq needs to know
-          # it must serve dns on this interface. for the switches to resolve ntp dns.
-
           # vlan 100
+          # listen on management vlan interface for cisco. eg. to resolve cisceo nameserver requests
           interface=eth0.100
 
           # cisco switches have static assignment on vlan100
