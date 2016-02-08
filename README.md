@@ -1,35 +1,4 @@
 
-### Notes
-
-If we move the tasks in common/tasks/*.*  up to common/*.*, then they
-  can probably be invoked as roles. which would make them easier
-  to invoke...
-
-It may be that the indirection between node, and role for the node is a bit useless
-  with a one-to-one mapping. for nodes like apu
-  but is that really be an issue. the benefit is the much cleaner lookup paths
-
-
-  - It has to be a task to use the include statement
-  - and a play with full dir structure to use in a role
-  - and a play to call directly from ansible-playbook (which is very useful)
-  - but there doesn't seem to be a way to use  
-
-  - BUT - can do both ... very easily 
-
-
-### Dir structure
-  Good practice to have a generalized play that can be run against all hosts...
-  versus specific plays
-  ansible-playbook -i geoserver, roles/zfs/main.yml
-  ansible-playbook -i geoserver, roles/debian/main.yml
-
-  we had this in resources before...
-
-### Tags
-  http://docs.ansible.com/ansible/playbooks_tags.html
-  If you wanted to just run the “configuration” and “packages” part of a very long playbook, you could do this:
-  ansible-playbook example.yml --tags "configuration,packages"
 
 
 ### Prepare
@@ -140,4 +109,39 @@ done - copy module can take a content argument, which makes it a lot nicer
             - it also supports template arg expansion
 
 done - zfs build to use fixed release instead of master
+
+
+
+### Notes
+
+If we move the tasks in common/tasks/*.*  up to common/*.*, then they
+  can probably be invoked as roles. which would make them easier
+  to invoke...
+
+It may be that the indirection between node, and role for the node is a bit useless
+  with a one-to-one mapping. for nodes like apu
+  but is that really be an issue. the benefit is the much cleaner lookup paths
+
+
+  - It has to be a task to use the include statement
+  - and a play with full dir structure to use in a role
+  - and a play to call directly from ansible-playbook (which is very useful)
+  - but there doesn't seem to be a way to use  
+
+  - BUT - it's easy to have a play and a task 
+      just make the play delegate to the task. see devenv-lite.yml for example
+
+
+  - Good practice to have a generalized play that can be run against all hosts...
+  versus specific plays
+  ansible-playbook -i geoserver, roles/zfs/main.yml
+  ansible-playbook -i geoserver, roles/debian/main.yml
+
+  we had this in resources before...
+
+### Tags
+  http://docs.ansible.com/ansible/playbooks_tags.html
+  If you wanted to just run the “configuration” and “packages” part of a very long playbook, you could do this:
+  ansible-playbook example.yml --tags "configuration,packages"
+
 

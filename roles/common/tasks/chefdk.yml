@@ -2,6 +2,9 @@
 
   # needs var of user to install for should be configured for user meteo...
 
+  # TODO get rid of /root/chef_install directory and use /ansible instead
+  # or better use a register variable
+
   - file: path=/root/chef_install state=directory
 
   - shell: chdir=/root/chef_install creates=chefdk-installed {{item}}

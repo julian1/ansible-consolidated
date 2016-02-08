@@ -14,8 +14,10 @@
 
   - unarchive: src=/home/meteo/imos/{{ jdk_tarball_file }}.tar.gz dest=/home/meteo/imos/ owner=meteo creates={{java_download_path}}/jdk{{jdk_version}}
 
-  - file: state=touch dest=/home/meteo/paths
-
-  - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export JAVA_HOME={{java_download_path}}/jdk{{jdk_version}}'
-  - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export PATH=$JAVA_HOME/bin:$PATH'
+#  TODO configure paths in bash_aliases
+#  - file: state=touch dest=/home/meteo/paths
+#
+#  - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export JAVA_HOME={{java_download_path}}/jdk{{jdk_version}}'
+#  - lineinfile: dest=/home/meteo/paths insertafter=EOF line='export PATH=$JAVA_HOME/bin:$PATH'
+#
 
