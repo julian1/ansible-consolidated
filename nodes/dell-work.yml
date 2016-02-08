@@ -15,21 +15,14 @@
     - debian
     - timezone
     - basic
- 
+    - forwarding
+
+    # TODO cups, grails, intelij  should be factored into roles
 
   tasks:
 
     #####
     - apt: name=memtest86
-
-    #####
-    # ip forwarding
-    - lineinfile: >
-        dest=/etc/sysctl.conf
-        state=present
-        regexp='.*net.ipv4.ip_forward.*'
-        line='net.ipv4.ip_forward = 1'
-      notify: reload-sysctl
 
     - apt: name=bridge-utils
 

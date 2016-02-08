@@ -1,0 +1,11 @@
+
+  #####
+  # ip forwarding
+  - lineinfile: >
+      dest=/etc/sysctl.conf
+      state=present
+      regexp='.*net.ipv4.ip_forward.*'
+      line='net.ipv4.ip_forward = 1'
+    notify: reload-sysctl
+
+
