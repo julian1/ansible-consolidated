@@ -1,4 +1,5 @@
 
+  # DEPRECATED in favor of roles/timezone
 
     # Debian documentation indicates /etc/localtime cannot be a symbolic link.
     # Since the ansible file module doesn't support copying local files, we have to use command/shell

@@ -1,4 +1,6 @@
 
+  # DEPRECATED see roles/basic
+
   - set_fact: user=meteo
 
   - apt: name=sudo

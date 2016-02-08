@@ -1,0 +1,8 @@
+
+# we could just symbolically link this from common/handlers ...
+
+  - name: restart-tomcat7
+    # shell: echo > /var/log/tomcat7/catalina.out
+    service: name=tomcat7 state=restarted
+
+

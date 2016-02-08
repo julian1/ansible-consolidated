@@ -1,0 +1,10 @@
+
+- hosts: all
+  vars:
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: jessie
+    - upgrade: safe
+
+  roles:
+    - debian
+ 

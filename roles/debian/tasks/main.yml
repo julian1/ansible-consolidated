@@ -3,7 +3,7 @@
   # ansible requires aptitude to perform upgrade!
   - apt: name=aptitude
 
-  - template: src={{template}} dest=/etc/apt/sources.list mode=0644 
+  - template: src=debian.j2 dest=/etc/apt/sources.list mode=0644
 
   - apt: state=latest update_cache=yes upgrade={{upgrade}}
 
@@ -18,12 +18,5 @@
     command: /sbin/reboot
     when: file.stat.exists == true
 
-
-#  - include: >
-#      ../roles/distribution/tasks/main.yml
-#      mirror=http://mirror.internode.on.net/pub/debian
-#      template=debian.j2
-#      version=jessie
-#      upgrade=safe
 
 

@@ -1,4 +1,6 @@
 
+# perhaps change name of basic to meteo, since this is highly-specific user environment
+
 #  - set_fact: user=meteo
 
   - apt: name=sudo
@@ -16,7 +18,8 @@
       groups=adm 
       append=yes
 
-  - authorized_key: user={{user}} key="{{ lookup('file', '../resources/keys') }}" #"
+  # - authorized_key: user={{user}} key="{{ lookup('file', '../resources/keys') }}" #"
+  - authorized_key: user={{user}} key="{{key}}"
 
     ###########################
 

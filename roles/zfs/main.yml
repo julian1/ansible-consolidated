@@ -1,0 +1,7 @@
+
+  # Ex. ansible-playbook -i geoserver, roles/zfs/main.yml -k -vvvv
+
+- hosts: all
+  roles:
+    - zfs
+ 

@@ -1,4 +1,5 @@
 
+  # NOTE: putting this here, means can only have one nat entry
   - apt: name=iptables-persistent
   - copy:
       dest: /etc/iptables-rules
@@ -15,6 +16,16 @@
   - set_fact: webapps={{tomcat7}}/webapps
   - set_fact: geoserver_config={{conf}}/geoserver-config
   - set_fact: lib={{tomcat7}}/lib
+
+  # doesn't seem to handle self-referential facts
+  #  - set_fact:
+  #      tomcat7: /var/lib/tomcat7
+  #      conf:    "{{tomcat7}}/conf"
+  #      webapps: "{{tomcat7}}/webapps"
+  #      geoserver_config: "{{conf}}/geoserver-config"
+  #      lib:     "{{tomcat7}}/lib"
+
+
 
   - file: path={{item}} state=directory owner=tomcat7 group=tomcat7
     with_items:

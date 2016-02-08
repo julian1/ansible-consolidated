@@ -1,4 +1,24 @@
 
+It may be that the indirection between node, and role for the node is a bit useless
+  with a one-to-one mapping. for nodes like apu
+  but is that really be an issue. the benefit is the much cleaner lookup paths
+
+
+### Dir structure
+  Good practice to have a generalized play that can be run against all hosts...
+  versus specific plays
+  ansible-playbook -i geoserver, roles/zfs/main.yml 
+  ansible-playbook -i geoserver, roles/debian/main.yml 
+
+  we had this in resources before...
+
+### Tags
+  http://docs.ansible.com/ansible/playbooks_tags.html
+  If you wanted to just run the “configuration” and “packages” part of a very long playbook, you could do this:
+  ansible-playbook example.yml --tags "configuration,packages"
+
+
+
 ### Examples
 
 ```
