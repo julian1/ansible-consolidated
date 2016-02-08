@@ -317,4 +317,4 @@
   handlers:
     - include: ../roles/common/handlers/main.yml
 
-
+  # TODO we should place the handlers for eth0 restart directly here

@@ -1,0 +1,9 @@
+
+  - name: reconfigure-tzdata
+    command: "{{item}}"
+    with_items:
+      # note that dpkg-reconfigure will actually modify /etc/timezone which is nasty
+      - dpkg-reconfigure --frontend noninteractive tzdata
+
+
+
