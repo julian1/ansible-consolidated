@@ -30,6 +30,8 @@ ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.s
 ansible-playbook playbook/zfs.yml
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
+
+ansible-playbook roles/geoserver/redeploy.yml
 ```
 
 ### Mirrors
