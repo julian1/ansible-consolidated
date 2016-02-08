@@ -26,10 +26,18 @@
     # TODO cups, grails, intelij  should be factored into roles
 
   tasks:
+    #####
+    # - include: "./roles/common/tasks/jdk.yml"
+    - include: ../roles/common/tasks/grails-1.3.7.yml
+    - include: ../roles/common/tasks/intellij.yml
+    # TODO add devenv and desktop...
+    # - include: ./roles/common/tasks/devenv.yml
+
 
     #####
     - apt: name=memtest86
 
+    #####
     - apt: name=bridge-utils
 
     - copy:
@@ -122,37 +130,7 @@
           # xset q | grep bell
           xmonad
 
-    #####
-#    - apt: name=cups
-#    - service: name=cups state=started
-#
-#    - shell: lpstat -p | grep -q ImosLexmark
-#      register: have_printer
-#      ignore_errors: yes
-#      changed_when: "have_printer.rc != 0"
-#
-#    # TODO better paths?
-#    - copy: src=../roles/common/files/lexmark.ppd dest=/tmp
-#
-#    - shell: |
-#        # install
-#        lpadmin \
-#          -p 'ImosLexmark' \
-#          -v 'socket://10.76.8.20:9100' \
-#          -P '/tmp/lexmark.ppd' \
-#          -E
-#        # set default
-#        lpadmin -d ImosLexmark
-#      when: "have_printer.rc != 0"
-#
 
-    #####
-    # - include: "./roles/common/tasks/jdk.yml"
-    - include: ../roles/common/tasks/grails-1.3.7.yml
-    - include: ../roles/common/tasks/intellij.yml
-
-    # TODO add devenv and desktop...
-    # - include: ./roles/common/tasks/devenv.yml
 
     #####
     # local changes not in dotfiles for .bashrc
