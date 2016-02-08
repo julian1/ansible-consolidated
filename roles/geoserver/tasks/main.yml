@@ -8,7 +8,7 @@
   - set_fact: geoserver_config={{conf}}/geoserver-config
   - set_fact: lib={{tomcat7}}/lib
 
-  # doesn't seem to handle self-referential facts
+  # set_fact doesn't seem to handle self-referential facts
   #  - set_fact:
   #      tomcat7: /var/lib/tomcat7
 
@@ -139,9 +139,6 @@
 
   - file: path={{geoserver_config}} state=directory owner=tomcat7 group=tomcat7 recurse=yes
 
-
-
-  # java -jar /usr/share/maven-repo/net/sf/saxon/Saxon-HE/debian/Saxon-HE-debian.jar
 
   # war
 #  # TODO make war source configurable

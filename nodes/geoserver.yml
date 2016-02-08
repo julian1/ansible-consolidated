@@ -1,6 +1,5 @@
 
 # TODO - expose locale,
-#  test runup from scratch
 
 - hosts: geoserver
   vars:
