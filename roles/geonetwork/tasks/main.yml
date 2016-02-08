@@ -3,18 +3,6 @@
   # NOTE the symbolic-link /var/lib/tomcat7/conf -> /etc/tomcat7
 
 
-  # TODO maybe move into the node definition
-  # port forward to tomcat7
-  - apt: name=iptables-persistent
-  - copy:
-      dest: /etc/iptables-rules
-      create: true
-      content: |
-        # deployed by ansible!
-        iptables -t nat --flush
-        iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
-    notify: reconfigure-iptables
-
   - apt: name=tomcat7 update_cache=yes
 
   - set_fact: tomcat7=/var/lib/tomcat7

@@ -1,24 +1,35 @@
 
 - hosts: geonetwork2
+  vars:
+    - user: meteo
+    - timezone: Australia/Hobart
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: jessie
+    - upgrade: safe
+  vars_files:
+    - credentials.yml
   roles:
-    - yaegashi.blockinfile
+    - debian
+    - timezone
+    - basic
+    - tomcat-port-forwarding
+    - postgres
+    - geonetwork
   tasks:
-    - include: >
-        ../roles/distribution/tasks/main.yml
-        mirror=http://mirror.aarnet.edu.au/debian
-        template=debian.j2
-        version=jessie
-        upgrade=safe
-
-    - include: ../roles/common/tasks/basic.yml
-
-    - include: ../roles/postgres/tasks/main.yml
-
-    # - include: ../roles/geonetwork/tasks/drop-db.yml
     - include: ../roles/geonetwork/tasks/restore-db.yml
 
-    - include: ../roles/geonetwork/tasks/main.yml
 
-  handlers:
-    - include: ../roles/common/handlers/main.yml
+#- hosts: geonetwork2
+#  roles:
+#    - yaegashi.blockinfile
+#    - tomcat-port-forwarding
+
+#    - include: ../roles/common/tasks/basic.yml
+#    - include: ../roles/postgres/tasks/main.yml
+#    # - include: ../roles/geonetwork/tasks/drop-db.yml
+#    - include: ../roles/geonetwork/tasks/restore-db.yml
+#    - include: ../roles/geonetwork/tasks/main.yml
+
+#  handlers:
+#    - include: ../roles/common/handlers/main.yml
 
