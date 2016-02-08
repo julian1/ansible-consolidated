@@ -37,29 +37,6 @@
     #####
     - apt: name=memtest86
 
-    #####
-    - apt: name=bridge-utils
-
-    - copy:
-        dest: /etc/network/interfaces
-        content: |
-          # deployed by ansible!
-          # The loopback network interface
-          auto lo
-          iface lo inet loopback
-
-          # The primary network interface
-          allow-hotplug eth0
-          iface eth0 inet dhcp
-
-          auto br0
-          iface br0 inet static
-            address 10.1.1.1
-            netmask 255.255.255.0
-            bridge_ports dummy0
-            bridge_stp off
-            bridge_fd 0
-      notify: restart-br0
 
     #####
     - apt: name=alsa-oss
@@ -154,14 +131,31 @@
           export PATH="$PATH:$INTELLIJ_HOME/bin"
 
 
-    - apt: name=maven
-    - apt: name=postgresql-client-9.4
 
-    # make sure systemd is installed
-    - apt: name=systemd-container
-      when: (ansible_distribution == "Debian" and ansible_distribution_major_version > "8")
+    #####
+    - apt: name=bridge-utils
 
-    - apt: name=debootstrap
+    - copy:
+        dest: /etc/network/interfaces
+        content: |
+          # deployed by ansible!
+          # The loopback network interface
+          auto lo
+          iface lo inet loopback
+
+          # The primary network interface
+          allow-hotplug eth0
+          iface eth0 inet dhcp
+
+          auto br0
+          iface br0 inet static
+            address 10.1.1.1
+            netmask 255.255.255.0
+            bridge_ports dummy0
+            bridge_stp off
+            bridge_fd 0
+      notify: restart-br0
+
 
 
     # Using local dnsmasq as a wholesale replacement for using resolvconf is a lot simpler
@@ -234,6 +228,15 @@
           # TODO - fill in checksums for all udp...
           iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
       notify: reconfigure-iptables
+
+    # make sure systemd is installed
+    - apt: name=systemd-container
+      when: (ansible_distribution == "Debian" and ansible_distribution_major_version > "8")
+
+    - apt: name=debootstrap
+    - apt: name=maven
+    - apt: name=postgresql-client-9.4
+
 
 
   handlers:
