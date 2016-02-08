@@ -1,4 +1,6 @@
-
+ 
+  - hosts: all
+    tasks:
     - apt: name=vim
     - apt: name=git
     - apt: name=screen
