@@ -1,3 +1,5 @@
+***DEPRECATED*** - using openelec image
+
 - hosts: nuc
   roles:
     - yaegashi.blockinfile
