@@ -6,31 +6,27 @@
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: testing
     - upgrade: safe
-
     - printer:
         name: ImosLexmark
         url: socket://10.76.8.20:9100
         ppd: lexmark.ppd
-
   vars_files:
     - credentials.yml
-
   roles:
     - yaegashi.blockinfile
     - debian
     - timezone
     - basic
-    - forwarding
+    - ip-forwarding
     - printer
 
-    # TODO cups, grails, intelij  should be factored into roles
+  # TODO jdk, grails, intelij should be factored into roles
+  # - not necessarily. simple tasks are fairly easy to manage...
+  # - roles factor common code amongst nodes and have cleaner relative path semantics
 
   tasks:
     #####
-
-    #####
     - apt: name=memtest86
-
 
     #####
     - apt: name=alsa-oss
@@ -101,8 +97,6 @@
           # xset q | grep bell
           xmonad
 
-
-
     #####
     # local changes not in dotfiles for .bashrc
     - blockinfile:
@@ -123,8 +117,6 @@
 
           export INTELLIJ_HOME=$I/idea-IU-143.1821.5/
           export PATH="$PATH:$INTELLIJ_HOME/bin"
-
-
 
     #####
     - apt: name=bridge-utils
@@ -149,8 +141,6 @@
             bridge_stp off
             bridge_fd 0
       notify: restart-br0
-
-
 
     # Using local dnsmasq as a wholesale replacement for using resolvconf is a lot simpler
     # issue is we want to ping containers from the host,
@@ -231,7 +221,6 @@
     - apt: name=maven
     - apt: name=postgresql-client-9.4
 
-
     # Tasks don't get relative path handling
 
     # - include: "./roles/common/tasks/jdk.yml"
@@ -240,8 +229,7 @@
     # TODO add devenv and desktop...
     # - include: ./roles/common/tasks/devenv.yml
 
-
-
+  # TODO maybe make handlers explicit
   handlers:
     - include: ../roles/common/handlers/main.yml
 

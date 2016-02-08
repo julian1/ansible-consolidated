@@ -1,3 +1,4 @@
+
 - hosts: dell-home
   vars:
     - user: meteo
@@ -5,28 +6,23 @@
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: testing
     - upgrade: safe
-
     - printer:
         name: Brother
         url: socket://brother:9100
         ppd: BRHL16_2_GPL.ppd
-
   vars_files:
     - credentials.yml
-
   roles:
     - yaegashi.blockinfile
     - debian
     - timezone
     - basic
-    - forwarding
+    - ip-forwarding
     - printer
-
   tasks:
-
     #####
     - apt: name=memtest86
-    
+
     #####
     - apt: name=alsa-oss
     - apt: name=alsa-utils
@@ -81,7 +77,6 @@
           xmonad
 
     #####
-
     - apt: name=bridge-utils
 
     - copy:
@@ -222,12 +217,10 @@
               exit 1
           fi
 
-
     #####
     - apt: name=dnsutils
     - apt: name=ffmpeg
     - apt: name=a2ps
-
 
     # local changes not in dotfiles for .bashrc
     - blockinfile:
@@ -235,7 +228,6 @@
         insertafter: EOF
         content: |
           # ansible test
-
 
   handlers:
     - include: ../roles/common/handlers/main.yml
