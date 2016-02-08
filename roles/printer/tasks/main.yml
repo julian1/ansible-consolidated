@@ -9,7 +9,6 @@
     ignore_errors: yes
     changed_when: "have_printer.rc != 0"
 
-  # TODO better paths?
   - copy: src={{printer.ppd}} dest=/tmp
 
   - shell: |
