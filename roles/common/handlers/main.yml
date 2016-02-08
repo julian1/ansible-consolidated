@@ -2,8 +2,8 @@
   - name: reboot
     command: /sbin/reboot
 
-  - name: reload-sysctl
-    command: /sbin/sysctl -p /etc/sysctl.conf
+#  - name: reload-sysctl
+#    command: /sbin/sysctl -p /etc/sysctl.conf
 
   - name: restart-br0
     command: sh -c "/sbin/ifdown br0 && /sbin/ifup br0"
@@ -23,7 +23,7 @@
   - name: restart-wlan1
     command: sh -c "/sbin/ifdown wlan1 && sleep 1 && /sbin/ifup wlan1"
 
-
+  # should move to where they are actually used...
   - name: restart-dnsmasq
     service: name=dnsmasq state=restarted
 
@@ -46,12 +46,13 @@
   - name: restart-smcroute
     service: name=smcroute state=restarted
 
-  - name: restart-postgres
-    service: name=postgresql state=restarted
+#  - name: restart-postgres
+#    service: name=postgresql state=restarted
 
-  - name: restart-tomcat7
-    # shell: echo > /var/log/tomcat7/catalina.out
-    service: name=tomcat7 state=restarted
+# should be placed where it's used
+#  - name: restart-tomcat7
+#    # shell: echo > /var/log/tomcat7/catalina.out
+#    service: name=tomcat7 state=restarted
 
 
   - name: reload-apache2

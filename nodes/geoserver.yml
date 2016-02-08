@@ -9,10 +9,8 @@
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie
     - upgrade: safe
-
   vars_files:
     - credentials.yml
-
   roles:
     - debian
     - timezone
