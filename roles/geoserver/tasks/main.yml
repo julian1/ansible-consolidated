@@ -1,13 +1,4 @@
 
-  # NOTE: putting this here, means can only have one nat entry
-  - apt: name=iptables-persistent
-  - copy:
-      dest: /etc/iptables-rules
-      content: |
-        # deployed by ansible!
-        iptables -t nat --flush
-        iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
-    notify: reconfigure-iptables
 
   - apt: name=tomcat7 update_cache=yes
 
@@ -20,11 +11,6 @@
   # doesn't seem to handle self-referential facts
   #  - set_fact:
   #      tomcat7: /var/lib/tomcat7
-  #      conf:    "{{tomcat7}}/conf"
-  #      webapps: "{{tomcat7}}/webapps"
-  #      geoserver_config: "{{conf}}/geoserver-config"
-  #      lib:     "{{tomcat7}}/lib"
-
 
 
   - file: path={{item}} state=directory owner=tomcat7 group=tomcat7

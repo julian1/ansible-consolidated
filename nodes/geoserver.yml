@@ -17,5 +17,6 @@
     - debian
     - timezone
     - basic
+    - tomcat-port-forwarding
     - geoserver
 

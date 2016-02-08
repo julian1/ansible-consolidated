@@ -1,0 +1,9 @@
+
+  - name: reconfigure-iptables
+    command: "{{item}}"
+    with_items:
+      # incoming http to allow apt-get update/upgrade
+      - sh /etc/iptables-rules
+      - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+
