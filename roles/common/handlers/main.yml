@@ -36,12 +36,12 @@
 #      # note that dpkg-reconfigure will actually modify /etc/timezone which is nasty
 #      - dpkg-reconfigure --frontend noninteractive tzdata
 
-#  - name: reconfigure-iptables
-#    command: "{{item}}"
-#    with_items:
-#      # incoming http to allow apt-get update/upgrade
-#      - sh /etc/iptables-rules
-#      - dpkg-reconfigure --frontend noninteractive iptables-persistent
+  - name: reconfigure-iptables
+    command: "{{item}}"
+    with_items:
+      # incoming http to allow apt-get update/upgrade
+      - sh /etc/iptables-rules
+      - dpkg-reconfigure --frontend noninteractive iptables-persistent
 
   - name: restart-smcroute
     service: name=smcroute state=restarted

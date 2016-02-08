@@ -19,6 +19,15 @@ It may be that the indirection between node, and role for the node is a bit usel
   ansible-playbook example.yml --tags "configuration,packages"
 
 
+### Prepare
+```
+# local
+ansible-galaxy install yaegashi.blockinfile -p ./roles
+
+# or global
+sudo ansible-galaxy install yaegashi.blockinfile
+```
+
 
 ### Examples
 
@@ -39,15 +48,6 @@ ansible-playbook roles/geoserver/redeploy.yml
 http://ftp.us.debian.org/debian
 http://mirror.internode.on.net/pub/debian
 http://mirror.aarnet.edu.au/debian
-```
-
-### Prepare
-```
-# local
-ansible-galaxy install yaegashi.blockinfile -p ./roles
-
-# or global
-sudo ansible-galaxy install yaegashi.blockinfile
 ```
 
 ### Useful flags

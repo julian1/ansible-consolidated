@@ -3,15 +3,24 @@
 
 # TODO hide hostap passphrase
 
-- hosts: 192.168.43.1
-  tasks:
-    - include: >
-        ../roles/distribution/tasks/main.yml
-        mirror=http://mirror.internode.on.net/pub/debian
-        template=debian.j2
-        version=testing
-        upgrade=safe
+  # Use ip not dns, because if dns fails, we'll end up with 127.0.0.1
+- hosts: 192.168.100.1
+  vars:
+    - user: meteo
+    - timezone: Australia/Hobart
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: testing
+    - upgrade: safe
+  vars_files:
+    - credentials.yml
+  roles:
+    - yaegashi.blockinfile
+    - debian
+    - timezone
+    - basic
+    - ip-forwarding
 
+  tasks:
     - hostname: name=apu
 
     - lineinfile: >
@@ -19,7 +28,7 @@
         state=present
         line='127.0.1.1       apu'
 
-    - include: ../roles/common/tasks/basic.yml
+    # - include: ../roles/common/tasks/basic.yml
 
     - apt: name=ntp             # network time
     - apt: name=tcpdump
@@ -29,6 +38,7 @@
     - apt: name=pciutils        # lspci
     - apt: name=usbutils        # lsusb
 
+    # TODO factor into a role...
     # sensors
     - apt: name=lm-sensors
     - shell: creates=ansible-lm-sensors {{item}}
@@ -39,13 +49,6 @@
     # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
     - apt: name=firmware-realtek
 
-    # ip forwarding
-    - lineinfile: >
-        dest=/etc/sysctl.conf
-        state=present
-        regexp='.*net.ipv4.ip_forward.*'
-        line='net.ipv4.ip_forward = 1'
-      notify: reload-sysctl
 
     - apt: name=hostapd
 
@@ -169,7 +172,7 @@
 
           # IMPORTANT - TODO even though there are no dhcp entries, dhcpmasq needs to know
           # it must serve dns on this interface. for the switches to resolve ntp dns.
-        
+
           # vlan 100
           interface=eth0.100
 
