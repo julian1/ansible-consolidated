@@ -146,8 +146,8 @@
 
   - shell: chdir={{geoserver_config}} creates=wps-enabled {{item}}
     with_items:
-      - java -jar {{saxon}} wps.xml wps-enable.xslt > wps-new.xml
-      - cp wps-new.xml wps.xml
+      - cp wps.xml wps.orig.xml
+      - java -jar {{saxon}} wps.orig.xml wps-enable.xslt > wps.xml
       - touch wps-enabled
 
 
