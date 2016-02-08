@@ -231,6 +231,9 @@
     - apt: name=maven
     - apt: name=postgresql-client-9.4
 
+
+    # Tasks don't get relative path handling
+
     # - include: "./roles/common/tasks/jdk.yml"
     - include: ../roles/common/tasks/grails-1.3.7.yml
     - include: ../roles/common/tasks/intellij.yml
