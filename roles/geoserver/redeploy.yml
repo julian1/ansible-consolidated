@@ -8,25 +8,32 @@
     - set_fact: webapps={{tomcat7}}/webapps
     - set_fact: logs={{tomcat7}}/logs
 
-    - service: name=tomcat7 state=stopped
+    # Note, we use systemctl directly rather than the ansible module, because
+    # it leaves the catalina.out file descriptor intact
 
+    # - service: name=tomcat7 state=stopped
     - shell: "{{item}}"
       with_items:
+        - systemctl stop tomcat7
         - rm {{webapps}}/geoserver.war || true
         - rm -rf {{webapps}}/geoserver || true
-        - echo > {{logs}}/catalina.out 
+        - echo > {{logs}}/catalina.out
 
     - copy:
         dest={{webapps}}/geoserver.war
         src=/home/meteo/imos/geoserver/src/web/app/target/geoserver.war
 
-    - service: name=tomcat7 state=started
+    # - service: name=tomcat7 state=started
+    - shell: "{{item}}"
+      with_items:
+        - systemctl start tomcat7
+
 
 #    - shell: "{{item}}"
 #      with_items:
 #        - systemctl stop tomcat7
 #        - rm {{webapps}}/geoserver.war || true
 #        - rm -rf {{webapps}}/geoserver || true
-#        - echo > {{logs}}/catalina.out 
+#        - echo > {{logs}}/catalina.out
 #
 
