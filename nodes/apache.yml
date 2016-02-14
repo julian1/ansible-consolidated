@@ -1,64 +1,67 @@
 
-  - hosts: apache
-    roles:
-      - yaegashi.blockinfile
-    vars:
-      - user: meteo
-      - sshkey: "{{ lookup('file', '../resources/keys') }}"
-      - mirror: "http://mirror.aarnet.edu.au/debian/"
-    tasks:
-      - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
+- hosts: apache
+  vars:
+    - user: meteo
+    - timezone: Australia/Hobart
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: jessie
+    - upgrade: safe
+  vars_files:
+    - credentials.yml   # needed for meteo ssh key,
+                        # TODO split out local keys into a seperate file or else specify explicitly...
+  roles:
+    - yaegashi.blockinfile
+    - debian
+    - basic
+  tasks:
+    # - include: ../roles/common/tasks/basic.yml
+    # apache
+    - apt: name=apache2
 
-      # - include: ../roles/common/tasks/basic.yml
+    # mod proxy
+    - apt: name=libapache2-mod-proxy-html
 
+    # TODO this is not idempotent
+    # enable proxy
+    - command: a2enmod proxy proxy_http
+    - command: a2enmod proxy proxy_html
 
-      # apache
-      - apt: name=apache2
+    # TODO ordering,
+    # disable default site
+    - command: a2dissite 000-default.conf
 
-      # mod proxy
-      - apt: name=libapache2-mod-proxy-html
+    # reverse proxy
+    - blockinfile:
+        dest: /etc/apache2/sites-available/default.conf
+        create: true
+        content: |
+          <VirtualHost *:80>
 
-      # TODO this is not idempotent
-      # enable proxy
-      - command: a2enmod proxy proxy_http
-      - command: a2enmod proxy proxy_html
+            # DocumentRoot      /aatams
+            # Require all granted
+            ProxyPass         /aatams http://aatams:8080/aatams
+            ProxyPassReverse  /aatams http://aatams:8080/aatams
 
-      # TODO ordering,
-      # disable default site
-      - command: a2dissite 000-default.conf
+            ProxyPass         /portal http://portal:8080/portal
+            ProxyPassReverse  /portal http://portal:8080/portal
 
-      # aatams reverse proxy
-      - blockinfile:
-          dest: /etc/apache2/sites-available/default.conf
-          create: true
-          content: |
-            <VirtualHost *:80>
+            ProxyPass         /geonetwork http://geonetwork2:8080/geonetwork
+            ProxyPassReverse  /geonetwork http://geonetwork2:8080/geonetwork
 
-              # DocumentRoot      /aatams
-              # Require all granted
-              ProxyPass         /aatams http://aatams:8080/aatams
-              ProxyPassReverse  /aatams http://aatams:8080/aatams
+            ProxyPass         /geoserver http://geoserver:8080/geoserver
+            ProxyPassReverse  /geoserver http://geoserver:8080/geoserver
 
-              ProxyPass         /portal http://portal:8080/portal
-              ProxyPassReverse  /portal http://portal:8080/portal
+            # Rewriting URLs in hyperlinks
+            # ProxyHTMLEnable On
+            # ProxyHTMLExtended On
+            # ProxyHTMLURLMap http://apache/geonetwork2  /geonetwork
+          </VirtualHost>
+      notify: reload-apache2
 
-              ProxyPass         /geonetwork http://geonetwork2:8080/geonetwork
-              ProxyPassReverse  /geonetwork http://geonetwork2:8080/geonetwork
+    # enable
+    - command: a2ensite default
 
-              # Rewriting URLs in hyperlinks
-              # ProxyHTMLEnable On
-              # ProxyHTMLExtended On
-              # ProxyHTMLURLMap http://apache/geonetwork2  /geonetwork
-
-
-            </VirtualHost>
-        notify: reload-apache2
-
-      # aatams enable
-      - command: a2ensite default
-
-
-    handlers:
-      - include: ../roles/common/handlers/main.yml
+  handlers:
+    - include: ../roles/common/handlers/main.yml
 
 
