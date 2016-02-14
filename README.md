@@ -70,6 +70,7 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
 
+Maybe directory partition imos from other nodes in the /nodes directory, similar to inventory/dev
 
 email, tftp, anon ftp
 
