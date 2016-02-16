@@ -1,16 +1,16 @@
 
 - hosts: julian-test-instance
-  tasks:
-
-    - include: >
-        ../roles/distribution/tasks/main.yml
-        mirror=http://mirror.aarnet.edu.au/debian
-        template=debian.j2 
-        version=jessie 
-        upgrade=safe 
-
-    - include: ../roles/common/tasks/meteo.yml
-
-  handlers:
-    - include: ../roles/common/handlers/main.yml
+  vars:
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: jessie
+    - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
+  vars_files:
+    - credentials.yml
+  roles:
+    - debian
+    - timezone
+    - locale
+    - meteo
 
