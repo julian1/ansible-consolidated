@@ -1,9 +1,6 @@
 
-# TODO - change name to meteo????? 
 
-# perhaps change name of basic to meteo, since this is highly-specific user environment
-
-#  - set_fact: user=meteo
+  - set_fact: user=meteo
 
   - apt: name=sudo
 
@@ -14,23 +11,15 @@
       insertafter=EOF
       "line=%adm ALL=(ALL) NOPASSWD: ALL"
 
-  - user: > 
-      name={{user}} 
-      shell=/bin/bash 
-      groups=adm 
+  - user: >
+      name={{user}}
+      shell=/bin/bash
+      groups=adm
       append=yes
 
-  # - authorized_key: user={{user}} key="{{ lookup('file', '../resources/keys') }}" #"
-  - authorized_key: user={{user}} key="{{key}}"
-
-
-  - apt: name=vim
-  - apt: name=screen
-  - apt: name=mlocate
-  - apt: name=unzip       # for wars
-  - apt: name=less
-
-  - apt: name=git
+  - authorized_key: >
+      user="{{user}}"
+      key="{{key}}"
 
   - git: >
       repo=http://github.com/julian1/dotfiles.git
@@ -50,4 +39,10 @@
   - name: Disable shell bell
     replace: dest=/etc/inputrc backup=true regexp='#.*(set bell-style visible.*)' replace='\1'
 
+  - apt: name=vim
+  - apt: name=screen
+  - apt: name=mlocate
+  - apt: name=unzip
+  - apt: name=less
+  - apt: name=git
 

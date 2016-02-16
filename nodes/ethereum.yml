@@ -9,7 +9,7 @@
 
     - file: path=/root state=directory mode=0755
 
-    - include: ../roles/common/tasks/basic.yml
+    - include: ../roles/common/tasks/meteo.yml
 
     - include: ../roles/ethereum/tasks/cpp-ethereum.yml
 #    - include: ../roles/ethereum/tasks/go-ethereum.yml

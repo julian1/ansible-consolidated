@@ -17,7 +17,7 @@
     - yaegashi.blockinfile
     - debian
     - timezone
-    - basic
+    - meteo
     - ip-forwarding
 
   tasks:

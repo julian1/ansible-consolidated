@@ -6,16 +6,15 @@
     - upgrade: safe
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
-    - user: meteo
   vars_files:
     - credentials.yml
-
   roles:
+    # should specify yaegashi as dependency for roles, where it's actually used...
     - yaegashi.blockinfile
     - debian
     - timezone
     - locale
-    - basic
+    - meteo
     - tomcat-port-forwarding
     - postgres
 

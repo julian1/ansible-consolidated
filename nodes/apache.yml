@@ -12,9 +12,9 @@
   roles:
     - yaegashi.blockinfile
     - debian
-    - basic
+    - meteo
   tasks:
-    # - include: ../roles/common/tasks/basic.yml
+    # - include: ../roles/common/tasks/meteo.yml
     # apache
     - apt: name=apache2
 

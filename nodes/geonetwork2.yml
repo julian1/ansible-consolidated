@@ -11,7 +11,7 @@
   roles:
     - debian
     - timezone
-    - basic
+    - meteo
     - tomcat-port-forwarding
     - postgres
     - geonetwork
@@ -24,7 +24,7 @@
 #    - yaegashi.blockinfile
 #    - tomcat-port-forwarding
 
-#    - include: ../roles/common/tasks/basic.yml
+#    - include: ../roles/common/tasks/meteo.yml
 #    - include: ../roles/postgres/tasks/main.yml
 #    # - include: ../roles/geonetwork/tasks/drop-db.yml
 #    - include: ../roles/geonetwork/tasks/restore-db.yml

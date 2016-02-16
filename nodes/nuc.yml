@@ -43,7 +43,7 @@
     # IMPORTANT Think we need to move .xinitrc out of dotfiles and make it non-generic for displays 
     # we probably also need a wm as well as xorg, so probably makes sense to try xmonad. 
 
-#    - include: ../roles/common/tasks/basic.yml
+#    - include: ../roles/common/tasks/meteo.yml
 
     # xinit launches, via ssh when root after installing xorg.
     - apt: name=xorg
