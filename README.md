@@ -24,7 +24,7 @@ ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.s
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 
-ansible-playbook -i geoserver, roles/geoserver/redeploy.yml
+nsible-playbook ./roles/aatams/redeploy.yml
 ansible-playbook -i localhost, roles/common/devenv-lite.yml
 ansible-playbook -i localhost, roles/zfs/main.yml
 ```
