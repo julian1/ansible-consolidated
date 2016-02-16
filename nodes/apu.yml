@@ -187,7 +187,6 @@
           dhcp-host=54:ab:3a:19:b6:d5,chromebox,192.168.201.15
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.201.16
           dhcp-host=b8:ae:ed:7b:b5:b9,nuc,192.168.201.17
-          dhcp-host=08:17:35:34:c9:c0,cisco1000,192.168.201.18
           dhcp-host=b8:2a:72:c9:fe:d2,dell-home-wired,192.168.201.19
           dhcp-host=00:04:13:37:1a:f1,snom,192.168.201.20
 
