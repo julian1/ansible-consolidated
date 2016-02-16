@@ -9,18 +9,11 @@
   vars_files:
     - credentials.yml
   roles:
-    # should specify yaegashi as dependency for roles, where it's actually used...
-    - yaegashi.blockinfile
     - debian
     - timezone
     - locale
     - meteo
     - tomcat-port-forwarding
     - postgres
-
-  tasks:
-    #- include: ../roles/aatams/tasks/main.yml
-
-  handlers:
-    - include: ../roles/common/handlers/main.yml
+    - aatams
 

@@ -1,0 +1,7 @@
+
+  # we could symbolically link this from ./roles/common/handlers/restart-aatams.yml ...
+
+  - name: restart-tomcat7
+    # shell: echo > /var/log/tomcat7/catalina.out
+    service: name=tomcat7 state=restarted
+

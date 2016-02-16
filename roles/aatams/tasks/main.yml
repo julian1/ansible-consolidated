@@ -1,47 +1,95 @@
 
-# assume have postgres 
-
-# just about hoist this up into the aatams node?
+  # assumes postgres setup elsewhere...
 
   - apt: name=tomcat7 update_cache=yes
 
-  # TODO maybe move into the node definition
-  # port forward to tomcat7
-  - apt: name=iptables-persistent
-  - blockinfile:
-      dest: /etc/iptables-rules
-      create: true
+  # paths
+  - set_fact: tomcat7=/var/lib/tomcat7
+  - set_fact: conf={{tomcat7}}/conf
+  - set_fact: webapps={{tomcat7}}/webapps
+  - set_fact: lib={{tomcat7}}/lib
+  - set_fact: log=/var/log/tomcat7
+  - set_fact: aatams_data={{conf}}/aatams-data
+
+  # permissions
+  - file: path={{item}} state=directory owner=tomcat7 group=tomcat7
+    with_items:
+      - "{{tomcat7}}"
+      - "{{webapps}}"
+      - "{{lib}}"
+      - "{{aatams_data}}"
+
+  # change log-file permissions
+  - file: path={{log}}/catalina.out mode=0666
+
+  # tomcat
+  - copy:
+      dest: /etc/default/tomcat7
+      backup: yes
+      owner: tomcat7
+      group: tomcat7
       content: |
-        iptables --flush PREROUTING -t nat
-        iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
-    notify: reconfigure-iptables
-
-    # TODO tidy paths, put aatams_data in conf...
-
+        # deployed by ansible!
+        TOMCAT7_USER=tomcat7
+        TOMCAT7_GROUP=tomcat7
+        JAVA_OPTS="${JAVA_OPTS} \
+          -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError \
+          -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+    notify: restart-tomcat7
 
   # jndi
-  - template: src=context.j2 dest=/etc/tomcat7/context.xml owner=tomcat7
+  - copy:
+      dest: "{{conf}}/context.xml"
+      backup: yes
+      owner: tomcat7
+      group: tomcat7
+      content: |
+        <?xml version='1.0' encoding='utf-8'?>
+        <!-- deployed by ansible! -->
+        <Context>
+            <!-- Default set of monitored resources -->
+            <WatchedResource>WEB-INF/web.xml</WatchedResource>
+            <Resource
+                name="jdbc/aatams"
+                auth="Container"
+                factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+                type="javax.sql.DataSource"
+                driverClassName="org.postgresql.Driver"
+                url="jdbc:postgresql://localhost:5432/aatams?ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"
+                validationQuery="SELECT 1"
+                username="aatams" 
+                password="aatams"
+                maxActive="20" maxIdle="5" maxWait="-1"
+                testOnBorrow="true" testWhileIdle="true" testOnReturn="true"
+                timeBetweenEvictionRunsMillis="30000"
+                numTestsPerEvictionRun="3"
+                minEvictableIdleTimeMillis="60000"
+                defaultAutoCommit="false"
+            />
+            <Environment name="aodn.configuration" value="{{aatams_data}}/aatams.groovy" type="java.lang.String" override="true"/>
+        </Context>
     notify: restart-tomcat7
 
-  # tomcat opts
-  - template: src=tomcat7.j2 dest=/etc/default/tomcat7 owner=tomcat7
-    notify: restart-tomcat7
 
-  # data directory
-  - file: path=/var/lib/tomcat7/aatams_data state=directory owner=tomcat7
 
+  # NOTE: currently a template, but perhaps should do inline using copy module
   # grails config
-  - template: src=aatams.groovy.j2 dest=/var/lib/tomcat7/aatams_data/aatams.groovy owner=tomcat7
+  - template: >
+      src=aatams.groovy.j2 
+      dest={{aatams_data}}/aatams.groovy 
+      owner=tomcat7
+      group=tomcat7
     notify: restart-tomcat7
 
   # war
   # TODO owner - use file?
-  - get_url: url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.15.0.war
+  - get_url: > 
+      url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.15.0.war
       dest=/var/lib/tomcat7/webapps/aatams.war
     notify: restart-tomcat7
 
 
-  # check for database
+  # check for existing aatams database
   - shell: psql -tAc "select 1 from pg_database where datname='aatams'"
     become: yes
     become_user: postgres
@@ -49,7 +97,7 @@
     changed_when: false
 
 
-  # fresh database
+  # create fresh database
   - shell: "{{item}}"
     become: yes
     become_user: postgres
