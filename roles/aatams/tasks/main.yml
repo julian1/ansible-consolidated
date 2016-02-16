@@ -101,7 +101,8 @@
     notify: restart-tomcat7
 
 
-
+  # TODO likely to be used in other roles, so factor out file deployment to 
+  # /usr/share/postgresql/9.4/ or /ansible
   # sql functions to easily manipulate permissions
   - copy:
       dest: "{{conf}}/admin93.sql"
