@@ -1,5 +1,5 @@
 
-
+  # template first, in case original mirror is down.
   - template: src=debian.j2 dest=/etc/apt/sources.list mode=0644
 
   # ansible requires aptitude in order to perform upgrade!
