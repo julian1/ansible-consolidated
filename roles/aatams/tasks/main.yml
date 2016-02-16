@@ -101,12 +101,6 @@
     notify: restart-tomcat7
 
 
-  # TODO likely to be used in other roles, so factor out file deployment to 
-  # /usr/share/postgresql/9.4/ or /ansible
-  # sql functions to easily manipulate permissions
-  - copy:
-      dest: "{{conf}}/admin93.sql"
-      src: admin93.sql
 
   # check for existing aatams database
   - shell: psql -tAc "select 1 from pg_database where datname='aatams'"
@@ -133,7 +127,7 @@
           create schema aatams authorization aatams;
           alter database aatams set search_path to 'aatams','public';
           "
-      - psql -d aatams -f {{conf}}/admin93.sql
+      - psql -d aatams -f /usr/share/postgresql/9.4/admin93.sql
 
     when: have_aatams_db.stdout != "1"
 
