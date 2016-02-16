@@ -5,18 +5,20 @@
   # however this means we need to manually compute the state
   # https://wiki.debian.org/TimeZoneChanges
 
-  # ok, so we can control whether something is counted as a change 
+  # ok, so we can control whether something is counted as a change
 
-
-  - shell: "cmp --silent /etc/localtime /usr/share/zoneinfo/{{ timezone }}; echo $?"
+  - shell: "cmp --silent /etc/localtime /usr/share/zoneinfo/{{timezone}}; echo $?"
     register: identical
     changed_when: identical.stdout != '0'
 
-  - command: cp -f /usr/share/zoneinfo/{{ timezone }} /etc/localtime
+  - command: cp -f /usr/share/zoneinfo/{{timezone}} /etc/localtime
     when:  identical.stdout != '0'
     notify: reconfigure-tzdata
 
-  # replace this and just use a copy instead?
-  - template: src=timezone.j2 dest=/etc/timezone force=yes mode=0644
+  - copy:
+      mode: 0644
+      dest: /etc/timezone
+      content: |
+        {{timezone}}
     notify: reconfigure-tzdata
 
