@@ -84,7 +84,7 @@
   # war
   # TODO owner - use file?
   - get_url: > 
-      url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.15.0.war
+      url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.16.0.war
       dest=/var/lib/tomcat7/webapps/aatams.war
     notify: restart-tomcat7
 
@@ -115,4 +115,9 @@
           alter database aatams set search_path to 'aatams','public';
           "
     when: have_aatams_db.stdout != "1"
+
+    # to restore aatams schema from backup...
+    # sudo -u postgres psql -d aatams -c 'drop schema aatams cascade;'
+    # time sudo -u postgres pg_restore aatams.dump -x -O  -d aatams
+    # 40 minutes
 
