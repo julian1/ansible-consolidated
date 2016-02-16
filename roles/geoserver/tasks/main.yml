@@ -25,7 +25,6 @@
   # related, where pool throws on class load failre of Cursor
   - copy:
       dest: "{{lib}}/tomcat-dbcp.jar"
-      # src: ../roles/geoserver/files/tomcat-dbcp.jar
       src: tomcat-dbcp.jar
       owner: tomcat7
       group: tomcat7
