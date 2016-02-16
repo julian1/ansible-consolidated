@@ -21,6 +21,8 @@
       user="{{user}}"
       key="{{key}}"
 
+  - apt: name=git
+
   - git: >
       repo=http://github.com/julian1/dotfiles.git
       dest=/home/{{user}}/dotfiles
@@ -36,13 +38,11 @@
       chdir: /home/{{user}}/dotfiles/
       creates: installed.txt
 
-  - name: Disable shell bell
-    replace: dest=/etc/inputrc backup=true regexp='#.*(set bell-style visible.*)' replace='\1'
+  - replace: dest=/etc/inputrc backup=true regexp='#.*(set bell-style visible.*)' replace='\1'
 
   - apt: name=vim
   - apt: name=screen
   - apt: name=mlocate
-  - apt: name=unzip
   - apt: name=less
-  - apt: name=git
+  - apt: name=unzip
 
