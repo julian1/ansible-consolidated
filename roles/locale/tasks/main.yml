@@ -1,0 +1,12 @@
+
+    ###########################
+    # Ok, issue is that the deploy templates for timezone are not available
+    # options are to specify the full file path directly
+    # or separate it into a separate role to be included...
+    ###########################3
+
+
+  - apt: name=locales
+
+  - locale_gen: name={{locale}} state=present
+

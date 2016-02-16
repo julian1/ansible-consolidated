@@ -1,5 +1,7 @@
 
-
+###
+  - For use with systemd-nspawn containers, kvm, docker or virtual box.
+  
 
 ### Prepare
 ```
@@ -69,6 +71,10 @@ http://www.mechanicalfish.net/start-learning-ansible-with-one-line-and-no-files/
 http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 ### TODO
+
+
+expose locale in the sameway as timezone
+
 
 Maybe directory partition imos from other nodes in the /nodes directory, similar to inventory/dev
 
