@@ -1,16 +1,17 @@
 
 - hosts: geonetwork2
   vars:
-    - user: meteo
-    - timezone: Australia/Hobart
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie
     - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
   vars_files:
     - credentials.yml
   roles:
     - debian
     - timezone
+    - locale
     - meteo
     - tomcat-port-forwarding
     - postgres

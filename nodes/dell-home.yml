@@ -1,11 +1,12 @@
 
 - hosts: dell-home
   vars:
-    - user: meteo
     - timezone: Australia/Hobart
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: testing
     - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
     - printer:
         name: Brother
         url: socket://brother:9100
@@ -16,6 +17,7 @@
     - yaegashi.blockinfile
     - debian
     - timezone
+    - locale
     - meteo
     - ip-forwarding
     - printer

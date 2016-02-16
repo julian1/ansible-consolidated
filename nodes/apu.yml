@@ -6,17 +6,18 @@
   # Use ip not dns, because if dns goes wrong, we can end up trying to provision 127.0.0.1
 - hosts: 192.168.100.1
   vars:
-    - user: meteo
-    - timezone: Australia/Hobart
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: testing
     - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
   vars_files:
     - credentials.yml
   roles:
     - yaegashi.blockinfile
     - debian
     - timezone
+    - locale
     - meteo
     - ip-forwarding
 

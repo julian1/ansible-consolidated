@@ -1,17 +1,19 @@
 
 - hosts: apache
   vars:
-    - user: meteo
-    - timezone: Australia/Hobart
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie
     - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
   vars_files:
     - credentials.yml   # needed for meteo ssh key,
                         # TODO split out local keys into a seperate file or else specify explicitly...
   roles:
     - yaegashi.blockinfile
     - debian
+    - timezone
+    - locale
     - meteo
   tasks:
     # - include: ../roles/common/tasks/meteo.yml
