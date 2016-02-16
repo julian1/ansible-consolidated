@@ -1,0 +1,9 @@
+
+  - hostname: name="{{hostname}}"
+
+  - lineinfile: >
+      dest=/etc/hosts
+      state=present
+      line='127.0.1.1       {{hostname}}'
+
+

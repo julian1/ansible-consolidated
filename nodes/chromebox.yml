@@ -5,12 +5,15 @@
     - upgrade: safe
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
+    # might be nicer to take from dhcp...
+    - hostname: chromebox
   vars_files:
     - credentials.yml
   roles:
     - debian
     - timezone
     - locale
+    - hostname
     - meteo
 
   tasks:

@@ -11,6 +11,7 @@
     - upgrade: safe
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
+    - hostname: apu
   vars_files:
     - credentials.yml
   roles:
@@ -18,17 +19,11 @@
     - debian
     - timezone
     - locale
+    - hostname
     - meteo
     - ip-forwarding
 
   tasks:
-    - hostname: name=apu
-
-    - lineinfile: >
-        dest=/etc/hosts
-        state=present
-        line='127.0.1.1       apu'
-
     - apt: name=ntp             # network time
     - apt: name=tcpdump
     - apt: name=netstat-nat     # nat connections
