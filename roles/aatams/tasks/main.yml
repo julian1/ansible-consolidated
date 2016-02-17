@@ -22,6 +22,17 @@
   # change log-file permissions
   - file: path={{log}}/catalina.out mode=0666
 
+
+  # use apache/ubuntu connection pool jar. commons has bug, probably class loader
+  # related, where pool throws on class load failre of Cursor
+  - copy:
+      dest: "{{lib}}/tomcat-dbcp.jar"
+      src: tomcat-dbcp.jar
+      owner: tomcat7
+      group: tomcat7
+
+
+
   # tomcat
   - copy:
       dest: /etc/default/tomcat7
@@ -38,6 +49,7 @@
     notify: restart-tomcat7
 
   # jndi
+  # factory="org.apache.commons.dbcp.BasicDataSourceFactory"
   - copy:
       dest: "{{conf}}/context.xml"
       backup: yes
@@ -52,12 +64,12 @@
             <Resource
                 name="jdbc/aatams"
                 auth="Container"
-                factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+                factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
                 type="javax.sql.DataSource"
                 driverClassName="org.postgresql.Driver"
                 url="jdbc:postgresql://localhost:5432/aatams?ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"
                 validationQuery="SELECT 1"
-                username="aatams" 
+                username="aatams"
                 password="aatams"
                 maxActive="20" maxIdle="5" maxWait="-1"
                 testOnBorrow="true" testWhileIdle="true" testOnReturn="true"
@@ -75,18 +87,19 @@
   # NOTE: currently a template, but perhaps should do inline using copy module
   # grails config
   - template: >
-      src=aatams.groovy.j2 
-      dest={{aatams_data}}/aatams.groovy 
+      src=aatams.groovy.j2
+      dest={{aatams_data}}/aatams.groovy
       owner=tomcat7
       group=tomcat7
     notify: restart-tomcat7
 
   # war
   # TODO owner - use file?
-  - get_url: > 
-      url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.15.0.war
+  - get_url: >
+      url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.16.0.war
       dest=/var/lib/tomcat7/webapps/aatams.war
     notify: restart-tomcat7
+
 
 
   # check for existing aatams database
@@ -97,7 +110,7 @@
     changed_when: false
 
 
-  # create fresh database
+  # create fresh database if none
   - shell: "{{item}}"
     become: yes
     become_user: postgres
@@ -114,5 +127,17 @@
           create schema aatams authorization aatams;
           alter database aatams set search_path to 'aatams','public';
           "
+      - psql -d aatams -f /usr/share/postgresql/9.4/admin93.sql
+
     when: have_aatams_db.stdout != "1"
+
+    # to restore aatams schema from backup...
+    # sudo -u postgres psql -d aatams -c 'drop schema aatams cascade;'
+    # time sudo -u postgres pg_restore aatams.dump -x -O -d aatams
+    # 40 minutes
+    # sudo -u postgres psql -d aatams -c 'alter schema aatams owner to aatams'
+    # sudo -u postgres psql -d aatams -f /var/lib/tomcat7/conf/admin93.sql
+    # sudo -u postgres psql -d aatams
+    # aatams=# select admin.set_owner_of_schema_objects('aatams', 'aatams');
+
 
