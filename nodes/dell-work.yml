@@ -1,5 +1,5 @@
 
-- hosts: 131.217.38.36
+- hosts: dell-work
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: testing
