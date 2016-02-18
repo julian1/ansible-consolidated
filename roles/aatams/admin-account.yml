@@ -4,20 +4,11 @@
 # this should work in sql, but doesn't
 # select encode(digest('admin', 'sha1'), 'hex') ;
 
-- hosts: 
-    - aatams
-    - aatams-test-instance
+- hosts: all
   tasks:
-    - shell: psql -d aatams -tAc "select 1 from sec_user where username = 'admin'"
-      become: yes
-      become_user: postgres
-      register: have_admin_account
-      changed_when: false
-
     - shell: "{{item}}"
       become: yes
       become_user: postgres
-      when: have_admin_account.stdout != "1"
       with_items:
         - |
           psql -d aatams -c "
