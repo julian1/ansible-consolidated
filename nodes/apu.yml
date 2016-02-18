@@ -12,6 +12,8 @@
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
     - hostname: apu
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
     - credentials.yml
   roles:
@@ -21,7 +23,7 @@
     - locale
     - hostname
     - common
-    - meteo
+    - meteo-dotfiles
     - ip-forwarding
 
   tasks:

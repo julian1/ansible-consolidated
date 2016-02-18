@@ -6,6 +6,8 @@
     - upgrade: safe
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
     - credentials.yml
   roles:
@@ -13,25 +15,10 @@
     - timezone
     - locale
     - common
-    - meteo
+    - meteo-dotfiles
     - tomcat-port-forwarding
     - postgres
     - geonetwork
   tasks:
     - include: ../roles/geonetwork/tasks/restore-db.yml
-
-
-#- hosts: geonetwork2
-#  roles:
-#    - yaegashi.blockinfile
-#    - tomcat-port-forwarding
-
-#    - include: ../roles/common/tasks/meteo.yml
-#    - include: ../roles/postgres/tasks/main.yml
-#    # - include: ../roles/geonetwork/tasks/drop-db.yml
-#    - include: ../roles/geonetwork/tasks/restore-db.yml
-#    - include: ../roles/geonetwork/tasks/main.yml
-
-#  handlers:
-#    - include: ../roles/common/handlers/main.yml
 

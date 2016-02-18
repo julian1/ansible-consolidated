@@ -6,16 +6,17 @@
     - upgrade: safe
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
-    - credentials.yml   # needed for meteo ssh key,
-                        # TODO split out local keys into a seperate file or else specify explicitly...
+    - credentials.yml
   roles:
     - yaegashi.blockinfile
     - debian
     - timezone
     - locale
     - common
-    - meteo
+    - meteo-dotfiles
   tasks:
     # - include: ../roles/common/tasks/meteo.yml
     # apache
