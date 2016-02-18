@@ -1,5 +1,5 @@
 
-- hosts: apache
+- hosts: rev-proxy
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie

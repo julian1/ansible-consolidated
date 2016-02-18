@@ -163,7 +163,7 @@
           dhcp-range=br0,10.1.1.10,10.1.1.20,4h
           dhcp-host=00:01:04:1b:2C:1C,portal,10.1.1.14
           dhcp-host=00:01:04:1b:2C:1F,geonetwork3,10.1.1.15
-          dhcp-host=00:01:04:1b:2C:1E,apache,10.1.1.16
+          dhcp-host=00:01:04:1b:2C:1E,rev-proxy,10.1.1.16
           dhcp-host=00:01:04:1b:2C:1D,aatams,10.1.1.17
           dhcp-host=00:01:04:1b:2C:1B,geonetwork2,10.1.1.18
           dhcp-host=00:01:04:1b:2C:1A,jessie,10.1.1.19
@@ -201,7 +201,7 @@
           iptables -t nat --flush
           iptables -t mangle --flush
 
-          # redirect to apache
+          # redirect to rev-proxy
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
           iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
 
