@@ -71,6 +71,8 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 #### TODO
 
+Strategy for IOS, md5sum the cisco config file and compare. if different then upload, and reboot.
+
 Maybe directory partition imos from other nodes in the /nodes directory, similar to inventory/dev
 email, tftp, anon ftp
 git server
