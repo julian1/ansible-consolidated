@@ -1,7 +1,0 @@
-
-  # may want to change the sshd root permit option as well...
-
-  - authorized_key: >
-      user="root"
-      key="{{key}}"
-

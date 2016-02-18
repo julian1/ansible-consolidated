@@ -1,16 +1,12 @@
 
-- hosts:
-    - aatams
-    - aatams-test-instance
+- hosts: all
   tasks:
     - copy:
         dest: /tmp/aatams.dump
         src: /home/meteo/imos/2015.11.21.00.12.46/aatams3/aatams.dump
 
-    - shell: "{{item}}"
-      with_items:
-        - systemctl stop tomcat7
-
+    - shell: systemctl stop tomcat7
+    
     - shell: "{{item}}"
       become: yes
       become_user: postgres

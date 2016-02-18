@@ -101,6 +101,9 @@
     notify: restart-tomcat7
 
 
+  # TODO factor this out into a separate task?
+  # should be role and task, and not a role, to be included
+  # actually should be able to call as a role, but specifying the path
 
   # check for existing aatams database
   - shell: psql -tAc "select 1 from pg_database where datname='aatams'"
@@ -109,7 +112,6 @@
     register: have_aatams_db
     changed_when: false
 
-  # TODO factor this out into a separate task?
   # create fresh database if none
   - shell: "{{item}}"
     become: yes

@@ -1,9 +1,10 @@
 
+  # TODO change name to just meteo-dotfiles.yml since users 
 
   - set_fact: user=meteo
 
-  - user: name={{user}} shell=/bin/bash groups=adm append=yes
-  - authorized_key: user="{{user}}" key="{{key}}"
+#  - user: name={{user}} shell=/bin/bash groups=adm append=yes
+#  - authorized_key: user="{{user}}" key="{{key}}"
 
   - apt: name=git
 

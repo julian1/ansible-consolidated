@@ -4,9 +4,7 @@
 # Note, use systemctl instead of ansible system module, since it leaves
 # catalina.out file descriptor intact
 
-- hosts: 
-    - aatams
-    - aatams-test-instance
+- hosts: all
   tasks:
     - set_fact: tomcat7=/var/lib/tomcat7
     - set_fact: webapps={{tomcat7}}/webapps

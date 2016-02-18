@@ -1,7 +1,5 @@
 
-- hosts: 
-    - aatams
-    - aatams-test-instance
+- hosts: all
   tasks:
     - shell: "{{item}}"
       become: yes

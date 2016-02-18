@@ -8,7 +8,7 @@
     - aatams
     - aatams-test-instance
   tasks:
-    - shell: psql -d aatams -tAc "select 1 from sec_user where username = 'aatams'"
+    - shell: psql -d aatams -tAc "select 1 from sec_user where username = 'admin'"
       become: yes
       become_user: postgres
       register: have_admin_account
@@ -21,8 +21,6 @@
       with_items:
         - |
           psql -d aatams -c "
-            -- TODO - wipe out all production hashes?
-
             insert into sec_user(id, version, password_hash, username, class) 
             values (
               99999999,
