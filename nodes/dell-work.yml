@@ -15,7 +15,6 @@
   vars_files:
     - credentials.yml
   roles:
-    - yaegashi.blockinfile
     - debian
     - timezone
     - locale

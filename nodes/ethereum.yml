@@ -3,7 +3,6 @@ TODO: Fixme!
 
 - hosts: ethereum
   roles:
-    - yaegashi.blockinfile
   tasks:
     - include: | 
         ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe 

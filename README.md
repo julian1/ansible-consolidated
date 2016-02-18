@@ -2,15 +2,7 @@
 ####
 For use with systemd-nspawn containers, kvm, docker or virtual box.
   
-
-#### Prepare
-```
-# local
-ansible-galaxy install yaegashi.blockinfile -p ./roles
-
-# or global
-sudo ansible-galaxy install yaegashi.blockinfile
-```
+Requires Ansible version >= 2
 
 
 #### Examples

@@ -1,7 +1,6 @@
 
 - hosts: portal
   roles:
-    - yaegashi.blockinfile
   tasks:
     - include: >
         ../roles/distribution/tasks/main.yml

@@ -2,7 +2,6 @@
 
 - hosts: nuc
   roles:
-    - yaegashi.blockinfile
   tasks:
     # have to set append acpi=off in syslinux boot
 

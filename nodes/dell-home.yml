@@ -16,7 +16,6 @@
   vars_files:
     - credentials.yml
   roles:
-    - yaegashi.blockinfile
     - debian
     - timezone
     - locale
@@ -24,10 +23,8 @@
     - meteo-dotfiles
     - ip-forwarding
     - printer
-
   tasks:
     #####
-
     - include: ../roles/common/tasks/devenv-lite.yml
 
     - apt: name=memtest86

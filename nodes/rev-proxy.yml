@@ -11,21 +11,19 @@
   vars_files:
     - credentials.yml
   roles:
-    - yaegashi.blockinfile
     - debian
     - timezone
     - locale
     - common
     - meteo-dotfiles
   tasks:
-    # - include: ../roles/common/tasks/meteo.yml
     # apache
     - apt: name=apache2
 
     # mod proxy
     - apt: name=libapache2-mod-proxy-html
 
-    # TODO this is not idempotent
+    # TODO not idempotent
     # enable proxy
     - command: a2enmod proxy proxy_http
     - command: a2enmod proxy proxy_html

@@ -6,5 +6,4 @@
 *.class
 target
 harcopy.0
-roles/yaegashi.blockinfile
 nodes/credentials.yml
