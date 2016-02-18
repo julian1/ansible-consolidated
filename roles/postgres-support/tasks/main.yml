@@ -1,9 +1,0 @@
-
-  # TODO likely to be used in other roles, so factor out file deployment to 
-  # /usr/share/postgresql/9.4/ or /ansible
-  # sql functions to easily manipulate permissions
-
-  - copy:
-      src: admin93.sql
-      dest: /usr/share/postgresql/9.4/admin93.sql
-

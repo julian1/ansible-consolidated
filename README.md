@@ -19,8 +19,7 @@ sudo ansible-galaxy install yaegashi.blockinfile
 ansible-playbook nodes/dell-home.yml
 ansible-playbook nodes/aatams.yml -v
 ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
-ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.ssh/julian3.pem -s
-
+ansible-playbook ./nodes/aatams.yml -i aatams-test-instance, -u debian --private-key ~/.ssh/julian3.pem -s
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 

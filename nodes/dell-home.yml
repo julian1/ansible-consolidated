@@ -18,6 +18,7 @@
     - debian
     - timezone
     - locale
+    - common
     - meteo
     - ip-forwarding
     - printer

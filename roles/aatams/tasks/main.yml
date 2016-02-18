@@ -109,11 +109,12 @@
     register: have_aatams_db
     changed_when: false
 
-
+  # TODO factor this out into a separate task?
   # create fresh database if none
   - shell: "{{item}}"
     become: yes
     become_user: postgres
+    when: have_aatams_db.stdout != "1"
     with_items:
       - |
         psql -d postgres -c "
@@ -127,17 +128,7 @@
           create schema aatams authorization aatams;
           alter database aatams set search_path to 'aatams','public';
           "
-      - psql -d aatams -f /usr/share/postgresql/9.4/admin93.sql
-
-    when: have_aatams_db.stdout != "1"
-
-    # to restore aatams schema from backup...
-    # sudo -u postgres psql -d aatams -c 'drop schema aatams cascade;'
-    # time sudo -u postgres pg_restore aatams.dump -x -O -d aatams
-    # 40 minutes
-    # sudo -u postgres psql -d aatams -c 'alter schema aatams owner to aatams'
-    # sudo -u postgres psql -d aatams -f /var/lib/tomcat7/conf/admin93.sql
-    # sudo -u postgres psql -d aatams
-    # aatams=# select admin.set_owner_of_schema_objects('aatams', 'aatams');
+      # this is horrible cross-role dependency....
+      - psql -d aatams -f /usr/share/postgresql/9.4/admin.sql
 
 

@@ -2,24 +2,8 @@
 
   - set_fact: user=meteo
 
-  - apt: name=sudo
-
-  - lineinfile: >
-      dest=/etc/sudoers
-      validate='visudo -cf %s'
-      state=present
-      insertafter=EOF
-      "line=%adm ALL=(ALL) NOPASSWD: ALL"
-
-  - user: >
-      name={{user}}
-      shell=/bin/bash
-      groups=adm
-      append=yes
-
-  - authorized_key: >
-      user="{{user}}"
-      key="{{key}}"
+  - user: name={{user}} shell=/bin/bash groups=adm append=yes
+  - authorized_key: user="{{user}}" key="{{key}}"
 
   - apt: name=git
 
@@ -38,11 +22,4 @@
       chdir: /home/{{user}}/dotfiles/
       creates: installed.txt
 
-  - replace: dest=/etc/inputrc backup=true regexp='#.*(set bell-style visible.*)' replace='\1'
-
-  - apt: name=vim
-  - apt: name=screen
-  - apt: name=mlocate
-  - apt: name=less
-  - apt: name=unzip
 

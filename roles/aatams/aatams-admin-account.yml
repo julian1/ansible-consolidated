@@ -1,0 +1,34 @@
+# hash is...
+# echo -n admin | sha256sum
+# or, (should work in sql, but doesn't)
+# select encode(digest('admin', 'sha1'), 'hex') ;
+
+- hosts: 
+    - aatams
+    - aatams-test-instance
+  tasks:
+    - shell: psql -d aatams -tAc "select 1 from sec_user where username = 'aatams'"
+      become: yes
+      become_user: postgres
+      register: have_admin_account
+      changed_when: false
+
+    - shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      when: have_admin_account.stdout != "1"
+      with_items:
+        - |
+          psql -d aatams -c "
+            insert into sec_user(id, version, password_hash, username, class) 
+            values (
+              99999999,
+              0,
+              '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+              'admin',
+              'au.org.emii.aatams.Person'
+            );
+            -- TODO: lookup id in sec_role corresponding to Admin user
+            insert into sec_user_roles(sec_role_id, sec_user_id) 
+            values (5, 99999999);
+            "

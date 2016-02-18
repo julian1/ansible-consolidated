@@ -1,0 +1,10 @@
+
+  - apt: name=sudo
+
+  - lineinfile: >
+      dest=/etc/sudoers
+      validate='visudo -cf %s'
+      state=present
+      insertafter=EOF
+      "line=%adm ALL=(ALL) NOPASSWD: ALL"
+

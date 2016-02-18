@@ -1,15 +1,17 @@
 
 # TODO figure out a way to refactor this mostly common code
-- hosts: aatams
+# ok, the point of this is to not be idempotent, so shell commands are fine...
+# Note, use systemctl instead of ansible system module, since it leaves
+# catalina.out file descriptor intact
+
+- hosts: 
+    - aatams
+    - aatams-test-instance
   tasks:
-    # ok, the point of this is to not be idempotent, so shell commands are fine...
     - set_fact: tomcat7=/var/lib/tomcat7
     - set_fact: webapps={{tomcat7}}/webapps
     - set_fact: logs={{tomcat7}}/logs
 
-    # Note, use systemctl instead of ansible system module, since it leaves
-    # catalina.out file descriptor intact
-    # - service: name=tomcat7 state=stopped
     - shell: "{{item}}"
       with_items:
         - systemctl stop tomcat7
@@ -21,7 +23,6 @@
         dest={{webapps}}/aatams.war
         src=/home/meteo/imos/aatams/target/aatams-3.16.0.war
 
-    # - service: name=tomcat7 state=started
     - shell: "{{item}}"
       with_items:
         - systemctl start tomcat7

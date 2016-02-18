@@ -20,6 +20,7 @@
     - timezone
     - locale
     - hostname
+    - common
     - meteo
     - ip-forwarding
 

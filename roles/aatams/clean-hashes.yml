@@ -1,0 +1,15 @@
+
+- hosts: 
+    - aatams
+    - aatams-test-instance
+  tasks:
+    - shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      with_items:
+        - |
+          psql -d aatams -c "
+            update sec_user
+            set password_hash = '9999999'
+            where username != 'admin' 
+            "

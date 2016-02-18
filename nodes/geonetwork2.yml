@@ -12,6 +12,7 @@
     - debian
     - timezone
     - locale
+    - common
     - meteo
     - tomcat-port-forwarding
     - postgres
