@@ -6,5 +6,5 @@
       validate='visudo -cf %s'
       state=present
       insertafter=EOF
-      "line=%adm ALL=(ALL) NOPASSWD: ALL"
+      line="%adm ALL=(ALL) NOPASSWD: ALL"
 

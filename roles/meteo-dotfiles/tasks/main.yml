@@ -1,10 +1,5 @@
 
-  # TODO change name to just meteo-dotfiles.yml since users 
-
   - set_fact: user=meteo
-
-#  - user: name={{user}} shell=/bin/bash groups=adm append=yes
-#  - authorized_key: user="{{user}}" key="{{key}}"
 
   - apt: name=git
 
@@ -13,12 +8,12 @@
       dest=/home/{{user}}/dotfiles
       version=master
       force=yes
-    sudo: true
-    sudo_user: "{{user}}"
+    become: true
+    become_user: "{{user}}"
 
   - shell: ./install.sh 2> installed.txt
-    sudo: true
-    sudo_user: "{{user}}"
+    become: true
+    become_user: "{{user}}"
     args:
       chdir: /home/{{user}}/dotfiles/
       creates: installed.txt
