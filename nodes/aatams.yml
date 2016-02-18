@@ -19,7 +19,6 @@
   pre_tasks:
     - authorized_key: user=root key="{{meteo_pubkey}}"
   roles:
-    # - root-auth-key
     - debian
     - timezone
     - locale
