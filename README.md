@@ -1,6 +1,6 @@
 
 ####
-For use with systemd-nspawn containers, kvm, docker or virtual box.
+For use with systemd-nspawn containers, kvm, docker or virtual box VMs.
   
 Requires Ansible version >= 2
 
@@ -20,17 +20,9 @@ ansible-playbook -i localhost, roles/common/devenv-lite.yml
 ansible-playbook -i localhost, roles/zfs/main.yml
 ```
 
-#### Mirrors
-```
-http://ftp.us.debian.org/debian
-http://mirror.internode.on.net/pub/debian
-http://mirror.aarnet.edu.au/debian
-```
 
-#### Useful flags
+#### Handy Ansible flags
 ```
-
-
 --list-tasks    # show tasks that will be run
 --check         # report what would have been done only
 -s              # force use of sudo for all plays even if not marked as such
