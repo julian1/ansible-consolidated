@@ -225,6 +225,7 @@
 
     #####
     - apt: name=dnsutils
+    - apt: name=ethtool
     - apt: name=ffmpeg
     - apt: name=a2ps
 
