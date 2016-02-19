@@ -32,6 +32,31 @@
     # disable default site
     - command: a2dissite 000-default.conf
 
+    # TODO control docroot with var
+    # tmp dir for files
+    - file: path=/var/www/html     state=directory mode=0755
+    - file: path=/var/www/html/tmp state=directory mode=0755
+
+    # document root
+    - copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+            <body>
+              <h1>Woot!!</h1>
+              <ul>
+                <li><a href="/tmp">tmp</a></li>
+                <li><a href="/aatams">aatams</a></li>
+                <li><a href="/geoserver">geoserver</a></li>
+                <li><a href="/geonetwork">geonetwork</a></li>
+                <li><a href="/portal">portal</a></li>
+              </ul>
+            </body>
+          </html>
+
+    # TODO authentification...
+
     # reverse proxy
     - blockinfile:
         dest: /etc/apache2/sites-available/default.conf
@@ -39,7 +64,8 @@
         content: |
           <VirtualHost *:80>
 
-            # DocumentRoot      /aatams
+            DocumentRoot      /var/www/html
+
             # Require all granted
             ProxyPass         /aatams http://aatams:8080/aatams
             ProxyPassReverse  /aatams http://aatams:8080/aatams
@@ -64,6 +90,6 @@
     - command: a2ensite default
 
   handlers:
-    - include: ../roles/common/handlers/main.yml
-
+    - name: reload-apache2
+      command: service apache2 reload
 
