@@ -1,6 +1,5 @@
 
-  # assumes postgres setup elsewhere...
-
+  # assumes postgres already setup
   - apt: name=tomcat7 update_cache=yes
 
   # paths
@@ -22,7 +21,6 @@
   # change log-file permissions
   - file: path={{log}}/catalina.out mode=0666
 
-
   # use apache/ubuntu connection pool jar. commons has bug, probably class loader
   # related, where pool throws on class load failre of Cursor
   - copy:
@@ -30,8 +28,6 @@
       src: tomcat-dbcp.jar
       owner: tomcat7
       group: tomcat7
-
-
 
   # tomcat
   - copy:
@@ -82,8 +78,6 @@
         </Context>
     notify: restart-tomcat7
 
-
-
   # NOTE: currently a template, but perhaps should do inline using copy module
   # grails config
   - template: >
@@ -99,7 +93,6 @@
       url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.16.0.war
       dest=/var/lib/tomcat7/webapps/aatams.war
     notify: restart-tomcat7
-
 
   # TODO factor this out into a separate task?
   # should be role and task, and not a role, to be included
@@ -132,5 +125,4 @@
           "
       # this is horrible cross-role dependency....
       - psql -d aatams -f /usr/share/postgresql/9.4/admin.sql
-
 
