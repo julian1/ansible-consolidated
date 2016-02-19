@@ -28,6 +28,12 @@
     - command: a2enmod proxy proxy_http
     - command: a2enmod proxy proxy_html
 
+    # https://cumptrnrd.wordpress.com/2013/04/21/securing-apache-content-with-basic-authentication-on-ubuntu/
+    #- command: a2enmod auth_basic
+    #- command: a2enmod authn_file
+    #- command: a2enmod authz_user
+
+
     # TODO ordering,
     # disable default site
     - command: a2dissite 000-default.conf
@@ -78,6 +84,14 @@
 
             ProxyPass         /geoserver http://geoserver:8080/geoserver
             ProxyPassReverse  /geoserver http://geoserver:8080/geoserver
+
+            #<Location /geoserver>
+            #  AuthType Basic
+            #  AuthName "Secure Content"
+            #  AuthBasicProvider file
+            #  AuthUserFile /etc/apache2/passwords
+            #  Require valid-user
+            #</Location>
 
             # Rewriting URLs in hyperlinks
             # ProxyHTMLEnable On
