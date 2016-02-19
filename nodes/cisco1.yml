@@ -1,0 +1,26 @@
+
+# python client supporting ios
+#   https://github.com/ktbyers/netmiko
+
+# Ansible modulue to copy files to cisco ios devices,
+#   https://github.com/ktbyers/scp_sidecar
+#   https://github.com/ktbyers/scp_sidecar/blob/master/ansible_modules/cisco_file_transfer.py
+
+# Discussion and examples,
+#   https://pynet.twb-tech.com/blog/automation/cisco-ios.html
+
+# Eg. supports initial and merged configuration...
+
+- hosts: cisco1
+  gather_facts: False
+  vars:
+  # should probably be {{ansible_user}}@{{...
+  tasks:
+    #- local_action: shell ssh meteo@{{inventory_hostname}} show interfaces trunk
+    - local_action: "shell ssh -2 meteo@{{inventory_hostname}} dir flash:"
+    # this doesnt' work...
+    #- local_action: "shell ssh -2 meteo@{{inventory_hostname}} verify /md5 flash:config.text"
+    #- local_action: "shell ssh meteo@{{inventory_hostname}} more flash:config.text"
+    # Uploading,
+    # scp config.text cisco1:config2.text
+
