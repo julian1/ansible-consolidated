@@ -637,6 +637,13 @@ as $$
     where c.kind = 'v'
     and c.schema = $1;
 
+
+    perform admin.exec( 'alter materialized view '||$1||'.'||c.name||' owner to '||$2 )
+    from admin.objects c
+    where c.kind = 'm'
+    and c.schema = $1;
+
+
     perform admin.exec( 'alter table '||$1||'.'||c.name||' owner to '||$2 )
     from admin.objects c
     where c.kind = 'r'
@@ -731,11 +738,20 @@ create function drop_objects_in_schema( schema text ) returns void
 language plpgsql volatile
 as $$
     begin
+
     perform admin.exec( 'drop view if exists '||n.nspname||'.'||o.relname||' cascade' )
     from pg_class o
     left join pg_namespace n on n.oid=o.relnamespace
     where o.relkind = 'v'
     and n.nspname = $1;
+
+
+    perform admin.exec( 'drop materialzed view if exists '||n.nspname||'.'||o.relname||' cascade' )
+    from pg_class o
+    left join pg_namespace n on n.oid=o.relnamespace
+    where o.relkind = 'm'
+    and n.nspname = $1;
+
 
     perform admin.exec( 'alter table '||n.nspname||'.'||r.relname||' drop constraint if exists '||c.conname||' cascade' )
     from pg_constraint c

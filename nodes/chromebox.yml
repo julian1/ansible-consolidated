@@ -7,6 +7,8 @@
     - locale: en_AU.UTF-8
     # might be nicer to take from dhcp...
     - hostname: chromebox
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
     - credentials.yml
   roles:
@@ -14,8 +16,8 @@
     - timezone
     - locale
     - hostname
-    - meteo
-
+    - common
+    - meteo-dotfiles
   tasks:
     - apt: name=pciutils        # lspci
 

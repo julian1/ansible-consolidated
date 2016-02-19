@@ -1,20 +1,31 @@
 
-- hosts: aatams
+# for nectar, mount ephemeral drive for postgres ...
+# /dev/vdb        /var/lib/postgresql auto        defaults,comment=cloudconfig    0       2
+
+- hosts:
+    - aatams
+    - aatams-test-instance
+  vars_files:
+    - credentials.yml
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie
     - upgrade: safe
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
-  vars_files:
-    - credentials.yml
+    - users:
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: xhoenner, group: adm, pubkey: "{{xavier_pubkey}}" }
+  pre_tasks:
+    - authorized_key: user=root key="{{meteo_pubkey}}"
   roles:
     - debian
     - timezone
     - locale
-    - meteo
-    - tomcat-port-forwarding
+    - common
+    - users
+    - meteo-dotfiles
     - postgres
-    - postgres-support
+    - tomcat-port-forwarding
     - aatams
 

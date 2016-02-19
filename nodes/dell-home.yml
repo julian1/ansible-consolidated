@@ -11,20 +11,20 @@
         name: Brother
         url: socket://brother:9100
         ppd: BRHL16_2_GPL.ppd
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
     - credentials.yml
   roles:
-    - yaegashi.blockinfile
     - debian
     - timezone
     - locale
-    - meteo
+    - common
+    - meteo-dotfiles
     - ip-forwarding
     - printer
-
   tasks:
     #####
-
     - include: ../roles/common/tasks/devenv-lite.yml
 
     - apt: name=memtest86

@@ -1,0 +1,28 @@
+
+# TODO figure out a way to refactor this mostly common code
+# ok, the point of this is to not be idempotent, so shell commands are fine...
+# Note, use systemctl instead of ansible system module, since it leaves
+# catalina.out file descriptor intact
+
+- hosts: all
+  tasks:
+    - set_fact: tomcat7=/var/lib/tomcat7
+    - set_fact: webapps={{tomcat7}}/webapps
+    - set_fact: logs={{tomcat7}}/logs
+
+    - shell: "{{item}}"
+      with_items:
+        - systemctl stop tomcat7
+        - rm {{webapps}}/aatams.war || true
+        - rm -rf {{webapps}}/aatams || true
+        - echo > {{logs}}/catalina.out
+
+    - copy:
+        dest={{webapps}}/aatams.war
+        src=/home/meteo/imos/aatams/target/aatams-3.16.0.war
+
+    - shell: "{{item}}"
+      with_items:
+        - systemctl start tomcat7
+
+

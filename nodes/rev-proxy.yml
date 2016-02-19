@@ -1,36 +1,67 @@
 
-- hosts: apache
+- hosts: rev-proxy
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie
     - upgrade: safe
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
-    - credentials.yml   # needed for meteo ssh key,
-                        # TODO split out local keys into a seperate file or else specify explicitly...
+    - credentials.yml
   roles:
-    - yaegashi.blockinfile
     - debian
     - timezone
     - locale
-    - meteo
+    - common
+    - meteo-dotfiles
   tasks:
-    # - include: ../roles/common/tasks/meteo.yml
     # apache
     - apt: name=apache2
 
     # mod proxy
     - apt: name=libapache2-mod-proxy-html
 
-    # TODO this is not idempotent
+    # TODO not idempotent
     # enable proxy
     - command: a2enmod proxy proxy_http
     - command: a2enmod proxy proxy_html
 
+    # https://cumptrnrd.wordpress.com/2013/04/21/securing-apache-content-with-basic-authentication-on-ubuntu/
+    #- command: a2enmod auth_basic
+    #- command: a2enmod authn_file
+    #- command: a2enmod authz_user
+
+
     # TODO ordering,
     # disable default site
     - command: a2dissite 000-default.conf
+
+    # TODO control docroot with var
+    # tmp dir for files
+    - file: path=/var/www/html     state=directory mode=0755
+    - file: path=/var/www/html/tmp state=directory mode=0755
+
+    # document root
+    - copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+            <body>
+              <h1>Woot!!</h1>
+              <ul>
+                <li><a href="/tmp">tmp</a></li>
+                <li><a href="/aatams">aatams</a></li>
+                <li><a href="/geoserver">geoserver</a></li>
+                <li><a href="/geonetwork">geonetwork</a></li>
+                <li><a href="/portal">portal</a></li>
+              </ul>
+            </body>
+          </html>
+
+    # TODO authentification...
 
     # reverse proxy
     - blockinfile:
@@ -39,7 +70,8 @@
         content: |
           <VirtualHost *:80>
 
-            # DocumentRoot      /aatams
+            DocumentRoot      /var/www/html
+
             # Require all granted
             ProxyPass         /aatams http://aatams:8080/aatams
             ProxyPassReverse  /aatams http://aatams:8080/aatams
@@ -53,6 +85,14 @@
             ProxyPass         /geoserver http://geoserver:8080/geoserver
             ProxyPassReverse  /geoserver http://geoserver:8080/geoserver
 
+            #<Location /geoserver>
+            #  AuthType Basic
+            #  AuthName "Secure Content"
+            #  AuthBasicProvider file
+            #  AuthUserFile /etc/apache2/passwords
+            #  Require valid-user
+            #</Location>
+
             # Rewriting URLs in hyperlinks
             # ProxyHTMLEnable On
             # ProxyHTMLExtended On
@@ -64,6 +104,6 @@
     - command: a2ensite default
 
   handlers:
-    - include: ../roles/common/handlers/main.yml
-
+    - name: reload-apache2
+      command: service apache2 reload
 

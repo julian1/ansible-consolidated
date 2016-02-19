@@ -1,0 +1,27 @@
+
+# intentionally not idempotent!
+
+- hosts: all
+  tasks:
+    - shell: systemctl stop tomcat7
+
+    - shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      with_items:
+        - psql -d postgres -c "drop database if exists aatams"
+        - |
+          psql -d postgres -c "
+            drop user if exists aatams;
+            create user aatams unencrypted password 'aatams';
+            "
+        - psql -d postgres -c "create database aatams owner aatams"
+        - |
+          psql -d aatams -c "
+            create extension postgis;
+            create schema aatams authorization aatams;
+            alter database aatams set search_path to 'aatams','public';
+            "
+        # this is horrible cross-role dependency....
+        - psql -d aatams -f /usr/share/postgresql/9.4/admin.sql
+

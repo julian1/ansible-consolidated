@@ -1,0 +1,21 @@
+
+  - set_fact: user=meteo
+
+  - apt: name=git
+
+  - git: >
+      repo=http://github.com/julian1/dotfiles.git
+      dest=/home/{{user}}/dotfiles
+      version=master
+      force=yes
+    become: true
+    become_user: "{{user}}"
+
+  - shell: ./install.sh 2> installed.txt
+    become: true
+    become_user: "{{user}}"
+    args:
+      chdir: /home/{{user}}/dotfiles/
+      creates: installed.txt
+
+

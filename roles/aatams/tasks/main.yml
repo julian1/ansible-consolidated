@@ -1,6 +1,5 @@
 
-  # assumes postgres setup elsewhere...
-
+  # assumes postgres already setup
   - apt: name=tomcat7 update_cache=yes
 
   # paths
@@ -22,7 +21,6 @@
   # change log-file permissions
   - file: path={{log}}/catalina.out mode=0666
 
-
   # use apache/ubuntu connection pool jar. commons has bug, probably class loader
   # related, where pool throws on class load failre of Cursor
   - copy:
@@ -30,8 +28,6 @@
       src: tomcat-dbcp.jar
       owner: tomcat7
       group: tomcat7
-
-
 
   # tomcat
   - copy:
@@ -82,8 +78,6 @@
         </Context>
     notify: restart-tomcat7
 
-
-
   # NOTE: currently a template, but perhaps should do inline using copy module
   # grails config
   - template: >
@@ -100,7 +94,9 @@
       dest=/var/lib/tomcat7/webapps/aatams.war
     notify: restart-tomcat7
 
-
+  # TODO factor this out into a separate task?
+  # should be role and task, and not a role, to be included
+  # actually should be able to call as a role, but specifying the path
 
   # check for existing aatams database
   - shell: psql -tAc "select 1 from pg_database where datname='aatams'"
@@ -109,11 +105,11 @@
     register: have_aatams_db
     changed_when: false
 
-
   # create fresh database if none
   - shell: "{{item}}"
     become: yes
     become_user: postgres
+    when: have_aatams_db.stdout != "1"
     with_items:
       - |
         psql -d postgres -c "
@@ -127,17 +123,6 @@
           create schema aatams authorization aatams;
           alter database aatams set search_path to 'aatams','public';
           "
-      - psql -d aatams -f /usr/share/postgresql/9.4/admin93.sql
-
-    when: have_aatams_db.stdout != "1"
-
-    # to restore aatams schema from backup...
-    # sudo -u postgres psql -d aatams -c 'drop schema aatams cascade;'
-    # time sudo -u postgres pg_restore aatams.dump -x -O -d aatams
-    # 40 minutes
-    # sudo -u postgres psql -d aatams -c 'alter schema aatams owner to aatams'
-    # sudo -u postgres psql -d aatams -f /var/lib/tomcat7/conf/admin93.sql
-    # sudo -u postgres psql -d aatams
-    # aatams=# select admin.set_owner_of_schema_objects('aatams', 'aatams');
-
+      # this is horrible cross-role dependency....
+      - psql -d aatams -f /usr/share/postgresql/9.4/admin.sql
 

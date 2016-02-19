@@ -1,0 +1,7 @@
+
+
+  - user: name={{item.name}} groups={{item.group}} shell=/bin/bash append=yes
+    with_items: users
+
+  - authorized_key: user={{item.name}} key="{{item.pubkey}}"
+    with_items: users

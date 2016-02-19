@@ -1,16 +1,14 @@
 
+# TODO figure out a way to refactor this mostly common code
 - hosts: geoserver
-
   tasks:
     # ok, the point of this is to not be idempotent, so shell commands are fine...
-
     - set_fact: tomcat7=/var/lib/tomcat7
     - set_fact: webapps={{tomcat7}}/webapps
     - set_fact: logs={{tomcat7}}/logs
 
-    # Note, we use systemctl directly rather than the ansible module, because
-    # it leaves the catalina.out file descriptor intact
-
+    # Note, use systemctl instead of ansible system module, since it leaves 
+    # catalina.out file descriptor intact
     # - service: name=tomcat7 state=stopped
     - shell: "{{item}}"
       with_items:
@@ -27,13 +25,4 @@
     - shell: "{{item}}"
       with_items:
         - systemctl start tomcat7
-
-
-#    - shell: "{{item}}"
-#      with_items:
-#        - systemctl stop tomcat7
-#        - rm {{webapps}}/geoserver.war || true
-#        - rm -rf {{webapps}}/geoserver || true
-#        - echo > {{logs}}/catalina.out
-#
 

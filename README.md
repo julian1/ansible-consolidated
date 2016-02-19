@@ -1,16 +1,8 @@
 
 ####
-For use with systemd-nspawn containers, kvm, docker or virtual box.
+For use with systemd-nspawn containers, kvm, docker or virtual box VMs.
   
-
-#### Prepare
-```
-# local
-ansible-galaxy install yaegashi.blockinfile -p ./roles
-
-# or global
-sudo ansible-galaxy install yaegashi.blockinfile
-```
+Requires Ansible version >= 2
 
 
 #### Examples
@@ -19,27 +11,18 @@ sudo ansible-galaxy install yaegashi.blockinfile
 ansible-playbook nodes/dell-home.yml
 ansible-playbook nodes/aatams.yml -v
 ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
-ansible-playbook nodes/julian-test-instance.yml  -v -u debian --private-key ~/.ssh/julian3.pem -s
-
+ansible-playbook ./nodes/aatams.yml -i aatams-test-instance, -u debian --private-key ~/.ssh/julian3.pem -s
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 
-ansible-playbook -i geoserver, roles/geoserver/redeploy.yml
+nsible-playbook ./roles/aatams/redeploy.yml
 ansible-playbook -i localhost, roles/common/devenv-lite.yml
 ansible-playbook -i localhost, roles/zfs/main.yml
 ```
 
-#### Mirrors
-```
-http://ftp.us.debian.org/debian
-http://mirror.internode.on.net/pub/debian
-http://mirror.aarnet.edu.au/debian
-```
 
-#### Useful flags
+#### Handy Ansible flags
 ```
-
-
 --list-tasks    # show tasks that will be run
 --check         # report what would have been done only
 -s              # force use of sudo for all plays even if not marked as such
@@ -71,6 +54,8 @@ http://www.mechanicalfish.net/start-learning-ansible-with-one-line-and-no-files/
 http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 #### TODO
+
+Strategy for IOS, md5sum the cisco config file and compare. if different then upload, and reboot.
 
 Maybe directory partition imos from other nodes in the /nodes directory, similar to inventory/dev
 email, tftp, anon ftp
