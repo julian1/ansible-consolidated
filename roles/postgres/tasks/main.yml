@@ -1,7 +1,4 @@
 
-  # TODO move restart-postgres handlers in here rather than ./roles/common ...
-
-
   - debug: msg="{{ansible_distribution_release}}"
 
   - apt: name=postgresql-9.4-postgis-2.1
@@ -14,7 +11,7 @@
       owner: postgres
 
       content: |
-        # whoot2 deployed by ansible!
+        # deployed by ansible!
         listen_addresses = '*'
         port = 5432
         max_connections = 100
