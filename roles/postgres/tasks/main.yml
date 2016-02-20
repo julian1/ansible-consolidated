@@ -6,10 +6,11 @@
 
   #- apt: name=postgresql-9.4-postgis-2.2   # debian testing
 
-  - copy:
-      dest: /etc/postgresql/9.4/main/postgresql.conf
-      owner: postgres
+  - set_fact: main=/etc/postgresql/9.4/main
 
+  - copy:
+      dest: "{{main}}/postgresql.conf"
+      owner: postgres
       content: |
         # deployed by ansible!
         listen_addresses = '*'
@@ -24,29 +25,26 @@
         default_text_search_config = 'pg_catalog.english'
         ssl = on
         data_directory = '/var/lib/postgresql/9.4/main'
-        hba_file = '/etc/postgresql/9.4/main/pg_hba.conf'
+        hba_file = '{{main}}/pg_hba.conf'
 
         ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
         ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
 
     notify: restart-postgres
 
-
   - copy:
-      dest: /etc/postgresql/9.4/main/pg_hba.conf 
+      dest: "{{main}}/pg_hba.conf"
       owner: postgres
-
       content: |
         # deployed by ansible!
         hostssl  all  postgres  0.0.0.0/0  reject
-        local  all  postgres    peer
-        hostssl  all  all  0.0.0.0/0  md5
+        local    all  postgres  peer
+        hostssl  all  all       0.0.0.0/0  md5
 
     notify: restart-postgres
 
-
-
   - file: path=/ansible state=directory
+
   - copy:
       src: admin.sql
       dest: /ansible/admin.sql
