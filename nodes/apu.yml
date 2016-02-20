@@ -43,6 +43,11 @@
         - sensors-detect --auto
         - touch ansible-lm-sensors
 
+    # WARNING: Nasty, after kernel upgrade, was 
+    # missing wlan0. Have to apt-get purge and 
+    # reinstall firmware-realtek as it
+    # modifies initrd.img
+
     # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
     - apt: name=firmware-realtek
 
