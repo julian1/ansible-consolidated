@@ -1,17 +1,56 @@
 
   # TODO move restart-postgres handlers in here rather than ./roles/common ...
 
-  # postgres with default postgresql.conf and pg_hba.conf
-  - apt: name=postgresql-9.4-postgis-2.1    # debian jessie
+
+  - debug: msg="{{ansible_distribution_release}}"
+
+  - apt: name=postgresql-9.4-postgis-2.1
+    when: ansible_distribution_release == 'jessie'
+
   #- apt: name=postgresql-9.4-postgis-2.2   # debian testing
 
-  - template: src=postgresql.conf.j2 dest=/etc/postgresql/9.4/main/postgresql.conf owner=postgres
+  - copy:
+      dest: /etc/postgresql/9.4/main/postgresql.conf
+      owner: postgres
+
+      content: |
+        # whoot2 deployed by ansible!
+        listen_addresses = '*'
+        port = 5432
+        max_connections = 100
+        shared_buffers = '24MB'
+        log_line_prefix = '%t %h %u %d %p %e'
+
+        log_statement = all
+
+        datestyle = 'iso, mdy'
+        default_text_search_config = 'pg_catalog.english'
+        ssl = on
+        data_directory = '/var/lib/postgresql/9.4/main'
+        hba_file = '/etc/postgresql/9.4/main/pg_hba.conf'
+
+        ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+        ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+
     notify: restart-postgres
 
-  - template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.4/main/pg_hba.conf owner=postgres
-    notify: restart-postgres
 
   - copy:
+      dest: /etc/postgresql/9.4/main/pg_hba.conf 
+      owner: postgres
+
+      content: |
+        # deployed by ansible!
+        hostssl  all  postgres  0.0.0.0/0  reject
+        local  all  postgres    peer
+        hostssl  all  all  0.0.0.0/0  md5
+
+    notify: restart-postgres
+
+
+
+  - file: path=/ansible state=directory
+  - copy:
       src: admin.sql
-      dest: /usr/share/postgresql/9.4/admin.sql
+      dest: /ansible/admin.sql
 
