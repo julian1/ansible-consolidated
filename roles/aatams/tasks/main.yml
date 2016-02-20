@@ -87,19 +87,8 @@
       group=tomcat7
     notify: restart-tomcat7
 
-  # war
-  # TODO owner - use file?
-  - get_url: >
-      url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.16.0.war
-      dest=/var/lib/tomcat7/webapps/aatams.war
-    notify: restart-tomcat7
 
-  # TODO factor this out into a separate task?
-  # should be role and task, and not a role, to be included
-  # actually should be able to call as a role, but specifying the path
-
-
-    # IMPORTANT - this script is really clean
+  # Careful script deletes and recreates db
   - copy:
       dest: /ansible/create-aatams-db.sql
       content: |
@@ -109,7 +98,7 @@
         create user {{aatams.postgres.username}} unencrypted password '{{aatams.postgres.username}}';
         create database {{aatams.postgres.database}} owner {{aatams.postgres.username}};
 
-        \c aatams
+        \c {{aatams.postgres.database}}
         create extension postgis;
         create schema aatams authorization {{aatams.postgres.username}};
         alter database {{aatams.postgres.database}} set search_path to 'aatams','public';
@@ -122,4 +111,11 @@
     become_user: postgres
     when: whoot.changed == true
 
+
+  # war
+  # TODO owner - use file?
+  - get_url: >
+      url=https://jenkins.aodn.org.au/job/aatams_prod/lastSuccessfulBuild/artifact/target/aatams-3.16.0.war
+      dest=/var/lib/tomcat7/webapps/aatams.war
+    notify: restart-tomcat7
 
