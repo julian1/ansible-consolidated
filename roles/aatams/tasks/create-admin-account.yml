@@ -1,0 +1,48 @@
+
+  - copy:
+      dest: /ansible/admin-account.sql
+      content: |
+        -- run each in a action in separate transaction to progress as far as possible
+
+        create extension if not exists pgcrypto;
+        begin;
+          -- delete from project_role where person_id = 99999999 ;
+          -- delete from sec_user_roles where sec_user_id = 99999999;
+          -- delete from sec_user where id = 99999999;
+          insert into sec_user(id, version, password_hash, username, class, status) 
+          values (
+            99999999,
+            0,
+            (select encode(digest('{{aatams.app.password}}', 'sha256'), 'hex')),
+            '{{aatams.app.username}}',
+            'au.org.emii.aatams.Person',
+            null
+          );
+        commit;
+
+        begin;
+          update sec_user 
+          set 
+            password_hash=(select encode(digest('{{aatams.app.password}}', 'sha256'), 'hex')), 
+            status = null 
+          where username = '{{aatams.app.username}}'; 
+        commit;
+
+        begin;
+          insert into sec_role(id,version,name) 
+          values (5, 1, 'SysAdmin' );
+        commit;
+        begin;
+          -- TODO: lookup id in sec_role corresponding to Admin user
+          insert into sec_user_roles(sec_role_id, sec_user_id) 
+          values (5, 99999999);
+        commit;
+
+    register: whoot
+
+  - shell: psql -d {{aatams.postgres.database}} -f /ansible/admin-account.sql
+    become: yes
+    become_user: postgres
+    when: whoot.changed == true # || force == true
+
+

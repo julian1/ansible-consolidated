@@ -1,0 +1,8 @@
+
+- hosts: all
+  vars_files:
+    # TODO fix awfulness, 
+    - ../../nodes/credentials.yml
+  tasks:
+    - include: tasks/create-admin-account.yml
+

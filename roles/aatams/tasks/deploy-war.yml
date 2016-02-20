@@ -1,0 +1,13 @@
+
+
+  - copy: src={{aatams.war}} dest={{webapps}}/aatams.war
+    register: deployed
+
+  - shell: "{{item}}"
+    with_items:
+      - systemctl stop tomcat7
+      - rm -rf {{webapps}}/aatams || true
+      - echo > {{logs}}/catalina.out
+    when: deployed.changed == true
+    notify: restart-tomcat7
+

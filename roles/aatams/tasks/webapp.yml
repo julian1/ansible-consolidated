@@ -1,0 +1,85 @@
+
+  # assumes postgres already setup
+  - apt: name=tomcat7 update_cache=yes
+
+
+  # permissions
+  - file: path={{item}} state=directory owner=tomcat7 group=tomcat7
+    with_items:
+      - "{{tomcat7}}"
+      - "{{webapps}}"
+      - "{{lib}}"
+      - "{{aatams_data}}"
+
+  # change log-file permissions
+  - file: path={{logs}}/catalina.out mode=0666
+
+  # use apache/ubuntu connection pool jar. commons has bug, probably class loader
+  # related, where pool throws on class load failre of Cursor
+  - copy:
+      dest: "{{lib}}/tomcat-dbcp.jar"
+      src: tomcat-dbcp.jar
+      owner: tomcat7
+      group: tomcat7
+
+  # tomcat
+  - copy:
+      dest: /etc/default/tomcat7
+      backup: yes
+      owner: tomcat7
+      group: tomcat7
+      content: |
+        # deployed by ansible!
+        TOMCAT7_USER=tomcat7
+        TOMCAT7_GROUP=tomcat7
+        JAVA_OPTS="${JAVA_OPTS} \
+          -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError \
+          -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+    notify: restart-tomcat7
+
+  # jndi
+  # factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+  - copy:
+      dest: "{{conf}}/context.xml"
+      backup: yes
+      owner: tomcat7
+      group: tomcat7
+      content: |
+        <?xml version='1.0' encoding='utf-8'?>
+        <!-- deployed by ansible! -->
+        <Context>
+            <!-- Default set of monitored resources -->
+            <WatchedResource>WEB-INF/web.xml</WatchedResource>
+            <Resource
+                name="jdbc/aatams"
+                auth="Container"
+                factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+                type="javax.sql.DataSource"
+                driverClassName="org.postgresql.Driver"
+                url="{{aatams.jndi.url}}"
+                validationQuery="SELECT 1"
+                username="{{aatams.jndi.username}}"
+                password="{{aatams.jndi.password}}"
+                maxActive="20" maxIdle="5" maxWait="-1"
+                testOnBorrow="true" testWhileIdle="true" testOnReturn="true"
+                timeBetweenEvictionRunsMillis="30000"
+                numTestsPerEvictionRun="3"
+                minEvictableIdleTimeMillis="60000"
+                defaultAutoCommit="false"
+            />
+            <Environment name="aodn.configuration" value="{{aatams_data}}/aatams.groovy" type="java.lang.String" override="true"/>
+        </Context>
+    notify: restart-tomcat7
+
+  # NOTE: currently a template, but perhaps should do inline using copy module
+  # grails config
+  - template: >
+      src=aatams.groovy.j2
+      dest={{aatams_data}}/aatams.groovy
+      owner=tomcat7
+      group=tomcat7
+    notify: restart-tomcat7
+
+
+
+

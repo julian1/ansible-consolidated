@@ -16,7 +16,7 @@
         - psql -d aatams -c "drop schema aatams cascade"
         - pg_restore /tmp/aatams.dump -x -O -d aatams
         - psql -d aatams -c "alter schema aatams owner to aatams"
-        - psql -d aatams -f /usr/share/postgresql/9.4/admin.sql
+        - psql -d aatams -f /ansible/admin.sql
         - psql -d aatams -c "select admin.set_owner_of_schema_objects('aatams', 'aatams')"
 
 

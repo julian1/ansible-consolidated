@@ -1,0 +1,13 @@
+
+  # note symbolic links, 
+  # /var/lib/tomcat7/logs -> /var/log/tomcat7 
+  # /var/lib/tomcat7/conf -> /etc/tomcat7
+
+  tomcat7:     /var/lib/tomcat7
+  conf:        "{{tomcat7}}/conf"
+  webapps:     "{{tomcat7}}/webapps"
+  lib:         "{{tomcat7}}/lib"
+  logs:        "{{tomcat7}}/logs"
+  aatams_data: "{{conf}}/aatams-data"
+
+

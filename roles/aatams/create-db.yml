@@ -1,0 +1,10 @@
+
+- hosts: all
+  vars_files:
+    # TODO fix awfulness, 
+    - ../../nodes/credentials.yml
+  tasks:
+    # force re-create
+    - file: path=/ansible/create-aatams-db.sql state=absent
+    - include: tasks/create-aatams-db.yml
+

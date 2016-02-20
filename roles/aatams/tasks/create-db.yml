@@ -1,0 +1,26 @@
+
+
+  # Careful script deletes and recreates db
+  - copy:
+      dest: /ansible/create-aatams-db.sql
+      content: |
+        -- deployed by ansible
+        drop database if exists {{aatams.postgres.database}};
+        drop user if exists {{aatams.jndi.username}};
+        create user {{aatams.jndi.username}} unencrypted password '{{aatams.jndi.password}}';
+        create database {{aatams.postgres.database}} owner {{aatams.jndi.username}};
+
+        \c {{aatams.postgres.database}}
+        create extension postgis;
+        create schema aatams authorization {{aatams.jndi.username}};
+        alter database {{aatams.postgres.database}} set search_path to 'aatams','public';
+
+        \i /ansible/admin.sql
+    register: whoot
+
+  - shell: psql -f /ansible/create-aatams-db.sql
+    become: yes
+    become_user: postgres
+    when: whoot.changed == true
+
+
