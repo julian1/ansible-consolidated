@@ -1,4 +1,6 @@
 
+  - file: path=/ansible state=directory
+
   - include: sudoers.yml
   - include: no-shell-bell.yml
   - include: devenv-lite.yml

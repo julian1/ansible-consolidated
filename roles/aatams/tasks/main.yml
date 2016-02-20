@@ -99,74 +99,27 @@
   # actually should be able to call as a role, but specifying the path
 
 
-
-#  - apt: name=python-psycopg2
-#
-#  - postgresql_user: name=aatams
-#    become: true
-#    become_user: postgres
-#
-#  - postgresql_db: name=aatams owner=aatams
-#    become: true
-#    become_user: postgres
-#
-#  - postgresql_ext: db=aatams name=postgis
-#    become: true
-#    become_user: postgres
-
-    # ok, now we just need schema and searchpath and admin.sql ....
-
-    # instead of running commands... would it be easier to create an sql script and run it wholesale?
-    # can then be idempotent as against the file...
-
-    # script is nicer permits multiple commands...
-
+    # IMPORTANT - this script is really clean
   - copy:
-      dest: /ansible/xxx.sql
+      dest: /ansible/create-aatams-db.sql
       content: |
-        -- deployed by ansible3
+        -- deployed by ansible
         drop database if exists {{aatams.postgres.database}};
         drop user if exists {{aatams.postgres.username}};
         create user {{aatams.postgres.username}} unencrypted password '{{aatams.postgres.username}}';
         create database {{aatams.postgres.database}} owner {{aatams.postgres.username}};
+
         \c aatams
         create extension postgis;
         create schema aatams authorization {{aatams.postgres.username}};
-        alter database aatams set search_path to 'aatams','public';
+        alter database {{aatams.postgres.database}} set search_path to 'aatams','public';
+
+        \i /ansible/admin.sql
     register: whoot
 
-
-  - shell: psql -f /ansible/xxx.sql
+  - shell: psql -f /ansible/create-aatams-db.sql
     become: yes
     become_user: postgres
     when: whoot.changed == true
 
-
-  # check for existing aatams database
-  - shell: psql -tAc "select 1 from pg_database where datname='aatams'"
-    become: yes
-    become_user: postgres
-    register: have_aatams_db
-    changed_when: false
-
-  # create fresh database if none
-  - shell: "{{item}}"
-    become: yes
-    become_user: postgres
-    when: have_aatams_db.stdout != "1"
-    with_items:
-      - |
-        psql -d postgres -c "
-          drop user if exists aatams;
-          create user aatams unencrypted password 'aatams';
-          "
-      - psql -d postgres -c "create database aatams owner aatams"
-      - |
-        psql -d aatams -c "
-          create extension postgis;
-          create schema aatams authorization aatams;
-          alter database aatams set search_path to 'aatams','public';
-          "
-      # this is horrible cross-role dependency....
-      - psql -d aatams -f /usr/share/postgresql/9.4/admin.sql
 
