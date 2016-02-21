@@ -14,10 +14,9 @@
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
     - users:
+      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
       - { name: xhoenner, group: adm, pubkey: "{{xavier_pubkey}}" }
-  pre_tasks:
-    - authorized_key: user=root key="{{meteo_pubkey}}"
   roles:
     - debian
     - timezone
