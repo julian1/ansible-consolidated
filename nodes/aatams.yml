@@ -22,7 +22,6 @@
     - timezone
     - locale
     - common
-    - users
     - meteo-dotfiles
     - postgres
     - tomcat-port-forward
