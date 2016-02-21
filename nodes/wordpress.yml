@@ -1,0 +1,88 @@
+
+# TODO change name to wordpress...
+
+# https://wiki.debian.org/WordPress
+
+- hosts: wordpress
+  vars_files:
+    - credentials.yml
+  vars:
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: jessie
+    - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
+    - users:
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
+  roles:
+    - debian
+    - timezone
+    - locale
+    - common
+    - meteo-dotfiles
+  tasks:
+    - apt: name=mysql-server
+    - apt: name=apache2
+    - apt: name=wordpress
+
+    - copy:
+        dest: /etc/apache2/sites-available/wp.conf
+        content: |
+          Alias /wp/wp-content /var/lib/wordpress/wp-content
+          Alias /wp /usr/share/wordpress
+          <Directory /usr/share/wordpress>
+              Options FollowSymLinks
+              AllowOverride Limit Options FileInfo
+              DirectoryIndex index.php
+              Require all granted
+          </Directory>
+          <Directory /var/lib/wordpress/wp-content>
+              Options FollowSymLinks
+              Require all granted
+          </Directory>
+
+      notify: reload-apache2
+
+    - command: a2ensite wp
+      args:
+        creates: /etc/apache2/sites-enabled/wp.conf
+
+    # can now hit, http://drupal/wp/
+
+    - copy:
+        dest: /etc/wordpress/config-wordpress.php 
+        content: |
+          <?php
+          define('DB_NAME', 'wordpress');
+          define('DB_USER', 'wordpress');
+          define('DB_PASSWORD', 'password');
+          define('DB_HOST', 'localhost');
+          define('WP_CONTENT_DIR', '/var/lib/wordpress/wp-content');
+          ?>
+
+    - copy:
+        dest: /ansible/wp.sql
+        content: |
+          CREATE DATABASE wordpress;
+          GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,ALTER
+          ON wordpress.*
+          TO wordpress@localhost
+          IDENTIFIED BY 'password';
+          FLUSH PRIVILEGES;
+      register: whoot
+
+
+    - shell: mysql -u root -proot drupal < /ansible/wp.sql
+      become: yes
+      become_user: mysql
+      when: whoot.changed == true
+
+
+
+
+  handlers:
+    - name: reload-apache2
+      command: service apache2 reload
+
+
+
