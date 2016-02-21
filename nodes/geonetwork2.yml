@@ -16,7 +16,7 @@
     - locale
     - common
     - meteo-dotfiles
-    - tomcat-port-forwarding
+    - tomcat-port-forward
     - postgres
     - geonetwork
   tasks:

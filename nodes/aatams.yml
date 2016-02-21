@@ -26,6 +26,6 @@
     - users
     - meteo-dotfiles
     - postgres
-    - tomcat-port-forwarding
+    - tomcat-port-forward
     - aatams
 
