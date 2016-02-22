@@ -60,6 +60,14 @@
             <body>
               <h1>Woot!!</h1>
               <ul>
+                <video width="320" height="240" controls>
+                  <source src="/tmp/magic-dirt.mp4" type="video/mp4">
+                </video>
+                <video width="320" height="240" controls>
+                  <source src="/tmp/output.mp4" type="video/mp4">
+                </video>
+
+
                 <li><a href="/tmp">tmp</a></li>
                 <li><a href="/aatams">aatams</a></li>
                 <li><a href="/geoserver">geoserver</a></li>
