@@ -24,6 +24,10 @@
     - ip-forwarding
     - printer
   tasks:
+
+    - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
+    - apt: name=iw
+
     #####
     - include: ../roles/common/tasks/devenv-lite.yml
 
