@@ -162,7 +162,7 @@
           expand-hosts
           domain=container
           dhcp-range=br0,10.1.1.10,10.1.1.20,4h
-          dhcp-host=00:01:04:1b:2C:0A,drupal,10.1.1.11
+          dhcp-host=00:01:04:1b:2C:0A,wordpress,10.1.1.11
           dhcp-host=00:01:04:1b:2C:19,geoserver,10.1.1.12
           dhcp-host=00:01:04:1b:2C:1C,portal,10.1.1.14
           dhcp-host=00:01:04:1b:2C:1F,geonetwork3,10.1.1.15
