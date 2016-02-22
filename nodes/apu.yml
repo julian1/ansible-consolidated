@@ -71,8 +71,7 @@
           channel=7
           auth_algs=1
           wpa=2
-          # TODO hide me!!!
-          wpa_passphrase=____apple____
+          wpa_passphrase={{wpa_passphrase}}
           wpa_key_mgmt=WPA-PSK
           wpa_pairwise=TKIP
           rsn_pairwise=CCMP
@@ -187,7 +186,7 @@
           # management vlan for cisco switches and now router
           interface=eth0.100
 
-          # vlan 100 is the most stable interface to serve an ip for
+          # vlan 100 is the most stable interface for assigning the router ip
           address=/apu/192.168.100.1
           address=/apu.localnet/192.168.100.1
 
