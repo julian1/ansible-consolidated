@@ -58,8 +58,6 @@
     - apt: name=hostapd
 
     # hostapd.conf goes first since referred to by /etc/network/interfaces
-
-
     # AP primary
     - copy:
         dest: /etc/hostapd/hostapd-wlan0.conf
@@ -137,7 +135,6 @@
           iface eth1 inet static
             address 172.16.1.1
             netmask 255.255.255.0
-
 
           # AP primary
           auto wlan0
@@ -233,7 +230,6 @@
 
       notify: restart-dnsmasq
 
-
       # may need to restart wlan0 here? at least when install dnsmasq
     - apt: name=iptables-persistent
 
@@ -306,7 +302,6 @@
 
       notify: reconfigure-iptables
 
-
     # multicast subnet routing. for example minidlna udp on 1900
     # Use, ip -s mroute to query status
     - apt: name=smcroute
@@ -319,7 +314,6 @@
           smcroute -a wlan0    0.0.0.0 239.255.255.250 eth0.201
           smcroute -a eth0.201 0.0.0.0 239.255.255.250 wlan0
       notify: restart-smcroute
-
 
     - apt: name=tftp
     - copy:
@@ -338,11 +332,10 @@
       # chmod 755 $( find /srv/tftp -type d )
       # chmod 644 $( find /srv/tftp -type f )
 
-
     # xmodem protocol support over serial for switch firmware
     - apt: name=lrzsz
 
   handlers:
     - include: ../roles/common/handlers/main.yml
 
-  # TODO we should place the handlers for eth0 restart directly here
+  # TODO move restart handlers from ./roles/common here
