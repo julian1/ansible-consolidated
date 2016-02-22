@@ -1,4 +1,5 @@
 
+
 # apu router with wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, tftp, xmodem serial
 
 # TODO hide hostap passphrase
@@ -31,9 +32,15 @@
     - apt: name=netstat-nat     # nat connections
     - apt: name=dnsutils        # dig, whois
     - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
+    - apt: name=iw
+
     - apt: name=pciutils        # lspci
     - apt: name=usbutils        # lsusb
     - apt: name=ethtool
+
+    - apt: name=firmware-ralink # backup AP
+    - apt: name=haveged         # entropy for wifi crypto
+
 
     # TODO factor into a role if use more than here...
     # sensors
@@ -43,8 +50,8 @@
         - sensors-detect --auto
         - touch ansible-lm-sensors
 
-    # WARNING: Nasty, after kernel upgrade, was 
-    # missing wlan0. Have to apt-get purge and 
+    # WARNING: Nasty, after kernel upgrade, was
+    # missing wlan0. Have to apt-get purge and
     # reinstall firmware-realtek as it
     # modifies initrd.img
 
@@ -54,6 +61,8 @@
     - apt: name=hostapd
 
     # hostapd.conf goes first since referred to by /etc/network/interfaces
+
+    # AP primary
     - copy:
         dest: /etc/hostapd/hostapd.conf
         content: |
@@ -68,17 +77,29 @@
           macaddr_acl=0
           ignore_broadcast_ssid=0
           wpa=2
-          # TODO hide this!!!
+          # TODO hide me!!!
           wpa_passphrase=____apple____
           wpa_key_mgmt=WPA-PSK
           wpa_pairwise=TKIP
           rsn_pairwise=CCMP
-      notify: restart-hostapd
+      notify: restart-wlan0
+
+    # AP2
+    - copy:
+        dest: /etc/hostapd/hostapd-wlan1.conf
+        content: |
+          # deployed by ansible!
+          interface=wlan1
+          ssid=AP2
+          hw_mode=g
+          channel=8
+      notify: restart-wlan1
 
     - copy:
         dest: /etc/network/interfaces
         content: |
           # deployed by ansible!
+
           # loopback
           auto lo
           iface lo inet loopback
@@ -124,21 +145,23 @@
             address 172.16.1.1
             netmask 255.255.255.0
 
-          #
-          # auto eth2
-          # iface eth2 inet static
-          #   address 192.168.42.1
-          #  netmask 255.255.255.0
 
-          # wireless-lan on wlan0
+          # AP primary
           auto wlan0
           iface wlan0 inet static
-            hostapd /etc/hostapd/hostapd.conf
+            hostapd /etc/hostapd/hostapd-wlan0.conf
             address 192.168.43.1
             netmask 255.255.255.0
             # gateway to 10.0.0.0 via dell-home
             # TODO A cleaner way to persist routing entries?
             post-up ip route add 10.0.0.0/8 via 192.168.43.14
+
+          # AP 2
+          auto wlan1
+          iface wlan1 inet static
+            hostapd /etc/hostapd/hostapd-wlan1.conf
+            address 192.168.44.1
+            netmask 255.255.255.0
 
       notify:
         # will these all be run together
@@ -166,14 +189,13 @@
           # no-hosts is required to avoid returning the 127.0.0.1 entry for apu in /etc/hosts
           no-hosts
 
-          # any interface's ip is ok for apu
-          # although wireless is more isolated from rest of switch environment
-          address=/apu/192.168.43.1
-          address=/apu.localnet/192.168.43.1
-
           # vlan 100
-          # listen on management vlan interface for cisco. eg. to resolve cisceo nameserver requests
+          # management vlan for cisco switches and now router
           interface=eth0.100
+
+          # vlan 100 is the most stable interface to serve an ip for
+          address=/apu/192.168.100.1
+          address=/apu.localnet/192.168.100.1
 
           # cisco switches have static assignment on vlan100
           address=/cisco2/192.168.100.11
@@ -205,6 +227,16 @@
           dhcp-host=00:19:e3:10:53:89,imac,192.168.43.15
           dhcp-host=18:fe:34:d1:94:4d,esp,192.168.43.16
           dhcp-host=60:57:18:75:3b:cc,asus,192.168.43.17
+          dhcp-host=ac:b5:7d:07:f7:d9,chromebox-wifi,192.168.43.18
+
+          # wireless-secondary
+          interface=wlan1
+          dhcp-range=wlan1,192.168.44.10,192.168.44.20,255.255.255.0,12h
+          dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.44.14
+          dhcp-host=00:19:e3:10:53:89,imac,192.168.44.15
+          dhcp-host=18:fe:34:d1:94:4d,esp,192.168.44.16
+          dhcp-host=60:57:18:75:3b:cc,asus,192.168.44.17
+          dhcp-host=ac:b5:7d:07:f7:d9,chromebox-wifi,192.168.44.18
 
       notify: restart-dnsmasq
 
