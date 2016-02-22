@@ -23,10 +23,15 @@
     # mod proxy
     - apt: name=libapache2-mod-proxy-html
 
-    # TODO not idempotent
     # enable proxy
-    - command: a2enmod proxy proxy_http
-    - command: a2enmod proxy proxy_html
+    - apache2_module: name={{item}} state=present
+      with_items:
+        - proxy
+        - proxy_http
+        - proxy_html
+
+    # - command: a2enmod proxy proxy_http
+    # - command: a2enmod proxy proxy_html
 
     # https://cumptrnrd.wordpress.com/2013/04/21/securing-apache-content-with-basic-authentication-on-ubuntu/
     #- command: a2enmod auth_basic
@@ -34,9 +39,12 @@
     #- command: a2enmod authz_user
 
 
-    # TODO ordering,
-    # disable default site
+    # remove default site
     - command: a2dissite 000-default.conf
+      args:
+        removes: /etc/apache2/sites-enabled/000-default.conf
+
+
 
     # TODO control docroot with var
     # tmp dir for files
@@ -57,6 +65,7 @@
                 <li><a href="/geoserver">geoserver</a></li>
                 <li><a href="/geonetwork">geonetwork</a></li>
                 <li><a href="/portal">portal</a></li>
+                <li><a href="/wp">wordpress</a></li>
               </ul>
             </body>
           </html>
@@ -85,6 +94,10 @@
             ProxyPass         /geoserver http://geoserver:8080/geoserver
             ProxyPassReverse  /geoserver http://geoserver:8080/geoserver
 
+            ProxyPass         /wp http://wordpress/wp
+            ProxyPassReverse  /wp http://wordpress/wp
+
+
             #<Location /geoserver>
             #  AuthType Basic
             #  AuthName "Secure Content"
@@ -102,6 +115,9 @@
 
     # enable
     - command: a2ensite default
+      args:
+        creates: /etc/apache2/sites-enabled/default.conf
+
 
   handlers:
     - name: reload-apache2
