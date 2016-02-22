@@ -20,4 +20,6 @@
     - meteo-dotfiles
   tasks:
     - apt: name=pciutils        # lspci
+    - apt: name=wpasupplicant
+    - apt: name=man
 
