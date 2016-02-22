@@ -1,10 +1,7 @@
 
-
 # apu router with wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, tftp, xmodem serial
 
-# TODO hide hostap passphrase
-
-  # Use ip not dns, because if dns goes wrong, we can end up trying to provision 127.0.0.1
+  # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
 - hosts: 192.168.100.1
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
@@ -62,20 +59,17 @@
 
     # hostapd.conf goes first since referred to by /etc/network/interfaces
 
+
     # AP primary
     - copy:
-        dest: /etc/hostapd/hostapd.conf
+        dest: /etc/hostapd/hostapd-wlan0.conf
         content: |
           # deployed by ansible!
           interface=wlan0
-          ssid=My_AP3
+          ssid=AP1
           hw_mode=g
           channel=7
           auth_algs=1
-          wmm_enabled=0
-          # The following gives us wpa2
-          macaddr_acl=0
-          ignore_broadcast_ssid=0
           wpa=2
           # TODO hide me!!!
           wpa_passphrase=____apple____
