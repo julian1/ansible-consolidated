@@ -1,0 +1,8 @@
+
+- hosts: all
+  vars_files:
+    # TODO fix awfulness, 
+    - ../../nodes/credentials.yml
+    - vars/main.yml
+  tasks:
+    - include: tasks/deploy-war.yml
