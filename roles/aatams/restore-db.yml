@@ -2,7 +2,7 @@
 - hosts: all
   tasks:
     - copy:
-        dest: /tmp/aatams.dump
+        dest: /ansible/aatams.dump
         src: /home/meteo/imos/2015.11.21.00.12.46/aatams3/aatams.dump
 
     - shell: systemctl stop tomcat7
@@ -11,10 +11,10 @@
       become: yes
       become_user: postgres
       with_items:
-        # currently assumes have db aatams and role aatams, admin93 etc.
+        # Assumes have aatams db and role, also admin.sql
         # TODO rebuild role/db from scratch
         - psql -d aatams -c "drop schema aatams cascade"
-        - pg_restore /tmp/aatams.dump -x -O -d aatams
+        - pg_restore /ansible/aatams.dump -x -O -d aatams
         - psql -d aatams -c "alter schema aatams owner to aatams"
         - psql -d aatams -f /ansible/admin.sql
         - psql -d aatams -c "select admin.set_owner_of_schema_objects('aatams', 'aatams')"
