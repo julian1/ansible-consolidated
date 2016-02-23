@@ -1,0 +1,37 @@
+# for nectar, mount ephemeral drive for postgres ...
+# /dev/vdb        /var/lib/postgresql auto        defaults,comment=cloudconfig    0       2
+
+- hosts: aatams-dev-instance
+  vars_files:
+    - credentials.yml
+  vars:
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: jessie
+    - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
+    - users:
+      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: xhoenner, group: adm, pubkey: "{{xavier_pubkey}}" }
+
+    - jdk_deploy_path: /home/xhoenner/
+    - grails_deploy_path: /home/xhoenner/
+  roles:
+  tasks:
+    - include: ../roles/common/tasks/jdk.yml
+    - include: ../roles/common/tasks/grails-1.3.7.yml
+ 
+    - file: path=/home/xhoenner/.bash_aliases state=touch owner=xhoenner group=xhoenner
+    - blockinfile:
+        dest: /home/xhoenner/.bash_aliases
+        insertafter: EOF
+        content: |
+          export JAVA_HOME=$HOME/jdk1.7.0_80/
+          export PATH="$JAVA_HOME/bin:$PATH"
+
+          export GRAILS_HOME=$HOME/grails-1.3.7/
+          export PATH="$PATH:$GRAILS_HOME/bin"
+
+
+
