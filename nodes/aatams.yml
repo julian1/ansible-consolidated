@@ -5,6 +5,7 @@
 - hosts:
     - aatams
     - aatams-test-instance
+    - aatams-dev-instance
   vars_files:
     - credentials.yml
   vars:
