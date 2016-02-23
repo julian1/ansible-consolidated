@@ -52,6 +52,13 @@
           export GRAILS_HOME=$HOME/grails-1.3.7/
           export PATH="$PATH:$GRAILS_HOME/bin"
 
+    # once only using shell to permit local modification
+    - shell: creates=/ansible/git-aatams-deployed chdir=/home/xhoenner {{item}}
+      with_items:
+        - git clone https://github.com/aodn/aatams/
+        - "chown -R xhoenner:xhoenner aatams"
+        - touch /ansible/git-aatams-deployed
+
   handlers:
     - name: reboot
       command: /sbin/reboot
