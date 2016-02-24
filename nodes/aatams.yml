@@ -1,11 +1,6 @@
 
-# for nectar, mount ephemeral drive for postgres ...
-# /dev/vdb        /var/lib/postgresql auto        defaults,comment=cloudconfig    0       2
-
 - hosts:
     - aatams
-    - aatams-test-instance
-    - aatams-dev-instance
   vars_files:
     - credentials.yml
   vars:
@@ -15,9 +10,7 @@
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
     - users:
-      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
-      - { name: xhoenner, group: adm, pubkey: "{{xavier_pubkey}}" }
   roles:
     - debian
     - timezone

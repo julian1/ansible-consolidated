@@ -1,7 +1,9 @@
 
   # Note nofail flag for /etc/fstab
 
-- hosts: aatams-dev-instance
+- hosts:
+    - aatams-test-instance
+    - aatams-dev-instance
   vars_files:
     - credentials.yml
   vars:
