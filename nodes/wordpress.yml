@@ -29,7 +29,7 @@
 
     # chown -R  www-data:www-data /var/lib/wordpress
     # chown -R  www-data:www-data /usr/share/wordpress
-    - file: path="{{items}}" state=directory owner=www-data group=www-data
+    - file: path="{{item}}" state=directory recurse=yes owner=www-data group=www-data
       with_items:
         - /var/lib/wordpress
         - /usr/share/wordpress
