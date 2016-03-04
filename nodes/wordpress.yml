@@ -3,9 +3,10 @@
 
 # https://wiki.debian.org/WordPress
 
-- hosts: 
+- hosts:
     - wordpress
     - aodnblog
+    - aodnblog2
   vars_files:
     - credentials.yml
   vars:
@@ -26,6 +27,14 @@
     - apt: name=mysql-server
     - apt: name=apache2
     - apt: name=wordpress
+
+    # chown -R  www-data:www-data /var/lib/wordpress
+    # chown -R  www-data:www-data /usr/share/wordpress
+    - file: path="{{item}}" state=directory recurse=yes owner=www-data group=www-data
+      with_items:
+        - /var/lib/wordpress
+        - /usr/share/wordpress
+
 
     - copy:
         dest: /etc/apache2/sites-available/wp.conf
@@ -57,6 +66,9 @@
         # define('WP_ALLOW_REPAIR', true);
         content: |
           <?php
+          ini_set('display_errors', 1);
+          ini_set('display_startup_errors', 1);
+          error_reporting(E_ALL);
           define('DB_NAME', 'wordpress');
           define('DB_USER', 'wordpress');
           define('DB_PASSWORD', 'wordpress');
@@ -79,9 +91,27 @@
     - shell: mysql -u root < /ansible/wp.sql
       when: whoot.changed == true
 
+
+    # support large file upload
+    - lineinfile: >
+        dest=/etc/php5/apache2/php.ini
+        state=present
+        backrefs=yes
+        regexp='upload_max_filesize.*'
+        line='upload_max_filesize = 32M'
+      notify: reload-apache2
+
+    - lineinfile: >
+        dest=/etc/php5/apache2/php.ini
+        state=present
+        backrefs=yes
+        regexp='post_max_size.*'
+        line='post_max_size = 32M'
+      notify: reload-apache2
+
+    # Note: that max_file_uploads = 20 didn't hinder bulk upload...
+
   handlers:
     - name: reload-apache2
       command: service apache2 reload
-
-
 
