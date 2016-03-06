@@ -124,11 +124,10 @@
           DIR=$1
           rm -rf /var/lib/wordpress/ || exit
           cp -rp $DIR/wordpress /var/lib/ || exit
-          chown www-data:  /var/lib/wordpress/ || exit
+          chown -R www-data:  /var/lib/wordpress/ || exit
           mysql -u root wordpress < $DIR/wordpress.dump || exit
-
-          mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'siteurl'"
-          mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'home'"
+          mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'siteurl'" || exit
+          mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'home'" || exit
 
   handlers:
     - name: reload-apache2
