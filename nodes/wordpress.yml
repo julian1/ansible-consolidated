@@ -112,7 +112,7 @@
         content: |
           #!/bin/bash -x
           # deployed by ansible!
-          DIR=backup-$(date '+%DIR-%H-%M')
+          DIR=backup-$(date '+%F-%H-%M')
           mkdir $DIR
           cp -rp /var/lib/wordpress/ $DIR
           mysqldump --opt -u root wordpress > $DIR/wordpress.dump
