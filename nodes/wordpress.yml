@@ -61,9 +61,6 @@
         # define('WP_ALLOW_REPAIR', true);
         content: |
           <?php
-          ini_set('display_errors', 1);
-          ini_set('display_startup_errors', 1);
-          error_reporting(E_ALL);
           define('DB_NAME', 'wordpress');
           define('DB_USER', 'wordpress');
           define('DB_PASSWORD', 'wordpress');
@@ -117,6 +114,21 @@
           cp -rp /var/lib/wordpress/ $DIR
           mysqldump --opt -u root wordpress > $DIR/wordpress.dump
 
+    - copy:
+        dest: /home/meteo/restore.sh
+        mode: 0755
+        content: |
+          #!/bin/bash -x
+          # deployed by ansible!
+          # must be run as sudo for permissions, and without using wp gui first
+          DIR=$1
+          rm -rf /var/lib/wordpress/ || exit
+          cp -rp $DIR/wordpress /var/lib/ || exit
+          chown www-data:  /var/lib/wordpress/ || exit
+          mysql -u root wordpress < $DIR/wordpress.dump || exit
+
+          mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'siteurl'"
+          mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'home'"
 
   handlers:
     - name: reload-apache2
