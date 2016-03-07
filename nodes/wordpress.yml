@@ -1,7 +1,5 @@
 
-# TODO change name to wordpress...
-
-# https://wiki.debian.org/WordPress
+# Based on https://wiki.debian.org/WordPress
 
 - hosts:
     - wordpress
@@ -28,13 +26,10 @@
     - apt: name=apache2
     - apt: name=wordpress
 
-    # chown -R  www-data:www-data /var/lib/wordpress
-    # chown -R  www-data:www-data /usr/share/wordpress
     - file: path="{{item}}" state=directory recurse=yes owner=www-data group=www-data
       with_items:
         - /var/lib/wordpress
         - /usr/share/wordpress
-
 
     - copy:
         dest: /etc/apache2/sites-available/wp.conf
@@ -58,7 +53,7 @@
       args:
         creates: /etc/apache2/sites-enabled/wp.conf
 
-    # can now hit, http://drupal/wp/
+    # web site should now be up and accessible, http://host/wp/
 
     - copy:
         dest: /etc/wordpress/config-default.php
@@ -66,9 +61,6 @@
         # define('WP_ALLOW_REPAIR', true);
         content: |
           <?php
-          ini_set('display_errors', 1);
-          ini_set('display_startup_errors', 1);
-          error_reporting(E_ALL);
           define('DB_NAME', 'wordpress');
           define('DB_USER', 'wordpress');
           define('DB_PASSWORD', 'wordpress');
@@ -91,8 +83,8 @@
     - shell: mysql -u root < /ansible/wp.sql
       when: whoot.changed == true
 
-
-    # support large file upload
+    # apche support large file upload
+    # Note: that max_file_uploads = 20 didn't prevent bulk upload of more than 20 images...
     - lineinfile: >
         dest=/etc/php5/apache2/php.ini
         state=present
@@ -109,7 +101,33 @@
         line='post_max_size = 32M'
       notify: reload-apache2
 
-    # Note: that max_file_uploads = 20 didn't hinder bulk upload...
+
+    # Useful enough to be included here, TODO use system path
+    - copy:
+        dest: /home/meteo/backup.sh
+        mode: 0755
+        content: |
+          #!/bin/bash -x
+          # deployed by ansible!
+          DIR=backup-$(date '+%F-%H-%M')
+          mkdir $DIR
+          cp -rp /var/lib/wordpress/ $DIR
+          mysqldump --opt -u root wordpress > $DIR/wordpress.dump
+
+    - copy:
+        dest: /home/meteo/restore.sh
+        mode: 0755
+        content: |
+          #!/bin/bash -x
+          # deployed by ansible!
+          # must be run as sudo for permissions, and without using wp gui first
+          DIR=$1
+          rm -rf /var/lib/wordpress/ || exit
+          cp -rp $DIR/wordpress /var/lib/ || exit
+          chown -R www-data:  /var/lib/wordpress/ || exit
+          mysql -u root wordpress < $DIR/wordpress.dump || exit
+          mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'siteurl'" || exit
+          mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'home'" || exit
 
   handlers:
     - name: reload-apache2
