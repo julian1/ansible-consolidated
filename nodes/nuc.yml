@@ -1,92 +1,12 @@
-***DEPRECATED*** - using openelec image
 
 - hosts: nuc
-  roles:
   tasks:
-    # have to set append acpi=off in syslinux boot
-
-    # nic renaming, http://forums.debian.net/viewtopic.php?f=19&t=122795
-
-    # http://ftp.us.debian.org/debian
-    # http://mirror.aarnet.edu.au/debian
-
-#    - include: >
-#        ../roles/distribution/tasks/main.yml
-#        mirror=http://ftp.us.debian.org/debian
-#        template=debian.j2
-#        version=testing
-#        upgrade=safe
-
-    - hostname: name=nuc
-
-    # non zfs, requires the fs to be created
-    # reboot?
-    - blockinfile:
-        dest: /etc/fstab
+    - copy:
+        dest: /storage/.config/udev.rules.d/81-bluetooth-hci.rules
         content: |
-          UUID=9e4b1079-7b30-4dfb-960c-3a376a22b1ff /home ext4 noatime,errors=remount-ro 0 1
+          # deployed by ansible!
+          # Intel Bluetooth should be disabled
+          # https://projectgus.com/2014/09/blacklisting-a-single-usb-device-from-linux/
+          SUBSYSTEM=="usb", ATTRS{idVendor}=="8087", ATTRS{idProduct}=="0a2a", ATTR{authorized}="0"
 
-    # To flash the bios - on thumbdrive
-    #  fdisk /dev/sdb
-    #  # toggle b for dos/fat partition
-    #  mkfs.vfat  /dev/sdb1 
-    #  mkdir mnt
-    #  mount /dev/sdb1  mnt/
-    #  cp ~meteo/Downloads/PY0048.BIO  mnt/
-    #  umount mnt/
-    # 
-    # Then F7 - 
-    # Still stalls at ACPI power button pwrf
-    # Fucking BIOS went through flashing steps, but then shows the same revision... 0048.2015.1210
-
-    # IMPORTANT Think we need to move .xinitrc out of dotfiles and make it non-generic for displays 
-    # we probably also need a wm as well as xorg, so probably makes sense to try xmonad. 
-
-#    - include: ../roles/common/tasks/meteo.yml
-
-    # xinit launches, via ssh when root after installing xorg.
-    - apt: name=xorg
-
-    # start x as root, can then run mplayer with
-    # export DISPLAY=:0 && mplayer file.mp4
-    - apt: name=mplayer
-    - apt: name=pciutils   # lspci
-
-
-    - apt: name=alsa-oss
-    - apt: name=alsa-utils
-    - apt: name=alsa-tools
-
-    - name: Setup soundcard
-      blockinfile:
-        dest: /etc/modprobe.d/alsa-base.conf
-        create: true
-        content: |
-          # blacklist snd_hda_codec_realtek
-
-          # hardware beep off
-          options snd_hda_intel beep_mode=0
-          blacklist pcspkr
-      notify: reboot
-
-    - name: Initialize alsa
-      # must be without the init, if no a 
-      command: /usr/sbin/alsactl
-      args:
-        creates: /var/lib/alsa/asound.state
-      notify: reboot
-
-    # Ok, the fullowing work, when run as root, with headphones plugged in back or front..., Xorg not running
-    # It doesn't work when run as non-root...
-    # speaker-test -c 2 -D hw:0
-    # aplay -D plug:hw:0 /usr/share/sounds/alsa/Front_Right.wav
-
-    # install intel wifi, to clean up dmesg firmware logs, and because 
-    # it looks like wifi might be getting assigned to sound
-    # wlp2s0 gets recognized
-    - apt: name=firmware-iwlwifi
-
-  handlers:
-    - include: ../roles/common/handlers/main.yml
-      notify: reboot
 
