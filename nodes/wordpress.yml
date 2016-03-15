@@ -26,6 +26,43 @@
     - apt: name=apache2
     - apt: name=wordpress
 
+#    #################
+#    # NEW STUFF
+#    # remove default site
+#    - command: a2dissite 000-default.conf
+#      args:
+#        removes: /etc/apache2/sites-enabled/000-default.conf
+#
+#    # default
+#    - blockinfile:
+#        dest: /etc/apache2/sites-available/default.conf
+#        create: true
+#        content: |
+#          <VirtualHost *:80>
+#            DocumentRoot      /var/www/html
+#          </VirtualHost>
+#      notify: reload-apache2
+#
+#    # enable
+#    - command: a2ensite default
+#      args:
+#        creates: /etc/apache2/sites-enabled/default.conf
+#
+#    # document root
+#    - copy:
+#        dest: /var/www/html/index.html
+#        content: |
+#          <!DOCTYPE html>
+#          <html>
+#            <body>
+#              <h1>Woot!!</h1>
+#            </body>
+#          </html>
+
+    #################
+    # END NEW STUFF
+
+
     - file: path="{{item}}" state=directory recurse=yes owner=www-data group=www-data
       with_items:
         - /var/lib/wordpress
@@ -34,6 +71,8 @@
     - copy:
         dest: /etc/apache2/sites-available/wp.conf
         content: |
+          # deployed by ansible...
+          # Why no virtual host?
           Alias /wp/wp-content /var/lib/wordpress/wp-content
           Alias /wp /usr/share/wordpress
           <Directory /usr/share/wordpress>
@@ -53,6 +92,7 @@
       args:
         creates: /etc/apache2/sites-enabled/wp.conf
 
+    #################
     # web site should now be up and accessible, http://host/wp/
 
     - copy:
@@ -66,6 +106,10 @@
           define('DB_PASSWORD', 'wordpress');
           define('DB_HOST', 'localhost');
           define('WP_CONTENT_DIR', '/var/lib/wordpress/wp-content');
+
+
+          define('DB_CHARSET', 'utf8');
+          define('DB_COLLATE', '');
           ?>
 
     - copy:
@@ -102,7 +146,7 @@
       notify: reload-apache2
 
 
-    # Useful enough to be included here, TODO use system path
+    # Useful enough to be included here, TODO use system path or just put in /ansible and use args.
     - copy:
         dest: /home/meteo/backup.sh
         mode: 0755
@@ -128,6 +172,12 @@
           mysql -u root wordpress < $DIR/wordpress.dump || exit
           mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'siteurl'" || exit
           mysql -u root wordpress -e "update wp_options set option_value = 'http://aodnblog2/wp' where option_name = 'home'" || exit
+
+          # https://codex.wordpress.org/Converting_Database_Character_Sets
+          # SHOW FULL COLUMNS FROM wordpress.wp_posts;
+          # ALTER DATABASE wordpress CHARACTER SET utf8;
+          # ALTER TABLE wp_posts CHARACTER SET utf8;
+          # alter table wp_posts change post_content post_content LONGTEXT CHARACTER SET utf8;
 
   handlers:
     - name: reload-apache2
