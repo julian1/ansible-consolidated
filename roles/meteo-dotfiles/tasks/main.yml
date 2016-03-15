@@ -10,12 +10,12 @@
       force=yes
     become: true
     become_user: "{{user}}"
+    register: git_repository
 
-  - shell: ./install.sh 2> installed.txt
+  - shell: ./install.sh
     become: true
     become_user: "{{user}}"
     args:
       chdir: /home/{{user}}/dotfiles/
-      creates: installed.txt
-
+    when: git_repository.changed == true
 
