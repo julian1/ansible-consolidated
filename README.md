@@ -56,6 +56,16 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 #### TODO
 
+
+sshd for apu should only listen on 192.168.100.0 not 0.0.0.0
+
+limit iptables forwarding for non 80,443,dns,dhcp between vlans. 22 only only on vlan 100 
+
+do similar for dnsmasq, and use internal network interface only.
+  eg. 192.168.0.0 
+
+fix dhcpd and ntpd which are listening on 0.0.0.1
+
 chmod 700 on home directories
 
 
