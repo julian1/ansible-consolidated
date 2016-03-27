@@ -220,6 +220,7 @@
           # wireless
           interface=wlan0
           dhcp-range=wlan0,192.168.43.10,192.168.43.20,255.255.255.0,12h
+          dhcp-host=40:a3:6b:c1:18:dc,omega,192.168.43.10
           dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.43.14
           dhcp-host=00:19:e3:10:53:89,imac,192.168.43.15
           dhcp-host=18:fe:34:d1:94:4d,esp,192.168.43.16
