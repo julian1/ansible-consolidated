@@ -2,7 +2,7 @@
 #### Ansible CM
 
 For use with systemd-nspawn containers, kvm, docker or virtual box VMs.
-  
+
 Requires Ansible version >= 2
 
 
@@ -22,17 +22,17 @@ ansible-playbook -i localhost, roles/zfs/main.yml
 ```
 
 
-#### Handy Ansible flags
+#### Useful Ansible flags
 ```
---list-tasks    # show tasks that will be run
---check         # report what would have been done only
--s              # force use of sudo for all plays even if not marked as such
+--list-tasks        # tasks that will be run
+--check             # report what would have been done only
+-s                  # force use of sudo for all plays even if not marked as such
 --private-key ~/.ssh/id_rsa
 --ask-sudo-pass
--k ask pass     # useful before keys installed
+-k ask pass         # useful before keys installed
 -u specify username
 -v verbose
--c local        # no ssh, spawn local shell
+-c local            # no ssh, spawn local shell
 
 # Use ping module
 ansible all -i nc2, -c local -m ping
@@ -56,18 +56,22 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 #### TODO
 
+IMPORTANT
+  - sshd for apu should only listen on 192.168.100.0/24 not 0.0.0.0
 
-sshd for apu should only listen on 192.168.100.0 not 0.0.0.0
+  - ip iptables should only forward 192.168.0.0/16 not 0.0.0.0
 
-limit iptables forwarding for non 80,443,dns,dhcp between vlans. 22 only only on vlan 100 
+  - likewise dnsmasq and other services
+
+
+limit iptables forwarding for non 80,443,dns,dhcp between vlans. 22 only only on vlan 100
 
 do similar for dnsmasq, and use internal network interface only.
-  eg. 192.168.0.0 
+  eg. 192.168.0.0
 
 fix dhcpd and ntpd which are listening on 0.0.0.1
 
 chmod 700 on home directories
-
 
 Strategy for IOS, md5sum the cisco config file and compare. if different then upload, and reboot.
 
@@ -116,9 +120,9 @@ It may be that the indirection between node, and role for the node is a bit usel
   - It has to be a task to use the include statement
   - and a play with full dir structure to use in a role
   - and a play to call directly from ansible-playbook (which is very useful)
-  - but there doesn't seem to be a way to use  
+  - but there doesn't seem to be a way to use
 
-  - BUT - it's easy to have a play and a task 
+  - BUT - it's easy to have a play and a task
       just make the play delegate to the task. see devenv-lite.yml for example
 
 
