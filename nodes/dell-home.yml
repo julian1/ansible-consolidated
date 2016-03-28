@@ -241,6 +241,14 @@
         content: |
           # ansible test
 
+    - copy:
+        dest: /etc/udev/rules.d/80-ttyusb.rules
+        content: |
+          # deployed by ansible!
+          # ftdi device
+          KERNEL=="ttyUSB0", MODE="0666"
+
+
   handlers:
     - include: ../roles/common/handlers/main.yml
 
