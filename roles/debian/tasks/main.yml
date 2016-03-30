@@ -3,24 +3,26 @@
   # - template: src=debian.j2 dest=/etc/apt/sources.list mode=0644
 
   # set up sources first, in case default mirror is down
-  - copy:
-      dest: /etc/apt/sources.list
-      backup: yes
-      mode: 0644
-      content: |
-        # deployed by ansible
-        deb {{mirror}} {{version}} main
-        deb-src {{mirror}} {{version}} main
-
-        deb http://security.debian.org/ {{version}}/updates main
-        deb-src http://security.debian.org/ {{version}}/updates main
-
-        deb {{mirror}} {{version}}-updates main
-        deb-src {{mirror}} {{version}}-updates main
-
-        # firmware
-        # deb http://http.us.debian.org/debian/ {{version}} non-free contrib
-        deb {{mirror}} {{version}} non-free contrib
+#  - copy:
+#      dest: /etc/apt/sources.list
+#      backup: yes
+#      mode: 0644
+#      content: |
+#        # deployed by ansible
+#        deb {{mirror}} {{version}} main
+#        deb-src {{mirror}} {{version}} main
+#
+#        deb http://security.debian.org/ {{version}}/updates main
+#        deb-src http://security.debian.org/ {{version}}/updates main
+#
+#        deb {{mirror}} {{version}}-updates main
+#        deb-src {{mirror}} {{version}}-updates main
+#
+#        # firmware
+#        # deb http://http.us.debian.org/debian/ {{version}} non-free contrib
+#        deb {{mirror}} {{version}} non-free contrib
+#
+  - template: src={{sources_template}} dest=/etc/apt/sources.list mode=0644 
 
 
   # ansible requires aptitude to be installed in order to perform upgrade!

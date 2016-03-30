@@ -1,7 +1,14 @@
+
+# so if we set up as tv
+# if use jessie ...  need to change the roles - with a pre_task to add the repo...  
+# should use jessie.
+# if testing then we will have to build ourselves.
+
 - hosts: chromebox
   vars:
+    - sources_template: tvheadend.j2
     - mirror: http://mirror.internode.on.net/pub/debian
-    - version: testing
+    - version: jessie
     - upgrade: safe
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
@@ -22,4 +29,12 @@
     - apt: name=pciutils        # lspci
     - apt: name=wpasupplicant
     - apt: name=man
+
+
+    - apt_key: keyserver=keyserver.ubuntu.com id=379CE192D401AB61
+
+    - apt: name=tvheadend
+
+#sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 
+
 
