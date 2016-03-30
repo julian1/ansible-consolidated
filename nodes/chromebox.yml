@@ -30,7 +30,6 @@
     - apt: name=wpasupplicant
     - apt: name=man
 
-
     - apt_key: keyserver=keyserver.ubuntu.com id=379CE192D401AB61
 
     - apt: name=tvheadend
