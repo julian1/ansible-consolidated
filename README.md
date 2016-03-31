@@ -57,11 +57,13 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 #### TODO
 
 IMPORTANT
-  - sshd for apu should only listen on 192.168.100.0/24 not 0.0.0.0
+  - sshd and dnsmasq should only listen internal interfaces - eg. 192.168.100.0/24 not 0.0.0.0
 
   - ip iptables should only forward 192.168.0.0/16 not 0.0.0.0
 
   - likewise dnsmasq and other services
+
+make single vlan 200 for ordinary machines - and trunk vlan to cisco2. 
 
 
 limit iptables forwarding for non 80,443,dns,dhcp between vlans. 22 only only on vlan 100
