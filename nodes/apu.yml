@@ -202,17 +202,18 @@
           address=/cisco1.localnet/192.168.100.12
 
           # vlan 200
+          # Not unused
           interface=eth0.200
           dhcp-range=eth0.200,192.168.200.10,192.168.200.20,255.255.255.0,12h
+
           # Note, increased brother dhcp retries to 10 due slow switch startup
-          dhcp-host=54:ab:3a:19:b6:d5,chromebox,192.168.200.12
-          dhcp-host=00:80:77:34:55:96,brother,192.168.200.15
 
           # vlan 201
           interface=eth0.201
           dhcp-range=eth0.201,192.168.201.10,192.168.201.20,255.255.255.0,12h
           dhcp-host=78:a0:51:5c:75:53,budii,192.168.201.10
-          # dhcp-host=54:ab:3a:19:b6:d5,chromebox,192.168.201.15
+          dhcp-host=54:ab:3a:19:b6:d5,chromebox,192.168.201.12
+          dhcp-host=00:80:77:34:55:96,brother,192.168.201.15
           dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.201.16
           dhcp-host=b8:ae:ed:7b:b5:b9,nuc,192.168.201.17
           dhcp-host=b8:2a:72:c9:fe:d2,dell-home-wired,192.168.201.19
