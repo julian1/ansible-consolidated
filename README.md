@@ -18,7 +18,10 @@ ansible -i inventory/imos --list-hosts all
 
 nsible-playbook ./roles/aatams/redeploy.yml
 ansible-playbook -i localhost, roles/common/devenv-lite.yml
-ansible-playbook -i localhost, roles/zfs/main.yml
+
+# build zfs kernel module
+ansible-playbook ./roles/zfs/main.yml -c local -i dell-work,
+
 ```
 
 
