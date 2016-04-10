@@ -13,7 +13,7 @@
   roles:
     - debian
     - timezone
-    - meteo
+    - meteo-dotfiles
     - tomcat-port-forward
     - geoserver
 

@@ -1,25 +1,37 @@
 
-TODO: Fixme!
-
 - hosts: ethereum
+  vars:
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: jessie
+    - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
+    - users:
+      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
+  vars_files:
+    - credentials.yml
   roles:
+    - debian
+    - timezone
+    - locale
+    - common
+    - meteo-dotfiles
+
   tasks:
-    - include: | 
-        ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe 
-        mirror="http://mirror.aarnet.edu.au/debian" 
-
+    # support linking binaries in built in root
     - file: path=/root state=directory mode=0755
-
-    - include: ../roles/common/tasks/meteo.yml
-
     - include: ../roles/ethereum/tasks/cpp-ethereum.yml
-#    - include: ../roles/ethereum/tasks/go-ethereum.yml
+    - include: ../roles/ethereum/tasks/go-ethereum.yml
+    - include: ../roles/misc/tasks/node.yml
 
-    - include: ../roles/common/tasks/node.yml
-
+# TODO: Fixme!
+#
+# - hosts: ethereum
+#  roles:
 #    - include: ../roles/ethereum/tasks/dapple.yml
-    - include: ../roles/ethereum/tasks/vim-solidity.yml
+#    - include: ../roles/ethereum/tasks/vim-solidity.yml
 
-  handlers:
-    - include: ../roles/common/handlers/main.yml
+#  handlers:
+#    - include: ../roles/common/handlers/main.yml
 
