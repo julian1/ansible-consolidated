@@ -1,27 +1,17 @@
 
-  # git clone https://github.com/NexusDevelopment/dapple && cd dapple && npm install -g
-
-  # user doesn't matter because installed globally
-
-  # - git: repo=https://github.com/NexusDevelopment/dapple dest=dapple version=master
-
   - git: repo=https://github.com/julian1/dapple dest=dapple version=master
 
-
-  # For secp256k1 maybe more
+  # For secp256k1 maybe others
   - apt: name=make
   - apt: name=g++
 
-  #
   - shell: creates=git-remotes chdir=dapple {{item}}
-    # become meteo
     with_items:
       - git remote add nexus https://github.com/NexusDevelopment/dapple
       - git fetch nexus
       - git checkout nexus/master
       - touch git-remotes
+      - npm link               # from dapple docs
       # - npm install
 
-
-  # - shell: cd dapple && npm install -g creates=/usr/bin/dapple
 
