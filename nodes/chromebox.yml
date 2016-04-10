@@ -1,6 +1,6 @@
 
 # so if we set up as tv
-# if use jessie ...  need to change the roles - with a pre_task to add the repo...  
+# if use jessie ...  need to change the roles - with a pre_task to add the repo...
 # should use jessie.
 # if testing then we will have to build ourselves.
 
@@ -34,6 +34,8 @@
 
     - apt: name=tvheadend
 
-#sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 
+#    - apt: rtl-sdr
+
+#sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
 
 

@@ -11,10 +11,12 @@
 
 
   # Geth
+  # April 10, main branch master, with tags
+  - debug: msg="building geth"
   - apt: name=make
   - apt: name=gcc
   - apt: name=libgmp-dev
-  - git: repo=https://github.com/ethereum/go-ethereum dest=/root/go-ethereum version=master
+  - git: repo=https://github.com/ethereum/go-ethereum dest=/root/go-ethereum version=v1.3.6
   - shell: make creates=build/bin/geth chdir=/root/go-ethereum
 
 
