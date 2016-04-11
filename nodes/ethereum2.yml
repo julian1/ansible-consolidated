@@ -1,0 +1,40 @@
+
+- hosts: ethereum.julian1.io
+  vars:
+    - mirror: http://mirror.internode.on.net/pub/debian
+    - version: jessie
+    - upgrade: safe
+    - timezone: Australia/Hobart
+    - locale: en_AU.UTF-8
+    - users:
+      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
+  vars_files:
+    - credentials.yml
+
+  pre_tasks:
+    - copy:
+        dest: /etc/fstab
+        backup: yes
+        content: |
+          # deployed by ansible!
+          UUID=5cfc0e59-b149-4ddc-8741-74bd7e71f91c /     ext4 defaults 0 1
+          UUID=7b2ab2de-dc6a-4126-8c1e-2a1c0d999eb4 /home ext4 defaults 0 2
+  roles:
+    - debian
+    - timezone
+    - locale
+    - common
+    - meteo-dotfiles
+
+  tasks:
+    # support linking binaries in built in root
+    - file: path=/root state=directory mode=0755
+    - include: ../roles/ethereum/tasks/cpp-ethereum.yml
+    - include: ../roles/ethereum/tasks/go-ethereum.yml
+    - include: ../roles/misc/tasks/node.yml
+    - include: ../roles/ethereum/tasks/dapple.yml
+    - include: ../roles/ethereum/tasks/vim-solidity.yml
+#    - include: ../roles/ethereum/tasks/examples.yml
+
+    - apt: name=ntp             # network time
