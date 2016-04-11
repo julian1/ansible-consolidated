@@ -1,7 +1,5 @@
 
-# TODO all the building should be done as unprivileged user
-
-- hosts: ethereum
+- hosts: ethereum.julian1.io
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie
@@ -13,6 +11,15 @@
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
     - credentials.yml
+
+  pre_tasks:
+    - copy:
+        dest: /etc/fstab
+        backup: yes
+        content: |
+          # deployed by ansible!
+          UUID=5cfc0e59-b149-4ddc-8741-74bd7e71f91c /     ext4 defaults 0 1
+          UUID=7b2ab2de-dc6a-4126-8c1e-2a1c0d999eb4 /home ext4 defaults 0 2
   roles:
     - debian
     - timezone
@@ -30,3 +37,4 @@
     - include: ../roles/ethereum/tasks/vim-solidity.yml
 #    - include: ../roles/ethereum/tasks/examples.yml
 
+    - apt: name=ntp             # network time

@@ -57,7 +57,7 @@
     with_items:
       - rm -rf build 
       - mkdir build
-      - cd build && cmake .. && make -j 8 all install
+      - cd build && cmake .. && make -j 4 all install
 
 
   # libweb3core
@@ -69,7 +69,7 @@
     with_items:
       - rm -rf build 
       - mkdir build
-      - cd build && cmake .. && make -j 8 all install
+      - cd build && cmake .. && make -j 4 all install
 
 
   # libethereum
@@ -82,7 +82,7 @@
     with_items:
       - rm -rf build 
       - mkdir build
-      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 8 all install
+      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 4 all install
 
 
   # solidity
@@ -93,7 +93,7 @@
     with_items:
       - rm -rf build 
       - mkdir build
-      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 8 all install
+      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 4 all install
 
 
   # web3.js
@@ -111,6 +111,6 @@
     with_items:
       - rm -rf build 
       - mkdir build
-      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 8 all install
+      - cd build && cmake .. -DCPUID=0 -DETHASHCL=0 -DEVMJIT=0 && make -j 4 all install
 
 
