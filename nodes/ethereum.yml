@@ -28,4 +28,5 @@
     - include: ../roles/misc/tasks/node.yml
     - include: ../roles/ethereum/tasks/dapple.yml
     - include: ../roles/ethereum/tasks/vim-solidity.yml
+#    - include: ../roles/ethereum/tasks/examples.yml
 
