@@ -9,9 +9,10 @@
     - users:
       - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
+    # TODO for meteo-dotfiles
+    - user: meteo
   vars_files:
     - credentials.yml
-
   pre_tasks:
     - copy:
         dest: /etc/fstab
@@ -20,6 +21,7 @@
           # deployed by ansible!
           UUID=5cfc0e59-b149-4ddc-8741-74bd7e71f91c /     ext4 defaults 0 1
           UUID=7b2ab2de-dc6a-4126-8c1e-2a1c0d999eb4 /home ext4 defaults 0 2
+
   roles:
     - debian
     - timezone
