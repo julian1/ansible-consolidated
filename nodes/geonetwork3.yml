@@ -1,27 +1,53 @@
 
-TODO: fixme
+# it's messy to have vars in the roles, and in the playbook, and in the inventory.
+# although not as messy as attribute overriding in chef.
 
-  - hosts: geonetwork3
-    vars:
-      - user: meteo
-      - sshkey: "{{ lookup('file', '../resources/keys') }}"
-      - mirror: "http://mirror.aarnet.edu.au/debian/"
-    tasks:
-      - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
-      - include: ../roles/common/tasks/sudoers.yml
-      - include: ../roles/common/tasks/timezone.yml timezone=Australia/Hobart
-      - apt: name=locales
-      - locale_gen: name=en_AU.UTF-8 state=present
-      - user: name="{{user}}" shell=/bin/bash groups=adm append=yes
-      - include: ../roles/common/tasks/mydotfiles.yml #user="{{user}}"
-      - authorized_key: user="{{user}}" key="{{sshkey}}"
+- hosts: geonetwork3
+  vars:
+#    - mirror: http://mirror.internode.on.net/pub/debian
+#    - version: jessie
+#    - upgrade: safe
+#    - timezone: Australia/Hobart
+#    - locale: en_AU.UTF-8
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+  vars_files:
+    - credentials.yml
+  roles:
+    - debian
+    - timezone
+    - locale
+    - common
+    - meteo-dotfiles
+    - tomcat-port-forward
+    - postgres
 
+#    - geonetwork
+#  tasks:
+#    - include: ../roles/geonetwork/tasks/restore-db.yml
 
-      - include: ../roles/common/tasks/postgres.yml
-      - include: ../roles/geonetwork/tasks/main.yml
-
-    handlers:
-      - include: ../roles/common/handlers/main.yml
-
-
-
+#
+#TODO: fixme
+#
+#  - hosts: geonetwork3
+#    vars:
+#      - user: meteo
+#      - sshkey: "{{ lookup('file', '../resources/keys') }}"
+#      - mirror: "http://mirror.aarnet.edu.au/debian/"
+#    tasks:
+#      - include: ../roles/distribution/tasks/main.yml template=debian.j2 version=jessie upgrade=safe
+#      - include: ../roles/common/tasks/sudoers.yml
+#      - include: ../roles/common/tasks/timezone.yml timezone=Australia/Hobart
+#      - apt: name=locales
+#      - locale_gen: name=en_AU.UTF-8 state=present
+#      - user: name="{{user}}" shell=/bin/bash groups=adm append=yes
+#      - include: ../roles/common/tasks/mydotfiles.yml #user="{{user}}"
+#      - authorized_key: user="{{user}}" key="{{sshkey}}"
+#
+#
+#      - include: ../roles/common/tasks/postgres.yml
+#      - include: ../roles/geonetwork/tasks/main.yml
+#
+#    handlers:
+#      - include: ../roles/common/handlers/main.yml
+#
