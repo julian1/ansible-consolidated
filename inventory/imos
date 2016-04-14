@@ -1,3 +1,4 @@
+[default]
 dell-work
 rev-proxy
 geoserver
@@ -11,3 +12,16 @@ aatams-dev-instance
 julian-test-instance
 aodnblog
 aodnblog2
+
+
+[default:vars]
+mirror=http://mirror.internode.on.net/pub/debian
+version=jessie
+upgrade=safe
+timezone=Australia/Hobart
+locale=en_AU.UTF-8
+#users= { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+
+#ntp_server=ntp.atlanta.example.com
+#proxy=proxy.atlanta.example.com
+
