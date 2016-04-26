@@ -1,19 +1,19 @@
 
 - hosts: portal
+  vars_files:
+    - jessie.yml
+    - credentials.yml
   roles:
-  tasks:
-    - include: >
-        ../roles/distribution/tasks/main.yml
-        mirror=http://mirror.aarnet.edu.au/debian
-        template=debian.j2 
-        version=jessie 
-        upgrade=safe 
+    - debian
+    - timezone
+    - meteo-dotfiles
+    - tomcat-port-forward
+    - portal
 
-    - include: ../roles/common/tasks/meteo.yml
+#  tasks:
+#    - include: ../roles/portal/tasks/main.yml
 
-    - include: ../roles/portal/tasks/main.yml
-
-  handlers:
-    - include: ../roles/common/handlers/main.yml
+#  handlers:
+#    - include: ../roles/common/handlers/main.yml
 
 
