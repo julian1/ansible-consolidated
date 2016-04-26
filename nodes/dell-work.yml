@@ -180,6 +180,7 @@
           dhcp-host=00:01:04:1b:2C:2A,5-aws-syd,10.1.1.18
           dhcp-host=00:01:04:1b:2C:2B,6-aws-syd,10.1.1.19
           dhcp-host=00:01:04:1b:2C:2C,win7,10.1.1.20
+          dhcp-host=00:01:04:1b:2C:2D,10-aws-syd,10.1.1.21
 
       notify: restart-dnsmasq
 
