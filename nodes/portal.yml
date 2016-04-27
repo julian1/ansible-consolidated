@@ -15,10 +15,3 @@
     - tomcat-port-forward
     - portal
 
-#  tasks:
-#    - include: ../roles/portal/tasks/main.yml
-
-#  handlers:
-#    - include: ../roles/common/handlers/main.yml
-
-
