@@ -2,9 +2,6 @@
   - name: reboot
     command: /sbin/reboot
 
-#  - name: reload-sysctl
-#    command: /sbin/sysctl -p /etc/sysctl.conf
-
   - name: restart-br0
     command: sh -c "/sbin/ifdown br0 && /sbin/ifup br0"
 
@@ -23,38 +20,19 @@
   - name: restart-wlan1
     command: sh -c "/sbin/ifdown wlan1 && sleep 1 && /sbin/ifup wlan1"
 
-  # should move to where they are actually used...
+  # TODO move these handlers to the role that uses them
   - name: restart-dnsmasq
     service: name=dnsmasq state=restarted
 
   - name: restart-hostapd
     service: name=hostapd state=restarted
 
-#  - name: reconfigure-tzdata
-#    command: "{{item}}"
-#    with_items:
-#      # note that dpkg-reconfigure will actually modify /etc/timezone which is nasty
-#      - dpkg-reconfigure --frontend noninteractive tzdata
 
-  - name: reconfigure-iptables
-    command: "{{item}}"
-    with_items:
-      # incoming http to allow apt-get update/upgrade
-      - sh /etc/iptables-rules
-      - dpkg-reconfigure --frontend noninteractive iptables-persistent
-
+  # TODO should not be here. specific to apu
   - name: restart-smcroute
     service: name=smcroute state=restarted
 
-#  - name: restart-postgres
-#    service: name=postgresql state=restarted
-
-# should be placed where it's used
-#  - name: restart-tomcat7
-#    # shell: echo > /var/log/tomcat7/catalina.out
-#    service: name=tomcat7 state=restarted
-
-
+  # TODO remov
   - name: reload-apache2
     command: service apache2 reload
 
