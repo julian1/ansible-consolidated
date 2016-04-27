@@ -3,9 +3,14 @@
   vars_files:
     - jessie.yml
     - credentials.yml
+  vars:
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   roles:
     - debian
     - timezone
+    - locale
+    - common
     - meteo-dotfiles
     - tomcat-port-forward
     - portal
