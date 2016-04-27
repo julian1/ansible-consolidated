@@ -1,20 +1,15 @@
 
 - hosts: dell-home
+  vars_files:
+    - testing.yml
+    - credentials.yml
   vars:
-    - timezone: Australia/Hobart
-    - mirror: http://mirror.internode.on.net/pub/debian
-    - version: testing
-    - upgrade: safe
-    - timezone: Australia/Hobart
-    - locale: en_AU.UTF-8
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
     - printer:
         name: Brother
         url: socket://brother:9100
         ppd: BRHL16_2_GPL.ppd
-    - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
-  vars_files:
-    - credentials.yml
   roles:
     - debian
     - timezone

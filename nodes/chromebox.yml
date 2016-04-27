@@ -5,13 +5,11 @@
 # if testing then we will have to build ourselves.
 
 - hosts: chromebox
+  vars_files:
+    - jessie.yml
+    - credentials.yml
   vars:
     - sources_template: tvheadend.j2
-    - mirror: http://mirror.internode.on.net/pub/debian
-    - version: jessie
-    - upgrade: safe
-    - timezone: Australia/Hobart
-    - locale: en_AU.UTF-8
     # might be nicer to take from dhcp...
     - hostname: chromebox
     - users:
