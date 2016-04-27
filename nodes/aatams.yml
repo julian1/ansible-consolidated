@@ -2,8 +2,8 @@
 - hosts:
     - aatams
   vars_files:
-    - jessie.yml
-    - credentials.yml
+    - ../vars/jessie.yml
+    - ../vars/credentials.yml
   vars:
     - users:
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }

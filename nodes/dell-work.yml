@@ -1,8 +1,8 @@
 
 - hosts: dell-work
   vars_files:
-    - testing.yml
-    - credentials.yml
+    - ../vars/testing.yml
+    - ../vars/credentials.yml
   vars:
     - printer:
         name: ImosLexmark

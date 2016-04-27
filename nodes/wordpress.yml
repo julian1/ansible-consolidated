@@ -6,7 +6,7 @@
     - aodnblog
     - aodnblog2
   vars_files:
-    - credentials.yml
+    - ../vars/credentials.yml
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie

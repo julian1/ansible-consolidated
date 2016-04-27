@@ -6,8 +6,8 @@
 
 - hosts: chromebox
   vars_files:
-    - jessie.yml
-    - credentials.yml
+    - ../vars/jessie.yml
+    - ../vars/credentials.yml
   vars:
     - sources_template: tvheadend.j2
     # might be nicer to take from dhcp...
@@ -15,7 +15,7 @@
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
-    - credentials.yml
+    - ../vars/credentials.yml
   roles:
     - debian
     - timezone

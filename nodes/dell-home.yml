@@ -1,8 +1,8 @@
 
 - hosts: dell-home
   vars_files:
-    - testing.yml
-    - credentials.yml
+    - ../vars/testing.yml
+    - ../vars/credentials.yml
   vars:
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }

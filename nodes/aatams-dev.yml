@@ -5,8 +5,8 @@
     - aatams-test-instance
     - aatams-dev-instance
   vars_files:
-    - jessie.yml
-    - credentials.yml
+    - ../vars/jessie.yml
+    - ../vars/credentials.yml
   vars:
     - users:
       - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
