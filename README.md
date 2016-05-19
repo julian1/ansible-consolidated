@@ -11,12 +11,12 @@ Requires Ansible version >= 2
 ```
 ansible-playbook nodes/dell-home.yml
 ansible-playbook nodes/aatams.yml -v
+ansible-playbook nodes/aatams-dev.yml -i aatams-test-instance, -u debian --private-key ~/.ssh/julian3.pem -s
+ansible-playbook ./roles/aatams/redeploy.yml
 ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
-ansible-playbook ./nodes/aatams.yml -i aatams-test-instance, -u debian --private-key ~/.ssh/julian3.pem -s
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 
-nsible-playbook ./roles/aatams/redeploy.yml
 ansible-playbook -i localhost, roles/common/devenv-lite.yml
 
 # build zfs kernel module
