@@ -2,7 +2,7 @@
 - hosts: dell-home
   vars_files:
     - ../vars/testing.yml
-    - ../vars/credentials.yml
+    # - ../vars/credentials.yml
   vars:
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
@@ -18,8 +18,8 @@
     - meteo-dotfiles
     - ip-forwarding
     - printer
-  tasks:
 
+  tasks:
     - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
     - apt: name=iw
 
@@ -72,7 +72,7 @@
             keycode 90 = Insert NoSymbol Insert
           EOF
 
-          xrandr --output eDP1 --brightness .65
+          xrandr --output eDP1 --brightness .45
 
           # xset -dpms; xset s off
           # to turn on trackpad tap to select/button
@@ -91,17 +91,6 @@
           # deployed by ansible
           auto lo
           iface lo inet loopback
-
-          # vlan
-          # auto eth0.2
-          # iface eth0.2 inet static
-          #  address 192.168.2.1
-          #  netmask 255.255.255.0
-
-          # auto eth0.3
-          # iface eth0.3 inet static
-          #  address 192.168.3.1
-          #  netmask 255.255.255.0
 
           auto br0
           iface br0 inet static
@@ -158,11 +147,6 @@
               :
           }
 
-    # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present insertafter='#prepend' line='prepend domain-name-servers 10.1.1.1;'
-
-    # remove domain-name-servers from dhcp config
-    # - lineinfile: dest=/etc/dhcp/dhclient.conf backup=true state=present backrefs=yes regexp='(.*)domain-name-servers,(.*)' line='\1\2'
-
     - apt: name=iptables-persistent
     - copy:
         dest: /etc/iptables-rules
@@ -171,9 +155,12 @@
           iptables -t filter --flush
           iptables -t nat --flush
           iptables -t mangle --flush
+
+          # natting is handled on the router
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
           # iptables -t nat -A POSTROUTING -s '10.1.1.0/24' -j MASQUERADE
+
           # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=717217
           # TODO - fill in checksums for all udp...
           iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
@@ -243,16 +230,16 @@
           # ftdi device
           KERNEL=="ttyUSB0", MODE="0666"
 
+    - apt: name=samba
     - copy:
         dest: /etc/samba/smb.conf
         content: |
           # deployed by ansible!
           [global]
-
           workgroup = WORKGROUP
           dns proxy = no
 
-          interfaces = 10.1.1.0/24 br0 
+          interfaces = 10.1.1.0/24 br0
           bind interfaces only = yes
 
           log file = /var/log/samba/log.%m
@@ -268,10 +255,16 @@
           usershare allow guests = no
 
           [meteo]
-          path = /home/meteo
+          path = /home/meteo/Pictures
           valid users = meteo
           read only = yes
+      notify: restart-samba
+
 
   handlers:
     - include: ../roles/common/handlers/main.yml
+
+    - name: restart-samba
+      # command: service samba restart # samba doesn't play nice with systemd
+      command: /etc/init.d/samba restart
 
