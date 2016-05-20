@@ -1,10 +1,18 @@
 
+  # TODO install user ordinary user...
 
   # TODO perhaps use web3.js for building cpp-ethereum
   - shell: npm install web3
 
   # this isn't node specific
   - file: path=/root/examples state=directory
+
+#  - copy: dest=/root/examples src={{item}} 
+#    with_items:
+#      - last_block.js
+#      - token.js
+#      - token.solc
+
   - copy: src=last_block.js dest=/root/examples
   - copy: src=token.js dest=/root/examples
   - copy: src=token.solc dest=/root/examples

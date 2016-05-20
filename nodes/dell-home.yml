@@ -1,20 +1,15 @@
 
 - hosts: dell-home
+  vars_files:
+    - ../vars/testing.yml
+    - ../vars/credentials.yml
   vars:
-    - timezone: Australia/Hobart
-    - mirror: http://mirror.internode.on.net/pub/debian
-    - version: testing
-    - upgrade: safe
-    - timezone: Australia/Hobart
-    - locale: en_AU.UTF-8
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
     - printer:
         name: Brother
         url: socket://brother:9100
         ppd: BRHL16_2_GPL.ppd
-    - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
-  vars_files:
-    - credentials.yml
   roles:
     - debian
     - timezone
@@ -248,6 +243,34 @@
           # ftdi device
           KERNEL=="ttyUSB0", MODE="0666"
 
+    - copy:
+        dest: /etc/samba/smb.conf
+        content: |
+          # deployed by ansible!
+          [global]
+
+          workgroup = WORKGROUP
+          dns proxy = no
+
+          interfaces = 10.1.1.0/24 br0 
+          bind interfaces only = yes
+
+          log file = /var/log/samba/log.%m
+          max log size = 1000
+          syslog = 0
+          panic action = /usr/share/samba/panic-action %d
+
+          server role = standalone server
+          passdb backend = tdbsam
+          obey pam restrictions = yes
+          unix password sync = no
+          map to guest = bad user
+          usershare allow guests = no
+
+          [meteo]
+          path = /home/meteo
+          valid users = meteo
+          read only = yes
 
   handlers:
     - include: ../roles/common/handlers/main.yml

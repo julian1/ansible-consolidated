@@ -9,7 +9,7 @@
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
-    - credentials.yml
+    - ../vars/credentials.yml
   roles:
     - debian
     - timezone

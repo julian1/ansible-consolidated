@@ -1,19 +1,17 @@
 
 - hosts: portal
+  vars_files:
+    - ../vars/jessie.yml
+    - ../vars/credentials.yml
+  vars:
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   roles:
-  tasks:
-    - include: >
-        ../roles/distribution/tasks/main.yml
-        mirror=http://mirror.aarnet.edu.au/debian
-        template=debian.j2 
-        version=jessie 
-        upgrade=safe 
-
-    - include: ../roles/common/tasks/meteo.yml
-
-    - include: ../roles/portal/tasks/main.yml
-
-  handlers:
-    - include: ../roles/common/handlers/main.yml
-
+    - debian
+    - timezone
+    - locale
+    - common
+    - meteo-dotfiles
+    - tomcat-port-forward
+    - portal
 

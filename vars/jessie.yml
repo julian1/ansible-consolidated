@@ -1,0 +1,9 @@
+
+mirror: http://mirror.internode.on.net/pub/debian
+version: jessie
+upgrade: safe
+timezone: Australia/Hobart
+locale: en_AU.UTF-8
+
+
+

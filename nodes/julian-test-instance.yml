@@ -7,7 +7,7 @@
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
   vars_files:
-    - credentials.yml
+    - ../vars/credentials.yml
   roles:
     - debian
     - timezone

@@ -5,19 +5,17 @@
 # if testing then we will have to build ourselves.
 
 - hosts: chromebox
+  vars_files:
+    - ../vars/jessie.yml
+    - ../vars/credentials.yml
   vars:
     - sources_template: tvheadend.j2
-    - mirror: http://mirror.internode.on.net/pub/debian
-    - version: jessie
-    - upgrade: safe
-    - timezone: Australia/Hobart
-    - locale: en_AU.UTF-8
     # might be nicer to take from dhcp...
     - hostname: chromebox
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
-    - credentials.yml
+    - ../vars/credentials.yml
   roles:
     - debian
     - timezone

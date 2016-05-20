@@ -5,13 +5,9 @@
     - aatams-test-instance
     - aatams-dev-instance
   vars_files:
-    - credentials.yml
+    - ../vars/jessie.yml
+    - ../vars/credentials.yml
   vars:
-    - mirror: http://mirror.internode.on.net/pub/debian
-    - version: jessie
-    - upgrade: safe
-    - timezone: Australia/Hobart
-    - locale: en_AU.UTF-8
     - users:
       - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }

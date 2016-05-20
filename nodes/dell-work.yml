@@ -1,11 +1,9 @@
 
 - hosts: dell-work
+  vars_files:
+    - ../vars/testing.yml
+    - ../vars/credentials.yml
   vars:
-    - mirror: http://mirror.internode.on.net/pub/debian
-    - version: testing
-    - upgrade: safe
-    - timezone: Australia/Hobart
-    - locale: en_AU.UTF-8
     - printer:
         name: ImosLexmark
         url: socket://10.76.8.20:9100
@@ -14,9 +12,6 @@
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
     - jdk_deploy_path: /home/meteo
     - grails_deploy_path: /home/meteo
-
-  vars_files:
-    - credentials.yml
   roles:
     - debian
     - timezone
@@ -180,6 +175,7 @@
           dhcp-host=00:01:04:1b:2C:2A,5-aws-syd,10.1.1.18
           dhcp-host=00:01:04:1b:2C:2B,6-aws-syd,10.1.1.19
           dhcp-host=00:01:04:1b:2C:2C,win7,10.1.1.20
+          dhcp-host=00:01:04:1b:2C:2D,10-aws-syd,10.1.1.21
 
       notify: restart-dnsmasq
 

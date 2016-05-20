@@ -1,5 +1,6 @@
 
-  # NOTE: putting this here, means can only have one nat entry
+  # TODO would be good to make the handler notification more robust, so that if a prior event  caused
+  # the run to fail, iptables will be correctly reconfigured in a subsequent run
 
   - apt: name=iptables-persistent
   - copy:
