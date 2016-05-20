@@ -85,8 +85,8 @@
 
           if true; then
             # Warning - turns off laptop display!
-            xrandr --auto --output DP1-1 --mode 1920x1200 --primary
-            xrandr --auto --output DP1-2 --mode 1280x1024 --right-of DP1-1
+            xrandr --output DP1-1 --auto --mode 1920x1200 --primary
+            xrandr --output DP1-2 --auto --mode 1280x1024 --right-of DP1-1 --brightness .8
             xrandr --output eDP1 --off
           fi
 
