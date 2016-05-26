@@ -20,6 +20,8 @@
     - printer
 
   tasks:
+    - hostname: name=dell-home
+
     - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
     - apt: name=iw
 

@@ -26,6 +26,9 @@
   # - roles factor common code amongst nodes and have cleaner relative path semantics
 
   tasks:
+
+    - hostname: name=dell-work
+
     #####
     - apt: name=memtest86
 
