@@ -86,11 +86,14 @@
             keycode 90 = Insert NoSymbol Insert
           EOF
 
+          # seems to be necessary, to let xorg initialize before adjusting resolution
+          sleep 2
+          
           if true; then
             # Warning - turns off laptop display!
-            xrandr --output DP1-1 --auto --mode 1920x1200 --primary
-            xrandr --output DP1-2 --auto --mode 1280x1024 --right-of DP1-1 --brightness .8
             xrandr --output eDP1 --off
+            xrandr --output DP1-1 --auto --mode 1920x1200 --primary --brightness .94
+            xrandr --output DP1-2 --auto --mode 1280x1024 --right-of DP1-1 --brightness .8
           fi
 
           # xrandr --output eDP1 --brightness .65
