@@ -22,13 +22,10 @@
   tasks:
     - hostname: name=dell-home
 
+    - apt: name=memtest86
+
     - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
     - apt: name=iw
-
-    #####
-    - include: ../roles/common/tasks/devenv-lite.yml
-
-    - apt: name=memtest86
 
     #####
     - apt: name=alsa-oss
