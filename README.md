@@ -5,7 +5,6 @@ For use with systemd-nspawn containers, kvm, docker or virtual box VMs.
 
 Requires Ansible version >= 2
 
-
 #### Examples
 
 ```
@@ -23,7 +22,6 @@ ansible-playbook -i localhost, roles/common/devenv-lite.yml
 ansible-playbook ./roles/zfs/main.yml -c local -i dell-work,
 
 ```
-
 
 #### Useful Ansible flags
 ```
