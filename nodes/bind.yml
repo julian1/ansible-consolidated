@@ -12,15 +12,131 @@
     - locale
     - common
     - meteo-dotfiles
-
-  # TODO jdk, grails, intelij should be factored into roles
-  # - not necessarily. simple tasks are fairly easy to manage...
-  # - roles factor common code amongst nodes and have cleaner relative path semantics
-
   tasks:
 
-    # mydns?
     - hostname: name=bind
+
+    - apt: name=bind9
+
+    # http://www.thelinuxchef.com/configure-dns-on-ubuntu-server/
+    # primary configuration file is /etc/bind/named.conf
+    # which points at options,local,
+
+    # specifies your ISP provided nameservers
+    - copy:
+        dest: /etc/bind/named.conf.options
+        backup: yes
+        content: |
+          # deployed by ansible!
+          options {
+            directory "/var/cache/bind";
+
+            forwarders {
+              8.8.8.8;
+            };
+
+            dnssec-validation auto;
+
+            auth-nxdomain no;    # conform to RFC1035
+            listen-on-v6 { any; };
+          };
+      notify: restart-bind
+
+    # bluenet3.antcrc.utas.edu.au.
+
+    # configure the DNS zones
+    - copy:
+        dest: /etc/bind/named.conf.local
+        backup: yes
+        content: |
+          # deployed by ansible!
+          zone "thelinuxchef.com" {
+            type master;
+            file "/etc/bind/zones/thelinuxchef.com.db";
+          };
+          zone "antcrc.utas.edu.au" {
+            type master;
+            file "/etc/bind/zones/antcrc.db";
+          };
+
+      notify: restart-bind
+
+
+    - file: path=/etc/bind/zones state=directory owner=root group=bind
+
+
+    # DNS zone for your domain
+    - copy:
+        dest: /etc/bind/zones/thelinuxchef.com.db
+        owner: root
+        group: bind
+        backup: yes
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 1800
+          @ IN SOA ns1.thelinuxchef.com. root.thelinuxchef.com. (
+            2009121502 ; Serial
+            28800 ; Refresh
+            7200 ; Retry
+            604800 ; Expire
+            86400 ) ; Negative Cache TTL
+          ;
+          @ IN NS ns1.thelinuxchef.com.
+          @ IN NS ns2.thelinuxchef.com.
+          @ IN A 192.168.1.1
+          @ IN AAAA ::1
+          www IN A 192.168.1.1
+          @ MX 10 mail.thelinuxchef.com.
+          mail IN A 192.168.1.1
+          ns1 IN A 192.168.1.1
+          ns2 IN A 192.168.1.2
+      notify: restart-bind
+
+
+    # DNS zone for your domain
+    - copy:
+        dest: /etc/bind/zones/antcrc.db
+        owner: root
+        group: bind
+        backup: yes
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60
+          @ IN SOA ns1.antcrc.utas.edu.au. root.antcrc.utas.edu.au. (
+            2009121502 ; Serial
+            28800 ; Refresh
+            7200 ; Retry
+            604800 ; Expire
+            86400 ) ; Negative Cache TTL
+          ;
+          @ IN NS ns1.antcrc.utas.edu.au.
+          @ IN NS ns2.antcrc.utas.edu.au.
+          @ IN A 192.168.1.1
+          @ IN AAAA ::1
+          www IN A 192.168.1.1
+          ;
+          ;
+          ; bluenet3 IN CNAME s3-website-ap-southeast-2.amazonaws.com.
+          bluenet3 IN CNAME bluenet3.antcrc.utas.edu.au.s3-website-ap-southeast-2.amazonaws.com.
+          @ MX 10 mail.antcrc.utas.edu.au.
+          mail IN A 192.168.1.1
+          ns1 IN A 192.168.1.1
+          ns2 IN A 192.168.1.2
+      notify: restart-bind
+
+      # issue extra indirection .
+
+          # bluenet3 IN CNAME http://bluenet3.antcrc.utas.edu.au.s3-website-ap-southeast-2.amazonaws.com
+        # issue is that it's redirecting outside the antcrc zone, but it's tacking on our
+        # zone thing
+
+  handlers:
+    - name: restart-bind
+      service: name=bind9 state=restarted
+
+
 
 
 
