@@ -8,6 +8,7 @@ Requires Ansible version >= 2
 #### Examples
 
 ```
+ansible-playbook nodes/bind.yml -u root
 ansible-playbook nodes/dell-home.yml
 ansible-playbook nodes/aatams.yml -v
 ansible-playbook nodes/aatams-dev.yml -i aatams-test-instance, -u debian --private-key ~/.ssh/julian3.pem -s

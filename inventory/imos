@@ -12,6 +12,7 @@ aatams-dev-instance
 julian-test-instance
 aodnblog
 aodnblog2
+bind
 
 
 [default:vars]

@@ -176,6 +176,7 @@
           dhcp-host=00:01:04:1b:2C:1D,aatams,10.1.1.15
           dhcp-host=00:01:04:1b:2C:1E,rev-proxy,10.1.1.16
           dhcp-host=00:01:04:1b:2C:1F,geonetwork3,10.1.1.17
+          dhcp-host=00:01:04:1b:2C:10,bind,10.1.1.22
 
           # kvm guests
           dhcp-host=00:01:04:1b:2C:2A,5-aws-syd,10.1.1.18

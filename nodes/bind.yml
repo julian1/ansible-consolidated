@@ -1,0 +1,26 @@
+
+- hosts: bind
+  vars_files:
+    - ../vars/jessie.yml
+    - ../vars/credentials.yml
+  vars:
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+  roles:
+    - debian
+    - timezone
+    - locale
+    - common
+    - meteo-dotfiles
+
+  # TODO jdk, grails, intelij should be factored into roles
+  # - not necessarily. simple tasks are fairly easy to manage...
+  # - roles factor common code amongst nodes and have cleaner relative path semantics
+
+  tasks:
+
+    # mydns?
+    - hostname: name=bind
+
+
+
