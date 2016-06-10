@@ -76,11 +76,11 @@
           ;
           $TTL 1800
           @ IN SOA ns1.thelinuxchef.com. root.thelinuxchef.com. (
-            2009121502 ; Serial
-            28800 ; Refresh
-            7200 ; Retry
-            604800 ; Expire
-            86400 ) ; Negative Cache TTL
+            2001062501 ; serial
+            21600      ; refresh after 6 hours
+            3600       ; retry after 1 hour
+            604800     ; expire after 1 week
+            86400 )    ; minimum TTL of 1 day
           ;
           @ IN NS ns1.thelinuxchef.com.
           @ IN NS ns2.thelinuxchef.com.
@@ -94,7 +94,7 @@
       notify: restart-bind
 
 
-    # DNS zone for your domain
+    # antcrc DNS zone
     - copy:
         dest: /etc/bind/zones/antcrc.db
         owner: root
@@ -105,18 +105,17 @@
           ;
           $TTL 60
           @ IN SOA ns1.antcrc.utas.edu.au. root.antcrc.utas.edu.au. (
-            2009121502 ; Serial
-            28800 ; Refresh
-            7200 ; Retry
-            604800 ; Expire
-            86400 ) ; Negative Cache TTL
+            2001062501 ; serial
+            21600      ; refresh after 6 hours
+            3600       ; retry after 1 hour
+            604800     ; expire after 1 week
+            86400 )    ; minimum TTL of 1 day
           ;
           @ IN NS ns1.antcrc.utas.edu.au.
           @ IN NS ns2.antcrc.utas.edu.au.
           @ IN A 192.168.1.1
           @ IN AAAA ::1
           www IN A 192.168.1.1
-          ;
           ;
           ; bluenet3 IN CNAME s3-website-ap-southeast-2.amazonaws.com.
           bluenet3 IN CNAME bluenet3.antcrc.utas.edu.au.s3-website-ap-southeast-2.amazonaws.com.
@@ -126,11 +125,6 @@
           ns2 IN A 192.168.1.2
       notify: restart-bind
 
-      # issue extra indirection .
-
-          # bluenet3 IN CNAME http://bluenet3.antcrc.utas.edu.au.s3-website-ap-southeast-2.amazonaws.com
-        # issue is that it's redirecting outside the antcrc zone, but it's tacking on our
-        # zone thing
 
   handlers:
     - name: restart-bind
