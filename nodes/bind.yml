@@ -118,7 +118,11 @@
           www IN A 192.168.1.1
           ;
           ; bluenet3 IN CNAME s3-website-ap-southeast-2.amazonaws.com.
-          bluenet3 IN CNAME bluenet3.antcrc.utas.edu.au.s3-website-ap-southeast-2.amazonaws.com.
+          ; bluenet3 IN CNAME bluenet3.antcrc.utas.edu.au.s3-website-ap-southeast-2.amazonaws.com.
+
+          bluenet3 IN CNAME bluenet3-antcrc-utas-edu-au.aodn.org.au.
+
+
           @ MX 10 mail.antcrc.utas.edu.au.
           mail IN A 192.168.1.1
           ns1 IN A 192.168.1.1
