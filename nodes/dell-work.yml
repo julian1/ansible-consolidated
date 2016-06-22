@@ -220,7 +220,7 @@
 
     - file: path=/etc/bind/zones state=directory owner=root group=bind
 
-    # specifies your ISP provided nameservers
+    # named configuration
     - copy:
         dest: /etc/bind/named.conf.options
         backup: yes
@@ -237,7 +237,7 @@
           };
       notify: restart-bind
 
-    # DNS zones
+    # zones
     - copy:
         dest: /etc/bind/named.conf.local
         backup: yes
@@ -247,15 +247,49 @@
             type master;
             file "/etc/bind/zones/aodn.db";
           };
+          zone "localnet" {
+            type master;
+            file "/etc/bind/zones/localnet.db";
+          };
       notify: restart-bind
 
-    # issue is that it it's authoritative and won't delegate...
-    # aodn.org.au
+    # localnet zone
+    - copy:
+        dest: /etc/bind/zones/localnet.db
+        owner: root
+        group: bind
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60
+          @ IN SOA ns1.localnet. root.localnet. (
+            2001062501 ; serial
+            21600      ; refresh after 6 hours
+            3600       ; retry after 1 hour
+            604800     ; expire after 1 week
+            86400 )    ; minimum TTL of 1 day
+          ;
+          @ IN NS ns1.localnet.
+          @ IN NS ns2.localnet.
+          @ IN A 192.168.1.1
+          @ IN AAAA ::1
+
+          aatams 60 IN A 10.1.1.15
+
+          @ MX 10 mail.localnet.
+          mail IN A 192.168.1.1
+          ns1 IN A 192.168.1.1
+          ns2 IN A 192.168.1.2
+      notify: restart-bind
+
+
+    # it's difficult to overide single entries, sinece the zone is 
+    # authoritative and cannot be delegated...
+    # aodn.org.au zone
     - copy:
         dest: /etc/bind/zones/aodn.db
         owner: root
         group: bind
-        backup: yes
         content: |
           ; deployed by ansible!
           ;
@@ -280,6 +314,53 @@
           ns1 IN A 192.168.1.1
           ns2 IN A 192.168.1.2
       notify: restart-bind
+
+
+    # dhcp
+    - apt: name=isc-dhcp-server
+
+    - copy:
+        dest: /etc/default/isc-dhcp-server
+        owner: root
+        group: root
+        backup: yes
+        content: |
+          # deployed by ansible!
+          INTERFACESv4="br0"
+          INTERFACESv6=""
+      notify: restart-dhcp
+
+    - copy:
+        dest: /etc/dhcp/dhcpd.conf
+        owner: root
+        group: root
+        backup: yes
+        content: |
+          # deployed by ansible!
+
+          option domain-name "localnet";
+          # option domain-name-servers 131.217.38.36, 8.8.4.4;
+          option domain-name-servers 10.1.1.1;
+
+          # Set up our desired subnet:
+          # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
+          subnet 10.1.1.0 netmask 255.255.255.0 {
+              interface "br0";
+              range 10.1.1.10  10.1.1.30;
+              option subnet-mask 255.255.255.0;
+              option broadcast-address 10.1.1.255;
+              option routers 10.1.1.1;
+              option domain-name-servers home;
+
+              host aatams { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+          }
+
+          default-lease-time 600;
+          max-lease-time 7200;
+          # Show that we want to be the only DHCP server in this network:
+          authoritative;
+      notify: restart-dhcp
+
 
 
 
@@ -403,6 +484,9 @@
 
     - name: restart-bind
       service: name=bind9 state=restarted
+
+    - name: restart-dhcp
+      service: name=isc-dhcp-server state=restarted
 
 
 
