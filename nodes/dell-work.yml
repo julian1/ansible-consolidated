@@ -88,7 +88,7 @@
 
           # seems to be necessary, to let xorg initialize before adjusting resolution
           sleep 2
-          
+
           if true; then
             # Warning - turns off laptop display!
             xrandr --output eDP1 --off
@@ -186,17 +186,21 @@
 
       notify: restart-dnsmasq
 
-    # TODO - this doesn't clear the file first
-    # maybe change nameserver to 127.0.0.1
-    # also add domain, search?
-    - copy:
-        dest: /etc/resolv.conf
-        content: |
-          # deployed by ansible!
-          nameserver 10.1.1.1
+# TODO - this doesn't clear the file first
+# maybe change nameserver to 127.0.0.1
+# also add domain, search?
+#    - copy:
+#        dest: /etc/resolv.conf
+#        content: |
+#          # deployed by ansible!
+#          nameserver 10.1.1.1
+#          # nameserver 10.1.1.22
+#          # nameserver 8.8.8.8
+#          # nameserver 131.217.0.19   # utas
+
 
     # IMPORTANT for complete files not just blocks, could simply use shell maybe with <<-EOF type stuff
-
+    # disable /etc/resolv.conf update on dhcpd
     # http://unix.stackexchange.com/questions/174349/what-overwrites-etc-resolv-conf-on-every-boot
     - copy:
         dest: /etc/dhcp/dhclient-enter-hooks.d/nodnsupdate
@@ -208,6 +212,8 @@
               :
           }
 
+    # cat /proc/sys/net/ipv4/conf/lo/route_localnet
+    # sysctl -w net.ipv4.conf.lo.route_localnet=1
     - apt: name=iptables-persistent
     - copy:
         dest: /etc/iptables-rules
@@ -220,6 +226,16 @@
           # redirect to rev-proxy
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
           iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
+
+
+          # dns/bind
+          iptables -t nat -A PREROUTING -p tcp --dport 53 -i eth0 -j DNAT --to 10.1.1.22
+          iptables -t nat -A PREROUTING -p udp --dport 53 -i eth0 -j DNAT --to 10.1.1.22
+
+          # to test routing locally use the output chain
+          iptables -t nat -A OUTPUT -d 131.217.38.36 -p tcp --dport 53 -j DNAT --to 10.1.1.22
+          iptables -t nat -A OUTPUT -d 131.217.38.36 -p udp --dport 53 -j DNAT --to 10.1.1.22
+
 
           # bridge postrouting
           iptables -t nat -A POSTROUTING -s '10.0.0.0/8' -j MASQUERADE
@@ -296,5 +312,21 @@
 
   # TODO maybe make handlers explicit
   handlers:
-    - include: ../roles/common/handlers/main.yml
+    # - include: ../roles/common/handlers/main.yml
+
+    - name: reconfigure-iptables
+      command: "{{item}}"
+      with_items:
+        - sh /etc/iptables-rules
+        - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+    - name: reboot
+      command: /sbin/reboot
+
+    - name: restart-br0
+      command: sh -c "/sbin/ifdown br0 && /sbin/ifup br0"
+
+    - name: restart-dnsmasq
+      service: name=dnsmasq state=restarted
+
 
