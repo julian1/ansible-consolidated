@@ -22,6 +22,9 @@
     # primary configuration file is /etc/bind/named.conf
     # which points at options,local,
 
+
+    - file: path=/etc/bind/zones state=directory owner=root group=bind
+
     # specifies your ISP provided nameservers
     - copy:
         dest: /etc/bind/named.conf.options
@@ -58,11 +61,16 @@
             type master;
             file "/etc/bind/zones/antcrc.db";
           };
-
+          # zone "aodn.org.au" {
+          #  type master;
+          #  file "/etc/bind/zones/aodn.db";
+          # };
+          zone "jfca.aodn.org.au" {
+            type master;
+            file "/etc/bind/zones/jfca.aodn.db";
+          };
       notify: restart-bind
 
-
-    - file: path=/etc/bind/zones state=directory owner=root group=bind
 
 
     # DNS zone for your domain
@@ -94,7 +102,7 @@
       notify: restart-bind
 
 
-    # antcrc DNS zone
+    # antcrc.utas.edu.au 
     - copy:
         dest: /etc/bind/zones/antcrc.db
         owner: root
@@ -128,6 +136,71 @@
           ns1 IN A 192.168.1.1
           ns2 IN A 192.168.1.2
       notify: restart-bind
+
+
+    # aodn.org.au
+    - copy:
+        dest: /etc/bind/zones/aodn.db
+        owner: root
+        group: bind
+        backup: yes
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60
+          @ IN SOA ns1.aodn.org.au. root.aodn.org.au. (
+            2001062501 ; serial
+            21600      ; refresh after 6 hours
+            3600       ; retry after 1 hour
+            604800     ; expire after 1 week
+            86400 )    ; minimum TTL of 1 day
+          ;
+          @ IN NS ns1.aodn.org.au.
+          @ IN NS ns2.aodn.org.au.
+          @ IN A 192.168.1.1
+          @ IN AAAA ::1
+          www IN A 192.168.1.1
+
+          mcp2.0-doco IN CNAME mcp-profile-docs.readthedocs.io.
+
+          @ MX 10 mail.aodn.org.au.
+          mail IN A 192.168.1.1
+          ns1 IN A 192.168.1.1
+          ns2 IN A 192.168.1.2
+      notify: restart-bind
+
+
+    # jfca.aodn.org.au
+    - copy:
+        dest: /etc/bind/zones/jfca.aodn.db
+        owner: root
+        group: bind
+        backup: yes
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60
+          @ IN SOA ns1.jfca.aodn.org.au. root.jfca.aodn.org.au. (
+            2001062501 ; serial
+            21600      ; refresh after 6 hours
+            3600       ; retry after 1 hour
+            604800     ; expire after 1 week
+            86400 )    ; minimum TTL of 1 day
+          ;
+          @ IN NS ns1.jfca.aodn.org.au.
+          @ IN NS ns2.jfca.aodn.org.au.
+          @ IN A 192.168.1.1
+          @ IN AAAA ::1
+          www IN A 192.168.1.1
+
+          test IN A 131.217.38.36
+
+          @ MX 10 mail.jfca.aodn.org.au.
+          mail IN A 192.168.1.1
+          ns1 IN A 192.168.1.1
+          ns2 IN A 192.168.1.2
+      notify: restart-bind
+
 
 
   handlers:
