@@ -149,42 +149,42 @@
             bridge_fd 0
       notify: restart-br0
 
-    # Using local dnsmasq as a wholesale replacement for using resolvconf is a lot simpler
-    # issue is we want to ping containers from the host,
-    # so make local dns authoritative
-    - apt: name=dnsmasq
-    - copy:
-        dest: /etc/dnsmasq.d/localnet
-        content: |
-          # deployed by ansible!
-          interface=br0
-          # log-queries
-          log-dhcp
-          no-resolv
-          server=131.217.0.19
-          server=144.6.0.19
-          expand-hosts
-          domain=localnet
-          dhcp-range=br0,10.1.1.10,10.1.1.30,4h
+#    # Using local dnsmasq as a wholesale replacement for using resolvconf is a lot simpler
+#    # issue is we want to ping containers from the host,
+#    # so make local dns authoritative
+#    - apt: name=dnsmasq
+#    - copy:
+#        dest: /etc/dnsmasq.d/localnet
+#        content: |
+#          # deployed by ansible!
+#          interface=br0
+#          # log-queries
+#          log-dhcp
+#          no-resolv
+#          server=131.217.0.19
+#          server=144.6.0.19
+#          expand-hosts
+#          domain=localnet
+#          dhcp-range=br0,10.1.1.10,10.1.1.30,4h
 
-          # systemd containers
-          dhcp-host=00:01:04:1b:2C:0A,wordpress,10.1.1.10
-          dhcp-host=00:01:04:1b:2C:0B,geoserver,10.1.1.11
-          dhcp-host=00:01:04:1b:2C:1A,jessie,10.1.1.12
-          dhcp-host=00:01:04:1b:2C:1B,geonetwork2,10.1.1.13
-          dhcp-host=00:01:04:1b:2C:1C,portal,10.1.1.14
-          dhcp-host=00:01:04:1b:2C:1D,aatams,10.1.1.15
-          dhcp-host=00:01:04:1b:2C:1E,rev-proxy,10.1.1.16
-          dhcp-host=00:01:04:1b:2C:1F,geonetwork3,10.1.1.17
-          dhcp-host=00:01:04:1b:2C:10,bind,10.1.1.22
+#          # systemd containers
+#          dhcp-host=00:01:04:1b:2C:0A,wordpress,10.1.1.10
+#          dhcp-host=00:01:04:1b:2C:0B,geoserver,10.1.1.11
+#          dhcp-host=00:01:04:1b:2C:1A,jessie,10.1.1.12
+#          dhcp-host=00:01:04:1b:2C:1B,geonetwork2,10.1.1.13
+#          dhcp-host=00:01:04:1b:2C:1C,portal,10.1.1.14
+#          dhcp-host=00:01:04:1b:2C:1D,aatams,10.1.1.15
+#          dhcp-host=00:01:04:1b:2C:1E,rev-proxy,10.1.1.16
+#          dhcp-host=00:01:04:1b:2C:1F,geonetwork3,10.1.1.17
+#          dhcp-host=00:01:04:1b:2C:10,bind,10.1.1.22
 
-          # kvm guests
-          dhcp-host=00:01:04:1b:2C:2A,5-aws-syd,10.1.1.18
-          dhcp-host=00:01:04:1b:2C:2B,6-aws-syd,10.1.1.19
-          dhcp-host=00:01:04:1b:2C:2C,win7,10.1.1.20
-          dhcp-host=00:01:04:1b:2C:2D,10-aws-syd,10.1.1.21
+#          # kvm guests
+#          dhcp-host=00:01:04:1b:2C:2A,5-aws-syd,10.1.1.18
+#          dhcp-host=00:01:04:1b:2C:2B,6-aws-syd,10.1.1.19
+#          dhcp-host=00:01:04:1b:2C:2C,win7,10.1.1.20
+#          dhcp-host=00:01:04:1b:2C:2D,10-aws-syd,10.1.1.21
 
-      notify: restart-dnsmasq
+#      notify: restart-dnsmasq
 
 # TODO - this doesn't clear the file first
 # maybe change nameserver to 127.0.0.1
@@ -212,6 +212,77 @@
               :
           }
 
+
+    ########################################################
+    # bind
+    # problem with rndc.key  solved by purge bind9 and reinstall
+    - apt: name=bind9
+
+    - file: path=/etc/bind/zones state=directory owner=root group=bind
+
+    # specifies your ISP provided nameservers
+    - copy:
+        dest: /etc/bind/named.conf.options
+        backup: yes
+        content: |
+          # deployed by ansible!
+          options {
+            directory "/var/cache/bind";
+            forwarders {
+              8.8.8.8;
+            };
+            dnssec-validation auto;
+            auth-nxdomain no;    # conform to RFC1035
+            listen-on-v6 { any; };
+          };
+      notify: restart-bind
+
+    # DNS zones
+    - copy:
+        dest: /etc/bind/named.conf.local
+        backup: yes
+        content: |
+          # deployed by ansible!
+          zone "aodn.org.au" {
+            type master;
+            file "/etc/bind/zones/aodn.db";
+          };
+      notify: restart-bind
+
+    # issue is that it it's authoritative and won't delegate...
+    # aodn.org.au
+    - copy:
+        dest: /etc/bind/zones/aodn.db
+        owner: root
+        group: bind
+        backup: yes
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60
+          @ IN SOA ns1.aodn.org.au. root.aodn.org.au. (
+            2001062501 ; serial
+            21600      ; refresh after 6 hours
+            3600       ; retry after 1 hour
+            604800     ; expire after 1 week
+            86400 )    ; minimum TTL of 1 day
+          ;
+          @ IN NS ns1.aodn.org.au.
+          @ IN NS ns2.aodn.org.au.
+          @ IN A 192.168.1.1
+          @ IN AAAA ::1
+
+          portal 60 IN CNAME 7-aws-syd.emii.org.au.
+          test   60 IN A 131.217.38.36
+
+          @ MX 10 mail.aodn.org.au.
+          mail IN A 192.168.1.1
+          ns1 IN A 192.168.1.1
+          ns2 IN A 192.168.1.2
+      notify: restart-bind
+
+
+
     # cat /proc/sys/net/ipv4/conf/lo/route_localnet
     # sysctl -w net.ipv4.conf.lo.route_localnet=1
     - apt: name=iptables-persistent
@@ -225,17 +296,18 @@
 
           # redirect to rev-proxy
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
-          iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 10.1.1.16
+          iptables -t nat -A PREROUTING -p tcp -i eth0          --dport 80 -j DNAT --to 10.1.1.16
+          iptables -t nat -A OUTPUT     -p tcp -d 131.217.38.36 --dport 80 -j DNAT --to 10.1.1.16
 
+          # dns/bind/dnsmasq
+          # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 53 -j DNAT --to 10.1.1.22
+          # iptables -t nat -A PREROUTING -p udp -i eth0 --dport 53 -j DNAT --to 10.1.1.22
 
-          # dns/bind
-          iptables -t nat -A PREROUTING -p tcp --dport 53 -i eth0 -j DNAT --to 10.1.1.22
-          iptables -t nat -A PREROUTING -p udp --dport 53 -i eth0 -j DNAT --to 10.1.1.22
-
-          # to test routing locally use the output chain
-          iptables -t nat -A OUTPUT -d 131.217.38.36 -p tcp --dport 53 -j DNAT --to 10.1.1.22
-          iptables -t nat -A OUTPUT -d 131.217.38.36 -p udp --dport 53 -j DNAT --to 10.1.1.22
-
+          # this works, except that the containerized bind gets mixes up the interface it thinks its listening on
+          # redirect for incoming via prerouting, and for the destination
+          # doesn't quite work
+          # iptables -t nat -A OUTPUT     -p tcp -d 131.217.38.36 --dport 53 -j DNAT --to 10.1.1.22
+          # iptables -t nat -A OUTPUT     -p udp -d 131.217.38.36 --dport 53 -j DNAT --to 10.1.1.22
 
           # bridge postrouting
           iptables -t nat -A POSTROUTING -s '10.0.0.0/8' -j MASQUERADE
@@ -326,7 +398,11 @@
     - name: restart-br0
       command: sh -c "/sbin/ifdown br0 && /sbin/ifup br0"
 
-    - name: restart-dnsmasq
-      service: name=dnsmasq state=restarted
+    # - name: restart-dnsmasq
+    #  service: name=dnsmasq state=restarted
+
+    - name: restart-bind
+      service: name=bind9 state=restarted
+
 
 
