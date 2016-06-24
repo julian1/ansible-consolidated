@@ -274,7 +274,9 @@
           @ IN A 192.168.1.1
           @ IN AAAA ::1
 
-          aatams 60 IN A 10.1.1.15
+          aatams      60 IN A 10.1.1.15
+          rev-proxy   60 IN A 10.1.1.16
+          mcp2-0.docs 60 IN CNAME mcp-profile-docs.readthedocs.io.
 
           @ MX 10 mail.localnet.
           mail IN A 192.168.1.1
@@ -305,9 +307,15 @@
           @ IN NS ns2.aodn.org.au.
           @ IN A 192.168.1.1
           @ IN AAAA ::1
+  
+          ; ok, simple cname redirect
+          mcp2        60 IN CNAME mcp-profile-docs.readthedocs.io.
 
-          portal 60 IN CNAME 7-aws-syd.emii.org.au.
-          test   60 IN A 131.217.38.36
+          ; redirect to our reverse proxy, in front of everything
+          content     60 IN CNAME rev-proxy.localnet.
+
+          portal      60 IN CNAME 7-aws-syd.emii.org.au.
+          test        60 IN A 131.217.38.36
 
           @ MX 10 mail.aodn.org.au.
           mail IN A 192.168.1.1
@@ -352,7 +360,8 @@
               option routers 10.1.1.1;
               option domain-name-servers home;
 
-              host aatams { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+              host aatams    { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+              host rev-proxy { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
           }
 
           default-lease-time 600;

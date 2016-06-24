@@ -1,6 +1,7 @@
 [default]
 dell-work
 rev-proxy
+rev-proxy.localnet
 geoserver
 portal
 aatams

@@ -1,5 +1,6 @@
 
-- hosts: rev-proxy
+- hosts: 
+    - rev-proxy.localnet
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie
@@ -29,6 +30,7 @@
         - proxy
         - proxy_http
         - proxy_html
+        - ssl
 
     # - command: a2enmod proxy proxy_http
     # - command: a2enmod proxy proxy_html
@@ -90,20 +92,35 @@
             DocumentRoot      /var/www/html
 
             # Require all granted
+
+            # eg.
+            ProxyPass         /mcp2   http://mcp2.aodn.org.au
+            ProxyPassReverse  /mcp2   http://mcp2.aodn.org.au 
+
+            ProxyPass         /schemas http://schemas.aodn.org.au.s3-website-ap-southeast-2.amazonaws.com
+            ProxyPassReverse  /schemas http://schemas.aodn.org.au.s3-website-ap-southeast-2.amazonaws.com
+
+            ProxyPass         /content http://content.aodn.org.au.s3-website-ap-southeast-2.amazonaws.com
+            ProxyPassReverse  /content http://content.aodn.org.au.s3-website-ap-southeast-2.amazonaws.com
+
             ProxyPass         /aatams http://aatams:8080/aatams
             ProxyPassReverse  /aatams http://aatams:8080/aatams
 
-            ProxyPass         /portal http://portal:8080/portal
-            ProxyPassReverse  /portal http://portal:8080/portal
+            ProxyPass         /search http://portal.aodn.org.au/search
+            ProxyPassReverse  /search http://portal.aodn.org.au/search
 
-            ProxyPass         /geonetwork http://geonetwork2:8080/geonetwork
-            ProxyPassReverse  /geonetwork http://geonetwork2:8080/geonetwork
+            # OLD
+            # ProxyPass         /portal http://portal:8080/portal
+            # ProxyPassReverse  /portal http://portal:8080/portal
 
-            ProxyPass         /geoserver http://geoserver:8080/geoserver
-            ProxyPassReverse  /geoserver http://geoserver:8080/geoserver
+            # ProxyPass         /geonetwork http://geonetwork2:8080/geonetwork
+            # ProxyPassReverse  /geonetwork http://geonetwork2:8080/geonetwork
 
-            ProxyPass         /wp http://wordpress/wp
-            ProxyPassReverse  /wp http://wordpress/wp
+            # ProxyPass         /geoserver http://geoserver:8080/geoserver
+            # ProxyPassReverse  /geoserver http://geoserver:8080/geoserver
+
+            # ProxyPass         /wp http://wordpress/wp
+            # ProxyPassReverse  /wp http://wordpress/wp
 
 
             #<Location /geoserver>
@@ -119,6 +136,35 @@
             # ProxyHTMLExtended On
             # ProxyHTMLURLMap http://apache/geonetwork2  /geonetwork
           </VirtualHost>
+
+
+          <VirtualHost *:443>
+            DocumentRoot      /var/www/html
+
+            # eg.
+            ProxyPass         /mcp2   http://mcp2.aodn.org.au
+            ProxyPassReverse  /mcp2   http://mcp2.aodn.org.au 
+
+            ProxyPass         /schemas http://schemas.aodn.org.au.s3-website-ap-southeast-2.amazonaws.com
+            ProxyPassReverse  /schemas http://schemas.aodn.org.au.s3-website-ap-southeast-2.amazonaws.com
+
+            ProxyPass         /content http://content.aodn.org.au.s3-website-ap-southeast-2.amazonaws.com
+            ProxyPassReverse  /content http://content.aodn.org.au.s3-website-ap-southeast-2.amazonaws.com
+
+            ProxyPass         /aatams http://aatams:8080/aatams
+            ProxyPassReverse  /aatams http://aatams:8080/aatams
+
+            ProxyPass         /search http://portal.aodn.org.au/search
+            ProxyPassReverse  /search http://portal.aodn.org.au/search
+
+            SSLEngine On
+            SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+            SSLCertificateKeyFile   /etc/ssl/private/ssl-cert-snakeoil.key
+            # SSLCertificateChainFile /etc/ssl/certs/aodn.org.au.chain.crt
+
+          </VirtualHost>
+
+
       notify: reload-apache2
 
     # enable
