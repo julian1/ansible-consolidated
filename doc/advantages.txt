@@ -1,36 +1,45 @@
 
-Developer oriented, container-based stack. Advantages compared with chef/vagrant are, 
+Developer oriented, composible container-based stack.
 
-- Fast, boot instance in 2 to 10 seconds
+- Fast. container boot time, 2 to 10 seconds, reduced ram/cpu system resources
 
-- Reduced ram/cpu system resources
+- Useful shell-tools installed - vim, screen, mlocate
 
-- shell tools vim, screen, mlocate
+- Flexible bridged subnet with NAT, local dns and dhcp services
 
-- Flexible bridged subnet with local dns and dhcp services
+- Composible, mix and match containers, with VBox VMs, with production instances as needed
 
-- Mix and match of production GS,GN,Portal with developer instances as needed.
+- Subnet separation allows production GS,GN, Portal to continue to be accessible from host
 
-- Subnet separation allows production GS,GN, Portal to continue to be accessible from host (eg. no need to globally override /etc/hosts)
+- Authoritative DNS zone server - can simulate entire production network topology. eg. CNAME redirect
 
-- No need to pack all webapps GS,GN, Portal into a single tomcat7 instance like po box
+- For container instances - complex configuration not necessary for development removed. eg,
+  - reverse-proxy,
+  - squid caching,
+  - ssl termination,
+  - firewall,
+  - nagios, backup system roles, db roles etc
 
-- complex configuration not necessary for development removed
-	- eg reverse-proxy, squid caching, ssl termination, firewall, system roles, db roles etc 
-
-- Apps configured with debug configuration - eg. intelij debug ports enabled in tomcat7, postgres listens on 0.0.0.0, logging turned on
+- Apps are configured with a debug configuration
+  - debug ports enabled in tomcat7
+  - postgres listens on 0.0.0.0,
+  - debug logging turned on,
+  - admin,admin pass for geoserver etc.
 
 - Pre-configured test data (only for gn records, vocab, picker)
 
-- Faster provisioning with Ansible
+- Fast provisioning with Ansible
 
-- container filesystem exposed on host
+- easy access to container system filesystems without booting node
 
-- Zero-cost transactional snapshots when combined with Zfs - equivalent to Docker unionfs
+- snapshots when combined with ZFS - equivalent to Docker unionfs
 
 
 Limitations,
-	- Host much be Linux
-	- Configuration less localized
+  - WIP
+  - Developer focused
+  - Linux host needed
+  - Configuration less localized
+  - Must understand DNS, DHCP services
 
 
