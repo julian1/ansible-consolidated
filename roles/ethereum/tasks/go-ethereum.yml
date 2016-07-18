@@ -1,11 +1,14 @@
 
   # TODO chdir should be relative path, so can build under other accounts
 
+  # install Go as root
+
   # Go
   # install to /usr/local/go since it's the default for GOROOT
   - get_url: |
       url=https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
       dest=./go1.4.2.linux-amd64.tar.gz
+
   - unarchive: src=/root/go1.4.2.linux-amd64.tar.gz dest=/usr/local copy=no
   - file: src=/usr/local/go/bin/go dest=/usr/local/bin/go state=link
 
@@ -16,8 +19,18 @@
   - apt: name=make
   - apt: name=gcc
   - apt: name=libgmp-dev
-  - git: repo=https://github.com/ethereum/go-ethereum dest=/root/go-ethereum version=v1.3.6
-  - shell: make creates=build/bin/geth chdir=/root/go-ethereum
 
 
-  - file: src=/root/go-ethereum/build/bin/geth dest=/usr/local/bin/geth state=link
+  - set_fact: path=/home/meteo
+
+  - git: repo=https://github.com/ethereum/go-ethereum dest={{path}}/go-ethereum version=v1.3.6
+    become: true    
+    become_user: meteo
+
+  - shell: make creates=build/bin/geth chdir={{path}}/go-ethereum
+    become: true    
+    become_user: meteo
+
+  # No good if we want different versions...    
+  #- file: src=/root/go-ethereum/build/bin/geth dest=/usr/local/bin/geth state=link
+
