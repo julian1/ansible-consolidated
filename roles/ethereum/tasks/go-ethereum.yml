@@ -23,6 +23,7 @@
 
   - set_fact: path=/home/meteo
 
+  # g co v1.4.10
   - git: repo=https://github.com/ethereum/go-ethereum dest={{path}}/go-ethereum version=v1.3.6
     become: true    
     become_user: meteo
