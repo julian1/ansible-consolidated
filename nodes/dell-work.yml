@@ -243,10 +243,16 @@
         backup: yes
         content: |
           # deployed by ansible!
-          zone "aodn.org.au" {
+          # zone "aodn.org.au" {
+          #   type master;
+          #   file "/etc/bind/zones/aodn.db";
+          # };
+
+          zone "aatams.aodn.org.au" {
             type master;
-            file "/etc/bind/zones/aodn.db";
+            file "/etc/bind/zones/aatams.aodn.db";
           };
+
           zone "localnet" {
             type master;
             file "/etc/bind/zones/localnet.db";
@@ -287,10 +293,7 @@
           ns2 IN A 192.168.1.2
       notify: restart-bind
 
-    # how to do a single override. Easy. But needs a specific entry for each one.
-    # http://serverfault.com/questions/223850/override-a-dns-record-using-bind9
-
-    # it's difficult to overide single entries, sinece the zone is 
+    # it's difficult to overide single entries, sinece the zone is
     # authoritative and cannot be delegated...
     # aodn.org.au zone
     - copy:
@@ -312,7 +315,7 @@
           @ IN NS ns2.aodn.org.au.
           @ IN A 192.168.1.1
           @ IN AAAA ::1
-  
+
           ; ok, simple cname redirect
           mcp2            60 IN CNAME mcp-profile-docs.readthedocs.io.
 
@@ -330,6 +333,44 @@
           ns1 IN A 192.168.1.1
           ns2 IN A 192.168.1.2
       notify: restart-bind
+
+
+    # how to do a single override. Easy. But needs a specific entry for each one.
+    # http://serverfault.com/questions/223850/override-a-dns-record-using-bind9
+    - copy:
+        dest: /etc/bind/zones/aatams.aodn.db
+        owner: root
+        group: bind
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60
+          $ORIGIN aatams.aodn.org.au.
+
+          @ IN SOA ns0.aatams.aodn.org.au. root.aatams.aodn.org.au. (
+            2001062501 ; serial
+            21600      ; refresh after 6 hours
+            3600       ; retry after 1 hour
+            604800     ; expire after 1 week
+            86400 )    ; minimum TTL of 1 day
+          ;
+
+          ; we need one nameserver
+          ; IN NS ns0
+
+          @ IN NS ns0.aatams.aodn.org.au.
+          @ IN A 10.1.1.15 
+
+          ; and we're overriding the public ip address with
+          ; this address.
+          ; IN A 10.1.1.15
+          x       IN A 10.1.1.15 
+
+          ns0     IN A 127.0.0.1
+
+      notify: restart-bind
+
+
 
 
     # dhcp
