@@ -349,8 +349,12 @@
           $ORIGIN aatams.aodn.org.au. ; default
           @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
           @     IN NS ns0
-          @     IN A 10.1.1.15 
+          @     IN A 10.1.1.15
           ns0   IN A 129.0.0.1
+
+          ; @     IN CNAME aatams.localnet.  ; cname apex will be rejected
+          ; 15    IN  PTR   aatams.aodn.org.au.  ; PTR record won't work without upstream ns
+
       notify: restart-bind
 
 
