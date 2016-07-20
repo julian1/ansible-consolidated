@@ -272,9 +272,9 @@
           @           IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
           @           IN NS ns1
           @           IN NS ns2
-          @           IN A 192.168.1.1
-          @           IN AAAA ::1
-          @           IN MX 10 192.168.1.1
+          @           IN A 10.1.1.1
+          ; @         IN AAAA ::1
+          @           IN MX 10 10.1.1.1
 
           dell-work   IN A 10.1.1.1
           aatams      IN A 10.1.1.15
@@ -284,7 +284,7 @@
 
           mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
 
-          mail        IN A 192.168.1.1
+          mail        IN A 10.1.1.1
           ns1         IN A 192.168.1.1
           ns2         IN A 192.168.1.2
       notify: restart-bind
