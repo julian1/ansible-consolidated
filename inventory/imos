@@ -4,9 +4,9 @@ rev-proxy
 rev-proxy.localnet
 geoserver
 portal
-aatams
+aatams.localnet
 wordpress
-geonetwork2
+geonetwork2.localnet
 geonetwork3
 aatams-test-instance
 aatams-dev-instance

@@ -1,5 +1,5 @@
 
-- hosts: geonetwork2
+- hosts: geonetwork2.localnet
   vars:
     - mirror: http://mirror.internode.on.net/pub/debian
     - version: jessie
@@ -19,6 +19,10 @@
     - tomcat-port-forward
     - postgres
     - geonetwork
+
   tasks:
-    - include: ../roles/geonetwork/tasks/restore-db.yml
+    # should always do this, since it's necessary to start from scratch,
+    - include: ../roles/geonetwork/tasks/fresh-db.yml
+
+    # - include: ../roles/geonetwork/tasks/restore-db.yml
 

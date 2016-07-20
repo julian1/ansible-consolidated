@@ -42,6 +42,7 @@
 
 
   # overrides
+  - debug: msg="setting up config-overides"
   - file: path={{overrides}} state=directory owner=tomcat7
   - template: src=config-overrides.j2 dest={{overrides}}/config-overrides.xml owner=tomcat7 group=tomcat7
   - template: src=log4j-overrides.j2  dest={{overrides}}/log4j-overrides.xml  owner=tomcat7 group=tomcat7
@@ -49,6 +50,8 @@
 
   # war
   # TODO make war source configurable
+
+  - debug: msg="getting war"
   - get_url: >
       url=https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war
       dest={{webapps}}/geonetwork.war
