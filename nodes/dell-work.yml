@@ -335,7 +335,7 @@
       notify: restart-bind
 
 
-    # APEX records,
+    # APEX record,
     # how to do a single override. Easy. But needs a specific entry for each one.
     # http://serverfault.com/questions/223850/override-a-dns-record-using-bind9
     - copy:
@@ -345,24 +345,13 @@
         content: |
           ; deployed by ansible!
           ;
-          $TTL 60
-          $ORIGIN aatams.aodn.org.au.
-
-          @ IN SOA ns0 root (
-            2001062501 ; serial
-            21600      ; refresh after 6 hours
-            3600       ; retry after 1 hour
-            604800     ; expire after 1 week
-            86400 )    ; minimum TTL of 1 day
-          ;
-
-          @     60 IN NS ns0
-          @     60 IN A 10.1.1.15 
-          ns0   60 IN A 129.0.0.1
-
+          $TTL 60   ; default
+          $ORIGIN aatams.aodn.org.au. ; default
+          @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
+          @     IN NS ns0
+          @     IN A 10.1.1.15 
+          ns0   IN A 129.0.0.1
       notify: restart-bind
-
-
 
 
     # dhcp
