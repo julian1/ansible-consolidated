@@ -243,10 +243,16 @@
         backup: yes
         content: |
           # deployed by ansible!
-          zone "aodn.org.au" {
+          # zone "aodn.org.au" {
+          #   type master;
+          #   file "/etc/bind/zones/aodn.db";
+          # };
+
+          zone "aatams.aodn.org.au" {
             type master;
-            file "/etc/bind/zones/aodn.db";
+            file "/etc/bind/zones/aatams.aodn.db";
           };
+
           zone "localnet" {
             type master;
             file "/etc/bind/zones/localnet.db";
@@ -287,10 +293,7 @@
           ns2 IN A 192.168.1.2
       notify: restart-bind
 
-    # how to do a single override. Easy. But needs a specific entry for each one.
-    # http://serverfault.com/questions/223850/override-a-dns-record-using-bind9
-
-    # it's difficult to overide single entries, sinece the zone is 
+    # it's difficult to overide single entries, sinece the zone is
     # authoritative and cannot be delegated...
     # aodn.org.au zone
     - copy:
@@ -312,7 +315,7 @@
           @ IN NS ns2.aodn.org.au.
           @ IN A 192.168.1.1
           @ IN AAAA ::1
-  
+
           ; ok, simple cname redirect
           mcp2            60 IN CNAME mcp-profile-docs.readthedocs.io.
 
@@ -329,6 +332,25 @@
           mail IN A 192.168.1.1
           ns1 IN A 192.168.1.1
           ns2 IN A 192.168.1.2
+      notify: restart-bind
+
+
+    # APEX record,
+    # how to do a single override. Easy. But needs a specific entry for each one.
+    # http://serverfault.com/questions/223850/override-a-dns-record-using-bind9
+    - copy:
+        dest: /etc/bind/zones/aatams.aodn.db
+        owner: root
+        group: bind
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60   ; default
+          $ORIGIN aatams.aodn.org.au. ; default
+          @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
+          @     IN NS ns0
+          @     IN A 10.1.1.15 
+          ns0   IN A 129.0.0.1
       notify: restart-bind
 
 
