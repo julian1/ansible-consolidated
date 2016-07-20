@@ -268,29 +268,25 @@
           ; deployed by ansible!
           ;
           $TTL 60
-          @ IN SOA ns1.localnet. root.localnet. (
-            2001062501 ; serial
-            21600      ; refresh after 6 hours
-            3600       ; retry after 1 hour
-            604800     ; expire after 1 week
-            86400 )    ; minimum TTL of 1 day
-          ;
-          @ IN NS ns1.localnet.
-          @ IN NS ns2.localnet.
-          @ IN A 192.168.1.1
-          @ IN AAAA ::1
+          $ORIGIN localnet.
+          @           IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
+          @           IN NS ns1
+          @           IN NS ns2
+          @           IN A 192.168.1.1
+          @           IN AAAA ::1
+          @           IN MX 10 192.168.1.1
 
-          dell-work   60 IN A 10.1.1.1
-          aatams      60 IN A 10.1.1.15
-          rev-proxy   60 IN A 10.1.1.16
-          win7        60 IN A 10.1.1.20
+          dell-work   IN A 10.1.1.1
+          aatams      IN A 10.1.1.15
+          rev-proxy   IN A 10.1.1.16
+          win7        IN A 10.1.1.20
+          geonetwork2 IN A 10.1.1.13
 
-          mcp2-0.docs 60 IN CNAME mcp-profile-docs.readthedocs.io.
+          mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
 
-          @ MX 10 mail.localnet.
-          mail IN A 192.168.1.1
-          ns1 IN A 192.168.1.1
-          ns2 IN A 192.168.1.2
+          mail        IN A 192.168.1.1
+          ns1         IN A 192.168.1.1
+          ns2         IN A 192.168.1.2
       notify: restart-bind
 
     # it's difficult to overide single entries, sinece the zone is
@@ -396,10 +392,10 @@
               option routers 10.1.1.1;
               option domain-name-servers 10.1.1.1;
 
-              host aatams    { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
-              host rev-proxy { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
-              host win7      { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
-
+              host aatams       { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+              host rev-proxy    { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
+              host win7         { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
+              host geonetwork2  { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
           }
 
           default-lease-time 600;
