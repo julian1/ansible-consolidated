@@ -1,6 +1,6 @@
 
 - hosts:
-    - aatams
+    - aatams.localnet
   vars_files:
     - ../vars/jessie.yml
     - ../vars/credentials.yml
