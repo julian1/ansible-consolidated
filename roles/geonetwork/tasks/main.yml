@@ -83,6 +83,8 @@
   - file: src={{aodn_schema_plugins}}/iso19139.anzlic  dest={{schema_plugins}}/iso19139.anzlic   state=link owner=tomcat7 group=tomcat7
   - file: src={{aodn_schema_plugins}}/iso19135         dest={{schema_plugins}}/iso19135          state=link owner=tomcat7 group=tomcat7
 
+  - file: src={{aodn_schema_plugins}}/iso19139.mcp-1.4 dest={{schema_plugins}}/iso19139.mcp-1.4  state=link owner=tomcat7 group=tomcat7
+  
 
   # codelists
   - git: repo=https://github.com/aodn/codelist dest={{codelist}} version=master force=yes
