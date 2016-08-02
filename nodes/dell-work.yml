@@ -248,9 +248,14 @@
           #   file "/etc/bind/zones/aodn.db";
           # };
 
-          zone "aatams.aodn.org.au" {
+          #zone "aatams.aodn.org.au" {
+          #  type master;
+          #  file "/etc/bind/zones/aatams.aodn.db";
+          #};
+
+          zone "animaltracking.aodn.org.au" {
             type master;
-            file "/etc/bind/zones/aatams.aodn.db";
+            file "/etc/bind/zones/animaltracking.aodn.db";
           };
 
           zone "localnet" {
@@ -277,10 +282,13 @@
           @           IN MX 10 10.1.1.1
 
           dell-work   IN A 10.1.1.1
+          geonetwork2 IN A 10.1.1.13
+
+          aatams-vm   IN A 10.1.1.14
           aatams      IN A 10.1.1.15
           rev-proxy   IN A 10.1.1.16
+          precise     IN A 10.1.1.17
           win7        IN A 10.1.1.20
-          geonetwork2 IN A 10.1.1.13
 
           mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
 
@@ -348,10 +356,25 @@
           @     IN A 10.1.1.15
           ns0   IN A 129.0.0.1
 
-          ; @     IN CNAME aatams.localnet.  ; cname apex will be rejected
+          ; @     IN CNAME  aatams.localnet.  ; cname apex will be rejected
           ; 15    IN  PTR   aatams.aodn.org.au.  ; PTR record won't work without upstream ns
-
       notify: restart-bind
+
+    - copy:
+        dest: /etc/bind/zones/animaltracking.aodn.db
+        owner: root
+        group: bind
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60   ; default
+          $ORIGIN animaltracking.aodn.org.au.
+          @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
+          @     IN NS ns0
+          @     IN A 10.1.1.14
+          ns0   IN A 129.0.0.1
+      notify: restart-bind
+
 
 
     # dhcp
@@ -392,10 +415,15 @@
               option routers 10.1.1.1;
               option domain-name-servers 10.1.1.1;
 
-              host aatams       { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
-              host rev-proxy    { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
-              host win7         { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
               host geonetwork2  { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
+
+              # container aatams instance and vm instance
+              host aatams-vm    { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
+              host aatams       { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+
+              host rev-proxy    { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
+              host precise      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
+              host win7         { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
           }
 
           default-lease-time 600;

@@ -7,8 +7,6 @@
   vars:
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
-    - aatams:
-      - war: /home/meteo/imos/aatams/target/aatams-3.16.4.war
   roles:
     - debian
     - timezone
@@ -18,4 +16,9 @@
     - postgres
     - tomcat-port-forward
     - aatams
+
+    # TODO Remove this, should be a separate task,
+    # - aatams:
+    #  - war: /home/meteo/imos/aatams/target/aatams-3.16.4.war
+
 
