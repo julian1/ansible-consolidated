@@ -14,6 +14,7 @@ julian-test-instance
 aodnblog
 aodnblog2
 bind
+postgres.localnet
 
 
 [default:vars]

@@ -1,0 +1,27 @@
+
+- hosts:
+    - postgres.localnet
+  vars_files:
+    - ../vars/jessie.yml
+    - ../vars/credentials.yml
+  vars:
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+  roles:
+    - debian
+    - timezone
+    - locale
+    - common
+    - meteo-dotfiles
+    - postgres
+
+  tasks:
+    # should always do this, since it's necessary to start from scratch,
+    # - include: ../roles/geonetwork/tasks/fresh-db.yml
+
+    - shell: creates=/done.txt chdir=/root {{item}}
+      with_items:
+        - sudo -u postgres psql -c "create user admin password 'admin'" 
+        - sudo -u postgres psql -c "alter user admin with superuser" 
+        - touch done.txt      
+

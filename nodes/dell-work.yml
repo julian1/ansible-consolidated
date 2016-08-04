@@ -289,6 +289,7 @@
           rev-proxy   IN A 10.1.1.16
           precise     IN A 10.1.1.17
           win7        IN A 10.1.1.20
+          postgres    IN A 10.1.1.21
 
           mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
 
@@ -424,6 +425,7 @@
               host rev-proxy    { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
               host precise      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
               host win7         { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
+              host postgres     { hardware ethernet 00:01:04:1b:2C:2D; fixed-address 10.1.1.21; }
           }
 
           default-lease-time 600;
