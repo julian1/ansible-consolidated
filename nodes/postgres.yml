@@ -23,3 +23,4 @@
         - sudo -u postgres psql -c "alter user admin with superuser" 
         - touch postgres-done.txt      
 
+  # should use, 'become', 'become_method', and 'become_user
