@@ -1,3 +1,5 @@
+# eg.
+# psql -h postgres.localnet -U admin -d postgres
 
 - hosts:
     - postgres.localnet
@@ -14,14 +16,10 @@
     - common
     - meteo-dotfiles
     - postgres
-
   tasks:
-    # should always do this, since it's necessary to start from scratch,
-    # - include: ../roles/geonetwork/tasks/fresh-db.yml
-
-    - shell: creates=/done.txt chdir=/root {{item}}
+    - shell: creates=postgres-done.txt chdir=/root {{item}}
       with_items:
         - sudo -u postgres psql -c "create user admin password 'admin'" 
         - sudo -u postgres psql -c "alter user admin with superuser" 
-        - touch done.txt      
+        - touch postgres-done.txt      
 
