@@ -1,0 +1,20 @@
+
+- hosts:
+    - 14-nec-hob
+  vars_files:
+    - ../vars/credentials.yml
+  vars:
+    - upgrade: safe
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: root,  group: ,    pubkey: "{{meteo_pubkey}}" }
+
+  pre_tasks:
+    # ansible requires aptitude to be installed in order to perform upgrade!
+    - apt: name=aptitude update_cache=yes
+    - apt: state=latest update_cache=yes upgrade={{upgrade}}
+
+  roles:
+    - common
+    - meteo-dotfiles
+
