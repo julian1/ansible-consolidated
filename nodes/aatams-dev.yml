@@ -12,6 +12,7 @@
       - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
       - { name: xhoenner, group: adm, pubkey: "{{xavier_pubkey}}" }
+      - { name: ankit,    group: adm, pubkey: "{{ankit_pubkey}}" }
     - jdk_deploy_path: /home/xhoenner/
     - grails_deploy_path: /home/xhoenner/
   pre_tasks:
