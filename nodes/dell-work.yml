@@ -91,10 +91,6 @@
 
           if true; then
             # Warning - turns off laptop display!
-            # xrandr --output eDP1 --off
-            # xrandr --output DP1-1 --auto --mode 1920x1200 --primary --brightness .94
-            # xrandr --output DP1-2 --auto --mode 1280x1024 --right-of DP1-1 --brightness .8
-
             xrandr --output DP-1-1  --auto --mode 1920x1200 --primary
             xrandr --output DP-1-2  --auto --mode 1280x1024 --right-of DP-1-1
             xrandr --output eDP-1   --off
@@ -107,6 +103,17 @@
           xset b off
           # xset q | grep bell
           xmonad
+    ####
+    - copy:
+        dest: /home/meteo/restart-monitor2.sh
+        mode: 0777
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+          xrandr --output DP-1-2  --off
+          sleep 1
+          xrandr --output DP-1-2  --auto --mode 1280x1024 --right-of DP-1-1
+          sleep 1
 
     #####
     # local changes not in dotfiles for .bashrc
@@ -252,19 +259,19 @@
           #   file "/etc/bind/zones/aodn.db";
           # };
 
-          #zone "aatams.aodn.org.au" {
+          # zone "animaltracking.aodn.org.au" {
           #  type master;
-          #  file "/etc/bind/zones/aatams.aodn.db";
+          #  file "/etc/bind/zones/animaltracking.aodn.db";
           #};
-
-          zone "animaltracking.aodn.org.au" {
-            type master;
-            file "/etc/bind/zones/animaltracking.aodn.db";
-          };
 
           zone "localnet" {
             type master;
             file "/etc/bind/zones/localnet.db";
+          };
+
+          zone "jenkins.aodn.org.au" {
+            type master;
+            file "/etc/bind/zones/jenkins.aodn.db";
           };
       notify: restart-bind
 
@@ -294,6 +301,7 @@
           precise     IN A 10.1.1.17
           win7        IN A 10.1.1.20
           postgres    IN A 10.1.1.21
+          jenkins     IN A 10.1.1.22
 
           mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
 
@@ -336,6 +344,7 @@
           aatams          60 IN CNAME 3-aws-syd.emii.org.au.
           ; aatams        60 IN CNAME aatams.localnet.
           animaltracking  60 IN CNAME aatams.localnet.
+          jenkins         60 IN CNAME jenkins.localnet.
 
           @ MX 10 mail.aodn.org.au.
           mail IN A 192.168.1.1
@@ -347,24 +356,29 @@
     # APEX record,
     # how to do a single override. Easy. But needs a specific entry for each one.
     # http://serverfault.com/questions/223850/override-a-dns-record-using-bind9
+
+    # ; @     IN CNAME  aatams.localnet.  ; cname apex will be rejected
+    # ; 15    IN  PTR   aatams.aodn.org.au.  ; PTR record won't work without upstream ns
+
+
+    # jenkins
     - copy:
-        dest: /etc/bind/zones/aatams.aodn.db
+        dest: /etc/bind/zones/jenkins.aodn.db
         owner: root
         group: bind
         content: |
           ; deployed by ansible!
           ;
           $TTL 60   ; default
-          $ORIGIN aatams.aodn.org.au. ; default
+          $ORIGIN jenkins.aodn.org.au. ; default
           @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
           @     IN NS ns0
-          @     IN A 10.1.1.15
+          @     IN A 10.1.1.22
           ns0   IN A 129.0.0.1
-
-          ; @     IN CNAME  aatams.localnet.  ; cname apex will be rejected
-          ; 15    IN  PTR   aatams.aodn.org.au.  ; PTR record won't work without upstream ns
       notify: restart-bind
 
+
+    # animal tracking
     - copy:
         dest: /etc/bind/zones/animaltracking.aodn.db
         owner: root
@@ -425,6 +439,7 @@
               # container aatams instance and vm instance
               host aatams-vm    { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
               host aatams       { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+              host jenkins      { hardware ethernet 00:01:04:1b:3C:01; fixed-address 10.1.1.22; }
 
               host rev-proxy    { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
               host precise      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
