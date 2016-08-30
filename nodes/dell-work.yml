@@ -309,7 +309,7 @@
 
           ; kvm/chef
           jenkins     IN A 10.1.1.22
-          geonetwork  IN A 10.1.1.23
+          systest     IN A 10.1.1.23
 
           ; mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
           mail        IN A 10.1.1.1
@@ -351,7 +351,7 @@
           ; aatams          60 IN CNAME aatams.localnet.
           ; animaltracking  60 IN CNAME aatams.localnet.
           ; jenkins         60 IN CNAME jenkins.localnet.
-          catalogue-portal  60 IN CNAME geonetwork.localnet.
+          catalogue-portal  60 IN CNAME systest.localnet.
 
           @ MX 10 mail.aodn.org.au.
           mail IN A 192.168.1.1
@@ -387,6 +387,9 @@
     # geonetwork
     # if want to do multiple geonetworks then we need to use the aodn namespace...
     # there must be a way to perform easier delegation
+
+    # We can write a simple DNS resolver, more easily that than tyring to get bind9
+    # to be authoritative and to delegate 
 
 
     # animal tracking
@@ -449,7 +452,7 @@
               host jenkins      { hardware ethernet 00:01:04:1b:3C:01; fixed-address 10.1.1.22; }   # 15-aws-syd
               host precise      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
               host win7         { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
-              host geonetwork   { hardware ethernet 00:01:04:1b:3C:23; fixed-address 10.1.1.23; }   # 6-aws-syd
+              host systest      { hardware ethernet 00:01:04:1b:3C:23; fixed-address 10.1.1.23; }   # 6-aws-syd
 
               # system-d container instances
               host geonetwork2  { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
