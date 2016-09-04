@@ -351,7 +351,14 @@
           ; aatams          60 IN CNAME aatams.localnet.
           ; animaltracking  60 IN CNAME aatams.localnet.
           ; jenkins         60 IN CNAME jenkins.localnet.
-          catalogue-portal  60 IN CNAME systest.localnet.
+
+          ; this is really crap, we need jenkins, in order to be able to pull artifacts,
+          catalogue-systest 60 IN CNAME systest.localnet.
+          portal-systest    60 IN CNAME systest.localnet.
+          geoserver-systest 60 IN CNAME systest.localnet.
+          jenkins           60 IN CNAME jenkins.localnet.
+
+          binary            60 IN CNAME dnebqw4820yi3.cloudfront.net.
 
           @ MX 10 mail.aodn.org.au.
           mail IN A 192.168.1.1
@@ -484,8 +491,8 @@
 
           # redirect to rev-proxy
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
-          iptables -t nat -A PREROUTING -p tcp -i eth0          --dport 80 -j DNAT --to 10.1.1.16
-          iptables -t nat -A OUTPUT     -p tcp -d 131.217.38.36 --dport 80 -j DNAT --to 10.1.1.16
+          iptables -t nat -A PREROUTING -p tcp -i eth0          --dport 80 -j DNAT --to 10.1.1.22
+          iptables -t nat -A OUTPUT     -p tcp -d 131.217.38.36 --dport 80 -j DNAT --to 10.1.1.22
 
           # dns/bind/dnsmasq
           # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 53 -j DNAT --to 10.1.1.22
