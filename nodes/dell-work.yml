@@ -350,14 +350,14 @@
           ; geoserver-123   60 IN CNAME 1-aws-syd.emii.org.au.
           ; aatams          60 IN CNAME aatams.localnet.
           ; animaltracking  60 IN CNAME aatams.localnet.
-          ; jenkins         60 IN CNAME jenkins.localnet.
 
           ; this is really crap, we need jenkins, in order to be able to pull artifacts,
           catalogue-systest 60 IN CNAME systest.localnet.
           portal-systest    60 IN CNAME systest.localnet.
           geoserver-systest 60 IN CNAME systest.localnet.
-          jenkins           60 IN CNAME jenkins.localnet.
+          ; jenkins           60 IN CNAME jenkins.localnet.
 
+          jenkins           60 IN CNAME 15-aws-syd.emii.org.au.
           binary            60 IN CNAME dnebqw4820yi3.cloudfront.net.
 
           @ MX 10 mail.aodn.org.au.
