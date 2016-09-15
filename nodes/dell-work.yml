@@ -20,6 +20,7 @@
     - meteo-dotfiles
     - ip-forwarding
     - printer
+    - vim
 
   # TODO jdk, grails, intelij should be factored into roles
   # - not necessarily. simple tasks are fairly easy to manage...
@@ -48,6 +49,15 @@
           options snd_hda_intel beep_mode=0
           blacklist pcspkr
       notify: reboot
+
+    - copy:
+        dest: /etc/modprobe.d/zfs.conf
+        content: |
+          # deployed by ansible!
+          # see, http://serverfault.com/questions/581669/why-isnt-the-arc-max-setting-honoured-on-zfs-on-linux
+          options zfs zfs_arc_max=34359738368
+      notify: reboot
+
 
     - name: Initialize alsa
       # command: bash -c "/usr/sbin/alsactl"
@@ -114,6 +124,9 @@
           sleep 1
           xrandr --output DP-1-2  --auto --mode 1280x1024 --right-of DP-1-1
           sleep 1
+
+
+
 
     #####
     # local changes not in dotfiles for .bashrc
@@ -288,33 +301,34 @@
           ;
           $TTL 60
           $ORIGIN localnet.
-          @           IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
-          @           IN NS ns1
-          @           IN NS ns2
-          @           IN A 10.1.1.1
-          ; @         IN AAAA ::1
-          @           IN MX 10 10.1.1.1
+          @             IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
+          @             IN NS ns1
+          @             IN NS ns2
+          @             IN A 10.1.1.1
+          ; @           IN AAAA ::1
+          @             IN MX 10 10.1.1.1
 
-          dell-work   IN A 10.1.1.1
+          dell-work     IN A 10.1.1.1
 
           ; systemd-d containers
-          geonetwork2 IN A 10.1.1.13
-          aatams-vm   IN A 10.1.1.14
-          aatams      IN A 10.1.1.15
-          rev-proxy   IN A 10.1.1.16
-          win7        IN A 10.1.1.20
-          postgres    IN A 10.1.1.21
+          geonetwork2   IN A 10.1.1.13
+          aatams-vm     IN A 10.1.1.14
+          aatams        IN A 10.1.1.15
+          rev-proxy     IN A 10.1.1.16
+          win7          IN A 10.1.1.20
+          postgres      IN A 10.1.1.21
 
-          precise     IN A 10.1.1.17
+          precise       IN A 10.1.1.17
 
           ; kvm/chef
-          jenkins     IN A 10.1.1.22
-          systest     IN A 10.1.1.23
+          jenkins       IN A 10.1.1.22
+          systest       IN A 10.1.1.23
+          data-services IN A 10.1.1.24
 
           ; mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
-          mail        IN A 10.1.1.1
-          ns1         IN A 192.168.1.1
-          ns2         IN A 192.168.1.2
+          mail          IN A 10.1.1.1
+          ns1           IN A 192.168.1.1
+          ns2           IN A 192.168.1.2
       notify: restart-bind
 
     # it's difficult to overide single entries, sinece the zone is
@@ -396,7 +410,7 @@
     # there must be a way to perform easier delegation
 
     # We can write a simple DNS resolver, more easily that than tyring to get bind9
-    # to be authoritative and to delegate 
+    # to be authoritative and to delegate
 
 
     # animal tracking
@@ -456,17 +470,18 @@
               option domain-name-servers 10.1.1.1;
 
               # kvm/chef instances
-              host jenkins      { hardware ethernet 00:01:04:1b:3C:01; fixed-address 10.1.1.22; }   # 15-aws-syd
-              host precise      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
-              host win7         { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
-              host systest      { hardware ethernet 00:01:04:1b:3C:23; fixed-address 10.1.1.23; }   # 6-aws-syd
+              host jenkins        { hardware ethernet 00:01:04:1b:3C:01; fixed-address 10.1.1.22; }   # 15-aws-syd
+              host precise        { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
+              host win7           { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
+              host systest        { hardware ethernet 00:01:04:1b:3C:23; fixed-address 10.1.1.23; }   # 6-aws-syd
+              host data-services  { hardware ethernet 00:01:04:1b:3C:24; fixed-address 10.1.1.24; }   # 6-aws-syd
 
               # system-d container instances
-              host geonetwork2  { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
-              host rev-proxy    { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
-              host postgres     { hardware ethernet 00:01:04:1b:2C:2D; fixed-address 10.1.1.21; }
-              host aatams-vm    { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
-              host aatams       { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+              host geonetwork2    { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
+              host rev-proxy      { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
+              host postgres       { hardware ethernet 00:01:04:1b:2C:2D; fixed-address 10.1.1.21; }
+              host aatams-vm      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
+              host aatams         { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
           }
 
           default-lease-time 600;
