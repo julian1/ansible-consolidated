@@ -10,7 +10,6 @@
 "ctrl-i is a lot easier than ctrl-c since uses two hands and is symetrical with i for insert mode
 
 
-
 " *********** MISC ****************
 " start in number mode
 set number
@@ -24,11 +23,11 @@ set ruler
 " tell us when anything is changed via :...
 set report=0
 
-" what is this?
-:noremap L 4l
-:noremap H 4h
-:noremap K 4k
-":noremap J 4j
+" this is really nice for fast navigating, duplicates existing keys
+:noremap <C-L> 4l
+:noremap <C-H> 4h
+:noremap <C-K> 4k
+:noremap <C-J> 4j
 
 
 " enable syntax highlyging
@@ -42,27 +41,24 @@ syntax enable
 :nnoremap <C-M> :buffers<CR>:buffer<Space>
 
 " Toggle numbers in lhs margin
-:nmap <C-J> :set number!<CR>
+:nmap J :set number!<CR>
 
 " toggle display of formatting characters
-:nmap <C-K> :set list!<CR>
+:nmap K :set list!<CR>
 
 " bash script formatting
 
-" kk,aa aa  ,,,aa  " to reload vimrc - vimrc needs to be open
+" to reload vimrc - vimrc needs to be open
 " :so %
-
-
 
 
 " *********** TABS ****************
 " tab navigation like firefox
-" this works stunningly well - use ctrl-n and ctrl-p since pg-up/down doesnt
-" work
+" works very well - use ctrl-n and ctrl-p since pg-up/down doesnt
 " just use ctrl-t to create new tab then :e file to open file
 " likewise ctrl-w to close the tab
 " but note
-" #  CTRL+T is used for jumping to previous tags [exuberant ctags].
+" # CTRL+T is used for jumping to previous tags [exuberant ctags].
 " # CTRL+W is used for jumping to next split window in multiple windows
 """"" tabnext and tab previous defalts are gt and gT
 "" not sure if shouldnt use defaults instead
@@ -82,14 +78,6 @@ syntax enable
 ":nmap <C-w> :tabclose<cr>
 ":imap <C-w> <ESC>:tabclose<cr>
 
-" fast commenting of code - pretty basic
-" note that the single , is slow because it has to resolve but if we hit
-" any other key again then its fine
-
-"" commas interfere with g; and g,  which iterate through change list
-":map ,, :s/^/\/\//<CR><Esc>:nohlsearch<CR>
-":map , :s/^\/\///<CR><Esc>:nohlsearch<CR>
-
 
 " ********** FOLDING **************
 
@@ -99,9 +87,6 @@ set foldmethod=syntax
 " see, http://vim.wikia.com/wiki/All_folds_open_when_opening_a_file
 set foldlevelstart=5
 
-
-
-
 " ************** TAB/SPACE HANDLING ****************
 
 " defaults
@@ -109,7 +94,6 @@ set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
-
 
 
 function TabToggle()
@@ -135,49 +119,12 @@ function TabToggle()
 endfunction
 nmap <C-o> mz:execute TabToggle()<CR>
 
-
-
-
 " *************** SYNTAX HIGHLIGHTING *******
 
-":verbose map <F5>
-
-" Commenting blocks of code.
-autocmd FileType c,cpp,java,scala,rust let b:comment_leader = '// '
-autocmd FileType sh,ruby,python   let b:comment_leader = '# '
-autocmd FileType conf,fstab       let b:comment_leader = '# '
-autocmd FileType tex              let b:comment_leader = '% '
-autocmd FileType mail             let b:comment_leader = '> '
-autocmd FileType vim              let b:comment_leader = '" '
-noremap <silent> ,cc :<C-B>silent <C-E>s/^/<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:nohlsearch<CR>
-noremap <silent> ,cu :<C-B>silent <C-E>s/^\V<C-R>=escape(b:comment_leader,'\/')<CR>//e<CR>:nohlsearch<CR>
-
-
-" specific language, autodetect should work
-
-" for vala
-" autocmd BufRead *.vala set efm=%f:%l.%c-%[%^:]%#:\ %t%[%^:]%#:\ %m
-" autocmd BufRead *.vapi set efm=%f:%l.%c-%[%^:]%#:\ %t%[%^:]%#:\ %m
-" au BufRead,BufNewFile *.vala            setfiletype vala
-" au BufRead,BufNewFile *.vapi
-" for objective c
-
-" newer
-" au BufNewFile,BufRead *.m,*.h set ft=objc
-
-" au BufNewFile,BufRead *.sol setf solidity
-
+" shouldn't need this, as autodetect should work
 " au BufNewFile,BufRead *.why3 setf why3
 " au BufNewFile,BufRead *.why setf why3
 " au BufNewFile,BufRead *.mlw setf why3
-
-" au BufNewFile,BufRead *.rs setf rust
-
-" this works, but the other association type doesn't for some reason,
-" au BufRead,BufNewFile *.rs set filetype=rust
-
-" coq ? .v files,
-
 
 
 " *************** LOCALIZE TMP FILE HANDLING *******
@@ -193,6 +140,5 @@ set undodir=~/.vim/undo//
 " *************** PATHOGEN *******
 
 execute pathogen#infect()
-
 
 
