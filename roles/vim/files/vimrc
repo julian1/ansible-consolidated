@@ -41,10 +41,11 @@ syntax enable
 :nnoremap <C-M> :buffers<CR>:buffer<Space>
 
 " Toggle numbers in lhs margin
-:nmap J :set number!<CR>
+:nmap L :set number!<CR>
 
 " toggle display of formatting characters
 :nmap K :set list!<CR>
+
 
 " bash script formatting
 
