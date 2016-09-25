@@ -11,13 +11,14 @@
         url: socket://brother:9100
         ppd: BRHL16_2_GPL.ppd
   roles:
-#    - debian
+    - debian
     - timezone
     - locale
     - common
 #   - meteo-dotfiles
     - ip-forwarding
     - printer
+    - vim
 
   tasks:
     - hostname: name=dell-home
