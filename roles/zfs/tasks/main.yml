@@ -1,4 +1,10 @@
 
+
+OBSOLETE!!!
+
+EXCEPT the mount and unmount scripts
+
+
     # can't use commands because we need redirection, piping or wildcards. so use shell instead
 
     # TODO get rid of the touch stuff...

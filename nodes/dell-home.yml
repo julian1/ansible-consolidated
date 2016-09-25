@@ -2,7 +2,7 @@
 - hosts: dell-home
   vars_files:
     - ../vars/testing.yml
-    # - ../vars/credentials.yml
+    - ../vars/credentials.yml
   vars:
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
@@ -11,11 +11,11 @@
         url: socket://brother:9100
         ppd: BRHL16_2_GPL.ppd
   roles:
-    - debian
+#    - debian
     - timezone
     - locale
     - common
-    - meteo-dotfiles
+#   - meteo-dotfiles
     - ip-forwarding
     - printer
 
@@ -119,9 +119,10 @@
           server=192.168.43.1
           expand-hosts
           domain=container
-          dhcp-range=br0,10.1.1.10,10.1.1.20,4h
+          dhcp-range=br0,10.1.1.10,10.1.1.30,4h
           dhcp-host=00:01:04:1b:2C:1A,ethereum,10.1.1.19
           dhcp-host=00:01:04:1b:2C:1B,jessie-test,10.1.1.20
+          dhcp-host=00:01:04:1b:2C:1C,ise,10.1.1.21
 
       notify: restart-dnsmasq
 

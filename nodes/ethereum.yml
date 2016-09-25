@@ -21,12 +21,14 @@
     - meteo-dotfiles
 
   tasks:
+    # we want to build all this stuff under an unprivileged account
+
     # support linking binaries in built in root
     - file: path=/root state=directory mode=0755
-    - include: ../roles/ethereum/tasks/cpp-ethereum.yml
+#    - include: ../roles/ethereum/tasks/cpp-ethereum.yml
     - include: ../roles/ethereum/tasks/go-ethereum.yml
-    - include: ../roles/misc/tasks/node.yml
-    - include: ../roles/ethereum/tasks/dapple.yml
-    - include: ../roles/ethereum/tasks/vim-solidity.yml
+#    - include: ../roles/misc/tasks/node.yml
+#    - include: ../roles/ethereum/tasks/dapple.yml
+#    - include: ../roles/ethereum/tasks/vim-solidity.yml
 #    - include: ../roles/ethereum/tasks/examples.yml
 
