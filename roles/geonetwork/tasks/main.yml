@@ -42,6 +42,7 @@
 
 
   # overrides
+  - debug: msg="setting up config-overides"
   - file: path={{overrides}} state=directory owner=tomcat7
   - template: src=config-overrides.j2 dest={{overrides}}/config-overrides.xml owner=tomcat7 group=tomcat7
   - template: src=log4j-overrides.j2  dest={{overrides}}/log4j-overrides.xml  owner=tomcat7 group=tomcat7
@@ -49,6 +50,8 @@
 
   # war
   # TODO make war source configurable
+
+  - debug: msg="getting war"
   - get_url: >
       url=https://jenkins.aodn.org.au/job/geonetwork_prod/lastSuccessfulBuild/artifact/web/target/geonetwork.war
       dest={{webapps}}/geonetwork.war
@@ -80,6 +83,8 @@
   - file: src={{aodn_schema_plugins}}/iso19139.anzlic  dest={{schema_plugins}}/iso19139.anzlic   state=link owner=tomcat7 group=tomcat7
   - file: src={{aodn_schema_plugins}}/iso19135         dest={{schema_plugins}}/iso19135          state=link owner=tomcat7 group=tomcat7
 
+  - file: src={{aodn_schema_plugins}}/iso19139.mcp-1.4 dest={{schema_plugins}}/iso19139.mcp-1.4  state=link owner=tomcat7 group=tomcat7
+  
 
   # codelists
   - git: repo=https://github.com/aodn/codelist dest={{codelist}} version=master force=yes

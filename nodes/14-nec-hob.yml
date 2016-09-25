@@ -1,0 +1,87 @@
+
+- hosts:
+    - 14-nec-hob
+  vars_files:
+    - ../vars/credentials.yml
+  vars:
+    - upgrade: safe
+    - users:
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: root,  group: ,    pubkey: "{{meteo_pubkey}}" }
+  pre_tasks:
+    # ansible requires aptitude to be installed in order to perform upgrade!
+    - apt: name=aptitude update_cache=yes
+    - apt: state=latest update_cache=yes upgrade={{upgrade}}
+  roles:
+    - common
+    - meteo-dotfiles
+  tasks:
+    # when run outside jenkins/vagrant then need environment details on server
+    - copy:
+        dest: "/root/chef-solo/environments/development.json"
+        owner: root
+        content: |
+          {
+            "name": "development",
+            "default_attributes": {
+            },
+            "json_class": "Chef::Environment",
+            "description": "",
+            "chef_type": "environment"
+          }
+
+  # finding stuff
+  - apt: name=mlocate
+
+  # make is needed to build nokogiri
+  - apt: name=make
+ 
+  # imos_vsftpd uses user ftp before vsftpd is installed and ftp user exists
+  - apt: name=vsftpd
+
+  # issue with celeryd not being installed, but trying to use supervisor - got past by running chef twice .
+
+  # matplotlib requires numpy 1.4 to build, but requirements specifies 1.10.1
+  # but it's specified after... 
+
+  # see, http://stackoverflow.com/questions/19119042/pip-dependency-resolution-fails-when-install-both-numpy-and-matplotlib
+
+  # maybe fixed by installing numpy manually,
+  # root@14-nec-hob:~$ pip install numpy
+  # Downloading numpy-1.11.1-cp27-cp27mu-manylinux1_x86_64.whl (15.3MB)
+  #  100% |████████████████████████████████| 15.3MB 57kB/s 
+
+
+  # netcdf generator,
+  #  Couldn't retrieve index page for 'compliance-checker'
+  #   Scanning index of all packages (this may take a while)
+
+  # easy_install --find-links=/var/chef/cache --allow-hosts=None --always-unzip /var/chef/cache/compliance_checker_plugin_imos-latest.egg returned 1
+
+
+  # -----
+  # something to do,
+  # Could not find suitable distribution for Requirement.parse('compliance-checker>=2.0.0')
+
+  # issue was s3 jenkins hosting, - leigh had a workaround in the deployment cookbook - to follow the redirects
+  # to get at the versioned instance, and give it the correct name.
+
+
+  # talend_rc/aatams_acoustic_harvester_Latest.zip  fails to deploy...
+
+  # issue - with talend deployment was jenkins firewalled.
+
+  # issue with complaining, about NilClass at the end is only a warning 
+
+  # database provisioning doesn't populate the tables.
+
+
+  # issue with roles and users - need to remove files that govern caching here -
+  # /var/chef/cache/imos_postgresql/state/ 
+
+
+
+
+
+
+

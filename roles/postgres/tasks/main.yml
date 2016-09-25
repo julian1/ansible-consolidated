@@ -21,6 +21,9 @@
 
         log_statement = all
 
+        # For XA
+        max_prepared_transactions = 10          # zero disables the feature
+
         datestyle = 'iso, mdy'
         default_text_search_config = 'pg_catalog.english'
         ssl = on

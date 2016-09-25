@@ -1,9 +1,0 @@
-
-  - git: repo=https://github.com/tomlion/vim-solidity dest=vim-solidity
-
-  - file: src=/root/vim-solidity/indent/solidity.vim dest=/usr/share/vim/vim74/indent/solidity.vim  state=link
-  - file: src=/root/vim-solidity/syntax/solidity.vim dest=/usr/share/vim/vim74/syntax/solidity.vim  state=link
-
-  # Need in vimrc
-  #  au BufNewFile,BufRead *.sol setf solidity 
-

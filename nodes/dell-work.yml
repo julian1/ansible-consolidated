@@ -20,6 +20,7 @@
     - meteo-dotfiles
     - ip-forwarding
     - printer
+    - vim
 
   # TODO jdk, grails, intelij should be factored into roles
   # - not necessarily. simple tasks are fairly easy to manage...
@@ -48,6 +49,15 @@
           options snd_hda_intel beep_mode=0
           blacklist pcspkr
       notify: reboot
+
+    - copy:
+        dest: /etc/modprobe.d/zfs.conf
+        content: |
+          # deployed by ansible!
+          # see, http://serverfault.com/questions/581669/why-isnt-the-arc-max-setting-honoured-on-zfs-on-linux
+          options zfs zfs_arc_max=34359738368
+      notify: reboot
+
 
     - name: Initialize alsa
       # command: bash -c "/usr/sbin/alsactl"
@@ -91,9 +101,9 @@
 
           if true; then
             # Warning - turns off laptop display!
-            xrandr --output eDP1 --off
-            xrandr --output DP1-1 --auto --mode 1920x1200 --primary --brightness .94
-            xrandr --output DP1-2 --auto --mode 1280x1024 --right-of DP1-1 --brightness .8
+            xrandr --output DP-1-1  --auto --mode 1920x1200 --primary
+            xrandr --output DP-1-2  --auto --mode 1280x1024 --right-of DP-1-1
+            xrandr --output eDP-1   --off
           fi
 
           # xrandr --output eDP1 --brightness .65
@@ -103,6 +113,20 @@
           xset b off
           # xset q | grep bell
           xmonad
+    ####
+    - copy:
+        dest: /home/meteo/restart-monitor2.sh
+        mode: 0777
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+          xrandr --output DP-1-2  --off
+          sleep 1
+          xrandr --output DP-1-2  --auto --mode 1280x1024 --right-of DP-1-1
+          sleep 1
+
+
+
 
     #####
     # local changes not in dotfiles for .bashrc
@@ -243,20 +267,28 @@
         backup: yes
         content: |
           # deployed by ansible!
-          # zone "aodn.org.au" {
-          #   type master;
-          #   file "/etc/bind/zones/aodn.db";
-          # };
-
-          zone "aatams.aodn.org.au" {
+          zone "aodn.org.au" {
             type master;
-            file "/etc/bind/zones/aatams.aodn.db";
+            file "/etc/bind/zones/aodn.db";
           };
+
+          # zone "animaltracking.aodn.org.au" {
+          #  type master;
+          #  file "/etc/bind/zones/animaltracking.aodn.db";
+          #};
 
           zone "localnet" {
             type master;
             file "/etc/bind/zones/localnet.db";
           };
+
+          # zone "jenkins.aodn.org.au" {
+          #  type master;
+          #  file "/etc/bind/zones/jenkins.aodn.db";
+          # };
+
+
+
       notify: restart-bind
 
     # localnet zone
@@ -268,29 +300,35 @@
           ; deployed by ansible!
           ;
           $TTL 60
-          @ IN SOA ns1.localnet. root.localnet. (
-            2001062501 ; serial
-            21600      ; refresh after 6 hours
-            3600       ; retry after 1 hour
-            604800     ; expire after 1 week
-            86400 )    ; minimum TTL of 1 day
-          ;
-          @ IN NS ns1.localnet.
-          @ IN NS ns2.localnet.
-          @ IN A 192.168.1.1
-          @ IN AAAA ::1
+          $ORIGIN localnet.
+          @             IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
+          @             IN NS ns1
+          @             IN NS ns2
+          @             IN A 10.1.1.1
+          ; @           IN AAAA ::1
+          @             IN MX 10 10.1.1.1
 
-          dell-work   60 IN A 10.1.1.1
-          aatams      60 IN A 10.1.1.15
-          rev-proxy   60 IN A 10.1.1.16
-          win7        60 IN A 10.1.1.20
+          dell-work     IN A 10.1.1.1
 
-          mcp2-0.docs 60 IN CNAME mcp-profile-docs.readthedocs.io.
+          ; systemd-d containers
+          geonetwork2   IN A 10.1.1.13
+          aatams-vm     IN A 10.1.1.14
+          aatams        IN A 10.1.1.15
+          rev-proxy     IN A 10.1.1.16
+          win7          IN A 10.1.1.20
+          postgres      IN A 10.1.1.21
 
-          @ MX 10 mail.localnet.
-          mail IN A 192.168.1.1
-          ns1 IN A 192.168.1.1
-          ns2 IN A 192.168.1.2
+          precise       IN A 10.1.1.17
+
+          ; kvm/chef
+          jenkins       IN A 10.1.1.22
+          systest       IN A 10.1.1.23
+          data-services IN A 10.1.1.24
+
+          ; mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
+          mail          IN A 10.1.1.1
+          ns1           IN A 192.168.1.1
+          ns2           IN A 192.168.1.2
       notify: restart-bind
 
     # it's difficult to overide single entries, sinece the zone is
@@ -317,16 +355,24 @@
           @ IN AAAA ::1
 
           ; ok, simple cname redirect
-          mcp2            60 IN CNAME mcp-profile-docs.readthedocs.io.
+          mcp2              60 IN CNAME mcp-profile-docs.readthedocs.io.
 
           ; redirect to our reverse proxy, in front of everything
-          content         60 IN CNAME rev-proxy.localnet.
+          content           60 IN CNAME rev-proxy.localnet.
 
-          portal          60 IN CNAME 7-aws-syd.emii.org.au.
-          geoserver-123   60 IN CNAME 1-aws-syd.emii.org.au.
-          aatams          60 IN CNAME 3-aws-syd.emii.org.au.
-          ; aatams        60 IN CNAME aatams.localnet.
-          animaltracking  60 IN CNAME aatams.localnet.
+          ; portal          60 IN CNAME 7-aws-syd.emii.org.au.
+          ; geoserver-123   60 IN CNAME 1-aws-syd.emii.org.au.
+          ; aatams          60 IN CNAME aatams.localnet.
+          ; animaltracking  60 IN CNAME aatams.localnet.
+
+          ; this is really crap, we need jenkins, in order to be able to pull artifacts,
+          catalogue-systest 60 IN CNAME systest.localnet.
+          portal-systest    60 IN CNAME systest.localnet.
+          geoserver-systest 60 IN CNAME systest.localnet.
+          ; jenkins           60 IN CNAME jenkins.localnet.
+
+          jenkins           60 IN CNAME 15-aws-syd.emii.org.au.
+          binary            60 IN CNAME dnebqw4820yi3.cloudfront.net.
 
           @ MX 10 mail.aodn.org.au.
           mail IN A 192.168.1.1
@@ -338,24 +384,51 @@
     # APEX record,
     # how to do a single override. Easy. But needs a specific entry for each one.
     # http://serverfault.com/questions/223850/override-a-dns-record-using-bind9
+
+    # ; @     IN CNAME  aatams.localnet.  ; cname apex will be rejected
+    # ; 15    IN  PTR   aatams.aodn.org.au.  ; PTR record won't work without upstream ns
+
+
+    # jenkins
     - copy:
-        dest: /etc/bind/zones/aatams.aodn.db
+        dest: /etc/bind/zones/jenkins.aodn.db
         owner: root
         group: bind
         content: |
           ; deployed by ansible!
           ;
           $TTL 60   ; default
-          $ORIGIN aatams.aodn.org.au. ; default
+          $ORIGIN jenkins.aodn.org.au. ; default
           @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
           @     IN NS ns0
-          @     IN A 10.1.1.15
+          @     IN A 10.1.1.22
           ns0   IN A 129.0.0.1
-
-          ; @     IN CNAME aatams.localnet.  ; cname apex will be rejected
-          ; 15    IN  PTR   aatams.aodn.org.au.  ; PTR record won't work without upstream ns
-
       notify: restart-bind
+
+    # geonetwork
+    # if want to do multiple geonetworks then we need to use the aodn namespace...
+    # there must be a way to perform easier delegation
+
+    # We can write a simple DNS resolver, more easily that than tyring to get bind9
+    # to be authoritative and to delegate
+
+
+    # animal tracking
+    - copy:
+        dest: /etc/bind/zones/animaltracking.aodn.db
+        owner: root
+        group: bind
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60   ; default
+          $ORIGIN animaltracking.aodn.org.au.
+          @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
+          @     IN NS ns0
+          @     IN A 10.1.1.14
+          ns0   IN A 129.0.0.1
+      notify: restart-bind
+
 
 
     # dhcp
@@ -396,10 +469,19 @@
               option routers 10.1.1.1;
               option domain-name-servers 10.1.1.1;
 
-              host aatams    { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
-              host rev-proxy { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
-              host win7      { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
+              # kvm/chef instances
+              host jenkins        { hardware ethernet 00:01:04:1b:3C:01; fixed-address 10.1.1.22; }   # 15-aws-syd
+              host precise        { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
+              host win7           { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
+              host systest        { hardware ethernet 00:01:04:1b:3C:23; fixed-address 10.1.1.23; }   # 6-aws-syd
+              host data-services  { hardware ethernet 00:01:04:1b:3C:24; fixed-address 10.1.1.24; }   # 6-aws-syd
 
+              # system-d container instances
+              host geonetwork2    { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
+              host rev-proxy      { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
+              host postgres       { hardware ethernet 00:01:04:1b:2C:2D; fixed-address 10.1.1.21; }
+              host aatams-vm      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
+              host aatams         { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
           }
 
           default-lease-time 600;
@@ -424,8 +506,8 @@
 
           # redirect to rev-proxy
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
-          iptables -t nat -A PREROUTING -p tcp -i eth0          --dport 80 -j DNAT --to 10.1.1.16
-          iptables -t nat -A OUTPUT     -p tcp -d 131.217.38.36 --dport 80 -j DNAT --to 10.1.1.16
+          iptables -t nat -A PREROUTING -p tcp -i eth0          --dport 80 -j DNAT --to 10.1.1.22
+          iptables -t nat -A OUTPUT     -p tcp -d 131.217.38.36 --dport 80 -j DNAT --to 10.1.1.22
 
           # dns/bind/dnsmasq
           # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 53 -j DNAT --to 10.1.1.22
