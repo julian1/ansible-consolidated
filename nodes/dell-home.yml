@@ -48,6 +48,17 @@
           blacklist pcspkr
       notify: reboot
 
+
+    - copy:
+        dest: /etc/modprobe.d/zfs.conf
+        content: |
+          # deployed by ansible!
+          # see, http://serverfault.com/questions/581669/why-isnt-the-arc-max-setting-honoured-on-zfs-on-linux
+          options zfs zfs_arc_max=34359738368
+      notify: reboot
+
+
+
       # command: bash -c "/usr/sbin/alsactl"
       # not sure if this should be with store or init
     - command: /usr/sbin/alsactl
