@@ -15,7 +15,7 @@ aodnblog
 aodnblog2
 bind
 postgres.localnet
-14-nec-hob
+geoserver-test
 
 
 [default:vars]

@@ -1,5 +1,7 @@
 
-- hosts: geoserver
+- hosts:
+    - geoserver
+    - geoserver-test
   vars_files:
     - ../vars/jessie.yml
     - ../vars/credentials.yml
