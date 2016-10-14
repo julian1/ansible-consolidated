@@ -136,19 +136,19 @@
           LOG=/var/log/xtrlock.log
 
           # handle empty starting file condition
-          [ -f $LOG ] || echo "UNKNOWN" >> $LOG
+          [ -f "$LOG" ] || echo 'UNKNOWN' >> "$LOG"
 
           LOCKED=$(pgrep xtrlock)
-          CURRENT=$(tail -n 1 $LOG | cut -d' ' -f 1) # '
+          CURRENT=$(tail -n 1 "$LOG" | cut -d' ' -f 1) # '
 
           # echo "LOCKED: $LOCKED, CURRENT: $CURRENT"
           # not locked, and current condition not UNLOCKED
-          if [ -z "$LOCKED" ] && [ $CURRENT != "UNLOCKED" ]; then
-              echo "UNLOCKED $(date)" >> $LOG
+          if [ -z "$LOCKED" ] && [ "$CURRENT" != 'UNLOCKED' ]; then
+              echo "UNLOCKED $(date)" >> "$LOG"
           fi
           # locked, and current condition is not LOCKED
-          if [ -n "$LOCKED" ] && [ $CURRENT != "LOCKED" ]; then
-              echo "LOCKED   $(date)" >> $LOG
+          if [ -n "$LOCKED" ] && [ "$CURRENT" != 'LOCKED' ]; then
+              echo "LOCKED   $(date)" >> "$LOG"
           fi
 
     - copy:
