@@ -113,6 +113,7 @@
           xset b off
           # xset q | grep bell
           xmonad
+
     ####
     - copy:
         dest: /home/meteo/restart-monitor2.sh
@@ -125,6 +126,37 @@
           xrandr --output DP-1-2  --auto --mode 1280x1024 --right-of DP-1-1
           sleep 1
 
+    ####
+    - copy:
+        dest: /ansible/log-screensaver.sh
+        mode: 0777
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+          LOG=/var/log/xtrlock.log
+
+          # handle empty starting file condition
+          [ -f $LOG ] || echo "UNKNOWN" >> $LOG
+
+          LOCKED=$(pgrep xtrlock)
+          CURRENT=$(tail -n 1 $LOG | cut -d' ' -f 1) # '
+
+          # echo "LOCKED: $LOCKED, CURRENT: $CURRENT"
+          # not locked, and current condition not UNLOCKED
+          if [ -z "$LOCKED" ] && [ $CURRENT != "UNLOCKED" ]; then
+              echo "UNLOCKED $(date)" >> $LOG
+          fi
+          # locked, and current condition is not LOCKED
+          if [ -n "$LOCKED" ] && [ $CURRENT != "LOCKED" ]; then
+              echo "LOCKED   $(date)" >> $LOG
+          fi
+
+    - copy:
+        dest: /var/spool/cron/crontabs/root
+        mode: 0600
+        content: |
+          # deployed by ansible!
+          */1 * * * *  /ansible/log-screensaver.sh
 
 
 
