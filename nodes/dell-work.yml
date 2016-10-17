@@ -144,11 +144,11 @@
           # echo "LOCKED: $LOCKED, CURRENT: $CURRENT"
           # not locked, and current condition not UNLOCKED
           if [ -z "$LOCKED" ] && [ "$CURRENT" != 'UNLOCKED' ]; then
-              echo "UNLOCKED $(date)" >> "$LOG"
+              echo "UNLOCKED $(date -R)" >> "$LOG"
           fi
           # locked, and current condition is not LOCKED
           if [ -n "$LOCKED" ] && [ "$CURRENT" != 'LOCKED' ]; then
-              echo "LOCKED   $(date)" >> "$LOG"
+              echo "LOCKED   $(date -R)" >> "$LOG"
           fi
 
     - copy:
@@ -650,4 +650,6 @@
       service: name=isc-dhcp-server state=restarted
 
 
+    # nectar,
+    - apt: name=ethtool
 
