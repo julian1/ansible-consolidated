@@ -7,6 +7,7 @@
   - set_fact: webapps={{tomcat7}}/webapps
   - set_fact: geoserver_config={{conf}}/geoserver-config
   - set_fact: lib={{tomcat7}}/lib
+  - set_fact: logs={{tomcat7}}/logs
 
   # set_fact doesn't seem to handle self-referential facts
   #  - set_fact:
@@ -139,15 +140,18 @@
   - file: path={{geoserver_config}} state=directory owner=tomcat7 group=tomcat7 recurse=yes
 
 
-  # war
-#  # TODO make war source configurable
-#  - get_url: >
-#      url=https://jenkins.aodn.org.au/job/geoserver_prod/lastSuccessfulBuild/artifact/au.org.emii/main/1.0.0/main-1.0.0.war
-#      dest={{webapps}}/geoserver.war
-#    notify: restart-tomcat7
+  # TODO
+  # this war deploy code, is the same as aatams and could be factored out,
 
-  - copy:
-      dest={{webapps}}/geoserver.war
-      src=/home/meteo/imos/geoserver/src/web/app/target/geoserver.war
+  - copy: src={{geoserver.war}} dest={{webapps}}/geoserver.war
+    register: deployed
+
+  - shell: "{{item}}"
+    with_items:
+      - systemctl stop tomcat7
+      - rm -rf {{webapps}}/geoserver || true
+      - echo > {{logs}}/catalina.out
+    when: deployed.changed == true
     notify: restart-tomcat7
+
 
