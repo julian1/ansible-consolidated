@@ -1,45 +1,40 @@
 
-  # template first, in case original mirror is down.
-  # - template: src=debian.j2 dest=/etc/apt/sources.list mode=0644
 
-  # set up sources first, in case default mirror is down
-#  - copy:
-#      dest: /etc/apt/sources.list
-#      backup: yes
-#      mode: 0644
-#      content: |
-#        # deployed by ansible
-#        deb {{mirror}} {{version}} main
-#        deb-src {{mirror}} {{version}} main
-#
-#        deb http://security.debian.org/ {{version}}/updates main
-#        deb-src http://security.debian.org/ {{version}}/updates main
-#
-#        deb {{mirror}} {{version}}-updates main
-#        deb-src {{mirror}} {{version}}-updates main
-#
-#        # firmware
-#        # deb http://http.us.debian.org/debian/ {{version}} non-free contrib
-#        deb {{mirror}} {{version}} non-free contrib
-#
-  - template: src={{sources_template}} dest=/etc/apt/sources.list mode=0644 
-
+  # install repo sources
+  - template: src={{sources_template}} dest=/etc/apt/sources.list mode=0644
 
   # ansible requires aptitude to be installed in order to perform upgrade!
   - apt: name=aptitude update_cache=yes
-
   - apt: state=latest update_cache=yes upgrade={{upgrade}}
 
-  # https://realguess.net/2014/12/21/ansible-update-servers-to-the-latest-and-reboot/
-  # http://docs.ansible.com/ansible/playbooks_conditionals.html
+  # check if need reboot,
   - name: Check reboot is required
     register: file
     stat: path=/var/run/reboot-required get_md5=no
 
-  # reboot before continuing - not in a handler
+
+  # reboot
   - name: Reboot the server
-    command: /sbin/reboot
+    shell: nohup bash -c 'sleep 2 && /sbin/reboot' &
+    async: 1
+    poll: 0
+    ignore_errors: true
     when: file.stat.exists == true
 
+  # debug,
+  - name: debug variable values
+    debug: msg="ansible_host {{ansible_host}}"        #"
 
+  # workaround, see https://github.com/ansible/ansible/issues/18133
+  - set_fact: mytarget="{{ansible_host}}"
+
+
+  # see, last example, http://docs.ansible.com/ansible/wait_for_module.html
+  - name: waiting for server to come back
+#    local_action: wait_for host="{{mytarget}}" search_regex='OpenSSH' port=22 state='started' delay=10 timeout=300 # "
+    local_action: wait_for host="{{ansible_ssh_host}}" search_regex='OpenSSH' port=22 state='started' delay=10 timeout=300 # "
+
+  # check it's up
+  - name: Check responsivness
+    shell: uptime
 
