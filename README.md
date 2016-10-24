@@ -23,8 +23,8 @@ ansible -i inventory/imos --list-hosts all
 
 ansible-playbook -i localhost, roles/common/devenv-lite.yml
 
-ansible-playbook ./plays/restart-tomcat.yml -i n.n.n.n, -u meteo
-ansible-playbook ./plays/deploy-war.yml     -i n.n.n.n, -u meteo --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
+ansible-playbook ./plays/restart-tomcat.yml -i n.n.n.n,
+ansible-playbook ./plays/deploy-war.yml     -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
 
 
 # build zfs kernel module
@@ -73,7 +73,7 @@ IMPORTANT
 
   - likewise dnsmasq and other services
 
-make single vlan 200 for ordinary machines - and trunk vlan to cisco2. 
+make single vlan 200 for ordinary machines - and trunk vlan to cisco2.
 
 
 limit iptables forwarding for non 80,443,dns,dhcp between vlans. 22 only only on vlan 100
