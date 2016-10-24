@@ -1,6 +1,5 @@
 
   - hosts: all
-   
     tasks:
     - include: "../roles/meteo-dotfiles/tasks/main.yml"
 
