@@ -1,7 +1,6 @@
 
 - hosts: ethereum.julian1.io
   vars_files:
-    - ../vars/jessie.yml
     - ../vars/credentials.yml
   vars:
     - users:

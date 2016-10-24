@@ -1,17 +1,15 @@
 
 - hosts:
-    #- geoserver
-    #- geoserver-test
     - all
   vars_files:
-    - ../vars/jessie.yml
     - ../vars/credentials.yml
   vars:
     - users:
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
       - { name: bpasquer, group: adm, pubkey: "{{bpasquer_pubkey}}" }
   roles:
-    - debian
+    - jessie
     - timezone
     - locale
     - common

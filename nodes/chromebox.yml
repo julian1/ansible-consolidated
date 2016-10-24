@@ -6,7 +6,6 @@
 
 - hosts: chromebox
   vars_files:
-    - ../vars/jessie.yml
     - ../vars/credentials.yml
   vars:
     - sources_template: tvheadend.j2

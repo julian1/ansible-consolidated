@@ -1,7 +1,6 @@
 
 - hosts: bind
   vars_files:
-    - ../vars/jessie.yml
     - ../vars/credentials.yml
   vars:
     - users:

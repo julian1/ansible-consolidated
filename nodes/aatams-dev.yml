@@ -5,7 +5,6 @@
     - aatams-test-instance
     - aatams-dev-instance
   vars_files:
-    - ../vars/jessie.yml
     - ../vars/credentials.yml
   vars:
     - users:
