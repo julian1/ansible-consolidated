@@ -1,0 +1,6 @@
+
+
+  - hosts: all
+   
+    tasks:
+    - include: "../roles/misc/tasks/jdk.yml"

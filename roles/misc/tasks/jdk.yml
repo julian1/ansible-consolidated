@@ -1,0 +1,29 @@
+
+  # the difficult thing, is the download, and dealing with oracle authentication...
+
+  - file: path=/ansible state=directory
+
+  - shell: "{{item}}"
+    args:
+      chdir: '/ansible'
+      creates: jdk-7u80-linux-x64.tar.gz
+    with_items:
+      - >
+        curl -L -H 'Cookie:oraclelicense=accept-securebackup-cookie'
+        http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64.tar.gz
+        -o jdk-7u80-linux-x64.tar.gz
+
+
+  # handle PATH setup elsewhere
+
+  - shell: "{{item}}"
+    args:
+      chdir: '/ansible'
+      creates: jdk-8u111-linux-x64.tar.gz
+    with_items:
+      - >
+        curl -L -H 'Cookie:oraclelicense=accept-securebackup-cookie'
+        http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz
+        -o jdk-8u111-linux-x64.tar.gz
+
+
