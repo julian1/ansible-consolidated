@@ -1,4 +1,8 @@
 
+OBSOLETE
+
+# this is way too complicated...
+# and apt loses control over sub-versioning
 
 - shell: creates=oracle-jdk-installed {{item}}
   with_items:
