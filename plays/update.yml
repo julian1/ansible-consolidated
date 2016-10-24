@@ -1,0 +1,9 @@
+  
+  - hosts: all
+    sudo: yes
+    tasks:
+    - include: "../roles/debian/tasks/main.yml"
+
+
+
+

@@ -1,7 +1,8 @@
 
+
   # install repo sources
   - set_fact: mirror=http://mirror.internode.on.net/pub/debian
-  - set_fact: version=jessie
+  - set_fact: version=testing
   # - set_fact: upgrade=safe
 
   - copy:
@@ -18,6 +19,11 @@
         deb {{mirror}} {{version}}-updates main
         deb-src {{mirror}} {{version}}-updates main
 
+        # firmware
+        # deb http://http.us.debian.org/debian/ {{version}} non-free contrib
+        deb {{mirror}} {{version}} non-free contrib
+
 
   - include: ../roles/debian/tasks/main.yml 
+
 
