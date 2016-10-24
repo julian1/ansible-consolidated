@@ -1,0 +1,24 @@
+Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
+        , borderColor = "black"
+        , border = TopB
+        , bgColor = "black"
+        , fgColor = "grey"
+        , position = TopW L 100
+        , commands = [ 
+						  Run Network "wlan0" ["-L","0","-H","32","--normal","green","--high","red"] 10
+						 , Run Wireless "wlan0" ["-L","40","-H","70","--normal","yellow","--high","green","--low","red","-t","<essid> (<quality>%)"] 10
+
+						, Run Battery ["-t","<left>% / <timeleft>","-L","50","-H","75","--high","green","--normal","yellow", "--low", "red", "--", "energy_full"] 10
+            
+
+                        , Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
+						, Run CpuFreq ["-t","<cpu0> <cpu1>"] 50
+                        , Run Memory ["-t","Mem: <usedratio>%"] 10
+                        , Run Swap [] 10
+                        , Run Date "%a %b %_d %Y %H:%M:%S" "date" 10
+                        , Run StdinReader
+                        ]
+        , sepChar = "%"
+        , alignSep = "}{"
+        , template = "%StdinReader% | %cpu% | %cpufreq%  | %memory% | %swap% | %wlan0% | %wlan0wi% | %battery% }{<fc=#ee9a00>%date%</fc>   "
+        }

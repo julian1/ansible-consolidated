@@ -16,7 +16,7 @@
     - timezone
     - locale
     - common
-    - meteo-dotfiles
+    - dotfiles
     - ip-forwarding
     - printer
     - vim

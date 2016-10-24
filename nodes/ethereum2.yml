@@ -27,7 +27,7 @@
     - timezone
     - locale
     - common
-    - meteo-dotfiles
+    - dotfiles
 
   tasks:
     # support linking binaries in built in root

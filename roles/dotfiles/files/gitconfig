@@ -1,0 +1,79 @@
+# deployed by ansible!
+[user]
+  name = julian1
+  email = julian.atkinson71@gmail.com
+[push]
+  default = simple
+
+# see http://durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
+[alias]
+
+  # commit/staging
+  c = commit
+  cm = commit -m
+  cma = commit --amend -m
+
+  a = add
+  au = add -u
+
+  s = status -s
+  f = fetch --all
+  m = merge
+
+  cp = cherry-pick
+
+  mom = merge origin/master
+
+  # git commit --amend -m doesn't work for some reason?
+  am = commit --amend -m
+
+  # push
+  p = push
+  po = push origin
+  # pom = push origin master
+
+  # be explicit
+  # use fetch and merge instead of pull
+  # pull
+  # pu = pull
+  # puo = pull origin
+  # puom = pull origin master
+
+  # branch stuff
+  b = branch
+  bd = branch -D
+
+  # r can be remote, rebase, reset or rm, seem to use remote the most
+  # remote
+  r = remote
+  rv = remote -v
+
+  # checkout stuff
+  co = checkout
+  cob = checkout -b
+  com = checkout master
+
+  # log history
+  l = log --color --graph  --abbrev-commit --decorate --abbrev-commit --decorate --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue) <%an>%Creset'
+  ll = log --color --graph  --abbrev-commit --decorate --abbrev-commit --decorate --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue) <%an>%Creset' --numstat
+  lf = log -U1 --follow
+  # show source changes
+  lp = log --color -p
+  # show file change stats
+  ls = log --color --stat
+
+  # reset stuff
+  rh = reset --hard
+  ro = reset --hard remotes/origin/HEAD
+
+  # unstage file - deleted only
+  # reset can be used unstage ordinary staged files
+  ru = rm --cached
+
+  # undo last commit (or reset to last commit)
+  u = checkout HEAD~1
+
+  # diff
+  dc = diff --color
+
+

@@ -20,7 +20,7 @@
     - timezone
     - locale
     - common
-    - meteo-dotfiles
+    - dotfiles
   tasks:
     - apt: name=mysql-server
     - apt: name=apache2

@@ -13,7 +13,7 @@
     - timezone
     - locale
     - common
-    - meteo-dotfiles
+    - dotfiles
     - postgres
   tasks:
     - shell: creates=postgres-done.txt chdir=/root {{item}}

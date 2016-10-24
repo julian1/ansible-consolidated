@@ -15,7 +15,7 @@
     - timezone
     - locale
     - common
-    - meteo-dotfiles
+    - dotfiles
     - tomcat-port-forward
     - postgres
     - geonetwork

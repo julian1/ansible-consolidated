@@ -21,7 +21,7 @@
     - locale
     - hostname
     - common
-    - meteo-dotfiles
+    - dotfiles
   tasks:
     - apt: name=pciutils        # lspci
     - apt: name=wpasupplicant
