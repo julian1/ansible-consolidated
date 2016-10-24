@@ -66,6 +66,9 @@ http://docs.ansible.com/ansible/playbooks_best_practices.html
 
 #### TODO
 
+- should set generic user... so can install root.
+
+
 IMPORTANT
   - sshd and dnsmasq should only listen internal interfaces - eg. 192.168.100.0/24 not 0.0.0.0
 
