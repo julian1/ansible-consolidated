@@ -8,6 +8,7 @@ Requires Ansible version >= 2
 #### Examples
 
 ```
+
 ansible-playbook nodes/bind.yml -u root
 ansible-playbook nodes/dell-home.yml
 ansible-playbook nodes/aatams.yml -v
@@ -21,6 +22,10 @@ ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 
 ansible-playbook -i localhost, roles/common/devenv-lite.yml
+
+ansible-playbook ./plays/restart-tomcat.yml -i n.n.n.n, -u meteo
+ansible-playbook ./plays/deploy-war.yml     -i n.n.n.n, -u meteo --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
+
 
 # build zfs kernel module
 ansible-playbook ./roles/zfs/main.yml -c local -i dell-work,

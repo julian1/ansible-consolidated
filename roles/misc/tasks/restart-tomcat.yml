@@ -1,0 +1,11 @@
+
+  - service: name=tomcat7 state=stopped
+
+  - shell: "{{item}}"
+    with_items:
+      - echo >  /var/lib/tomcat7/logs/catalina.out 
+
+  - service: name=tomcat7 state=started
+
+  # could watch the log and wait until something is reported...
+

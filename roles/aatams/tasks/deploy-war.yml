@@ -1,4 +1,6 @@
 
+  # use the misc playbook,
+
   # use unarchive to pull war, defined in credentials from jenkins?
   # see -> grails-1.3.7.yml as example
   # the war shouldn't be in credentials...
