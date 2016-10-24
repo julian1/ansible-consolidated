@@ -105,7 +105,7 @@
         <?xml version="1.0" encoding="UTF-8"?>
         <userRegistry xmlns="http://www.geoserver.org/security/users" version="1.0">
           <users>
-            <user enabled="true" name="admin" password="plain:admin"/>
+            <user enabled="true" name="admin" password="plain:{{geoserver.adminpass}}"/>
           </users>
           <groups>
           </groups>
@@ -141,9 +141,8 @@
 
 
   # TODO
-  # this war deploy code, is the same as aatams and could be factored out,
+  # this war deploy code is the same as aatams.  ccould be factored out,
   # or put in tomcat7 etc.
-
   - copy: src={{geoserver.war}} dest={{webapps}}/geoserver.war
     register: deployed
 
