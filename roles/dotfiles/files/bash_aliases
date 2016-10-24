@@ -1,25 +1,13 @@
 # deployed by ansible!
 # http://unix.stackexchange.com/questions/30925/in-bash-when-to-alias-when-to-script-and-when-to-write-a-function
-. $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+# . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
 
 export HISTFILESIZE=40000
 export HISTSIZE=40001
 export HISTTIMEFORMAT="%T " # "
 export EDITOR=vim
 
-# locations
-export H=$HOME
-export A=$HOME/ansible-tests
-export C=$HOME/Config_Stuff2
-export D=$HOME/dotfiles
-#export L=/var/log
-
-alias a="cd $A"
-alias c="cd $C"
-alias d="cd $D"
-alias e='cd /etc'
-
-alias h="cd $HOME"
 
 alias dmesg='dmesg -T --color=always'
 alias less='less -R'
@@ -41,7 +29,10 @@ alias rec2="ffmpeg -f x11grab -s 1920x1080 -r 25 -i :0.0 output.mp4"
 # screen capture, emits a png in folder
 alias cap="scrot -d 5"
 
-alias frdate='TZ=Europe/Paris date'
+alias frtime='TZ=Europe/Paris date'
+alias uktime='TZ=Europe/London date'
+alias nytime='TZ=America/New_York date'
+
 
 # Single key aliases are idempotent, no rm,cp,mv etc
 # alias a=apt-get         # ansible
@@ -125,5 +116,12 @@ get_prompt_color() {
 }
 
 PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}$(get_prompt_color)\u@\h${NO_COLOUR}:${BLUE}\w${NO_COLOUR}\$ "
+
+
+
+# include more specific bash aliaes 
+for i in $( ls ~/.bash_aliases?); do
+  . "$i"
+done
 
 
