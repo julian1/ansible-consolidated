@@ -1,8 +1,12 @@
 
+  # ansible-playbook release.yml --extra-vars "hosts=vipers
 
   - set_fact: tomcat7=/var/lib/tomcat7
   - set_fact: webapps={{tomcat7}}/webapps
   - set_fact: logs={{tomcat7}}/logs
+
+  # - set_fact: conf={{tomcat7}}/conf
+  # - set_fact: lib={{tomcat7}}/lib
 
   - service: name=tomcat7 state=stopped
 
@@ -17,7 +21,7 @@
     register: result
     ignore_errors: True
 
-  - debug: msg="war md5sum: {{result.stdout}}" #"
+  - debug: msg="{{result.stdout}}" #"
 
 
   - service: name=tomcat7 state=started
