@@ -1,7 +1,6 @@
 
 - hosts: dell-home
   vars_files:
-    - ../vars/testing.yml
     - ../vars/credentials.yml
   vars:
     - users:
@@ -11,7 +10,7 @@
         url: socket://brother:9100
         ppd: BRHL16_2_GPL.ppd
   roles:
-    - debian
+    - testing
     - timezone
     - locale
     - common

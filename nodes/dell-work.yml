@@ -1,7 +1,6 @@
 
 - hosts: dell-work
   vars_files:
-    - ../vars/testing.yml
     - ../vars/credentials.yml
   vars:
     - printer:
@@ -12,7 +11,7 @@
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
     - grails_deploy_path: /home/meteo
   roles:
-    - debian
+    - testing
     - timezone
     - locale
     - common

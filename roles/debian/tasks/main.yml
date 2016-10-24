@@ -1,7 +1,6 @@
 
 
   # install repo sources
-  - template: src={{sources_template}} dest=/etc/apt/sources.list mode=0644
 
   # ansible requires aptitude to be installed in order to perform upgrade!
   - apt: name=aptitude update_cache=yes
