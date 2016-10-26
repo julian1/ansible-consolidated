@@ -8,6 +8,8 @@
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
       - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
       - { name: bpasquer, group: adm, pubkey: "{{bpasquer_pubkey}}" }
+      - { name: bpasquer, group: adm, pubkey: "{{bpasquer_pubkey}}" }
+      - { name: anguss,   group: adm, pubkey: "{{anguss_pubkey}}" }
   roles:
     - jessie
     - timezone
