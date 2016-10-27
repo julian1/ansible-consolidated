@@ -4,13 +4,15 @@ INSTANCE=$(mktemp)
 
 echo "instance details, $INSTANCE"
 
+# the instance should have the name of the provisioning script.
+
 nova boot \
   --image e9ffe176-acac-492c-b309-55431a1b197f \
   --flavor m1.small \
   --availability-zone tasmania \
   --security-groups "ssh" \
   --key-name julian3 \
-  JA-TEST \
+  "$INSTANCE" \
   | tee $INSTANCE
 
 

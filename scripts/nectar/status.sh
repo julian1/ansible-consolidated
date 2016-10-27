@@ -1,11 +1,11 @@
 #!/bin/bash
 
 INSTANCE=$(mktemp)
+trap "rm $INSTANCE" EXIT
+
+echo "instance is $INSTANCE"
 
 NAME="$1"
-
-nova delete \
-  "$NAME"
 
 
 get_nova_property() {
@@ -20,7 +20,7 @@ nova show "$NAME" > $INSTANCE
 ID=$( get_nova_property id "$INSTANCE"  )
 
 
-echo "id now $ID"
+echo "id is $ID"
 
 
 # wait for instance to terminate
@@ -31,7 +31,7 @@ while true; do
   if [ -z $STATE ]; then
     break
   fi
-  sleep 5
+  sleep 2
 done
 
 
