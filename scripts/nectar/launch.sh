@@ -68,6 +68,7 @@ ssh "debian@$IP" -o UserKnownHostsFile=./host-key -i ~/.ssh/julian3.pem uname -a
 # firewall - install sec groups,
 nova add-secgroup "$ID" ssh
 nova add-secgroup "$ID" http
+nova add-secgroup "$ID" icmp
 
 
 # too many failed ssh attempts and sshd will lockout valid attempts
