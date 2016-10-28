@@ -69,6 +69,7 @@ ssh "debian@$IP" -o UserKnownHostsFile=./host-key -i ~/.ssh/julian3.pem uname -a
 nova add-secgroup "$ID" ssh
 nova add-secgroup "$ID" http
 nova add-secgroup "$ID" icmp
+nova add-secgroup "$ID" debug
 
 
 # too many failed ssh attempts and sshd will lockout valid attempts
