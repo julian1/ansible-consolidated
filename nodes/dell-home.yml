@@ -9,8 +9,44 @@
         name: Brother
         url: socket://brother:9100
         ppd: BRHL16_2_GPL.ppd
+    - apt:
+        mirror: http://mirror.internode.on.net/pub/debian
+        version: testing
+
+  pre_tasks:
+    - copy:
+        dest: /etc/apt/sources.list
+        mode: 0644
+        content: |
+          # deployed by ansible
+          deb {{apt.mirror}} {{apt.version}} main
+          deb-src {{apt.mirror}} {{apt.version}} main
+
+          deb http://security.debian.org/ {{apt.version}}/updates main
+          deb-src http://security.debian.org/ {{apt.version}}/updates main
+
+          deb {{apt.mirror}} {{apt.version}}-updates main
+          deb-src {{apt.mirror}} {{apt.version}}-updates main
+
+          # firmware
+          # deb http://http.us.debian.org/debian/ {{apt.version}} non-free contrib
+          deb {{apt.mirror}} {{apt.version}} non-free contrib
+
+          # jessie - for gcc-arm-none-eab
+          deb {{apt.mirror}} jessie main
+          deb-src {{apt.mirror}} jessie main
+
+    # http://unix.stackexchange.com/questions/107689/how-to-install-a-single-jessie-package-on-wheezy
+    # TODO does this need a number in the name to force order?
+    - copy:
+        dest: /etc/apt/apt.conf.d/default-release
+        content: |
+          # deployed by ansible
+          APT::Default-Release "testing";
+
   roles:
-    - testing
+    - update
+    - zfs
     - timezone
     - locale
     - common
@@ -19,6 +55,7 @@
     - printer
     - vim
 
+
   tasks:
     - hostname: name=dell-home
 
@@ -26,6 +63,7 @@
 
     - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
     - apt: name=iw
+
 
     #####
     - apt: name=alsa-oss
