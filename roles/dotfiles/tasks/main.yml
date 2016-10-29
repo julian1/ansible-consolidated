@@ -19,11 +19,10 @@
   - copy: src=bash_aliases    dest={{home_dir}}/.bash_aliases
   - copy: src=gitconfig       dest={{home_dir}}/.gitconfig
   - copy: src=screenrc        dest={{home_dir}}/.screenrc
-  - copy: src=vimrc           dest={{home_dir}}/.vimrc
+  # - copy: src=vimrc           dest={{home_dir}}/.vimrc   in roles/dotfiles
 
   # this is only really for gui
-  - copy: src=brightness.sh   dest={{home_dir}} mode=755
-  - copy: src=volume.sh       dest={{home_dir}} mode=755
+  - copy: src=brightness.sh   dest={{home_dir}} mode=755 - copy: src=volume.sh       dest={{home_dir}} mode=755
 
   - copy: src=xmobarrc        dest={{home_dir}}/.xmobarrc
 
