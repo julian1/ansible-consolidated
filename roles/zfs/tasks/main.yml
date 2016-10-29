@@ -1,33 +1,69 @@
 
-#   zfs now maintained in debian repos, and doesn't need to be compiled.
+    #   zfs is now maintained in debian repos, and doesn't need to be compiled.
 
     # can't use commands because we need redirection, piping or wildcards. so use shell instead
 
     # TODO get rid of the touch stuff...
 
-#
-#    - apt: name=dh-autoreconf
-#    - apt: name=alien
-#
-#    - git: repo=https://github.com/zfsonlinux/spl.git dest=/root/spl version=spl-0.6.5-release
-#    - command: ./autogen.sh chdir=/root/spl creates=configure
-#    - command: ./configure chdir=/root/spl creates=Makefile
-#    - shell: make deb-utils deb-kmod chdir=/root/spl creates=kmod-spl-4.3.0-1-amd64_0.6.5.4-2_amd64.deb
-#    - shell: dpkg -i *.deb && touch ansible-installed chdir=/root/spl creates=ansible-installed
-#
-#
-#    - apt: name=uuid-dev
-#    - git: repo=https://github.com/zfsonlinux/zfs.git dest=/root/zfs version=zfs-0.6.5-release
-#    - command: ./autogen.sh chdir=/root/zfs creates=configure
-#    - command: ./configure chdir=/root/zfs creates=Makefile
-#    - shell: make deb-utils deb-kmod chdir=/root/zfs creates=zfs_0.6.5.4-1_amd64.deb
-#    - shell: dpkg -i *.deb && touch ansible-installed chdir=/root/zfs creates=ansible-installed
-#
-#    - modprobe: name=zfs state=present
-
-# we still use these though
-    - template: src=mount.j2   dest=/root/mount.sh   mode=0755
-    - template: src=umount.j2  dest=/root/umount.sh  mode=0755
+    #
+    #    - apt: name=dh-autoreconf
+    #    - apt: name=alien
+    #
+    #    - git: repo=https://github.com/zfsonlinux/spl.git dest=/root/spl version=spl-0.6.5-release
+    #    - command: ./autogen.sh chdir=/root/spl creates=configure
+    #    - command: ./configure chdir=/root/spl creates=Makefile
+    #    - shell: make deb-utils deb-kmod chdir=/root/spl creates=kmod-spl-4.3.0-1-amd64_0.6.5.4-2_amd64.deb
+    #    - shell: dpkg -i *.deb && touch ansible-installed chdir=/root/spl creates=ansible-installed
+    #
+    #
+    #    - apt: name=uuid-dev
+    #    - git: repo=https://github.com/zfsonlinux/zfs.git dest=/root/zfs version=zfs-0.6.5-release
+    #    - command: ./autogen.sh chdir=/root/zfs creates=configure
+    #    - command: ./configure chdir=/root/zfs creates=Makefile
+    #    - shell: make deb-utils deb-kmod chdir=/root/zfs creates=zfs_0.6.5.4-1_amd64.deb
+    #    - shell: dpkg -i *.deb && touch ansible-installed chdir=/root/zfs creates=ansible-installed
+    #
+    #    - modprobe: name=zfs state=present
 
 
+  - copy:
+      dest: /root/mount.sh
+      mode: 0755
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        cryptsetup luksOpen /dev/sda2 sda2-luks || exit
+        cryptsetup status sda2-luks || exit
+        zpool import storage
+
+  - copy:
+      dest: /root/unmount.sh
+      mode: 0755
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        zpool export storage
+        cryptsetup luksClose sda2-luks
+
+  - copy:
+      dest: /root/reinstall-zfs.sh
+      mode: 0755
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        apt-get purge spl-*
+        apt-get purge 'spl-*'
+        apt-get purge kmod-spl*
+        apt-get purge spl-dkms
+        apt-get purge kmod-zfs*
+        apt-get purge zfs*
+        apt-get purge libzfs*
+
+        # must have correct kernel header version to have zfs built current kernel
+        apt-get install linux-headers-$( uname -r )
+
+        apt-get install zfs-dkms
 
