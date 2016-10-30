@@ -22,7 +22,8 @@
   # - copy: src=vimrc           dest={{home_dir}}/.vimrc   in roles/dotfiles
 
   # this is only really for gui
-  - copy: src=brightness.sh   dest={{home_dir}} mode=755 - copy: src=volume.sh       dest={{home_dir}} mode=755
+  - copy: src=brightness.sh   dest={{home_dir}} mode=755
+  - copy: src=volume.sh       dest={{home_dir}} mode=755
 
   - copy: src=xmobarrc        dest={{home_dir}}/.xmobarrc
 
