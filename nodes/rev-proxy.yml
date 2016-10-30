@@ -2,17 +2,13 @@
 - hosts: 
     - rev-proxy.localnet
   vars:
-    - mirror: http://mirror.internode.on.net/pub/debian
-    - version: jessie
-    - upgrade: safe
-    - timezone: Australia/Hobart
-    - locale: en_AU.UTF-8
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   vars_files:
     - ../vars/credentials.yml
   roles:
-    - debian
+    - jessie
+    - update
     - timezone
     - locale
     - common

@@ -9,7 +9,8 @@
   vars_files:
     - ../vars/credentials.yml
   roles:
-    - debian
+    - jessie
+    - update
     - timezone
     - locale
     - meteo
