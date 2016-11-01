@@ -22,3 +22,16 @@
   tasks:
     - apt: name=libxml2-utils
 
+
+    # local changes not in dotfiles for .bashrc
+    - copy:
+        dest: /home/meteo/.bash_aliases1
+        content: |
+          # ansible test
+          export L=/var/lib/tomcat7/logs/catalina.out
+
+          alias cl='echo > $L'
+          alias st='sudo systemctl start tomcat7'
+          alias rt='sudo systemctl restart tomcat7'
+
+
