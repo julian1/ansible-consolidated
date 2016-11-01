@@ -658,3 +658,6 @@
     # nectar,
     - apt: name=ethtool
 
+    # jq for parsing json
+    - apt: name=jq
+
