@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# create aws instance, specify zone, add security groups, allocate elastic ip
+# Note, that instance knows nothing about public elastic ip, which is handled through NAT
 
 [ -d tmp ] && rm tmp -rf
 mkdir tmp
@@ -15,6 +17,7 @@ aws ec2 run-instances \
   > tmp/id.json \
   || exit 123
 
+# TODO change name to INSTANCE_ID? or just INSTANCE?
 ID=$( jq -r '.Instances[0].InstanceId' tmp/id.json)
 echo "id is $ID"
 

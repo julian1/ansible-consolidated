@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO use local tmp foc caching, instead
+
 INSTANCE=$(mktemp)
 
 echo "instance details, $INSTANCE"
