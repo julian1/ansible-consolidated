@@ -1,0 +1,35 @@
+
+- hosts:
+    - all
+  vars_files:
+    - ../vars/credentials.yml
+  vars:
+    - users:
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}", home_dir: "/home/meteo", dotfiles: true }
+      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}", home_dir: "/root"    }
+  roles:
+    - jessie
+    - update
+    - timezone
+    - locale
+    - users
+    - common
+    - dotfiles
+    - tomcat-port-forward
+
+  tasks:
+    - apt: name=libxml2-utils
+
+
+    # local changes not in dotfiles for .bashrc
+    - copy:
+        dest: /home/meteo/.bash_aliases1
+        content: |
+          # ansible test
+          export L=/var/lib/tomcat7/logs/catalina.out
+
+          alias cl='echo > $L'
+          alias st='sudo systemctl start tomcat7'
+          alias rt='sudo systemctl restart tomcat7'
+
+

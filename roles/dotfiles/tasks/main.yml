@@ -1,35 +1,15 @@
 
-  - set_fact: user=meteo
+# vim needs pathogen and is its own role
 
-  - set_fact:
-      home_dir: /home/{{user}}
-    when: "not \"{{ user }}\" == \"root\""
+  - copy: src=bash_aliases    dest={{item.home_dir}}/.bash_aliases
+    with_items: users
+    when: item.home_dir
 
-  - set_fact:
-      home_dir: /root
-    when: "\"{{ user }}\" == \"root\""
+  - copy: src=gitconfig       dest={{item.home_dir}}/.gitconfig
+    with_items: users
+    when: item.home_dir
 
-
-# roles/ethereum/files/token.js:source = fs.readFileSync('/root/examples/token.solc' ).toString('ascii');
-# meteo@dell-work:~/ansible-consolidated$ ls ./roles/meteo-dotfiles/files/
-# bash_aliases  brightness.sh  gitconfig  screenrc  volume.sh  xmobarrc  xmonad.hs
-# xmobarrc  xmonad.hs
-
-
-  - copy: src=bash_aliases    dest={{home_dir}}/.bash_aliases
-  - copy: src=gitconfig       dest={{home_dir}}/.gitconfig
-  - copy: src=screenrc        dest={{home_dir}}/.screenrc
-  # - copy: src=vimrc           dest={{home_dir}}/.vimrc   in roles/dotfiles
-
-  # this is only really for gui
-  - copy: src=brightness.sh   dest={{home_dir}} mode=755
-  - copy: src=volume.sh       dest={{home_dir}} mode=755
-
-  - copy: src=xmobarrc        dest={{home_dir}}/.xmobarrc
-
-  - file: path="{{home_dir}}/.xmonad" state=directory mode=0755
-
-  - copy: src=xmonad.hs       dest={{home_dir}}/.xmonad
-
-
+  - copy: src=screenrc        dest={{item.home_dir}}/.screenrc
+    with_items: users
+    when: item.home_dir
 
