@@ -26,11 +26,12 @@ echo "id is $ID"
 while true; do
 
   # get status
-  aws ec2 describe-instance-status \
+  aws ec2 describe-instances \
     --instance-id $ID \
     > tmp/status.json
 
-  STATUS=$( jq -r '.InstanceStatuses[0].InstanceState.Name' tmp/status.json )
+  STATUS=$( jq -r '.Reservations[0].Instances[0].State.Name' tmp/status.json )
+
   echo "status, $STATUS"
 
   # TODO handle error conditions,
@@ -60,27 +61,26 @@ aws ec2 associate-address \
   || exit 123
 
 
+# wait for ssh to be available,
+while true; do
+  if $( nc -v -v  "$IP" 22 -w 1 | grep -q OpenSSH ); then
+      break;
+  fi
+  sleep 5
+done
 
-# associate address,
-# eg. like this...
-# aws ec2 associate-address --instance-id i-54d09ed6 --allocation-id eipalloc-3da9d558
-# jq -r '.PublicIp' address.json
-# jq -r '.Instances[0].InstanceId' out.json
+# keyscan
 
-# t1.micro needs pvm  and ami  ami-5dbe983e isn't.
-# t2.medium
-
-# security groups,
-# sg-6ea2a10a icmp
-# sg-43a1a227 ssh
-# aws ec2 release-address --allocation-id eipalloc-9caed2f9   <- release, not cannot just specify the ip.
+# get and store the host key
+echo "get host key"
+ssh-keyscan -t rsa -H "$IP" &> tmp/host-key
 
 
-# aws ec2 describe-instance-status --instance-id i-48eea0ca  | jq -r '.InstanceStatuses[0].InstanceState.Name'
+# test ssh
+echo "trying ssh"
+ssh "admin@$IP" -o UserKnownHostsFile=./tmp/host-key -i ~/.ssh/julian-aws-bsd.pem uname -a
 
-# may actually work using the group names,
-# ICMP=sg-6ea2a10a
-# SSH=sg-43a1a227
+
 
 # aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t1.micro --key-name MyKeyPair --security-group-ids sg-xxxxxxxx --subnet-id subnet-xxxxxxxx
 

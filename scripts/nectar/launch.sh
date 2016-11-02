@@ -49,7 +49,8 @@ done
 IP=$( get_nova_property 'accessIPv4' $INSTANCE )
 echo "ip is $IP"
 
-
+# TODO change to just use nc to test port and ssh service, same as nectar
+# should just wait until we get the port???
 # wait til sshd responds
 while [ -z "$( ssh-keyscan -t rsa -H $IP )" ]; do
   echo "wait for sshd"
