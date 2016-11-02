@@ -24,12 +24,17 @@ echo "id is $ID"
 
 # wait for instance to be created
 while true; do
-  aws ec2 describe-instance-status --instance-id $ID > tmp/state.json
-  STATE=$( jq -r '.InstanceStatuses[0].InstanceState.Name' tmp/state.json )
-  echo "state, $STATE"
+
+  # get status
+  aws ec2 describe-instance-status \
+    --instance-id $ID \
+    > tmp/status.json
+
+  STATUS=$( jq -r '.InstanceStatuses[0].InstanceState.Name' tmp/status.json )
+  echo "status, $STATUS"
 
   # TODO handle error conditions,
-  if [ $STATE = "running" ]; then
+  if [ $STATUS = "running" ]; then
     break
   fi
   sleep 5
