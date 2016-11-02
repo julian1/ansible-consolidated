@@ -1,8 +1,0 @@
-
-# Ok, this is a play that invokes a task of the same name... 
-# which allows it to be used standalone, or as an include elsewhere... 
-- hosts: all
-  tasks:
-    - include: tasks/devenv-lite.yml
-
-

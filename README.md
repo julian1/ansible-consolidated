@@ -21,11 +21,15 @@ ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 
-ansible-playbook -i localhost, roles/common/devenv-lite.yml
+# light environment play
+ansible-playbook -i localhost, plays/devenv-lite.yml
 
+# plays
 ansible-playbook ./plays/restart-tomcat.yml -i n.n.n.n,
 ansible-playbook ./plays/deploy-war.yml     -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
 
+# aws instances
+ansible-playbook nodes/publications.yml -i n.n.n.n.n, -u admin --private-key ~/.ssh/julian-aws-bsd.pem  -s
 
 # build zfs kernel module
 ansible-playbook ./roles/zfs/main.yml -c local -i dell-work,
