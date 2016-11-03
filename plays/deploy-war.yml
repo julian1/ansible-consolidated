@@ -1,4 +1,8 @@
 
+  # eg. ansible-playbook ./plays/deploy-war.yml -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
+
+  # ansible-playbook ./plays/deploy-war.yml -i publications, --extra-vars "warpath=/home/meteo/imos/publications/target/publications-0.3.1.war warname=ROOT.war
+
   - hosts: all
     sudo: yes
     tasks:

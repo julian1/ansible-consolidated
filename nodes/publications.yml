@@ -42,8 +42,7 @@
           alias rt='sudo systemctl restart tomcat7'
 
 
-
-
+    - file: path=/ansible state=directory
 
     ####################################
     - apt: name=postgresql-9.4-postgis-2.3
@@ -86,7 +85,6 @@
           hostssl  all  all       127.0.0.1/24  md5
       notify: restart-postgres
 
-    - file: path=/ansible state=directory
 
     # - copy:
     #    src: admin.sql
@@ -214,7 +212,7 @@
 
 
     ####### must be writable
-    - file: path=//usr/share/tomcat7/.grails state=directory owner=tomcat7 group=tomcat7
+    - file: path=/usr/share/tomcat7/.grails state=directory owner=tomcat7 group=tomcat7
 
 
   handlers:

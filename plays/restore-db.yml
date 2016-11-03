@@ -1,0 +1,29 @@
+
+- hosts: all
+  tasks:
+    - file: path=/ansible state=directory
+
+    - copy:
+        dest: /ansible/publications.dump
+        src: /home/meteo/imos/publications.dump
+
+    - copy:
+        dest: /ansible/admin.sql
+        src: ../roles/postgres/files/admin.sql
+
+    - service: name=tomcat7 state=stopped
+
+    - shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      with_items:
+        - psql -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'publications' AND pid <> pg_backend_pid()"
+        - psql -d postgres -c "drop database if exists publications"
+        - pg_restore /ansible/publications.dump -x -O -C -d postgres
+
+        - psql -d publications -f /ansible/admin.sql
+        - psql -d publications -c "select admin.set_owner_of_schema_objects('public', 'publications')"
+
+        - echo > /var/log/tomcat7/catalina.out
+
+    - service: name=tomcat7 state=started

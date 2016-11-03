@@ -1,0 +1,16 @@
+
+# move to roles/misc and parameterize so that it's generally available?
+
+- hosts: all
+  tasks:
+    - service: name=tomcat7 state=stopped
+
+    - shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      with_items:
+        - psql -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'publications' AND pid <> pg_backend_pid()"
+        - psql -d postgres -c "drop database if exists publications"
+        - psql -d postgres -c "create database publications owner publications"
+
+    # - service: name=tomcat7 state=started
