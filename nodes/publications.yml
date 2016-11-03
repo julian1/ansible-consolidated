@@ -7,6 +7,15 @@
     - users:
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}", home_dir: "/home/meteo", dotfiles: true }
       - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}", home_dir: "/root"    }
+
+    # should we be using the deploy war?
+    - publications:
+        war: /home/meteo/imos/publications-0.3.1.war
+        jndi:
+          url: "jdbc:postgresql://127.0.0.1:5432/publications?loginTimeout=1000&amp;ssl=true&amp;sslfactory=org.postgresql.ssl.NonValidatingFactory"
+          username: publications
+          password: publications
+
   roles:
     - jessie
     - update
@@ -31,5 +40,189 @@
           alias cl='echo > $L'
           alias st='sudo systemctl start tomcat7'
           alias rt='sudo systemctl restart tomcat7'
+
+
+
+
+
+    ####################################
+    - apt: name=postgresql-9.4-postgis-2.3
+
+    - set_fact: main=/etc/postgresql/9.4/main
+
+    - copy:
+        dest: "{{main}}/postgresql.conf"
+        owner: postgres
+        content: |
+          # deployed by ansible!
+          listen_addresses = '*'
+          port = 5432
+          max_connections = 100
+          shared_buffers = '24MB'
+          log_line_prefix = '%t %h %u %d %p %e'
+
+          log_statement = all
+
+          # For XA
+          max_prepared_transactions = 10          # zero disables the feature
+
+          datestyle = 'iso, mdy'
+          default_text_search_config = 'pg_catalog.english'
+          ssl = on
+          data_directory = '/var/lib/postgresql/9.4/main'
+          hba_file = '{{main}}/pg_hba.conf'
+
+          ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+          ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+      notify: restart-postgres
+
+    - copy:
+        dest: "{{main}}/pg_hba.conf"
+        owner: postgres
+        content: |
+          # deployed by ansible!
+          hostssl  all  postgres  0.0.0.0/0  reject
+          local    all  postgres  peer
+          hostssl  all  all       127.0.0.1/24  md5
+      notify: restart-postgres
+
+    - file: path=/ansible state=directory
+
+    # - copy:
+    #    src: admin.sql
+    #    dest: /ansible/admin.sql
+
+
+    ####################################
+    # check for database
+    - shell: psql -tAc "select 1 from pg_database where datname='publications'"
+      become: yes
+      become_user: postgres
+      register: have_db
+      changed_when: false
+
+    # TODO Factor db creation out into separate tasks, to avoid using a switch variable...
+    # fresh db
+    - name: Fresh Geonetwork Database
+      shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      with_items:
+        - |
+          psql -d postgres -c "
+            drop user if exists publications;
+            create user {{publications.jndi.username}} unencrypted password '{{publications.jndi.password}}';
+            "
+        - psql -d postgres -c "create database publications owner publications"
+        # - psql -d publications -c "create extension postgis"
+      when: have_db.stdout != "1"
+
+
+
+    ####################################
+    - apt: name=tomcat7 update_cache=yes
+
+    - set_fact: tomcat7=/var/lib/tomcat7
+    - set_fact: conf={{tomcat7}}/conf
+    - set_fact: webapps={{tomcat7}}/webapps
+    - set_fact: geoserver_config={{conf}}/geoserver-config
+    - set_fact: lib={{tomcat7}}/lib
+    - set_fact: logs={{tomcat7}}/logs
+
+    # set_fact doesn't seem to handle self-referential facts
+    #  - set_fact:
+    #      tomcat7: /var/lib/tomcat7
+
+
+    - file: path={{item}} state=directory owner=tomcat7 group=tomcat7
+      with_items:
+        - "{{tomcat7}}"
+        - "{{webapps}}"
+        - "{{lib}}"
+
+    - file: path=/var/log/tomcat7/catalina.out mode=0666
+
+    # use apache/ubuntu connection pool jar. commons has bug, probably class loader
+    # related, where pool throws on class load failre of Cursor
+    - copy:
+        dest: "{{lib}}/tomcat-dbcp.jar"
+        src: ../roles/geoserver/files/tomcat-dbcp.jar 
+        owner: tomcat7
+        group: tomcat7
+
+    - copy:
+        dest: /etc/default/tomcat7
+        backup: yes
+        owner: tomcat7
+        group: tomcat7
+        content: |
+          # deployed by ansible!
+          TOMCAT7_USER=tomcat7
+          TOMCAT7_GROUP=tomcat7
+          JAVA_OPTS="${JAVA_OPTS} -DGEOSERVER_DATA_DIR={{geoserver_config}} \
+            -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError \
+            -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+      notify: restart-tomcat7
+
+      # factory="org.apache.commons.dbcp.BasicDataSourceFactory"        # debian
+      # factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"    # ubuntu
+    - copy:
+        dest: "{{conf}}/context.xml"
+        backup: yes
+        owner: tomcat7
+        group: tomcat7
+        content: |
+          <?xml version='1.0' encoding='utf-8'?>
+          <!-- deployed by ansible! -->
+          <Context>
+              <!-- Default set of monitored resources -->
+              <WatchedResource>WEB-INF/web.xml</WatchedResource>
+              <Resource
+                  name="jdbc/db_publications"
+                  auth="Container"
+                  type="javax.sql.DataSource"
+                  factory="org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory"
+                  driverClassName="org.postgresql.Driver"
+                  url="{{publications.jndi.url}}"
+                  username="{{publications.jndi.username}}"
+                  password="{{publications.jndi.password}}"
+                  validationQuery="SELECT 1"
+                  maxActive="5" maxIdle="3" maxWait="-1"
+                  testOnBorrow="true"
+                  testWhileIdle="true"
+                  testOnReturn="true"
+                  timeBetweenEvictionRunsMillis="30000"
+                  numTestsPerEvictionRun="3"
+                  minEvictableIdleTimeMillis="60000"
+                  defaultAutoCommit="true"
+              />
+          </Context>
+      notify: restart-tomcat7
+
+
+      ####################################
+    - copy: src={{publications.war}} dest={{webapps}}/ROOT.war
+      register: deployed
+
+    - shell: "{{item}}"
+      with_items:
+        - systemctl stop tomcat7
+        - rm -rf {{webapps}}/ROOT || true
+        - echo > {{logs}}/catalina.out
+      when: deployed.changed == true
+      notify: restart-tomcat7
+
+
+    ####### must be writable
+    - file: path=//usr/share/tomcat7/.grails state=directory owner=tomcat7 group=tomcat7
+
+
+  handlers:
+    # - name: reload-apache2
+    #  command: service apache2 reload
+    - name: restart-postgres
+      service: name=postgresql state=restarted
+    - name: restart-tomcat7
+      service: name=tomcat7 state=restarted
 
 

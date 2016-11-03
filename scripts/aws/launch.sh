@@ -12,7 +12,7 @@ aws ec2 run-instances \
   --count 1 \
   --instance-type t2.medium \
   --placement AvailabilityZone=ap-southeast-2c \
-  --security-group-ids icmp ssh \
+  --security-group-ids icmp ssh http \
   --key-name julian-aws-bsd \
   > tmp/id.json \
   || exit 123

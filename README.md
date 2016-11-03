@@ -52,6 +52,12 @@ ansible-playbook ./roles/zfs/main.yml -c local -i dell-work,
 ansible all -i nc2, -c local -m ping
 ```
 
+#### Important
+
+- rather than use register varaibles to flag the need for service restart, should write a file, and read again at the end.
+this will handle the case, when provision needs to be done again. eg. for network port forwarding etc.
+
+
 #### Resources
 
 https://www.stavros.io/posts/example-provisioning-and-deployment-ansible/
