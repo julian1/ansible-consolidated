@@ -1,9 +1,46 @@
 
   # eg. ansible-playbook ./plays/deploy-war.yml -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
 
-  # ansible-playbook ./plays/deploy-war.yml -i publications, --extra-vars "warpath=/home/meteo/imos/publications/target/publications-0.3.1.war warname=ROOT.war
+  # ansible-playbook ./plays/deploy-war.yml -i publications, --extra-vars "warpath=/home/meteo/imos/publications/target/publications-0.3.1.war" 
+
+# the play forces state change, which is different to an idempotent action...
+# think this makes the use cases different.
 
   - hosts: all
     sudo: yes
     tasks:
-    - include: "../roles/misc/tasks/deploy-war.yml"
+      - set_fact: tomcat7=/var/lib/tomcat7
+      - set_fact: webapps={{tomcat7}}/webapps
+      - set_fact: logs={{tomcat7}}/logs
+
+      - set_fact: warname=ROOT.war
+
+      - service: name=tomcat7 state=stopped
+
+
+      - shell: "{{item}}"
+        with_items:
+          - rm -rf {{webapps}}/*
+          - echo fuck > {{logs}}/catalina.out
+
+      - copy: src={{warpath}} dest={{webapps}}/{{warname}}
+
+      # print the md5sum - useful for debugging,
+      - command: md5sum {{webapps}}/{{warname}}
+        register: result
+        ignore_errors: True
+
+      - debug: msg="{{result.stdout}}" #"
+
+
+
+      - service: name=tomcat7 state=started
+
+
+
+          # - for i in $( "{{webapps}}/*" ); do echo $i; rm -rf $i; done
+          # - rm -rf "/var/lib/tomcat7/{{webapps}}/*"
+          # - touch "{{webapps}}/fuckeroo"
+#          sudo: yes
+# 
+

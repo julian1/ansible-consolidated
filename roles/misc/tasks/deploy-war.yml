@@ -1,6 +1,9 @@
 
   # eg. ansible-playbook ./plays/deploy-war.yml -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
 
+  # the play forces state change, which is different to an idempotent action...
+  # think this makes the use cases different.
+
   - set_fact: tomcat7=/var/lib/tomcat7
   - set_fact: webapps={{tomcat7}}/webapps
   - set_fact: logs={{tomcat7}}/logs
