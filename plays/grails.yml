@@ -1,0 +1,9 @@
+
+  - hosts: all
+    # sudo: yes
+    vars:
+      - grails_deploy_path: /home/meteo/imos/
+    tasks:
+      - include: "../roles/misc/tasks/grails.yml"
+
+
