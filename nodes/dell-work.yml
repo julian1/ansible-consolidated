@@ -9,7 +9,7 @@
         ppd: lexmark.ppd
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
-    - grails_deploy_path: /home/meteo
+    - grails_deploy_path: /home/meteo/imos
   roles:
     - testing
     - timezone
