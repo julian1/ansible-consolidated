@@ -1,10 +1,17 @@
 
   # Intellij ultimate
 
-  # TODO set paths.
+  # TODO fix owner=meteo reference
 
-  - get_url: url='https://d1opms6zj7jotq.cloudfront.net/idea/ideaIU-15.0.3.tar.gz' dest=/home/meteo/imos/ideaIU-15.0.3.tar.gz
+  - get_url: >
+      url='https://d1opms6zj7jotq.cloudfront.net/idea/ideaIU-15.0.3.tar.gz'
+      dest={{intellij_deploy_path}}/ideaIU-15.0.3.tar.gz
 
-  - unarchive: src=/home/meteo/imos/ideaIU-15.0.3.tar.gz  dest=/home/meteo/imos/ owner=meteo creates=/home/meteo/imos/idea-IU-143.1821.5/Install-Linux-tar.txt
+
+  - unarchive: >
+      src={{intellij_deploy_path}}/ideaIU-15.0.3.tar.gz
+      dest={{intellij_deploy_path}}
+      owner=meteo
+      creates={{intellij_deploy_path}}/idea-IU-143.1821.5/Install-Linux-tar.txt
 
 

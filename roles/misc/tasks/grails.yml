@@ -1,5 +1,9 @@
 
-  # https://grails.org/download.html
+  # see, https://grails.org/download.html
+
+  - file:
+      path: "{{grails_deploy_path}}"
+      state: directory
 
   - apt: name=unzip
 

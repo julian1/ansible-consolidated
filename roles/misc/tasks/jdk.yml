@@ -1,11 +1,16 @@
 
-  # the difficult thing, is the download, and dealing with oracle authentication...
+  # jdk_deploy_path is set in ./plays/jdk.yml
 
-  - file: path=/ansible state=directory
+  # the difficult bit is oracle authentication...
+  # handle PATH setup for bash_aliases elsewhere
+
+  - file:
+      path: "{{jdk_deploy_path}}"
+      state: directory
 
   - shell: "{{item}}"
     args:
-      chdir: '/ansible'
+      chdir: "{{jdk_deploy_path}}"
       creates: jdk-7u80-linux-x64.tar.gz
     with_items:
       - >
@@ -13,12 +18,14 @@
         http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64.tar.gz
         -o jdk-7u80-linux-x64.tar.gz
 
+  - unarchive:
+      src: "{{jdk_deploy_path}}/jdk-7u80-linux-x64.tar.gz"
+      dest: "{{jdk_deploy_path}}"
 
-  # handle PATH setup elsewhere
 
   - shell: "{{item}}"
     args:
-      chdir: '/ansible'
+      chdir: "{{jdk_deploy_path}}"
       creates: jdk-8u111-linux-x64.tar.gz
     with_items:
       - >
@@ -26,4 +33,7 @@
         http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz
         -o jdk-8u111-linux-x64.tar.gz
 
+  - unarchive:
+      src: "{{jdk_deploy_path}}/jdk-8u111-linux-x64.tar.gz"
+      dest: "{{jdk_deploy_path}}"
 
