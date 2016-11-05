@@ -53,9 +53,9 @@
     - locale
     - common
     - { role: dotfiles, tags: [ 'dotfiles' ] }
+    - vim
     - ip-forwarding
     - printer
-    - vim
 
   tasks:
     - hostname: name=dell-home
