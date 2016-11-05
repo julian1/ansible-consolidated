@@ -12,6 +12,7 @@
     - grails_deploy_path: /home/meteo/imos
   roles:
     - testing
+    - apt-update
     - timezone
     - locale
     - common

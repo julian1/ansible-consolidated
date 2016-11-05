@@ -52,13 +52,12 @@
           APT::Default-Release "testing";
 
   roles:
-    - update
+    - apt-update
     - zfs
     - timezone
     - locale
     - common
     - { role: dotfiles, tags: [ 'dotfiles' ] }
-
     - ip-forwarding
     - printer
     - vim
