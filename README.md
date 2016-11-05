@@ -1,7 +1,7 @@
 
 #### Ansible CM
 
-For use with systemd-nspawn containers, kvm, docker or virtual box VMs.
+Use with systemd-nspawn containers, kvm, cloud instances, VBox etc.
 
 Requires Ansible version >= 2
 
@@ -34,11 +34,17 @@ ansible-playbook nodes/publications.yml -i n.n.n.n.n, -u admin --private-key ~/.
 # build zfs kernel module
 ansible-playbook ./roles/zfs/main.yml -c local -i dell-work,
 
+# list and run tagged roles only
+ansible-playbook nodes/dell-home.yml --list-tags
+ansible-playbook nodes/dell-home.yml -t dotfiles
+
 ```
 
-#### Useful Ansible flags
+#### Useful flags
 ```
---list-tasks        # tasks that will be run
+
+--list-tags         # list tagged roles
+--list-tasks        # list tasks that will be run
 --check             # report what would have been done only
 -s                  # force use of sudo for all plays even if not marked as such
 --private-key ~/.ssh/id_rsa
