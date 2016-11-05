@@ -1,0 +1,8 @@
+
+  - hosts: all
+    vars:
+      - vim_user: meteo
+      - vim_user_home: /home/meteo
+    roles:
+      - vim
+
