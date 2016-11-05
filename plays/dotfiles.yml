@@ -1,5 +1,8 @@
 
   - hosts: all
-    tasks:
-    - include: "../roles/meteo-dotfiles/tasks/main.yml"
+    vars:
+      - users:
+        - { name: meteo, home_dir: /home/meteo }
+    roles:
+      - dotfiles
 
