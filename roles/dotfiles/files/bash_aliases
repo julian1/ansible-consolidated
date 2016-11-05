@@ -30,9 +30,12 @@ alias rec2="ffmpeg -f x11grab -s 1920x1080 -r 25 -i :0.0 output.mp4"
 # screen capture, emits a png in folder
 alias cap="scrot -d 5"
 
+# eg. cat /usr/share/zoneinfo/America/Los_Angeles
 alias frtime='TZ=Europe/Paris date'
 alias uktime='TZ=Europe/London date'
 alias nytime='TZ=America/New_York date'
+alias latime='TZ=America/Los_Angeles date'
+alias utctime='date --utc'
 
 
 # Single key aliases are idempotent, no rm,cp,mv etc
@@ -120,7 +123,7 @@ PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}$(get_prompt_color)\u
 
 
 
-# include more specific bash aliaes 
+# include more specific bash aliaes VMs
 for i in $( ls ~/.bash_aliases?); do
   . "$i"
 done
