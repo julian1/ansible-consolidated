@@ -1,10 +1,5 @@
 
 # TODO
-# apt-get install python-pip
-# sudo pip install awscli
-# apt-get install jq
-
-
 
 - hosts: dell-home
   vars_files:
@@ -92,6 +87,7 @@
       notify: reboot
 
 
+    # should be in the zfs play
     - copy:
         dest: /etc/modprobe.d/zfs.conf
         content: |
@@ -295,7 +291,7 @@
           ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3748", MODE="0666"
 
 
-
+    # should be a play if we really want this...
     - apt: name=samba
     - copy:
         dest: /etc/samba/smb.conf
@@ -325,10 +321,6 @@
           valid users = meteo
           read only = yes
       notify: restart-samba
-
-    # yosys? arachne?
-
-
 
 
   handlers:
