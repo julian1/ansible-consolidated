@@ -54,6 +54,7 @@
     - common
     - { role: dotfiles, tags: [ 'dotfiles' ] }
     - vim
+    - xmonad
     - ip-forwarding
     - printer
 

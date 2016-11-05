@@ -23,9 +23,10 @@
     - locale
     - common
     - dotfiles
+    - vim
+    - xmonad
     - ip-forwarding
     - printer
-    - vim
 
   # TODO jdk, grails, intelij should be factored into roles
   # - not necessarily. simple tasks are fairly easy to manage...

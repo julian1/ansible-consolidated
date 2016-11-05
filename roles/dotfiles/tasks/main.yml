@@ -1,5 +1,7 @@
 
-# vim needs pathogen and is its own role
+# note that, vim needs pathogen and is its own role
+# why not have dotfiles_users
+# actually it's controlled by the home_dir var - its' ok.
 
   - copy: src=bash_aliases    dest={{item.home_dir}}/.bash_aliases
     with_items: users
