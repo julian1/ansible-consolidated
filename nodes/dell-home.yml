@@ -87,15 +87,6 @@
       notify: reboot
 
 
-    # should be in the zfs play
-    - copy:
-        dest: /etc/modprobe.d/zfs.conf
-        content: |
-          # deployed by ansible!
-          # see, http://serverfault.com/questions/581669/why-isnt-the-arc-max-setting-honoured-on-zfs-on-linux
-          options zfs zfs_arc_max=34359738368
-      notify: reboot
-
 
 
       # command: bash -c "/usr/sbin/alsactl"

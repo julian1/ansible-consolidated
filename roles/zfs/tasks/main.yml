@@ -1,6 +1,76 @@
 
     #   zfs is now maintained in debian repos, and doesn't need to be compiled.
 
+
+    #  
+    - copy:
+        dest: /etc/modprobe.d/zfs.conf
+        content: |
+          # deployed by ansible!
+          # see, http://serverfault.com/questions/581669/why-isnt-the-arc-max-setting-honoured-on-zfs-on-linux
+          options zfs zfs_arc_max=34359738368
+      notify: reboot
+
+
+
+  - copy:
+      dest: /root/mount.sh
+      mode: 0755
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        cryptsetup luksOpen /dev/sda2 sda2-luks || exit
+        cryptsetup status sda2-luks || exit
+        zpool import storage
+
+  - copy:
+      dest: /root/unmount.sh
+      mode: 0755
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        zpool export storage
+        cryptsetup luksClose sda2-luks
+
+
+  # reinstall simpler
+  - copy:
+      dest: /root/reinstall-zfs-simple.sh
+      mode: 0755
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        apt-get install linux-headers-$( uname -r )
+        apt-get install --reinstall zfs-dkms
+
+
+  # reinstall
+  - copy:
+      dest: /root/reinstall-zfs-old.sh
+      mode: 0755
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        apt-get purge spl-*
+        apt-get purge 'spl-*'
+        apt-get purge kmod-spl*
+        apt-get purge spl-dkms
+        apt-get purge kmod-zfs*
+        apt-get purge zfs*
+        apt-get purge libzfs*
+
+        # must have correct kernel header version to have zfs built current kernel
+        apt-get install linux-headers-$( uname -r )
+
+        apt-get install zfs-dkms
+
+
+
+# OLD... compile from source
     # can't use commands because we need redirection, piping or wildcards. so use shell instead
 
     # TODO get rid of the touch stuff...
@@ -26,44 +96,4 @@
     #    - modprobe: name=zfs state=present
 
 
-  - copy:
-      dest: /root/mount.sh
-      mode: 0755
-      content: |
-        #!/bin/bash -x
-        # deployed by ansible!
-
-        cryptsetup luksOpen /dev/sda2 sda2-luks || exit
-        cryptsetup status sda2-luks || exit
-        zpool import storage
-
-  - copy:
-      dest: /root/unmount.sh
-      mode: 0755
-      content: |
-        #!/bin/bash -x
-        # deployed by ansible!
-
-        zpool export storage
-        cryptsetup luksClose sda2-luks
-
-  - copy:
-      dest: /root/reinstall-zfs.sh
-      mode: 0755
-      content: |
-        #!/bin/bash -x
-        # deployed by ansible!
-
-        apt-get purge spl-*
-        apt-get purge 'spl-*'
-        apt-get purge kmod-spl*
-        apt-get purge spl-dkms
-        apt-get purge kmod-zfs*
-        apt-get purge zfs*
-        apt-get purge libzfs*
-
-        # must have correct kernel header version to have zfs built current kernel
-        apt-get install linux-headers-$( uname -r )
-
-        apt-get install zfs-dkms
 
