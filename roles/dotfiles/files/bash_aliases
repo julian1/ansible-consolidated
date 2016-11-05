@@ -8,6 +8,7 @@ export HISTSIZE=40001
 export HISTTIMEFORMAT="%T " # "
 export EDITOR=vim
 
+alias xclip='xclip -selection clipboard'
 
 alias dmesg='dmesg -T --color=always'
 alias less='less -R'
