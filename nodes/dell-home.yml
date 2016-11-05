@@ -1,10 +1,17 @@
 
+# TODO
+# apt-get install python-pip
+# sudo pip install awscli
+# apt-get install jq
+
+
+
 - hosts: dell-home
   vars_files:
     - ../vars/credentials.yml
   vars:
     - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
     - printer:
         name: Brother
         url: socket://brother:9100
@@ -50,11 +57,11 @@
     - timezone
     - locale
     - common
-    - dotfiles
+    - { role: dotfiles, tags: [ 'dotfiles' ] }
+
     - ip-forwarding
     - printer
     - vim
-
 
   tasks:
     - hostname: name=dell-home
@@ -319,6 +326,10 @@
           valid users = meteo
           read only = yes
       notify: restart-samba
+
+    # yosys? arachne?
+
+
 
 
   handlers:
