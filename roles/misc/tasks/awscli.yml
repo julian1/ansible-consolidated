@@ -1,0 +1,9 @@
+ 
+  - apt: name=python-pip
+
+  - pip: name=awscli
+
+  # for working with json
+  - apt: name=jq
+
+
