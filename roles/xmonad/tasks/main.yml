@@ -17,7 +17,7 @@
     with_items: users
     when: item.home_dir
 
-  - copy: src=xmonad.hs       dest={{item.home_dir}}/.xmonad
+  - copy: src=xmonad.hs       dest={{item.home_dir}}/.xmonad/xmonad.hs
     with_items: users
     when: item.home_dir
 
