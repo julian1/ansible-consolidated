@@ -302,10 +302,10 @@
         backup: yes
         content: |
           # deployed by ansible!
-          zone "aodn.org.au" {
-            type master;
-            file "/etc/bind/zones/aodn.db";
-          };
+          # zone "aodn.org.au" {
+          #  type master;
+          #  file "/etc/bind/zones/aodn.db";
+          # };
 
           # zone "animaltracking.aodn.org.au" {
           #  type master;
@@ -355,10 +355,13 @@
 
           precise       IN A 10.1.1.17
 
+
           ; kvm/chef
           jenkins       IN A 10.1.1.22
           systest       IN A 10.1.1.23
           data-services IN A 10.1.1.24
+
+          geowebcache   IN A 10.1.1.25
 
           ; mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
           mail          IN A 10.1.1.1
@@ -507,16 +510,17 @@
               # kvm/chef instances
               host jenkins        { hardware ethernet 00:01:04:1b:3C:01; fixed-address 10.1.1.22; }   # 15-aws-syd
               host precise        { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
-              host win7           { hardware ethernet 00:01:04:1b:2C:2C; fixed-address 10.1.1.20; }
+              host win7           { hardware ethernet 00:01:04:1b:3C:2C; fixed-address 10.1.1.20; }
               host systest        { hardware ethernet 00:01:04:1b:3C:23; fixed-address 10.1.1.23; }   # 6-aws-syd
               host data-services  { hardware ethernet 00:01:04:1b:3C:24; fixed-address 10.1.1.24; }   # 6-aws-syd
+              host aatams-vm      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
 
               # system-d container instances
               host geonetwork2    { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
               host rev-proxy      { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
               host postgres       { hardware ethernet 00:01:04:1b:2C:2D; fixed-address 10.1.1.21; }
-              host aatams-vm      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
               host aatams         { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+              host geowebcache    { hardware ethernet 00:01:04:1b:2C:2E; fixed-address 10.1.1.25; }
           }
 
           default-lease-time 600;
