@@ -1,0 +1,84 @@
+
+- hosts:
+    - all
+  vars_files:
+    - ../vars/credentials.yml
+  vars:
+    - users:
+      - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+      - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
+
+    - jdk_deploy_path: /var/lib/tomcat7/
+
+  roles:
+    - jessie
+    - apt-update
+    - timezone
+    - locale
+    - common
+    - users
+    - dotfiles
+    - tomcat-port-forward
+
+  tasks:
+
+    # needed for root bash_aliases
+    - copy:
+        dest: /root/.bashrc
+        content: |
+          # deployed by ansible!
+          if [ -f ~/.bash_aliases ]; then
+              . ~/.bash_aliases
+          fi
+
+
+    # local changes not in dotfiles for .bashrc
+    - copy:
+        dest: /home/meteo/.bash_aliases1
+        content: |
+          # deployed by ansible!
+          export L=/var/lib/tomcat7/logs/catalina.out
+
+          alias cl='echo > $L'
+          alias sp='sudo systemctl stop tomcat7'
+          alias st='echo > $L && sudo systemctl start tomcat7'
+          alias rt='echo > $L && sudo systemctl restart tomcat7'
+
+
+    # install tomcat7
+    - apt: name=libxml2-utils
+    - apt: name=tomcat7
+
+
+    # create conf dir,
+    - file: > 
+        path=/var/lib/tomcat7/conf/geowebcache 
+        state=directory 
+        owner=tomcat7 group=tomcat7
+
+    # install java 8 to /var/lib/tomcat7
+    - include: ../roles/misc/tasks/jdk.yml
+
+    # set up tomcat7 environment for geowebcache
+    - copy:
+        dest: /etc/default/tomcat7
+
+        content: |
+          # deployed by ansible!
+          TOMCAT7_USER=tomcat7
+          TOMCAT7_GROUP=tomcat7
+          JAVA_HOME=/var/lib/tomcat7/jdk1.8.0_111/ 
+          JAVA_OPTS="${JAVA_OPTS} -DGEOWEBCACHE_CACHE_DIR=/var/lib/tomcat7/conf/geowebcache \
+            -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError \
+            -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+      notify: restart-tomcat7
+
+
+
+
+ 
+  handlers:
+    - name: restart-tomcat7
+      service: name=tomcat7 state=restarted
+
+
