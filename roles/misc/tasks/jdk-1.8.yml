@@ -1,0 +1,25 @@
+
+
+  - shell: "{{item}}"
+    args:
+      chdir: "{{jdk_deploy_path}}"
+      creates: jdk-8u111-linux-x64.tar.gz
+    with_items:
+      - >
+        curl -L -H 'Cookie:oraclelicense=accept-securebackup-cookie'
+        http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz
+        -o jdk-8u111-linux-x64.tar.gz
+
+
+  - shell: "{{item}}"
+    args:
+      chdir: "{{jdk_deploy_path}}"
+      creates: jdk1.8.0_111
+    with_items:
+      - tar xf jdk-8u111-linux-x64.tar.gz
+
+# seems to be an issue - running unarchive, not working... 
+#  - unarchive:
+#      src: "{{jdk_deploy_path}}/jdk-8u111-linux-x64.tar.gz"
+#      dest: "{{jdk_deploy_path}}"
+

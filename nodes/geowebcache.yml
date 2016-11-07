@@ -57,7 +57,7 @@
         owner=tomcat7 group=tomcat7
 
     # install java 8 to /var/lib/tomcat7
-    - include: ../roles/misc/tasks/jdk.yml
+    - include: ../roles/misc/tasks/jdk-1.8.yml
 
     # set up tomcat7 environment for geowebcache
     - copy:

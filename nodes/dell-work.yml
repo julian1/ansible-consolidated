@@ -158,7 +158,8 @@
           */1 * * * *  /ansible/log-screensaver.sh
 
     # TODO avoid /ansible since it is only a small root partition
-    - include: ../roles/misc/tasks/jdk.yml
+    - include: ../roles/misc/tasks/jdk-1.7.yml
+    - include: ../roles/misc/tasks/jdk-1.8.yml
     - include: ../roles/misc/tasks/grails.yml
     - include: ../roles/misc/tasks/intellij.yml
 
