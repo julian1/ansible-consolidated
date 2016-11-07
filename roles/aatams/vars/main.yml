@@ -3,6 +3,8 @@
   # /var/lib/tomcat7/logs -> /var/log/tomcat7 
   # /var/lib/tomcat7/conf -> /etc/tomcat7
 
+  # TODO, move this inside the tomcat7 role?
+
   tomcat7:     /var/lib/tomcat7
   conf:        "{{tomcat7}}/conf"
   webapps:     "{{tomcat7}}/webapps"
