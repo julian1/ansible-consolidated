@@ -8,8 +8,8 @@
   - hosts: all
     vars:
       - tomcat7: /var/lib/tomcat7
-      - webapps: {{tomcat7}}/webapps
-      - logs:    {{tomcat7}}/logs
+      - webapps: "{{tomcat7}}/webapps"
+      - logs:    "{{tomcat7}}/logs"
       - warname: ROOT.war
 
     tasks:
