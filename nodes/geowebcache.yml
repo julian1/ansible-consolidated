@@ -7,8 +7,9 @@
     - users:
       - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
       - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
-
     - jdk_deploy_path: /var/lib/tomcat7/
+    - warpath: '/home/meteo/imos/geowebcache/geowebcache.war'
+    - warname: 'ROOT.war'
 
   roles:
     - jessie
@@ -19,32 +20,16 @@
     - common
     - users
     - dotfiles
+
+    # keep deployment separate from the configuration,
     - tomcat-port-forward
+    - deploy-war
 
+  # TODO, there's an order problem here, that the deploy-war happens before the proper tomca
+  # environmnet is set up.
   tasks:
-
-    # needed for root bash_aliases
-    - copy:
-        dest: /root/.bashrc
-        content: |
-          # deployed by ansible!
-          if [ -f ~/.bash_aliases ]; then
-              . ~/.bash_aliases
-          fi
-
-    # local changes not in dotfiles for .bashrc
-    # TODO put in ./roles/tomcat7 ?
-    - copy:
-        dest: /home/meteo/.bash_aliases1
-        content: |
-          # deployed by ansible!
-          export L=/var/lib/tomcat7/logs/catalina.out
-
-          alias cl='echo > $L'
-          alias sp='sudo systemctl stop tomcat7'
-          alias st='sudo sh -c "echo > $L && systemctl start tomcat7"'    # '
-          alias rt='sudo sh -c "echo > $L && systemctl restart tomcat7"'  # ' 
-
+    - include: '../roles/misc/tasks/tomcat-bash-aliases.yml'
+    - include: '../roles/misc/tasks/root-bash-aliases.yml'
 
     # install tomcat7
     - apt: name=libxml2-utils
@@ -59,10 +44,9 @@
     # install java 8 to /var/lib/tomcat7
     - include: ../roles/misc/tasks/jdk-1.8.yml
 
-    # set up tomcat7 environment for geowebcache
+    # set up tomcat7 environment with java 1.8
     - copy:
         dest: /etc/default/tomcat7
-
         content: |
           # deployed by ansible!
           TOMCAT7_USER=tomcat7
@@ -72,10 +56,5 @@
             -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError \
             -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
       notify: restart-tomcat7
-
-
-  handlers:
-    - name: restart-tomcat7
-      service: name=tomcat7 state=restarted
 
 

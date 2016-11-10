@@ -6,6 +6,7 @@
   vars:
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+      - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
     - warpath: "/home/meteo/imos/aodn-portal/target/aodn-portal-4.27.0-production.war" 
     - warname: "portal.war"
   roles:
@@ -18,8 +19,10 @@
     - users
     - dotfiles
     - tomcat-port-forward
-    
     # keep deployment separate from the configuration,
     - portal
     - deploy-war
+  tasks:
+    - include: "../roles/misc/tasks/tomcat-bash-aliases.yml"
+    - include: "../roles/misc/tasks/root-bash-aliases.yml"
 

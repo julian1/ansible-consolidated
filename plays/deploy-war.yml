@@ -6,7 +6,6 @@
   # just because this isn't idempotent isn't a reason not to use it... 
 
   - hosts: all
-
     roles:
       - deploy-war
 
