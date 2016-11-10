@@ -17,6 +17,9 @@ bind
 postgres.localnet
 geoserver-test
 
+geowebcache.localnet
+portal.localnet
+
 
 [default:vars]
 #users= { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }

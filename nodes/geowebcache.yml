@@ -1,6 +1,6 @@
 
 - hosts:
-    - all
+    - geowebcache.localnet
   vars_files:
     - ../vars/credentials.yml
   vars:
@@ -13,6 +13,7 @@
   roles:
     - jessie
     - apt-update
+    - sshd
     - timezone
     - locale
     - common
@@ -32,6 +33,7 @@
           fi
 
     # local changes not in dotfiles for .bashrc
+    # TODO put in ./roles/tomcat7 ?
     - copy:
         dest: /home/meteo/.bash_aliases1
         content: |
@@ -40,8 +42,8 @@
 
           alias cl='echo > $L'
           alias sp='sudo systemctl stop tomcat7'
-          alias st='echo > $L && sudo systemctl start tomcat7'
-          alias rt='echo > $L && sudo systemctl restart tomcat7'
+          alias st='sudo sh -c "echo > $L && systemctl start tomcat7"'    # '
+          alias rt='sudo sh -c "echo > $L && systemctl restart tomcat7"'  # ' 
 
 
     # install tomcat7

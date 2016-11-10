@@ -1,16 +1,14 @@
 
-  # use role rather node file due to the large template files
+  # Note clear how to handle this... 
 
   - apt: name=tomcat7 update_cache=yes
 
-  # https://jenkins.aodn.org.au/view/portal_4/job/portal_4_systest/lastSuccessfulBuild/artifact/target/aodn-portal-4.22.4-production.war
-  # https://jenkins.aodn.org.au/job/portal_4_prod/lastSuccessfulBuild/artifact/target/aodn-portal-4.19.4-production.war
 
   # TODO configure or deploy from the node file? 
-  - get_url: > 
-      url=https://jenkins.aodn.org.au/view/portal_4/job/portal_4_systest/lastSuccessfulBuild/artifact/target/aodn-portal-4.22.4-production.war
-      dest=/var/lib/tomcat7/webapps/portal.war
-    notify: restart-tomcat7
+#  - get_url: > 
+#      url=https://jenkins.aodn.org.au/view/portal_4/job/portal_4_systest/lastSuccessfulBuild/artifact/target/aodn-portal-4.22.4-production.war
+#      dest=/var/lib/tomcat7/webapps/ROOT.war
+#    notify: restart-tomcat7
 
   # IMPORTANT NOTE THE SYM-LINK # /var/lib/tomcat7/conf -> /etc/tomcat7
 

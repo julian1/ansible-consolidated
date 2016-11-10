@@ -1,34 +1,12 @@
 
   # eg. ansible-playbook ./plays/deploy-war.yml -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
-
   # ansible-playbook ./plays/deploy-war.yml -i publications, --extra-vars "warpath=/home/meteo/imos/publications/target/publications-0.3.1.war" 
 
-# IMPORTANT, play forces state change (stopping/starting), so don't place in roles
+  # IMPORTANT, play forces state change (stopping/starting), so don't place in roles
+  # just because this isn't idempotent isn't a reason not to use it... 
 
   - hosts: all
-    vars:
-      - tomcat7: /var/lib/tomcat7
-      - webapps: "{{tomcat7}}/webapps"
-      - logs:    "{{tomcat7}}/logs"
-      - warname: ROOT.war
 
-    tasks:
-      - service: name=tomcat7 state=stopped
-
-      - shell: "{{item}}"
-        with_items:
-          - rm -rf {{webapps}}/*
-          - echo fuck > {{logs}}/catalina.out
-
-      - copy: src={{warpath}} dest={{webapps}}/{{warname}}
-
-      # print md5sum - for debug,
-      - command: md5sum {{webapps}}/{{warname}}
-        register: result
-        ignore_errors: True
-
-      - debug: msg="{{result.stdout}}" #"
-
-
-      - service: name=tomcat7 state=started
+    roles:
+      - deploy-war
 

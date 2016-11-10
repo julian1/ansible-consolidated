@@ -5,6 +5,7 @@
 
   - apt: name=tomcat7 update_cache=yes
 
+  # TODO can't we use vars for this stuff, and perhaps make generic tomcat7?
   - set_fact: tomcat7=/var/lib/tomcat7
   - set_fact: conf={{tomcat7}}/conf
   - set_fact: webapps={{tomcat7}}/webapps

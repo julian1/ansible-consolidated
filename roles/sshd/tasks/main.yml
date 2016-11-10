@@ -27,8 +27,8 @@
         LogLevel INFO
 
         LoginGraceTime 30
-        # JA
-        PermitRootLogin no
+        # JA neeed for provisioning...
+        PermitRootLogin yes
         StrictModes yes
 
         RSAAuthentication yes

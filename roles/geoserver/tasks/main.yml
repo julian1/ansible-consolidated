@@ -142,6 +142,7 @@
 
   # TODO
   # this war deploy code is the same as aatams.  ccould be factored out,
+  # and the same as redeploy-war
   # or put in tomcat7 etc.
   - copy: src={{geoserver.war}} dest={{webapps}}/geoserver.war
     register: deployed

@@ -1,5 +1,4 @@
 
   - hosts: all
-    sudo: yes
     tasks:
     - include: "../roles/misc/tasks/restart-tomcat.yml"

@@ -1,16 +1,33 @@
 
-- hosts: portal
+- hosts: 
+    - portal.localnet
   vars_files:
     - ../vars/credentials.yml
   vars:
     - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+    - warpath: "/home/meteo/imos/aodn-portal/target/aodn-portal-4.27.0-production.war" 
+    - warname: "portal.war"
   roles:
-    - debian
+    - jessie
+    - apt-update
+    - sshd
     - timezone
     - locale
     - common
-    - meteo-dotfiles
+    - users
+    - dotfiles
     - tomcat-port-forward
+    
+    # keep deployment separate from the configuration,
     - portal
+    - deploy-war
+
+#  tasks:
+#    - include: '../roles/misc/tasks/deploy-war.yml'
+  handlers:
+    - name: restart-tomcat7
+      service: name=tomcat7 state=restarted
+
+
 

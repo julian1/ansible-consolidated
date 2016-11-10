@@ -5,16 +5,18 @@
     - ../vars/credentials.yml
   vars:
     - users:
-      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
-      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
-      - { name: bpasquer, group: adm, pubkey: "{{bpasquer_pubkey}}" }
-      - { name: anguss,   group: adm, pubkey: "{{anguss_pubkey}}" }
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
+#      - { name: bpasquer, group: adm, pubkey: "{{bpasquer_pubkey}}" }
+#      - { name: anguss,   group: adm, pubkey: "{{anguss_pubkey}}" }
   roles:
     - jessie
-    - update
+    - apt-update
+    - sshd
     - timezone
     - locale
     - common
+    - users
     - dotfiles
     - tomcat-port-forward
     - geoserver
@@ -24,14 +26,16 @@
 
 
     # local changes not in dotfiles for .bashrc
+    # TODO put in ./roles/tomcat7 ?
     - copy:
         dest: /home/meteo/.bash_aliases1
         content: |
-          # ansible test
+          # deployed by ansible!
           export L=/var/lib/tomcat7/logs/catalina.out
 
           alias cl='echo > $L'
-          alias st='sudo systemctl start tomcat7'
-          alias rt='sudo systemctl restart tomcat7'
+          alias sp='sudo systemctl stop tomcat7'
+          alias st='sudo sh -c "echo > $L && systemctl start tomcat7"'    # '
+          alias rt='sudo sh -c "echo > $L && systemctl restart tomcat7"'  # ' 
 
 
