@@ -57,4 +57,25 @@
             -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
       notify: restart-tomcat7
 
+    # set up tomcat7 environment with java 1.8
+    - copy:
+        dest: /etc/default/tomcat7
+        content: |
+          # deployed by ansible!
+          TOMCAT7_USER=tomcat7
+          TOMCAT7_GROUP=tomcat7
+          JAVA_HOME=/var/lib/tomcat7/jdk1.8.0_111/
+          JAVA_OPTS="${JAVA_OPTS} -DGEOWEBCACHE_CACHE_DIR=/var/lib/tomcat7/conf/geowebcache \
+            -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError \
+            -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+      notify: restart-tomcat7
+
+    # if we pushed this into a play then create a tag,
+
+    # all this configuration is inside the exploded war which is hideous...
+    - copy:
+        dest: /var/lib/tomcat7/webapps/ROOT/WEB-INF/geowebcache-core-context.xml
+        src:  '../roles/geowebcache/files/geowebcache-core-context.xml'
+      notify: restart-tomcat7
+
 
