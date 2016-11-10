@@ -23,11 +23,3 @@
     - portal
     - deploy-war
 
-#  tasks:
-#    - include: '../roles/misc/tasks/deploy-war.yml'
-  handlers:
-    - name: restart-tomcat7
-      service: name=tomcat7 state=restarted
-
-
-
