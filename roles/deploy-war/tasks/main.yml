@@ -13,15 +13,31 @@
 
   - service: name=tomcat7 state=stopped
 
-  - copy: src={{warpath}} dest={{webapps}}/{{warname}}
 
-  # TODO, delete existing exploded war?.
+  # remove old stuff
+  - find: path="{{webapps}}" file_type=file
+    register: files
 
+  - find: path="{{webapps}}" file_type=directory
+    register: directories
+
+  - file: state=absent path={{ item.path }}
+    with_items: 
+      - "{{ files.files }}"
+      - "{{ directories.files }}"
+
+
+
+  # clear catalina
   - shell: "{{item}}"
     with_items:
       - echo > {{logs}}/catalina.out
 
 
+  # install
+  - copy: src={{warpath}} dest={{webapps}}/{{warname}}
+
+  # check md5sum
   - command: md5sum {{webapps}}/{{warname}}
     register: result
     ignore_errors: True

@@ -5,6 +5,8 @@
   # IMPORTANT, play forces state change (stopping/starting), so don't place in roles
   # just because this isn't idempotent isn't a reason not to use it... 
 
+  # ansible-playbook plays/deploy-war.yml -i portal.localnet, --extra-vars "warpath=/home/meteo/imos/aodn-portal/target/aodn-portal-4.27.0-production.war warname=portal.war"
+
   - hosts: all
     roles:
       - deploy-war
