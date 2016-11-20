@@ -14,6 +14,9 @@
       - { name: ankit,    group: adm, pubkey: "{{ankit_pubkey}}" }
     - jdk_deploy_path: /home/xhoenner/
     - grails_deploy_path: /home/xhoenner/
+
+
+
   pre_tasks:
     - file: path=/var/lib/postgresql state=directory owner=postgres group=postgres
     - copy:

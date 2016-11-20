@@ -1,6 +1,0 @@
-
-  - include: create-db.yml
-  - include: webapp.yml
-#  - include: deploy-war.yml
-
-

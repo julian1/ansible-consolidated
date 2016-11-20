@@ -7,6 +7,8 @@
 
   # ansible-playbook plays/deploy-war.yml -i portal.localnet, --extra-vars "warpath=/home/meteo/imos/aodn-portal/target/aodn-portal-4.27.0-production.war warname=portal.war"
 
+  # ansible-playbook plays/deploy-war.yml -i aatams.localnet, --extra-vars "warpath=/home/meteo/imos/aatams/target/aatams-3.19.2.war warname=ROOT.war"
+
   - hosts: all
     roles:
       - deploy-war

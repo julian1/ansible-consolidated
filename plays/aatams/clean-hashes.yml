@@ -1,0 +1,19 @@
+
+- hosts:
+    - all
+  tasks:
+    - copy:
+        dest: /ansible/clean-hashes.sql
+        content: |
+          -- deployed by ansible!
+          update sec_user
+            set password_hash = '9999999'
+            where username != 'admin'
+          ;
+
+    - shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      with_items:
+        - psql -d aatams -f /ansible/clean-hashes.sql
+

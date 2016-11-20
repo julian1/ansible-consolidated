@@ -165,25 +165,29 @@
 
 
     #####
-    - copy:
-        dest: /home/meteo/.bash_aliases1
-        content: |
-          # deployed by ansible!
-          export I=$HOME/imos
-          alias i="cd $I"
+#    - copy:
+#        dest: /home/meteo/.bash_aliases1
+#        content: |
+#          # deployed by ansible!
+#          export I=$HOME/imos
+#          alias i="cd $I"
+#
+#          export BERKS_HOME=$HOME/.chefdk/gem/ruby/2.1.0/
+#          export PATH="$BERKS_HOME/bin:$PATH"
 
-          export BERKS_HOME=$HOME/.chefdk/gem/ruby/2.1.0/
-          export PATH="$BERKS_HOME/bin:$PATH"
+          # TODO we need to just make this a simple script to set the vars...
 
-          # export JAVA_HOME=$I/jdk1.7.0_80
-          export JAVA_HOME=$I/jdk1.8.0_111
-          export PATH="$JAVA_HOME/bin:$PATH"
+#          export JAVA_HOME=$I/jdk1.7.0_80
+          # export JAVA_HOME=$I/jdk1.8.0_111
+#          export PATH="$JAVA_HOME/bin:$PATH"
 
-          export GRAILS_HOME=$I/grails-1.3.7/
-          export PATH="$PATH:$GRAILS_HOME/bin"
+          # export GRAILS_HOME=$I/grails-1.3.7/
+          # export PATH="$PATH:$GRAILS_HOME/bin"
+#          export GRAILS_HOME=$I/grails-2.4.4/
+#          export PATH="$PATH:$GRAILS_HOME/bin"
 
-          export INTELLIJ_HOME=$I/idea-IU-143.1821.5/
-          export PATH="$PATH:$INTELLIJ_HOME/bin"
+#          export INTELLIJ_HOME=$I/idea-IU-143.1821.5/
+#          export PATH="$PATH:$INTELLIJ_HOME/bin"
 
     #####
     - apt: name=bridge-utils

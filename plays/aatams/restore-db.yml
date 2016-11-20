@@ -1,0 +1,52 @@
+
+- hosts:
+    - aatams.localnet
+  vars_files:
+    - ../../vars/credentials.yml
+
+  tasks:
+    - copy:
+        dest: /ansible/aatams.dump
+        src:  /home/meteo/imos/2016.11.21.01.06.49-aatams3-aatams.dump
+
+    # this wants to be able to be run indepeendently of restoring the db....
+    # which could be achieved with a play?
+    - copy:
+        dest: /ansible/fix-ownership.sql
+        content: |
+          -- deployed by ansible!
+          -- run each in a action in separate transaction to progress as far as possible
+
+          alter schema aatams owner to aatams;
+
+          select admin.set_owner_of_schema_objects('aatams', 'aatams');
+
+          update sec_user
+            set password_hash = '9999999'
+            where username != 'admin'
+          ;
+
+          create extension if not exists pgcrypto;
+
+          -- might be easier to use unencrypted password
+          update sec_user
+            set
+              password_hash=(select encode(digest('{{aatams.app.password}}', 'sha256'), 'hex')),
+              status = null
+            where username = '{{aatams.app.username}}'
+          ;
+
+    - service: name=tomcat7 state=stopped
+
+    - shell: "{{item}}"
+      become: yes
+      become_user: postgres
+      with_items:
+        # Assumes have aatams db and role, also admin.sql
+        # TODO rebuild role/db from scratch
+        - psql -d aatams -c "drop schema aatams cascade"
+        - pg_restore /ansible/aatams.dump -x -O -d aatams
+        - psql -d aatams -f /ansible/fix-ownership.sql
+
+    - service: name=tomcat7 state=started
+
