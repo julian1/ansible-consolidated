@@ -1,0 +1,27 @@
+
+
+# grails, datasource
+#  dataSource {
+# url = "jdbc:postgresql://aatams.localnet:5432/aatams_test?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
+
+- hosts:
+    - all
+  tasks:
+    - shell: psql -d postgres -c "{{ item }}"
+      with_items:
+        - "drop database if exists aatams_test"
+        - "drop user if exists aatams_test"
+        - "create user aatams_test unencrypted password 'aatams_test'"
+        - "create database aatams_test owner aatams_test"
+      become: yes
+      become_user: postgres
+
+    - shell: psql -d aatams_test -c "{{ item }}"
+      with_items:
+        - "create extension postgis"    # schema aatams ?
+        - "create schema aatams authorization aatams_test"
+        - "alter database aatams_test set search_path to 'aatams', 'public'"
+        - "alter database aatams_test set timezone to 'Australia/Hobart'"
+      become: yes
+      become_user: postgres
+
