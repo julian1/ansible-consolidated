@@ -1,8 +1,12 @@
 
-
 # grails, datasource
-#  dataSource {
-# url = "jdbc:postgresql://aatams.localnet:5432/aatams_test?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
+#    test {
+#        dataSource {
+#            url = "jdbc:postgresql://aatams.localnet:5432/aatams_test?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
+#            username = "aatams_test"
+#            password = "aatams_test"
+#        }
+#    }
 
 - hosts:
     - all
