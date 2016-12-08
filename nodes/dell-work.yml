@@ -32,6 +32,11 @@
   # - not necessarily. simple tasks are fairly easy to manage...
   # - roles factor common code amongst nodes and have cleaner relative path semantics
 
+
+  # # OPAM configuration
+  # . /home/meteo/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+
   tasks:
 
     - hostname: name=dell-work
