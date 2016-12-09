@@ -33,4 +33,7 @@
   # coquille, v
   - git: repo=https://github.com/the-lambda-church/coquille   dest={{vim_user_home}}/.vim/bundle/coquille
 
+  # purescript
+  - git: repo=https://github.com/raichoo/purescript-vim.git   dest={{vim_user_home}}/.vim/bundle/purescript
+
 
