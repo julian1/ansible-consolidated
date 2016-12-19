@@ -49,29 +49,31 @@
 
   # reinstall
   - copy:
-      dest: /root/reinstall-zfs-old.sh
+      dest: /root/reinstall-zfs.sh
       mode: 0755
       content: |
         #!/bin/bash -x
         # deployed by ansible!
 
-        apt-get purge spl-*
-        apt-get purge 'spl-*'
-        apt-get purge kmod-spl*
-        apt-get purge spl-dkms
-        apt-get purge kmod-zfs*
-        apt-get purge zfs*
-        apt-get purge libzfs*
+        apt-get -y purge spl
+        apt-get -y purge spl-*
+        apt-get -y purge kmod-spl*
+        apt-get -y purge spl-dkms
+        apt-get -y purge kmod-zfs*
+        apt-get -y purge zfs*
+        apt-get -y purge libzfs*
 
-        # must have correct kernel header version to have zfs built current kernel
-        apt-get install linux-headers-$( uname -r )
+        # need correct kernel header version k
+        apt-get -y  install linux-headers-$( uname -r )
 
-        apt-get install zfs-dkms
+        apt-get -y install zfs-dkms
+
+        /sbin/modprobe zfs
 
 
 
-# OLD... compile from source
-    # can't use commands because we need redirection, piping or wildcards. so use shell instead
+
+
 
     # TODO get rid of the touch stuff...
 
