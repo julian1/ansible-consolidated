@@ -9,14 +9,14 @@
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
   roles:
-    - debian
+    - jessie
     - timezone
     - locale
     - common
     - dotfiles
     - postgres
   tasks:
-    - shell: creates=postgres-done.txt chdir=/root {{item}}
+    - shell: creates=/ansible/postgres-done.txt chdir=/root {{item}}
       with_items:
         - sudo -u postgres psql -c "create user admin password 'admin'" 
         - sudo -u postgres psql -c "alter user admin with superuser" 
