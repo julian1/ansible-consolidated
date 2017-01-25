@@ -1,4 +1,5 @@
 
+
 #### Ansible CM
 
 Use with systemd-nspawn containers, kvm, cloud instances, VBox etc.
@@ -25,6 +26,7 @@ ansible -i inventory/imos --list-hosts all
 ansible-playbook -i localhost, plays/devenv-lite.yml
 
 # plays
+ansible-playbook -i localhost, plays/work-localnet.yml
 ansible-playbook ./plays/restart-tomcat.yml -i n.n.n.n,
 ansible-playbook ./plays/deploy-war.yml     -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
 

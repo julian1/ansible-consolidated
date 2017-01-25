@@ -1,0 +1,108 @@
+
+
+# non localnet stuff...
+
+  - hosts: all
+    vars:
+    roles:
+    tasks:
+
+      # it's difficult to overide single entries, sinece the zone is
+      # authoritative and cannot be delegated...
+      # aodn.org.au zone
+      - copy:
+          dest: /etc/bind/zones/aodn.db
+          owner: root
+          group: bind
+          content: |
+            ; deployed by ansible!
+            ;
+            $TTL 60
+            @ IN SOA ns1.aodn.org.au. root.aodn.org.au. (
+              2001062501 ; serial
+              21600      ; refresh after 6 hours
+              3600       ; retry after 1 hour
+              604800     ; expire after 1 week
+              86400 )    ; minimum TTL of 1 day
+            ;
+            @ IN NS ns1.aodn.org.au.
+            @ IN NS ns2.aodn.org.au.
+            @ IN A 192.168.1.1
+            @ IN AAAA ::1
+
+            ; ok, simple cname redirect
+            mcp2              60 IN CNAME mcp-profile-docs.readthedocs.io.
+
+            ; redirect to our reverse proxy, in front of everything
+            content           60 IN CNAME rev-proxy.localnet.
+
+            ; portal          60 IN CNAME 7-aws-syd.emii.org.au.
+            ; geoserver-123   60 IN CNAME 1-aws-syd.emii.org.au.
+            ; aatams          60 IN CNAME aatams.localnet.
+            ; animaltracking  60 IN CNAME aatams.localnet.
+
+            ; this is really crap, we need jenkins, in order to be able to pull artifacts,
+            catalogue-systest 60 IN CNAME systest.localnet.
+            portal-systest    60 IN CNAME systest.localnet.
+            geoserver-systest 60 IN CNAME systest.localnet.
+            ; jenkins           60 IN CNAME jenkins.localnet.
+
+            jenkins           60 IN CNAME 15-aws-syd.emii.org.au.
+            binary            60 IN CNAME dnebqw4820yi3.cloudfront.net.
+
+            @ MX 10 mail.aodn.org.au.
+            mail IN A 192.168.1.1
+            ns1 IN A 192.168.1.1
+            ns2 IN A 192.168.1.2
+        notify: restart-bind
+
+
+      # APEX record,
+      # how to do a single override. Easy. But needs a specific entry for each one.
+      # http://serverfault.com/questions/223850/override-a-dns-record-using-bind9
+
+      # ; @     IN CNAME  aatams.localnet.  ; cname apex will be rejected
+      # ; 15    IN  PTR   aatams.aodn.org.au.  ; PTR record won't work without upstream ns
+
+
+      # jenkins
+      - copy:
+          dest: /etc/bind/zones/jenkins.aodn.db
+          owner: root
+          group: bind
+          content: |
+            ; deployed by ansible!
+            ;
+            $TTL 60   ; default
+            $ORIGIN jenkins.aodn.org.au. ; default
+            @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
+            @     IN NS ns0
+            @     IN A 10.1.1.22
+            ns0   IN A 129.0.0.1
+        notify: restart-bind
+
+      # geonetwork
+      # if want to do multiple geonetworks then we need to use the aodn namespace...
+      # there must be a way to perform easier delegation
+
+      # We can write a simple DNS resolver, more easily that than tyring to get bind9
+      # to be authoritative and to delegate
+
+
+      # animal tracking
+      - copy:
+          dest: /etc/bind/zones/animaltracking.aodn.db
+          owner: root
+          group: bind
+          content: |
+            ; deployed by ansible!
+            ;
+            $TTL 60   ; default
+            $ORIGIN animaltracking.aodn.org.au.
+            @     IN SOA ns0 postmaster ( 2001062501 21600 3600 604800 86400 )
+            @     IN NS ns0
+            @     IN A 10.1.1.14
+            ns0   IN A 129.0.0.1
+        notify: restart-bind
+
+

@@ -1,0 +1,172 @@
+
+  # extracted from dell-home
+  - hosts: 
+    - dell-work
+    - localhost
+    vars:
+    roles:
+    tasks:
+      # bind
+      # NOTE problem with rndc.key  solved by purge bind9 and reinstall
+      - apt: name=bind9
+
+      - file: path=/etc/bind/zones state=directory owner=root group=bind
+
+      # named configuration
+      - copy:
+          dest: /etc/bind/named.conf.options
+          backup: yes
+          content: |
+            # deployed by ansible!
+            options {
+              directory "/var/cache/bind";
+              forwarders {
+                8.8.8.8;
+              };
+              dnssec-validation auto;
+              auth-nxdomain no;    # conform to RFC1035
+              listen-on-v6 { any; };
+            };
+        notify: restart-bind
+
+      # zones
+      - copy:
+          dest: /etc/bind/named.conf.local
+          backup: yes
+          content: |
+            # deployed by ansible!
+            # zone "aodn.org.au" {
+            #  type master;
+            #  file "/etc/bind/zones/aodn.db";
+            # };
+
+            # zone "animaltracking.aodn.org.au" {
+            #  type master;
+            #  file "/etc/bind/zones/animaltracking.aodn.db";
+            #};
+
+            zone "localnet" {
+              type master;
+              file "/etc/bind/zones/localnet.db";
+            };
+
+            # zone "jenkins.aodn.org.au" {
+            #  type master;
+            #  file "/etc/bind/zones/jenkins.aodn.db";
+            # };
+        notify: restart-bind
+
+
+
+      # localnet zone
+      - copy:
+          dest: /etc/bind/zones/localnet.db
+          owner: root
+          group: bind
+          content: |
+            ; deployed by ansible!
+            ;
+            $TTL 60
+            $ORIGIN localnet.
+            @             IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
+            @             IN NS ns1
+            @             IN NS ns2
+            @             IN A 10.1.1.1
+            ; @           IN AAAA ::1
+            @             IN MX 10 10.1.1.1
+
+            dell-work     IN A 10.1.1.1
+
+            ; systemd-d  containers + kvm
+            geoserver     IN A 10.1.1.12
+            geonetwork2   IN A 10.1.1.13
+            portal        IN A 10.1.1.14
+            aatams        IN A 10.1.1.15
+            rev-proxy     IN A 10.1.1.16
+            precise       IN A 10.1.1.17
+            win7          IN A 10.1.1.20
+            postgres      IN A 10.1.1.21
+            jenkins       IN A 10.1.1.22
+            systest       IN A 10.1.1.23
+            data-services IN A 10.1.1.24
+            geowebcache   IN A 10.1.1.25
+            pglogical     IN A 10.1.1.26
+
+
+            ; mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
+            mail          IN A 10.1.1.1
+            ns1           IN A 192.168.1.1
+            ns2           IN A 192.168.1.2
+        notify: restart-bind
+
+
+      # dhcp
+      - apt: name=isc-dhcp-server
+
+      - copy:
+          dest: /etc/default/isc-dhcp-server
+          owner: root
+          group: root
+          backup: yes
+          content: |
+            # deployed by ansible!
+            INTERFACESv4="br0"
+            INTERFACESv6=""
+        notify: restart-dhcp
+
+      - copy:
+          dest: /etc/dhcp/dhcpd.conf
+          owner: root
+          group: root
+          backup: yes
+          content: |
+            # deployed by ansible!
+
+            authoritative;
+
+            option domain-name "localnet";
+            # option domain-name-servers 131.217.38.36, 8.8.4.4;
+            option domain-name-servers 10.1.1.1;
+
+            # Set up our desired subnet:
+            # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
+            subnet 10.1.1.0 netmask 255.255.255.0 {
+                interface "br0";
+                range 10.1.1.10  10.1.1.30;
+                option subnet-mask 255.255.255.0;
+                option broadcast-address 10.1.1.255;
+                option routers 10.1.1.1;
+                option domain-name-servers 10.1.1.1;
+
+                # kvm/chef instances
+                host jenkins        { hardware ethernet 00:01:04:1b:3C:01; fixed-address 10.1.1.22; }   # 15-aws-syd
+                host precise        { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
+                host win7           { hardware ethernet 00:01:04:1b:3C:2C; fixed-address 10.1.1.20; }
+                host systest        { hardware ethernet 00:01:04:1b:3C:23; fixed-address 10.1.1.23; }   # 6-aws-syd
+                host data-services  { hardware ethernet 00:01:04:1b:3C:24; fixed-address 10.1.1.24; }   # 6-aws-syd
+                host aatams-vm      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
+
+                # system-d container instances
+                host geonetwork2    { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
+                host portal         { hardware ethernet 00:01:04:1b:2C:1C; fixed-address 10.1.1.14; }
+                host rev-proxy      { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
+                host postgres       { hardware ethernet 00:01:04:1b:2C:2D; fixed-address 10.1.1.21; }
+                host aatams         { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
+                host geowebcache    { hardware ethernet 00:01:04:1b:2C:2E; fixed-address 10.1.1.25; }
+                host pglogical      { hardware ethernet 00:01:04:1b:2C:2F; fixed-address 10.1.1.26; }
+            }
+
+            default-lease-time 600;
+            max-lease-time 7200;
+            # Show that we want to be the only DHCP server in this network:
+            authoritative;
+        notify: restart-dhcp
+
+    handlers:
+      - name: restart-bind
+        service: name=bind9 state=restarted
+
+      - name: restart-dhcp
+        service: name=isc-dhcp-server state=restarted
+
+
