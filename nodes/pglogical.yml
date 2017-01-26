@@ -103,11 +103,44 @@
       notify: restart-postgres
 
 
+    # create ssl account for postgres superuser
     - shell: creates=/ansible/postgres-pass.txt chdir=/root {{item}}
       with_items:
         # Works, support ssl for postgres superuser
         - sudo -u postgres psql -c "alter user postgres unencrypted password 'postgres'"
         - touch /ansible/postgres-pass.txt
+
+
+    # pglogical provider definition,
+    - copy:
+        dest: /ansible/provider.sql
+        content: |
+          --       deployed by ansible!
+
+          -- create the extension
+          create extension pglogical;
+
+          -- create the provider node
+          SELECT pglogical.create_node(
+              node_name := 'provider1',
+              dsn := 'host=providerhost port=5432 dbname=db'
+          );
+
+          -- Add all tables in public schema to the default replication set.
+          SELECT pglogical.replication_set_add_all_tables('default', ARRAY['public']);
+      register: last_result
+      tags: whoot
+
+
+    - shell: chdir=/root {{item}}
+      with_items:
+        - sudo -u postgres psql -f /ansible/provider.sql
+      when: last_result.changed
+      tags: whoot
+
+
+ 
+
 
 
   handlers:

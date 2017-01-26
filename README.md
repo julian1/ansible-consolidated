@@ -43,6 +43,29 @@ ansible-playbook nodes/dell-home.yml -t dotfiles
 
 ```
 
+#### Using tags,
+
+    # for role
+    roles:
+      - locale
+      - common
+      - { role: dotfiles, tags: [ 'dotfiles' ] }
+   
+    # for task
+    - copy:
+        dest: /ansible/provider.sql
+        content: |
+          ...
+      register: last_result
+      tags: whoot
+
+
+#### Local actions
+
+
+#### register variables
+
+
 #### Useful flags
 ```
 
