@@ -10,6 +10,7 @@ Requires Ansible version >= 2
 
 ```
 
+ansible-playbook nodes/pglogical.yml -i pglogical.localnet,
 ansible-playbook nodes/bind.yml -u root
 ansible-playbook nodes/dell-home.yml
 ansible-playbook nodes/aatams.yml -v
