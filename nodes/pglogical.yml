@@ -2,6 +2,12 @@
 # eg.
 # psql -h postgres.localnet -U admin -d postgres
 
+# See,
+# Using,        https://2ndquadrant.com/en/resources/pglogical/pglogical-docs/
+# installation, https://2ndquadrant.com/en/resources/pglogical/pglogical-installation-instructions/
+# postgres,     https://wiki.postgresql.org/wiki/Apt
+
+
 - hosts:
     - pglogical.localnet
   vars_files:
@@ -9,6 +15,7 @@
   vars:
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+      - { name: root,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /root }
   roles:
     - jessie
     - timezone
@@ -33,14 +40,79 @@
           # deployed by ansible!
           deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
 
- 
+
     - shell: creates=/ansible/pglogical-done.txt chdir=/root {{item}}
       with_items:
         - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
         - wget --quiet -O - http://packages.2ndquadrant.com/pglogical/apt/AA7A6805.asc | sudo apt-key add -
         - apt-get update
-        - touch /ansible/pglogical-done.txt      
+        - touch /ansible/pglogical-done.txt
 
+
+    - set_fact: version=9.6
+
+    - apt: name=postgresql-{{version}}-pglogical
+
+    # - set_fact: main=/etc/postgresql/{{version}}/main
+
+
+    - copy:
+        dest: "/etc/postgresql/{{version}}/main/postgresql.conf"
+        owner: postgres
+        content: |
+          # deployed by ansible!
+          listen_addresses = '*'
+          port = 5432
+          max_connections = 100
+          shared_buffers = '24MB'
+          log_line_prefix = '%t %h %u %d %p %e'
+
+          log_statement = all
+
+          # For XA
+          max_prepared_transactions = 10          # zero disables the feature
+
+          datestyle = 'iso, mdy'
+          default_text_search_config = 'pg_catalog.english'
+          ssl = on
+          data_directory = '/var/lib/postgresql/{{version}}/main'
+          hba_file = '/etc/postgresql/{{version}}/main/pg_hba.conf'
+
+          ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+          ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+
+
+          # pglogical
+          wal_level = 'logical'
+          max_worker_processes = 10   # one per database needed on provider node
+                                      # one per node needed on subscriber node
+          max_replication_slots = 10  # one per node needed on provider node
+          max_wal_senders = 10        # one per node needed on provider node
+          shared_preload_libraries = 'pglogical'
+
+      notify: restart-postgres
+
+    - copy:
+        dest: "/etc/postgresql/{{version}}/main/pg_hba.conf"
+        owner: postgres
+        content: |
+          # deployed by ansible!
+          # hostssl  all  postgres  0.0.0.0/0  reject
+          local    all  postgres  peer
+          hostssl  all  all       0.0.0.0/0  md5
+      notify: restart-postgres
+
+
+    - shell: creates=/ansible/postgres-pass.txt chdir=/root {{item}}
+      with_items:
+        # Works, support ssl for postgres superuser
+        - sudo -u postgres psql -c "alter user postgres unencrypted password 'postgres'"
+        - touch /ansible/postgres-pass.txt
+
+
+  handlers:
+  - name: restart-postgres
+    service: name=postgresql state=restarted
 
 
 
