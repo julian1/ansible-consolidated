@@ -22,10 +22,11 @@
     - timezone
     - locale
     - common
+    - users
     - dotfiles
     - vim
     - xmonad
-    - ip-forwarding
+    - ip-forwarding   # move into common? or make explicit, it's just a line.
     - printer
 
   # TODO jdk, grails, intelij should be factored into roles

@@ -3,15 +3,16 @@
 # why not have dotfiles_users
 # actually it's controlled by the home_dir var - its' ok.
 
+
   - copy: src=bash_aliases    dest={{item.home_dir}}/.bash_aliases
-    with_items: users
-    when: item.home_dir
+    with_items: "{{users}}"
+    when: item.home_dir 
 
   - copy: src=gitconfig       dest={{item.home_dir}}/.gitconfig
-    with_items: users
+    with_items: "{{users}}"
     when: item.home_dir
 
   - copy: src=screenrc        dest={{item.home_dir}}/.screenrc
-    with_items: users
+    with_items: "{{users}}"
     when: item.home_dir
 
