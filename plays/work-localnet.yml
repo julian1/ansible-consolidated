@@ -40,20 +40,11 @@
             #  file "/etc/bind/zones/aodn.db";
             # };
 
-            # zone "animaltracking.aodn.org.au" {
-            #  type master;
-            #  file "/etc/bind/zones/animaltracking.aodn.db";
-            #};
-
             zone "localnet" {
               type master;
               file "/etc/bind/zones/localnet.db";
             };
 
-            # zone "jenkins.aodn.org.au" {
-            #  type master;
-            #  file "/etc/bind/zones/jenkins.aodn.db";
-            # };
         notify: restart-bind
 
 
@@ -91,6 +82,8 @@
             data-services IN A 10.1.1.24
             geowebcache   IN A 10.1.1.25
             pglogical     IN A 10.1.1.26
+            pg-provider1  IN A 10.1.1.27
+            pg-subscriber1 IN A 10.1.1.28
 
 
             ; mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
@@ -154,6 +147,12 @@
                 host aatams         { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
                 host geowebcache    { hardware ethernet 00:01:04:1b:2C:2E; fixed-address 10.1.1.25; }
                 host pglogical      { hardware ethernet 00:01:04:1b:2C:2F; fixed-address 10.1.1.26; }
+                host pg-provider1   { hardware ethernet 00:01:04:1b:2C:30; fixed-address 10.1.1.27; }
+                host pg-subscriber1 { hardware ethernet 00:01:04:1b:2C:31; fixed-address 10.1.1.28; }
+
+
+
+
             }
 
             default-lease-time 600;
