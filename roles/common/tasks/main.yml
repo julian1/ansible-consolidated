@@ -5,4 +5,5 @@
   - include: no-shell-bell.yml
   - include: devenv-lite.yml
   - include: root-aliases.yml
+  - include: ansible.yml
 
