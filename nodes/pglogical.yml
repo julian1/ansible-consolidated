@@ -82,6 +82,11 @@
           log_line_prefix = '%t %h %u %d %p %e'
 
           log_statement = all
+          log_connections = true        
+          log_disconnections = true
+          log_min_error_statement = DEBUG5
+          log_min_messages = DEBUG5
+
 
           # For XA
           max_prepared_transactions = 10          # zero disables the feature
