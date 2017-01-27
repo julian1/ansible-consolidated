@@ -7,9 +7,13 @@
 # installation, https://2ndquadrant.com/en/resources/pglogical/pglogical-installation-instructions/
 # postgres,     https://wiki.postgresql.org/wiki/Apt
 
+# the only difference is pg-provider and
+# we should be able to switch just on the hostname... as to which one is which...
 
 - hosts:
     - pglogical.localnet
+    - pg-provider1.localnet
+    - pg-subscriber1.localnet
   vars_files:
     - ../vars/credentials.yml
   vars:
@@ -53,7 +57,17 @@
 
     - apt: name=postgresql-{{version}}-pglogical
 
-    # - set_fact: main=/etc/postgresql/{{version}}/main
+
+    - copy:
+        dest: "/etc/postgresql/{{version}}/main/pg_hba.conf"
+        owner: postgres
+        content: |
+          # deployed by ansible!
+          # hostssl  all  postgres  0.0.0.0/0  reject
+          local       all  postgres  peer
+          hostssl     all  all       0.0.0.0/0  md5
+          replication all  all       0.0.0.0/0  md5
+      notify: restart-postgres
 
 
     - copy:
@@ -89,18 +103,15 @@
           max_replication_slots = 10  # one per node needed on provider node
           max_wal_senders = 10        # one per node needed on provider node
           shared_preload_libraries = 'pglogical'
+      # notify: restart-postgres
+      register: last_result
 
-      notify: restart-postgres
 
-    - copy:
-        dest: "/etc/postgresql/{{version}}/main/pg_hba.conf"
-        owner: postgres
-        content: |
-          # deployed by ansible!
-          # hostssl  all  postgres  0.0.0.0/0  reject
-          local    all  postgres  peer
-          hostssl  all  all       0.0.0.0/0  md5
-      notify: restart-postgres
+      ### POSTGRES must be immediately restarted after changing
+    - service: name=postgresql state=restarted
+      when: last_result.changed
+
+
 
 
     # create ssl account for postgres superuser
@@ -111,35 +122,39 @@
         - touch /ansible/postgres-pass.txt
 
 
-    # pglogical provider definition,
-    - copy:
-        dest: /ansible/provider.sql
-        content: |
-          --       deployed by ansible!
-
-          -- create the extension
-          create extension pglogical;
-
-          -- create the provider node
-          SELECT pglogical.create_node(
-              node_name := 'provider1',
-              dsn := 'host=providerhost port=5432 dbname=db'
-          );
-
-          -- Add all tables in public schema to the default replication set.
-          SELECT pglogical.replication_set_add_all_tables('default', ARRAY['public']);
-      register: last_result
+    ############################
+    # provider definition,
+    - shell: chdir=/root {{item}} creates=/ansible/provider1
+      with_items:
+        # drop database if exists .......
+        - sudo -u postgres psql -c "create database db owner postgres"
+        - sudo -u postgres psql -d db -c "create extension pglogical"
+        - sudo -u postgres psql -d db -c "SELECT pglogical.create_node( node_name := 'provider1', dsn := 'host=pg-provider1.localnet port=5432 dbname=db')"
+        - sudo -u postgres psql -d db -c "SELECT pglogical.replication_set_add_all_tables('default', ARRAY['public'])"
+        - touch /ansible/provider1
+      when: ansible_host == "pg-provider1.localnet"
       tags: whoot
 
+    # does this stuff need to be done for the postgres database ??? 
+    # rather than the 
 
+    ############################
+    # subscriber definition,
+    # from subscriber can test connection,
+    # psql -h pg-provider1.localnet -d db -U postgres
+    # SELECT pglogical.drop_subscription( subscription_name := 'subscription1'  ) ;
+    # note, that we don't pass the username and password
     - shell: chdir=/root {{item}}
       with_items:
-        - sudo -u postgres psql -f /ansible/provider.sql
-      when: last_result.changed
+        - sudo -u postgres psql -c "create database db owner postgres"
+        - sudo -u postgres psql -d db -c "create extension pglogical"
+        - sudo -u postgres psql -d db -c "SELECT pglogical.create_node( node_name := 'subscriber1', dsn := 'host=pg-subscriber1.localnet port=5432 dbname=db')"
+        - sudo -u postgres psql -d db -c "SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db ');"
+
+      when: ansible_host == "pg-subscriber1.localnet"
       tags: whoot
 
 
- 
 
 
 
