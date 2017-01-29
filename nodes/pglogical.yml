@@ -10,8 +10,17 @@
 # the only difference is pg-provider and
 # we should be able to switch just on the hostname... as to which one is which...
 
+# api examples,,
+# SELECT pglogical.create_node( node_name := 'provider1', dsn := 'host=pg-provider1.localnet port=5432 dbname=postgres');
+
+# disconnect
+# SELECT pglogical.drop_subscription( subscription_name := 'subscription1'  ) ;
+# SELECT pglogical.drop_node( node_name := 'subscriber1' ) ;
+
+# Notes,
+# when creating the node on the subscriber, we must give it the password. not just when creating the subscription
+
 - hosts:
-    - pglogical.localnet
     - pg-provider1.localnet
     - pg-subscriber1.localnet
   vars_files:
@@ -108,6 +117,7 @@
           max_replication_slots = 10  # one per node needed on provider node
           max_wal_senders = 10        # one per node needed on provider node
           shared_preload_libraries = 'pglogical'
+
       # notify: restart-postgres
       register: last_result
 
@@ -132,6 +142,8 @@
     - shell: chdir=/root {{item}} creates=/ansible/provider1
       with_items:
         # drop database if exists .......
+
+        - sudo -u postgres psql -c "drop database if exists db"
         - sudo -u postgres psql -c "create database db owner postgres"
         - sudo -u postgres psql -d db -c "create extension pglogical"
         - sudo -u postgres psql -d db -c "SELECT pglogical.create_node( node_name := 'provider1', dsn := 'host=pg-provider1.localnet port=5432 dbname=db')"
@@ -143,18 +155,21 @@
     # does this stuff need to be done for the postgres database ??? 
     # rather than the 
 
+    # why does become not work?
+
     ############################
     # subscriber definition,
-    # from subscriber can test connection,
-    # psql -h pg-provider1.localnet -d db -U postgres
-    # SELECT pglogical.drop_subscription( subscription_name := 'subscription1'  ) ;
-    # note, that we don't pass the username and password
-    - shell: chdir=/root {{item}}
+    # IMPORTANT password must be given at time create_node(), not just at create_subscription()
+    - shell: chdir=/var/lib/postgresql creates=/var/lib/postgresql/subscription-created {{item}}
+      become: yes
+      become_user: postgres
       with_items:
-        - sudo -u postgres psql -c "create database db owner postgres"
-        - sudo -u postgres psql -d db -c "create extension pglogical"
-        - sudo -u postgres psql -d db -c "SELECT pglogical.create_node( node_name := 'subscriber1', dsn := 'host=pg-subscriber1.localnet port=5432 dbname=db')"
-        - sudo -u postgres psql -d db -c "SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db ');"
+        - psql -c "drop database if exists db"
+        - psql -c "create database db owner postgres"
+        - psql -d db -c "create extension pglogical"
+        - psql -d db -c "SELECT pglogical.create_node( node_name := 'subscriber1', dsn := 'host=pg-subscriber1.localnet port=5432 dbname=db password=postgres')"
+        - psql -d db -c "SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres');"
+        - touch 'subscription-created'
 
       when: ansible_host == "pg-subscriber1.localnet"
       tags: whoot
