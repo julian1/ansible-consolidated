@@ -6,6 +6,9 @@
 # Using,        https://2ndquadrant.com/en/resources/pglogical/pglogical-docs/
 # installation, https://2ndquadrant.com/en/resources/pglogical/pglogical-installation-instructions/
 # postgres,     https://wiki.postgresql.org/wiki/Apt
+# postgres docs -> use cases, https://www.postgresql.org/docs/devel/static/logical-replication.html
+# upgrading     https://www.depesz.com/2016/11/08/major-version-upgrading-with-minimal-downtime/
+#
 
 # the only difference is pg-provider and
 # we should be able to switch just on the hostname... as to which one is which...
@@ -16,9 +19,26 @@
 # disconnect
 # SELECT pglogical.drop_subscription( subscription_name := 'subscription1'  ) ;
 # SELECT pglogical.drop_node( node_name := 'subscriber1' ) ;
+# SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres', synchronize_structure := true);
 
 # Notes,
-# when creating the node on the subscriber, we must give it the password. not just when creating the subscription
+# - when creating the node on the subscriber, we must give it the password. not just when creating the subscription
+# - provider tables must have primary keys to support update and delete
+# - table creation ddl is left to the user, alternatively use synchronize_structure := true
+
+# Advantages,
+# https://2ndquadrant.com/en/resources/pglogical/
+# different versions of postgres
+# very efficient - not based on triggers - instead processes the WALs using changeset extraction technique
+# ddl or not
+# different permissions structures, different sets of roles. eg. for a database dedicated to geoserver, it doesn't make sense to have all organisational roles on it.
+# limit data - eg. just a couple of tables. such as aatams harvesters that are required for reporting.
+# can set up, reporting queries, but keep them off of the geoserver specific database.
+# supports multiple replication sets!!!
+
+# part of BDR - bi directional replication
+
+
 
 - hosts:
     - pg-provider1.localnet
@@ -67,6 +87,7 @@
     - apt: name=postgresql-{{version}}-pglogical
 
 
+    # postgres already has replication rights, so not sure if need replication entry
     - copy:
         dest: "/etc/postgresql/{{version}}/main/pg_hba.conf"
         owner: postgres
@@ -75,7 +96,7 @@
           # hostssl  all  postgres  0.0.0.0/0  reject
           local       all         postgres                peer
           hostssl     all         all         0.0.0.0/0   md5
-          hostssl     replication all         0.0.0.0/0   md5
+          hostssl     replication postgres    0.0.0.0/0   md5
       # notify: restart-postgres
       register: last_result
 
@@ -96,7 +117,7 @@
           log_line_prefix = '%t %h %u %d %p %e'
 
           log_statement = all
-          log_connections = true        
+          log_connections = true
           log_disconnections = true
           log_min_error_statement = DEBUG5
           log_min_messages = DEBUG5
@@ -157,13 +178,6 @@
       when: ansible_host == "pg-provider1.localnet"
       tags: whoot
 
-    # does this stuff need to be done for the postgres database ??? 
-    # rather than the 
-
-    # why does become not work?
-
-    # ok, it's a pain, that if we become postgres, then we can't touch files in ansible directory...
-    # actually we could if we changed it to allow anyone to postgres, although that's a bit of a security issue
 
     ############################
     # subscriber definition,
@@ -181,9 +195,6 @@
 
       when: ansible_host == "pg-subscriber1.localnet"
       tags: whoot
-
-
-
 
 
   handlers:
