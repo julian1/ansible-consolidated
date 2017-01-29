@@ -73,10 +73,15 @@
         content: |
           # deployed by ansible!
           # hostssl  all  postgres  0.0.0.0/0  reject
-          local       all  postgres  peer
-          hostssl     all  all       0.0.0.0/0  md5
-          replication all  all       0.0.0.0/0  md5
-      notify: restart-postgres
+          local       all         postgres                peer
+          hostssl     all         all         0.0.0.0/0   md5
+          hostssl     replication all         0.0.0.0/0   md5
+      # notify: restart-postgres
+      register: last_result
+
+      ### POSTGRES must be immediately restarted after changing
+    - service: name=postgresql state=restarted
+      when: last_result.changed
 
 
     - copy:
@@ -157,10 +162,13 @@
 
     # why does become not work?
 
+    # ok, it's a pain, that if we become postgres, then we can't touch files in ansible directory...
+    # actually we could if we changed it to allow anyone to postgres, although that's a bit of a security issue
+
     ############################
     # subscriber definition,
     # IMPORTANT password must be given at time create_node(), not just at create_subscription()
-    - shell: chdir=/var/lib/postgresql creates=/var/lib/postgresql/subscription-created {{item}}
+    - shell: creates=/ansible/subscription-created {{item}}
       become: yes
       become_user: postgres
       with_items:
@@ -169,7 +177,7 @@
         - psql -d db -c "create extension pglogical"
         - psql -d db -c "SELECT pglogical.create_node( node_name := 'subscriber1', dsn := 'host=pg-subscriber1.localnet port=5432 dbname=db password=postgres')"
         - psql -d db -c "SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres');"
-        - touch 'subscription-created'
+        - touch '/ansible/subscription-created'
 
       when: ansible_host == "pg-subscriber1.localnet"
       tags: whoot
