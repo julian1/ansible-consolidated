@@ -21,6 +21,7 @@
 
 # resynchronize table after subscription status goes down
 # select * from pglogical.alter_subscription_resynchronize_table('subscription1', 'x'  ) ;
+# - probably could also just drop the table and call the same thing? 
 
 # api examples,
 # SELECT pglogical.create_node( node_name := 'provider1', dsn := 'host=pg-provider1.localnet port=5432 dbname=postgres');
@@ -31,7 +32,7 @@
 # drop node
 # SELECT pglogical.drop_node( node_name := 'subscriber1' ) ;
 
-# Use synchronize_structure to perform necessary ddl to create the table.
+# will create structure.
 # SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres', synchronize_structure := true);
 
 # specify which subscription sets to subscribe to
