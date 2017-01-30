@@ -13,18 +13,47 @@
 # the only difference is pg-provider and
 # we should be able to switch just on the hostname... as to which one is which...
 
-# api examples,,
+# show a subscription status
+# select * from pglogical.show_subscription_status('subscription1' ) ;
+
+# run a replicated ddl command
+# select pglogical.replicate_ddl_command( 'alter table public.x add column c int');
+
+# resynchronize table after subscription status goes down
+# select * from pglogical.alter_subscription_resynchronize_table('subscription1', 'x'  ) ;
+
+# api examples,
 # SELECT pglogical.create_node( node_name := 'provider1', dsn := 'host=pg-provider1.localnet port=5432 dbname=postgres');
 
-# disconnect
+# drop subscription
 # SELECT pglogical.drop_subscription( subscription_name := 'subscription1'  ) ;
+
+# drop node
 # SELECT pglogical.drop_node( node_name := 'subscriber1' ) ;
+
+# Use synchronize_structure to perform necessary ddl to create the table.
 # SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres', synchronize_structure := true);
+
+# specify which subscription sets to subscribe to
+# SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres  ', synchronize_structure := true, replication_sets := ARRAY['default'] );
+
+# show sync status of a table,
+# select * from pglogical.show_subscription_table('subscription1', 'x'  ) ;
+
+# drop and recreate provider default replication set, - useful to be able to drop a table
+# select pglogical.drop_replication_set('default');
+# select pglogical.create_replication_set('default');
+# SELECT pglogical.replication_set_add_all_tables('default', ARRAY['public']);
+
+# also functions to disable replication set, and add/remove
 
 # Notes,
 # - when creating the node on the subscriber, we must give it the password. not just when creating the subscription
 # - provider tables must have primary keys to support update and delete
 # - table creation ddl is left to the user, alternatively use synchronize_structure := true
+# - ddl is not replicated (issue - for liquibase stuff). if a table structure is changed (add a column), then 
+#     there will be a conflict. 
+
 
 # Advantages,
 # https://2ndquadrant.com/en/resources/pglogical/
@@ -119,8 +148,8 @@
           log_statement = all
           log_connections = true
           log_disconnections = true
-          log_min_error_statement = DEBUG5
-          log_min_messages = DEBUG5
+          # log_min_error_statement = DEBUG5
+          # log_min_messages = DEBUG5
 
 
           # For XA
@@ -165,16 +194,15 @@
 
     ############################
     # provider definition,
-    - shell: chdir=/root {{item}} creates=/ansible/provider1
+    - shell: chdir=/root {{item}} creates=/ansible/provider1-created
       with_items:
-        # drop database if exists .......
-
-        - sudo -u postgres psql -c "drop database if exists db"
         - sudo -u postgres psql -c "create database db owner postgres"
         - sudo -u postgres psql -d db -c "create extension pglogical"
         - sudo -u postgres psql -d db -c "SELECT pglogical.create_node( node_name := 'provider1', dsn := 'host=pg-provider1.localnet port=5432 dbname=db')"
+        - sudo -u postgres psql -d db -c "create table x ( a int primary key )"
+        - sudo -u postgres psql -d db -c "insert into  x( a) values (123);"
         - sudo -u postgres psql -d db -c "SELECT pglogical.replication_set_add_all_tables('default', ARRAY['public'])"
-        - touch /ansible/provider1
+        - touch /ansible/provider1-created
       when: ansible_host == "pg-provider1.localnet"
       tags: whoot
 
@@ -182,16 +210,16 @@
     ############################
     # subscriber definition,
     # IMPORTANT password must be given at time create_node(), not just at create_subscription()
-    - shell: creates=/ansible/subscription-created {{item}}
+    - shell: creates=/ansible/subscription1-created {{item}}
       become: yes
       become_user: postgres
       with_items:
-        - psql -c "drop database if exists db"
         - psql -c "create database db owner postgres"
         - psql -d db -c "create extension pglogical"
         - psql -d db -c "SELECT pglogical.create_node( node_name := 'subscriber1', dsn := 'host=pg-subscriber1.localnet port=5432 dbname=db password=postgres')"
-        - psql -d db -c "SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres');"
-        - touch '/ansible/subscription-created'
+        - psql -d db -c "SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres', synchronize_structure := true);"
+        # - psql -d db -c "SELECT pglogical.create_subscription( subscription_name := 'subscription1', provider_dsn := 'host=pg-provider1.localnet  port=5432 dbname=db password=postgres', synchronize_structure := true, replication_sets := ARRAY['default'] );"
+        - touch '/ansible/subscription1-created'
 
       when: ansible_host == "pg-subscriber1.localnet"
       tags: whoot

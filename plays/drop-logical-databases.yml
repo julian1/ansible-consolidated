@@ -1,0 +1,33 @@
+
+  # extracted from dell-home
+  - hosts: 
+    - pg-provider1.localnet
+    - pg-subscriber1.localnet
+    vars:
+    roles:
+    tasks:
+
+      - shell: "{{item}}"
+        become: yes
+        become_user: postgres
+        with_items:
+          - psql -d db -c "select pglogical.drop_node('provider1');"
+          - psql -d postgres -c "drop database db;"
+          - rm -f /ansible/provider1-created
+
+        when: ansible_host == "pg-provider1.localnet"
+
+
+      - shell: "{{item}}"
+        become: yes
+        become_user: postgres
+        with_items:
+          - psql -d db -c "SELECT pglogical.drop_subscription( subscription_name := 'subscription1');"
+          - psql -d db -c "SELECT pglogical.drop_node( node_name := 'subscriber1');"
+          - psql -d postgres -c "drop database db;"
+          - rm -f /ansible/subscription1-created
+
+        when: ansible_host == "pg-subscriber1.localnet"
+
+
+
