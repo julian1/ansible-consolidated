@@ -1,0 +1,9 @@
+
+# useful to avoid installing the entire apt-get java ecosystem
+
+  - hosts: all
+    vars:
+      - maven_deploy_path: /home/meteo
+    tasks:
+      - include: "../roles/misc/tasks/maven.yml"
+

@@ -1,0 +1,15 @@
+
+# useful to avoid installing the entire apt-get java ecosystem
+
+  - get_url: >
+      url='http://mirror.intergrid.com.au/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz'
+      dest={{maven_deploy_path}}/apache-maven-3.3.9-bin.tar.gz
+
+  - unarchive: >
+      src={{maven_deploy_path}}/apache-maven-3.3.9-bin.tar.gz
+      dest={{maven_deploy_path}}/
+      creates={{maven_deploy_path}}/apache-maven-3.3.9/bin/mvn
+      owner=meteo
+
+
+
