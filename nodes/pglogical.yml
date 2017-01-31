@@ -8,10 +8,9 @@
 # upgrading     https://www.depesz.com/2016/11/08/major-version-upgrading-with-minimal-downtime/
 #
 
-# the only difference is pg-provider and
-# we should be able to switch just on the hostname... as to which one is which...
+# Api examples,
 
-# show a subscription status
+# show subscription status
 # select * from pglogical.show_subscription_status('subscription1' ) ;
 
 # run a replicated ddl command
@@ -21,7 +20,7 @@
 # select * from pglogical.alter_subscription_resynchronize_table('subscription1', 'x'  ) ;
 # - probably could also just drop the table and call the same thing? 
 
-# api examples,
+# create logical node,
 # SELECT pglogical.create_node( node_name := 'provider1', dsn := 'host=pg-provider1.localnet port=5432 dbname=postgres');
 
 # drop subscription
