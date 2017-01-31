@@ -1,6 +1,0 @@
-
-  - hosts: all
-    vars:
-      - jdk_deploy_path: /home/meteo/imos
-    tasks:
-      - include: "../roles/misc/tasks/jdk.yml"
