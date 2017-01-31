@@ -1,8 +1,6 @@
 
-# eg.
-# psql -h postgres.localnet -U admin -d postgres
+# PG-Logical See,
 
-# See,
 # Using,        https://2ndquadrant.com/en/resources/pglogical/pglogical-docs/
 # installation, https://2ndquadrant.com/en/resources/pglogical/pglogical-installation-instructions/
 # postgres,     https://wiki.postgresql.org/wiki/Apt
