@@ -18,7 +18,7 @@
 
 # resynchronize table after subscription status goes down
 # select * from pglogical.alter_subscription_resynchronize_table('subscription1', 'x'  ) ;
-# - probably could also just drop the table and call the same thing? 
+# - probably could also just drop the table and call the same thing?
 
 # create logical node,
 # SELECT pglogical.create_node( node_name := 'provider1', dsn := 'host=pg-provider1.localnet port=5432 dbname=postgres');
@@ -49,8 +49,8 @@
 # - when creating the node on the subscriber, we must give it the password. not just when creating the subscription
 # - provider tables must have primary keys to support update and delete
 # - table creation ddl is left to the user, alternatively use synchronize_structure := true
-# - ddl is not replicated (issue - for liquibase stuff). if a table structure is changed (add a column), then 
-#     there will be a conflict. 
+# - ddl is not replicated (issue - for liquibase stuff). if a table structure is changed (add a column), then
+#     there will be a conflict.
 
 
 # Advantages,
@@ -127,7 +127,7 @@
       # notify: restart-postgres
       register: last_result
 
-      ### POSTGRES must be immediately restarted after changing
+      # must restart postgres immediately before continuing
     - service: name=postgresql state=restarted
       when: last_result.changed
 
@@ -175,7 +175,7 @@
       register: last_result
 
 
-      ### POSTGRES must be immediately restarted after changing
+      # must restart postgres immediately before continuing
     - service: name=postgresql state=restarted
       when: last_result.changed
 
