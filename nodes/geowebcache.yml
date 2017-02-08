@@ -7,6 +7,8 @@
     - users:
       - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
       - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
+
+    # this is pretty sucky, would be nicer to specify
     - jdk_deploy_path: /var/lib/tomcat7/
     - warpath: '/home/meteo/imos/geowebcache/geowebcache.war'
     - warname: 'ROOT.war'
@@ -44,18 +46,6 @@
     # install java 8 to /var/lib/tomcat7
     - include: ../roles/misc/tasks/jdk-1.8.yml
 
-    # set up tomcat7 environment with java 1.8
-    - copy:
-        dest: /etc/default/tomcat7
-        content: |
-          # deployed by ansible!
-          TOMCAT7_USER=tomcat7
-          TOMCAT7_GROUP=tomcat7
-          JAVA_HOME=/var/lib/tomcat7/jdk1.8.0_111/
-          JAVA_OPTS="${JAVA_OPTS} -DGEOWEBCACHE_CACHE_DIR=/var/lib/tomcat7/conf/geowebcache \
-            -Xmx4081m -Xms512m -server -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError \
-            -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
-      notify: restart-tomcat7
 
     # set up tomcat7 environment with java 1.8
     - copy:
