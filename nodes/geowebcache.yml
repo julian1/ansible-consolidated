@@ -25,29 +25,38 @@
 
     # keep deployment separate from the configuration,
     - tomcat-port-forward
-    - deploy-war
+    # - deploy-war
 
   # TODO, there's an order problem here, that the deploy-war happens before the proper tomca
   # environmnet is set up.
   tasks:
-    - include: '../roles/misc/tasks/tomcat-bash-aliases.yml'
-    - include: '../roles/misc/tasks/root-bash-aliases.yml'
+    - include: ../roles/misc/tasks/tomcat-bash-aliases.yml
+    - include: ../roles/misc/tasks/root-bash-aliases.yml
 
     # install tomcat7
     - apt: name=libxml2-utils
     - apt: name=tomcat7
 
     # create conf dir,
+    # note this is the same as /etc/tomcat7/geowebcache/
+    # since /var/lib/tomcat7/conf -> /etc/tomcat7
     - file: >
         path=/var/lib/tomcat7/conf/geowebcache
         state=directory
         owner=tomcat7 group=tomcat7
 
+
+    # allow anyone to write the log for easier truncation with echo
+    - file: >
+        path=/var/lib/tomcat7/logs/catalina.out
+        owner=tomcat7 group=tomcat7
+        mode=666
+
     # install java 8 to /var/lib/tomcat7
     - include: ../roles/misc/tasks/jdk-1.8.yml
 
 
-    # set up tomcat7 environment with java 1.8
+    # set up tomcat7 to use java 1.8
     - copy:
         dest: /etc/default/tomcat7
         content: |
@@ -62,10 +71,26 @@
 
     # if we pushed this into a play then create a tag,
 
+
+    # the war must be deployed first, before changing the exploded file, geowebcache-core-context.xml
+    - include: '../roles/deploy-war/tasks/main.yml'
+
+
     # all this configuration is inside the exploded war which is hideous...
     - copy:
         dest: /var/lib/tomcat7/webapps/ROOT/WEB-INF/geowebcache-core-context.xml
-        src:  '../roles/geowebcache/files/geowebcache-core-context.xml'
+        src:  ../roles/geowebcache/files/geowebcache-core-context.xml
       notify: restart-tomcat7
+
+
+    - copy:
+        dest: /var/lib/tomcat7/conf/geowebcache/geowebcache.xml
+        src: '../roles/geowebcache/files/geowebcache.xml'
+      notify: restart-tomcat7
+
+
+  handlers:
+    - name: restart-tomcat7
+      service: name=tomcat7 state=restarted
 
 
