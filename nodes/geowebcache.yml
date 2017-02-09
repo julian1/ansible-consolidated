@@ -87,6 +87,7 @@
         dest: /var/lib/tomcat7/conf/geowebcache/geowebcache.xml
         src: '../roles/geowebcache/files/geowebcache.xml'
       notify: restart-tomcat7
+      tags: whoot
 
 
   handlers:

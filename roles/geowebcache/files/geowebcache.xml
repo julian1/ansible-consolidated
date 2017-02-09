@@ -105,10 +105,34 @@
   </extent>
   <alignTopLeft>false</alignTopLeft>
   <resolutions>
+
+    <!-- double>0.3515625</double>
+    <double>0.17578125</double>
+    <double>0.087890625</double>
+    <double>0.0439453125</double>
+    <double>0.02197265625</double>
+    <double>0.010986328125</double>
+    <double>0.0054931640625</double> 
+    <double>0.00274658203125</double> 
+    <double>0.001373291015625</double> 
+    <double>0.0006866455078125</double> 
+    <double>0.00034332275390625</double> 
+    <double>0.000171661376953125</double -->
+
+    <!-- JA taken from https://github.com/GeoWebCache/geowebcache/blob/master/geowebcache/core/src/main/resources/org/geowebcache/grid/EPSG_4326.xml -->
+
     <double>0.703125</double>
     <double>0.3515625</double>
     <double>0.17578125</double>
+
+
+
     <double>0.087890625</double>
+
+    <double>
+        0.050811767578125
+    </double>
+
     <double>0.0439453125</double>
     <double>0.02197265625</double>
     <double>0.010986328125</double>
@@ -127,11 +151,17 @@
     <double>1.3411045074E-6</double>
     <double>6.705522537E-7</double>
     <double>3.352761269E-7</double>
+
   </resolutions>
   <metersPerUnit>111319.49079327358</metersPerUnit>
   <pixelSize>2.8E-4</pixelSize>
-  <tileHeight>256</tileHeight>
-  <tileWidth>256</tileWidth>
+  <!-- is 296 a mistake? -->
+  <!-- tileHeight>256</tileHeight>
+  <tileWidth>256</tileWidth -->
+
+  <tileHeight>296</tileHeight>
+  <tileWidth>296</tileWidth>
+
   <yCoordinateFirst>false</yCoordinateFirst>
 </gridSet>
 
