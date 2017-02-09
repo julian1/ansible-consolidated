@@ -1,8 +1,11 @@
 
+  # TODO consolidate 
 
   # local changes not in dotfiles for .bashrc
   # TODO put in ./roles/tomcat7 ?
   - copy:
+      # shouldn't be hardcoded - because might overwrite another bash_aliases
+      # or else we can move somewhere else.
       dest: /home/meteo/.bash_aliases1
       content: |
         # deployed by ansible!
