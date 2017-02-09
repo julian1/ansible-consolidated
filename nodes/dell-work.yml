@@ -166,34 +166,81 @@
     # TODO avoid /ansible since it is only a small root partition
     - include: ../roles/misc/tasks/jdk-1.7.yml
     - include: ../roles/misc/tasks/jdk-1.8.yml
+    # TODO separate version numbers,
     - include: ../roles/misc/tasks/grails.yml
     - include: ../roles/misc/tasks/intellij.yml
 
+    ##############################################
+    # create home for scripts
+    - file: path=/home/meteo/scripts state=directory mode=777
+      tags: whoot
 
-    #####
-#    - copy:
-#        dest: /home/meteo/.bash_aliases1
-#        content: |
-#          # deployed by ansible!
-#          export I=$HOME/imos
-#          alias i="cd $I"
-#
-#          export BERKS_HOME=$HOME/.chefdk/gem/ruby/2.1.0/
-#          export PATH="$BERKS_HOME/bin:$PATH"
+    # OPAM
+    #   /home/meteo/.opam/4.02.3/bin
+    # . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
 
-          # TODO we need to just make this a simple script to set the vars...
+    # brightness.sh
+    - copy:
+        dest: /home/meteo/scripts/brightness.sh
+        content: |
+          # deployed by ansible!
+          xrandr --output eDP-1 --brightness $1
+      tags: whoot
 
-#          export JAVA_HOME=$I/jdk1.7.0_80
-          # export JAVA_HOME=$I/jdk1.8.0_111
-#          export PATH="$JAVA_HOME/bin:$PATH"
+    # volume.sh
+    - copy:
+        dest: /home/meteo/scripts/brightness.sh
+        content: |
+          # deployed by ansible!
+          # could just use alias
+          amixer set Master $1
+      tags: whoot
 
-          # export GRAILS_HOME=$I/grails-1.3.7/
-          # export PATH="$PATH:$GRAILS_HOME/bin"
-#          export GRAILS_HOME=$I/grails-2.4.4/
-#          export PATH="$PATH:$GRAILS_HOME/bin"
+    # java 1.7 env
+    - copy:
+        dest: /home/meteo/scripts/jdk-1.7.sh
+        content: |
+          # deployed by ansible!
+          export JAVA_HOME="$HOME/jdk1.7.0_80"
+          export PATH="$JAVA_HOME/bin:$PATH"
+      tags: whoot
 
-#          export INTELLIJ_HOME=$I/idea-IU-143.1821.5/
-#          export PATH="$PATH:$INTELLIJ_HOME/bin"
+    # java 1.8 env
+    - copy:
+        dest: /home/meteo/scripts/jdk-1.8.sh
+        content: |
+          # deployed by ansible!
+          export JAVA_HOME="$HOME/jdk1.8.0_111"
+          export PATH="$JAVA_HOME/bin:$PATH"
+      tags: whoot
+
+    # grails 1.3.7 env
+    - copy:
+        dest: /home/meteo/scripts/grails-1.3.7.sh
+        content: |
+          # deployed by ansible!
+          export GRAILS_HOME="$HOME/imos/grails-1.3.7/"
+          export PATH="$PATH:$GRAILS_HOME/bin"
+      tags: whoot
+
+    # grails 2.4.4 env
+    - copy:
+        dest: /home/meteo/scripts/grails-2.4.4.sh
+        content: |
+          # deployed by ansible!
+          export GRAILS_HOME="$HOME/imos/grails-2.4.4/"
+          export PATH="$PATH:$GRAILS_HOME/bin"
+      tags: whoot
+
+    # could just about factor all this script setup out.
+    # TODO move volume, and brightness in here also
+
+    # intelij
+    # export INTELLIJ_HOME=$I/idea-IU-143.1821.5/
+    # export PATH="$PATH:$INTELLIJ_HOME/bin"
+
+    ##############################################
+     
 
     #####
     - apt: name=bridge-utils

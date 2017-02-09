@@ -1,13 +1,6 @@
 
   # xmonad stuff
 
-  - copy: src=brightness.sh   dest={{item.home_dir}} mode=755
-    with_items: users
-    when: item.home_dir
-
-  - copy: src=volume.sh       dest={{item.home_dir}} mode=755
-    with_items: users
-    when: item.home_dir
 
   - copy: src=xmobarrc        dest={{item.home_dir}}/.xmobarrc
     with_items: users
