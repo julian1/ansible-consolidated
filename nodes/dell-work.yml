@@ -23,7 +23,7 @@
     - locale
     - common
     - users
-    - dotfiles
+    - { role: dotfiles, tags: [ 'whoot' ] }
     - vim
     - xmonad
     - ip-forwarding   # move into common? or make explicit, it's just a line.
@@ -34,12 +34,7 @@
   # - roles factor common code amongst nodes and have cleaner relative path semantics
 
 
-  # # OPAM configuration
-  # . /home/meteo/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
-
-
   tasks:
-
     - hostname: name=dell-work
 
     #####
@@ -119,17 +114,6 @@
           # xset q | grep bell
           xmonad
 
-    ####
-    - copy:
-        dest: /home/meteo/restart-monitor2.sh
-        mode: 0777
-        content: |
-          #!/bin/bash
-          # deployed by ansible!
-          xrandr --output DP-1-2  --off
-          sleep 1
-          xrandr --output DP-1-2  --auto --mode 1280x1024 --right-of DP-1-1
-          sleep 1
 
     ####
     - copy:
@@ -162,6 +146,10 @@
         content: |
           # deployed by ansible!
           */1 * * * *  /ansible/log-screensaver.sh
+    
+
+    ##############################################
+    # jdk, grails, etc
 
     # TODO avoid /ansible since it is only a small root partition
     - include: ../roles/misc/tasks/jdk-1.7.yml
@@ -175,13 +163,36 @@
     - file: path=/home/meteo/scripts state=directory mode=777
       tags: whoot
 
-    # OPAM
-    #   /home/meteo/.opam/4.02.3/bin
-    # . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+    ####
+
+    - copy:
+        dest: /home/meteo/scripts/opam.sh
+        content: |
+          # deployed by ansible!
+          . $HOME/.opam/opam-init/init.sh
+          #   /home/meteo/.opam/4.02.3/bin
+          # . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+      tags: whoot
+
+
+    # restart monitor 2
+    - copy:
+        dest: /home/meteo/scripts/restart-monitor2.sh
+        mode: 0777
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+          xrandr --output DP-1-2  --off
+          sleep 1
+          xrandr --output DP-1-2  --auto --mode 1280x1024 --right-of DP-1-1
+          sleep 1
+      tags: whoot
 
     # brightness.sh
     - copy:
         dest: /home/meteo/scripts/brightness.sh
+        mode: 0777
         content: |
           # deployed by ansible!
           xrandr --output eDP-1 --brightness $1
@@ -189,7 +200,7 @@
 
     # volume.sh
     - copy:
-        dest: /home/meteo/scripts/brightness.sh
+        dest: /home/meteo/scripts/volume.sh
         content: |
           # deployed by ansible!
           # could just use alias
@@ -220,7 +231,7 @@
         content: |
           # deployed by ansible!
           export GRAILS_HOME="$HOME/imos/grails-1.3.7/"
-          export PATH="$PATH:$GRAILS_HOME/bin"
+          export PATH="$GRAILS_HOME/bin:$PATH"
       tags: whoot
 
     # grails 2.4.4 env
@@ -229,15 +240,18 @@
         content: |
           # deployed by ansible!
           export GRAILS_HOME="$HOME/imos/grails-2.4.4/"
-          export PATH="$PATH:$GRAILS_HOME/bin"
+          export PATH="$GRAILS_HOME/bin:$PATH"
       tags: whoot
 
-    # could just about factor all this script setup out.
-    # TODO move volume, and brightness in here also
-
     # intelij
-    # export INTELLIJ_HOME=$I/idea-IU-143.1821.5/
-    # export PATH="$PATH:$INTELLIJ_HOME/bin"
+    - copy:
+        dest: /home/meteo/scripts/intellij.sh
+        content: |
+          # deployed by ansible!
+          export INTELLIJ_HOME="$HOME/imos/idea-IU-143.1821.5/"
+          export PATH="$INTELLIJ_HOME/bin:$PATH:"
+      tags: whoot
+
 
     ##############################################
      
