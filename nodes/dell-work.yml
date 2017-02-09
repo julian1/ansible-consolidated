@@ -176,7 +176,24 @@
       tags: whoot
 
 
-    # restart monitor 2
+    #!/bin/bash
+# deployed by ansible!
+# xrandr --output DP-1-2  --off
+# sleep 1
+
+    # start room monitor
+    - copy:
+        dest: /home/meteo/scripts/start-room-monitor.sh
+        mode: 0777
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+          xrandr --output HDMI-1 --auto --mode 1920x1080 --right-of eDP-1
+          sleep 1
+      tags: whoot
+
+
+    # restart monitor 2 - eg. rightmost monitor - when it starts blinking,
     - copy:
         dest: /home/meteo/scripts/restart-monitor2.sh
         mode: 0777
