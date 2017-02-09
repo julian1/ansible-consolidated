@@ -101,9 +101,6 @@ function enable()   { sudo systemctl enable $@;  }
 function disable()  { sudo systemctl disable $@; }
 fi
 
-# ???
-export PATH="$PATH:$HOME/dotfiles/scripts"
-
 # shell colors...
 RED="\[\033[1;31m\]"
 YELLOW="\[\033[1;33m\]"
