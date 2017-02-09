@@ -271,12 +271,6 @@
     - apt: name=a2ps
 
 
-    # local changes not in dotfiles for .bashrc
-    - copy:
-        dest: /home/meteo/.bash_aliases1
-        content: |
-          # ansible test
-
 
     - copy:
         dest: /etc/udev/rules.d/80-ttyusb.rules
