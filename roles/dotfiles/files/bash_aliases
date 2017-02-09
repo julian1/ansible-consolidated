@@ -1,7 +1,6 @@
 # deployed by ansible!
 # http://unix.stackexchange.com/questions/30925/in-bash-when-to-alias-when-to-script-and-when-to-write-a-function
 
-# . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
 
 export HISTFILESIZE=40000
 export HISTSIZE=40001
