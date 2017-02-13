@@ -159,8 +159,8 @@
   <!-- tileHeight>256</tileHeight>
   <tileWidth>256</tileWidth -->
 
-  <tileHeight>296</tileHeight>
-  <tileWidth>296</tileWidth>
+  <tileHeight>256</tileHeight>
+  <tileWidth>256</tileWidth>
 
   <yCoordinateFirst>false</yCoordinateFirst>
 </gridSet>
