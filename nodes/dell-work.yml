@@ -176,11 +176,6 @@
       tags: whoot
 
 
-    #!/bin/bash
-# deployed by ansible!
-# xrandr --output DP-1-2  --off
-# sleep 1
-
     # start room monitor
     - copy:
         dest: /home/meteo/scripts/start-room-monitor.sh
@@ -477,6 +472,7 @@
     # - name: restart-dnsmasq
     #  service: name=dnsmasq state=restarted
 
+    # maynot be needed if networking is now a play
     - name: restart-bind
       service: name=bind9 state=restarted
 
