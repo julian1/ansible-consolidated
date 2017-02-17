@@ -68,8 +68,35 @@
     
   </bean>
 
+  <!-- 
+    http://portal.localnet/portal/proxy?url=http%3A%2F%2Fgeoserver-rls.imas.utas.edu.au%2Fgeoserver%2Fwms%3FLAYERS%3DRLS%253AM1_MAP%26TRANSPARENT%3DTRUE%26VERSION%3D1.1.1%26FORMAT%3Dimage%252Fpng%26EXCEPTIONS%3Dapplication%252Fvnd.ogc.se_xml%26SERVICE%3DWMS%26REQUEST%3DGetMap%26STYLES%3D%26QUERYABLE%3Dtrue%26SRS%3DEPSG%253A4326%26BBOX%3D129.375%2C-28.125%2C135%2C-22.5%26WIDTH%3D256%26HEIGHT%3D256
+  -->
 
   <bean id="gwcWMSConfigB" class="org.geowebcache.config.GetCapabilitiesConfiguration">
+  	<constructor-arg ref="gwcGridSetBroker">
+    </constructor-arg>
+    <constructor-arg value="http://geoserver-rls.imas.utas.edu.au/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities">
+      <description>The URL to the WMS GetCapabilities document, notice &amp; , port is normally 8080</description>
+    </constructor-arg>
+    <constructor-arg value="image/png">
+      <description>The formats to support for all layers read for the above document</description>
+    </constructor-arg>
+    <constructor-arg value="3x3">
+      <description>Metatiling factors, 3x3 is usually a good compromise for vector data</description>
+    </constructor-arg>
+    <constructor-arg value="map=/osgeo/mapserver/msautotest/world/world.map">
+      <description> </description>
+    </constructor-arg>
+    <constructor-arg value="false">
+      <description>Whether to allow cached=false to specificed for certain requests</description>
+    </constructor-arg>
+    <property name="primaryConfig" ref="gwcXmlConfig">
+      <description>The configuration object with the global defaults to use for new layers</description>
+    </property>
+  </bean>
+ 
+
+  <!-- bean id="gwcWMSConfigC" class="org.geowebcache.config.GetCapabilitiesConfiguration">
   	<constructor-arg ref="gwcGridSetBroker">
     </constructor-arg>
     <constructor-arg value="http://geoserver-static.aodn.org.au/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities">
@@ -90,8 +117,7 @@
     <property name="primaryConfig" ref="gwcXmlConfig">
       <description>The configuration object with the global defaults to use for new layers</description>
     </property>
-  </bean>
- 
+  </bean -->
 
 
   
