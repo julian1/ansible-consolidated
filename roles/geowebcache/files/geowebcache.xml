@@ -106,7 +106,8 @@
   <alignTopLeft>false</alignTopLeft>
   <resolutions>
 
-    <!-- double>0.3515625</double>
+    <!-- from portal -->
+<!-- double>0.3515625</double>
     <double>0.17578125</double>
     <double>0.087890625</double>
     <double>0.0439453125</double>
@@ -120,19 +121,10 @@
     <double>0.000171661376953125</double -->
 
     <!-- JA taken from https://github.com/GeoWebCache/geowebcache/blob/master/geowebcache/core/src/main/resources/org/geowebcache/grid/EPSG_4326.xml -->
-
     <double>0.703125</double>
-    <double>0.3515625</double>
+    <double>0.3515625</double>   <!-- first -->
     <double>0.17578125</double>
-
-
-
     <double>0.087890625</double>
-
-    <double>
-        0.050811767578125
-    </double>
-
     <double>0.0439453125</double>
     <double>0.02197265625</double>
     <double>0.010986328125</double>
@@ -141,7 +133,7 @@
     <double>0.001373291015625</double>
     <double>6.866455078125E-4</double>
     <double>3.433227539062E-4</double>
-    <double>1.716613769531E-4</double>
+    <double>1.716613769531E-4</double> <!-- last -->
     <double>8.58306884766E-5</double>
     <double>4.29153442383E-5</double>
     <double>2.14576721191E-5</double>

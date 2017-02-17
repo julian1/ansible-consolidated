@@ -48,6 +48,18 @@ enabledFacets = [
     ]
 ]
 
+proxyRedirects = [ 
+    [
+        uri: "http://geoserver-123.aodn.org.au/geoserver",
+        redirectUri: "http://geowebcache.localnet/service"
+    ],
+    [
+        uri: "http://geoserver-static.aodn.org.au/geoserver",
+        redirectUri: "http://geowebcache.localnet/service"
+    ]
+]
+
+
 knownServers = [
   [
     id: "aodn_geoserver_123",
