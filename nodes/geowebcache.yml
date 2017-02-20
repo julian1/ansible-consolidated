@@ -47,14 +47,15 @@
         state=directory
         owner=tomcat7 group=tomcat7
 
+    # NOTE also have to set im ./webapps/ROOT/WEB-INF/classes/log4j.properties and set info to debug for stdout first line to log it
 
-    # tomcat logging configuration
-    - copy: >
-        dest=/var/lib/tomcat7/conf/logging.properties
-        owner=tomcat7 group=tomcat7
-        src=../roles/geowebcache/files/logging.properties
-      notify: restart-tomcat7
-      tags: whoot
+    # tomcat logging configuration - this does nothing.
+    # - copy: >
+    #     dest=/var/lib/tomcat7/conf/logging.properties
+    #     owner=tomcat7 group=tomcat7
+    #     src=../roles/geowebcache/files/logging.properties
+    #  notify: restart-tomcat7
+    #  tags: whoot
 
 
     # allow anyone to write the log for easier truncation with echo
