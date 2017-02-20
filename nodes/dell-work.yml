@@ -370,8 +370,8 @@
 
           # redirect to rev-proxy
           # iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
-          iptables -t nat -A PREROUTING -p tcp -i eth0          --dport 80 -j DNAT --to 10.1.1.22
-          iptables -t nat -A OUTPUT     -p tcp -d 131.217.38.36 --dport 80 -j DNAT --to 10.1.1.22
+          iptables -t nat -A PREROUTING -p tcp -i eth0          --dport 80 -j DNAT --to 10.1.1.14
+          iptables -t nat -A OUTPUT     -p tcp -d 131.217.38.36 --dport 80 -j DNAT --to 10.1.1.14
 
           # dns/bind/dnsmasq
           # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 53 -j DNAT --to 10.1.1.22
@@ -392,6 +392,7 @@
           # TODO - fill in checksums for all udp...
           iptables -t mangle -A POSTROUTING -p udp --dport bootpc -j CHECKSUM --checksum-fill
       notify: reconfigure-iptables
+      tags: whoot
 
     # make sure systemd is installed
     - apt: name=systemd-container
