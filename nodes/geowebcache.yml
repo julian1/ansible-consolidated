@@ -37,6 +37,8 @@
     - apt: name=libxml2-utils
     - apt: name=tomcat7
 
+
+
     # create conf dir,
     # note this is the same as /etc/tomcat7/geowebcache/
     # since /var/lib/tomcat7/conf -> /etc/tomcat7
@@ -44,6 +46,15 @@
         path=/var/lib/tomcat7/conf/geowebcache
         state=directory
         owner=tomcat7 group=tomcat7
+
+
+    # tomcat logging configuration
+    - copy: >
+        dest=/var/lib/tomcat7/conf/logging.properties
+        owner=tomcat7 group=tomcat7
+        src=../roles/geowebcache/files/logging.properties
+      notify: restart-tomcat7
+      tags: whoot
 
 
     # allow anyone to write the log for easier truncation with echo
