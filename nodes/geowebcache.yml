@@ -47,6 +47,7 @@
         state=directory
         owner=tomcat7 group=tomcat7
 
+    # this can only be done after the application is exploded
     # NOTE also have to set im ./webapps/ROOT/WEB-INF/classes/log4j.properties and set info to debug for stdout first line to log it
 
     # tomcat logging configuration - this does nothing.
