@@ -14,8 +14,8 @@
     - logs:        "{{tomcat7}}/logs"
     - aatams_data: "{{conf}}/aatams-data"
 
-    - warpath: '/home/meteo/imos/aatams-3.18.1.war'
-    - warname: 'ROOT.war'
+    - warpath: '/home/meteo/imos/aatams/target/aatams-3.20.0.war'
+    - warname: 'aatams.war'
 
   roles:
     - jessie
@@ -186,3 +186,4 @@
       notify: restart-tomcat7
 
     - include: '../roles/deploy-war/tasks/main.yml'
+      tags: whoot

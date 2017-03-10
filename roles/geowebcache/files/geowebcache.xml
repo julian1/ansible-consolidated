@@ -85,7 +85,10 @@
 
   <gridSets>
    
-    <!-- JA overide 4326 -->
+    <!-- JA overide 4326 
+        this is really weird - if change the pixels it generates a new one.
+        but
+    -->
     <gridSet>
   <name>EPSG:4326</name>
   <description>A default WGS84 tile matrix set where the first zoom level covers the world with two tiles 
@@ -121,8 +124,8 @@
     <double>0.000171661376953125</double -->
 
     <!-- JA taken from https://github.com/GeoWebCache/geowebcache/blob/master/geowebcache/core/src/main/resources/org/geowebcache/grid/EPSG_4326.xml -->
-    <double>0.703125</double>
-    <double>0.3515625</double>   <!-- first -->
+    <!-- double>0.703125</double -->
+    <double>0.3515625</double>   <!-- portal first -->
     <double>0.17578125</double>
     <double>0.087890625</double>
     <double>0.0439453125</double>
@@ -134,7 +137,7 @@
     <double>6.866455078125E-4</double>
     <double>3.433227539062E-4</double>
     <double>1.716613769531E-4</double> <!-- last -->
-    <double>8.58306884766E-5</double>
+    <!-- double>8.58306884766E-5</double>
     <double>4.29153442383E-5</double>
     <double>2.14576721191E-5</double>
     <double>1.07288360596E-5</double>
@@ -142,7 +145,7 @@
     <double>2.6822090149E-6</double>
     <double>1.3411045074E-6</double>
     <double>6.705522537E-7</double>
-    <double>3.352761269E-7</double>
+    <double>3.352761269E-7</double -->
 
   </resolutions>
   <metersPerUnit>111319.49079327358</metersPerUnit>
@@ -159,8 +162,8 @@
 
 
      <!-- Grid Set Example, by default EPSG:900913 and EPSG:4326 are defined -->
-    <gridSet>
       <!-- This does not have to be an EPSG code, you can also have multiple gridSet elements per SRS -->
+    <!-- gridSet>
       <name>EPSG:2163</name>
       <srs>
         <number>2163</number>
@@ -181,10 +184,49 @@
       </scaleDenominators>
       <tileHeight>200</tileHeight>
       <tileWidth>200</tileWidth>
-    </gridSet>
+    </gridSet -->
   </gridSets>
 
   <layers>
+
+
+  <wmsLayer>
+      <!-- name>aodn:aodn_ran_ctd_map</name -->
+      <name>imos:argo_profile_map</name>
+      <metaInformation>
+        <title>Nicer title for Image States</title>
+        <description>This is a description. Fascinating.</description>
+      </metaInformation>
+      <mimeFormats>
+        <string>image/gif</string>
+        <string>image/jpeg</string>
+        <string>image/png</string>
+        <string>image/png8</string>
+      </mimeFormats>
+      <!-- Grid Subset Example -->
+
+      <expireCacheList>
+        <expirationRule minZoom="0" expiration="60" />
+      </expireCacheList>
+      <expireClientsList>
+        <expirationRule minZoom="0" expiration="500" />
+      </expireClientsList>
+    <parameterFilters>
+      <regexParameterFilter>
+      <key>CQL_FILTER</key>
+      <defaultValue>cruise_id IS NOT null</defaultValue>
+      <regex>^(.*)$</regex>
+    </regexParameterFilter>
+    </parameterFilters>
+      <wmsUrl>
+        <string>http://geoserver-123.aodn.org.au/geoserver/wms</string>
+      </wmsUrl>
+      <wmsLayers>imos:argo_profile_map</wmsLayers>
+      <transparent>false</transparent>
+      <bgColor>0x0066FF</bgColor>
+    </wmsLayer>
+
+
 
     <wmsLayer>
       <!-- 

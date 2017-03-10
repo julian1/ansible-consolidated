@@ -10,7 +10,8 @@
 
     # this is pretty sucky, would be nicer to specify
     - jdk_deploy_path: /var/lib/tomcat7/
-    - warpath: '/home/meteo/imos/geowebcache/geowebcache.war'
+    # - warpath: '/home/meteo/imos/geowebcache/geowebcache.war'
+    - warpath: '/home/meteo//imos/geowebcache/geowebcache/web/target/geowebcache.war'
     - warname: 'ROOT.war'
 
   roles:
@@ -94,6 +95,7 @@
         dest: /var/lib/tomcat7/webapps/ROOT/WEB-INF/geowebcache-core-context.xml
         src:  ../roles/geowebcache/files/geowebcache-core-context.xml
       notify: restart-tomcat7
+      tags: whoot
 
 
     - copy:
