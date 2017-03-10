@@ -22,10 +22,42 @@
     - dotfiles
     - tomcat-port-forward
     # keep configuration seperate from deployment
-    - portal
-    - { role: deploy-war, tags: [ 'whoot' ] }
+#    - portal
+#    - { role: deploy-war, tags: [ 'whoot' ] }
+
 
   tasks:
-    - include: "../roles/misc/tasks/tomcat-bash-aliases.yml"
-    - include: "../roles/misc/tasks/root-bash-aliases.yml"
+    - include: ../roles/misc/tasks/tomcat-bash-aliases.yml
+    - include: ../roles/misc/tasks/root-bash-aliases.yml
+
+    # anyone can write the log for easier truncation with echo
+    - file: >
+        path=/var/lib/tomcat7/logs/catalina.out
+        owner=tomcat7 group=tomcat7
+        mode=666
+
+
+    - apt: name=tomcat7 update_cache=yes
+
+    - template: 
+        src: ../roles/portal/templates/context.j2 
+        dest: /var/lib/tomcat7/conf/context.xml 
+        owner: tomcat7 
+        group: tomcat7
+      notify: restart-tomcat7
+      tags: whoot
+
+    - template: 
+        src: ../roles/portal/templates/Portal.groovy.j2 
+        dest: /var/lib/tomcat7/conf/Portal.groovy 
+        owner: tomcat7 
+        group: tomcat7
+      notify: restart-tomcat7
+      tags: whoot
+
+  handlers:
+    - name: restart-tomcat7
+      service: name=tomcat7 state=restarted
+
+
 
