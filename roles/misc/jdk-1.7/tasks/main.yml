@@ -1,8 +1,6 @@
 
 
-  # jdk_deploy_path is set in ./plays/jdk.yml
-
-  - debug: msg="whoot in jdk-1.7 deploy path is {{jdk_deploy_path}}"
+  - debug: msg="whoot in jdk-1.7 deploy path is {{jdk_deploy_path}}"   # "
 
   - apt: name=curl
 
@@ -21,9 +19,8 @@
         -o jdk-7u80-linux-x64.tar.gz
 
 
-#  - unarchive:
-#      src: "{{jdk_deploy_path}}/jdk-7u80-linux-x64.tar.gz"
-#      dest: "{{jdk_deploy_path}}"
-#
-#
+  - unarchive:
+      src: "{{jdk_deploy_path}}/jdk-7u80-linux-x64.tar.gz"
+      dest: "{{jdk_deploy_path}}"
+      creates: "{{jdk_deploy_path}}/jdk1.7.0_80"
 

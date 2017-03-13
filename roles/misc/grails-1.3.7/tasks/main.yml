@@ -17,5 +17,5 @@
       copy=no
       src={{grails_deploy_path}}/grails-1.3.7.zip
       dest={{grails_deploy_path}}
-      creates={{grails_deploy_path}}/grails-1.3.7/LICENSE
+      creates={{grails_deploy_path}}/grails-1.3.7
 
