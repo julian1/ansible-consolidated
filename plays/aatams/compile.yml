@@ -1,0 +1,14 @@
+
+- hosts:
+    - all
+  vars:
+    - user: meteo
+    - jdk_deploy_path: /home/{{user}}
+    - grails_deploy_path: /home/{{user}}
+  roles:
+    - misc/jdk-1.7
+    - misc/grails-1.3.7
+    - aatams/compile
+  tasks:
+
+

@@ -2,6 +2,8 @@
 
   # jdk_deploy_path is set in ./plays/jdk.yml
 
+  - debug: msg="whoot in jdk-1.7 deploy path is {{jdk_deploy_path}}"
+
   - apt: name=curl
 
   - file:

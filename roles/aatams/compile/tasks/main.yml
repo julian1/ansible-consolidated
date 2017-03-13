@@ -1,0 +1,6 @@
+
+
+  # we expect to have jdk
+  - debug: msg="whoot in role/aatmas ansible user {{ user }}" #"
+
+  - debug: msg="whoot user {{ user }}"
