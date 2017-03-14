@@ -84,6 +84,7 @@
             pglogical     IN A 10.1.1.26
             pg-provider1  IN A 10.1.1.27
             pg-subscriber1 IN A 10.1.1.28
+            archiva       IN A 10.1.1.30
 
 
             ; mcp2-0.docs IN CNAME mcp-profile-docs.readthedocs.io.
@@ -125,7 +126,7 @@
             # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
             subnet 10.1.1.0 netmask 255.255.255.0 {
                 interface "br0";
-                range 10.1.1.10  10.1.1.30;
+                range 10.1.1.10  10.1.1.40;
                 option subnet-mask 255.255.255.0;
                 option broadcast-address 10.1.1.255;
                 option routers 10.1.1.1;
@@ -147,11 +148,11 @@
                 host aatams         { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
                 host geowebcache    { hardware ethernet 00:01:04:1b:2C:2E; fixed-address 10.1.1.25; }
                 host pglogical      { hardware ethernet 00:01:04:1b:2C:2F; fixed-address 10.1.1.26; }
-                host pg-provider1   { hardware ethernet 00:01:04:1b:2C:30; fixed-address 10.1.1.27; }
-                host pg-subscriber1 { hardware ethernet 00:01:04:1b:2C:31; fixed-address 10.1.1.28; }
+                # NOTE SCHEME!!!
+                host pg-provider1   { hardware ethernet 00:01:04:1b:2C:27; fixed-address 10.1.1.27; }
+                host pg-subscriber1 { hardware ethernet 00:01:04:1b:2C:28; fixed-address 10.1.1.28; }
 
-
-
+                host archiva        { hardware ethernet 00:01:04:1b:2C:30; fixed-address 10.1.1.30; }
 
             }
 
@@ -167,5 +168,4 @@
 
       - name: restart-dhcp
         service: name=isc-dhcp-server state=restarted
-
 
