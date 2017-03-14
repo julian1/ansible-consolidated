@@ -1,8 +1,8 @@
 
   # extracted from dell-home
   - hosts: 
+    # use external ip to resolve
     - dell-work
-    - localhost
     vars:
     roles:
     tasks:
