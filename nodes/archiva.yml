@@ -1,0 +1,22 @@
+
+- hosts:
+    - archiva.localnet
+  vars_files:
+    - ../vars/credentials.yml
+  vars:
+    - users:
+      - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+      - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
+
+
+  roles:
+    - jessie
+    - apt-update
+    - sshd
+    - timezone
+    - locale
+    - common
+    - users
+    - dotfiles
+
+
