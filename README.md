@@ -14,6 +14,7 @@ ansible-playbook nodes/pglogical.yml -i pglogical.localnet,
 ansible-playbook nodes/bind.yml -u root
 ansible-playbook nodes/dell-home.yml
 ansible-playbook nodes/aatams.yml -v
+ansible-playbook nodes/archiva.yml   -i archiva, -u debian --private-key ~/.ssh/julian3.pem -s
 ansible-playbook nodes/aatams-dev.yml -i aatams-test-instance, -u debian --private-key ~/.ssh/julian3.pem -s
 ansible-playbook nodes/geoserver.yml -i geoserver-test, -u debian --private-key ~/.ssh/julian3.pem -s
 ansible-playbook nodes/geoserver.yml -i geoserver-test,

@@ -1,0 +1,31 @@
+
+- hosts: all
+  vars:
+    - user: meteo
+    - jdk_deploy_path: /home/{{user}}
+    - archiva_deploy_path: /home/{{user}}
+  roles:
+      - misc/jdk-1.7
+      - archiva/deploy
+
+  # run with
+  # . ./jdk-1.7.sh && ./archiva/bin/archiva console
+  #
+  # access
+  # http://archiva.localnet:8080
+  # click create admin user -> pass admin123
+  # it is now configured out of the box to support caching
+  #
+  # start as service . ./jdk-1.7.sh && ./archiva/bin/archiva start
+  #
+  # data is
+  # ls archiva/repositories/
+  # default configuration works.
+  # then change repo1 to this, and it should start archiving,
+  # http://archiva.localnet:8080/repository/internal/
+  #
+  # http://www.avajava.com/tutorials/lessons/how-do-i-use-archiva-as-a-mirror-of-the-maven-central-repository.html
+  #
+  # log level is set in archiva/conf/wrapper.conf
+  # ggj
+  # request log, ~/archiva/logs/request-20170314.log

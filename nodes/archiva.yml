@@ -1,6 +1,7 @@
 
 - hosts:
     - archiva.localnet
+    - archiva
   vars_files:
     - ../vars/credentials.yml
   vars:
@@ -8,6 +9,9 @@
       - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
       - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
 
+    - user: meteo
+    - jdk_deploy_path: /home/{{user}}
+    - archiva_deploy_path: /home/{{user}}
 
   roles:
     - jessie
@@ -18,5 +22,10 @@
     - common
     - users
     - dotfiles
+
+    # archiva specific
+    - tomcat-port-forward
+    - misc/jdk-1.7
+    - archiva/deploy
 
 

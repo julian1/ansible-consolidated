@@ -19,6 +19,7 @@ geoserver-test
 
 geowebcache.localnet
 portal.localnet
+archiva.localnet
 
 
 [default:vars]

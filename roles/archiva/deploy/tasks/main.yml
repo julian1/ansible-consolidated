@@ -1,0 +1,51 @@
+
+# issue - want's to download the file everytime... 
+#  - get_url:
+#      url: http://apache.uberglobalmirror.com/archiva/2.2.1/binaries/apache-archiva-2.2.1-bin.tar.gz
+#      dest: /home/meteo/
+#      mode: 0440
+#      force: no  # don't redownload if it already exists - but doesn't work
+#      # headers: "Cache-Control: max-age=31536000"
+#      # creates: /home/meteo/apache-archiva-2.2.1-bin.tar.gz
+
+# unarchive chdir doesn't work...
+#  - unarchive:
+#      chdir: /home/meteo
+#      src: /home/meteo/apache-archiva-2.2.1-bin.tar.gz
+#      dest: /home/meteo/archiva
+#      remote_src: True
+
+  - apt: name=curl
+
+  - shell: "{{item}}"
+    become: yes
+    become_user: meteo
+    args:
+      chdir: "{{archiva_deploy_path}}"
+      creates: archiva
+    with_items:
+      - >
+        curl -L
+        http://apache.uberglobalmirror.com/archiva/2.2.1/binaries/apache-archiva-2.2.1-bin.tar.gz
+        -o apache-archiva-2.2.1-bin.tar.gz
+      - tar xf apache-archiva-2.2.1-bin.tar.gz
+      - mv apache-archiva-2.2.1  archiva
+
+
+  # set path dependencies
+  - copy:
+      dest: "/home/{{user}}/jdk-1.7.sh"
+      content: |
+        # deployed by ansible!
+        export JAVA_HOME=$HOME/jdk1.7.0_80/
+        export PATH="$JAVA_HOME/bin:$PATH"
+
+  # should use tomcat port forward
+  # <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
+#  - lineinfile:
+#      dest: "/home/{{user}}/archiva/conf/jetty.xml"
+#      regexp: '^(.*)default="8080"(.*)$' 
+#      line:   '\1default="80"\2'
+#      backrefs: yes
+#    tags: whoot
+
