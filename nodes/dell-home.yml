@@ -113,16 +113,17 @@
             keycode 90 = Insert NoSymbol Insert
 
             ! pgup
-            keycode 104 = Prior NoSymbol Prior  
+            keycode 91 = Prior NoSymbol Prior
 
             ! pgdown
-            keycode 91  = Next NoSymbol Next    
-              
+            keycode 104  = Next NoSymbol Next
+
             ! numpad 2
-            keycode 88 =  Home NoSymbol Home   
+            keycode 88 =  Home NoSymbol Home
 
             ! numpad 3
             keycode 89  = End  NoSymbol End
+
           EOF
 
           xrandr --output eDP1 --brightness .45
