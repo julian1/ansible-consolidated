@@ -1,4 +1,6 @@
 
+# archiva for grails.
+
 # issue - want's to download the file everytime... 
 #  - get_url:
 #      url: http://apache.uberglobalmirror.com/archiva/2.2.1/binaries/apache-archiva-2.2.1-bin.tar.gz
@@ -29,7 +31,10 @@
         http://apache.uberglobalmirror.com/archiva/2.2.1/binaries/apache-archiva-2.2.1-bin.tar.gz
         -o apache-archiva-2.2.1-bin.tar.gz
       - tar xf apache-archiva-2.2.1-bin.tar.gz
+      # TODO JUST do a symbolic link herre.... 
       - mv apache-archiva-2.2.1  archiva
+
+  # TODO should go in /opt. or /usr/local
 
 
   # set path dependencies
