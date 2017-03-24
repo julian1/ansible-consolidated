@@ -6,5 +6,6 @@
   - apt: name=aptitude
   - apt: name=mlocate
   - apt: name=sudo
+  - apt: name=pv
 
 
