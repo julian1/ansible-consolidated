@@ -10,6 +10,7 @@
         url: socket://10.76.8.20:9100
         ppd: lexmark.ppd
     - users:
+      # no root, because not on zfs/encrypted partition
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
 
     - jdk_deploy_path:      /home/meteo/imos
