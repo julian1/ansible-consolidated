@@ -8,14 +8,14 @@
     - ../vars/credentials.yml
   vars:
     - users:
-      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}" }
-      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }
-      - { name: xhoenner, group: adm, pubkey: "{{xavier_pubkey}}" }
-      - { name: ankit,    group: adm, pubkey: "{{ankit_pubkey}}" }
+      - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}",   home_dir: /root }
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}",   home_dir: /home/meteo }
+      - { name: xhoenner, group: adm, pubkey: "{{xavier_pubkey}}",  home_dir: /home/meteo  }
+      - { name: ankit,    group: adm, pubkey: "{{ankit_pubkey}}",   home_dir: /home/meteo  }
+      - { name: alexm12,  group: adm, pubkey: "{{alexm12_pubkey}}", home_dir: /home/meteo  }
+
     - jdk_deploy_path: /home/xhoenner/
     - grails_deploy_path: /home/xhoenner/
-
-
 
   pre_tasks:
     - file: path=/var/lib/postgresql state=directory owner=postgres group=postgres
@@ -26,27 +26,31 @@
           /dev/vda1       /                   ext4    errors=remount-ro                     0       1
           /dev/vdb        /var/lib/postgresql auto    defaults,comment=cloudconfig          0       2
       notify: reboot
+
   roles:
-    - debian
+    - jessie
+    - apt-update
+    - sshd
     - timezone
     - locale
     - common
-    - meteo-dotfiles
+    - users
+    - dotfiles
+  
+    # aatams specific
+    - misc/jdk-1.7
+    - misc/grails-1.3.7
     - postgres
     - tomcat-port-forward
     - aatams
 
   tasks:
-    - include: ../roles/misc/tasks/jdk.yml
-    - include: ../roles/misc/tasks/grails-1.3.7.yml
 
-    - blockinfile:
-        dest: /home/xhoenner/.bash_aliases
-        create: yes
+    - copy:
+        dest: /home/xhoenner/.bash_aliases1
         owner: xhoenner
         group: xhoenner
         mode: 0644
-        insertafter: EOF
         content: |
           export JAVA_HOME=$HOME/jdk1.7.0_80/
           export PATH="$JAVA_HOME/bin:$PATH"
