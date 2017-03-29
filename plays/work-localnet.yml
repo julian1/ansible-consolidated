@@ -76,12 +76,12 @@
             rev-proxy     IN A 10.1.1.16
             precise       IN A 10.1.1.17
             win7          IN A 10.1.1.20
-            postgres      IN A 10.1.1.21
             jenkins       IN A 10.1.1.22
             systest       IN A 10.1.1.23
-            data-services IN A 10.1.1.24
+
+            ; data-services IN A 10.1.1.24
+            postgres      IN A 10.1.1.24
             geowebcache   IN A 10.1.1.25
-            pglogical     IN A 10.1.1.26
             pg-provider1  IN A 10.1.1.27
             pg-subscriber1 IN A 10.1.1.28
             archiva       IN A 10.1.1.30
@@ -137,21 +137,20 @@
                 host precise        { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.17; }
                 host win7           { hardware ethernet 00:01:04:1b:3C:2C; fixed-address 10.1.1.20; }
                 host systest        { hardware ethernet 00:01:04:1b:3C:23; fixed-address 10.1.1.23; }   # 6-aws-syd
-                host data-services  { hardware ethernet 00:01:04:1b:3C:24; fixed-address 10.1.1.24; }   # 6-aws-syd
+                # host data-services  { hardware ethernet 00:01:04:1b:3C:24; fixed-address 10.1.1.24; }   # 6-aws-syd
                 host aatams-vm      { hardware ethernet 00:01:04:1b:3C:00; fixed-address 10.1.1.14; }
 
                 # system-d container instances
-                host geonetwork2    { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.1.1.13; }
                 host portal         { hardware ethernet 00:01:04:1b:2C:1C; fixed-address 10.1.1.14; }
-                host rev-proxy      { hardware ethernet 00:01:04:1b:2C:1E; fixed-address 10.1.1.16; }
-                host postgres       { hardware ethernet 00:01:04:1b:2C:2D; fixed-address 10.1.1.21; }
-                host aatams         { hardware ethernet 00:01:04:1b:2C:1D; fixed-address 10.1.1.15; }
                 host geowebcache    { hardware ethernet 00:01:04:1b:2C:2E; fixed-address 10.1.1.25; }
-                host pglogical      { hardware ethernet 00:01:04:1b:2C:2F; fixed-address 10.1.1.26; }
-                # NOTE SCHEME!!!
+
+                # NOTE last byte matche SCHEME!!!
+                host geonetwork2    { hardware ethernet 00:01:04:1b:2C:13; fixed-address 10.1.1.13; }
+                host aatams         { hardware ethernet 00:01:04:1b:2C:15; fixed-address 10.1.1.15; }
+                host rev-proxy      { hardware ethernet 00:01:04:1b:2C:16; fixed-address 10.1.1.16; }
+                host postgres       { hardware ethernet 00:01:04:1b:2C:24; fixed-address 10.1.1.24; }
                 host pg-provider1   { hardware ethernet 00:01:04:1b:2C:27; fixed-address 10.1.1.27; }
                 host pg-subscriber1 { hardware ethernet 00:01:04:1b:2C:28; fixed-address 10.1.1.28; }
-
                 host archiva        { hardware ethernet 00:01:04:1b:2C:30; fixed-address 10.1.1.30; }
 
             }

@@ -1,12 +1,13 @@
 
   - debug: msg="{{ansible_distribution_release}}"
 
-  - apt: name=postgresql-9.4-postgis-2.1
+  # postgresql-9.6-postgis-2.3
+
+  - apt: name=postgresql-9.6-postgis-2.3
     when: ansible_distribution_release == 'jessie'
 
-  #- apt: name=postgresql-9.4-postgis-2.2   # debian testing
-
-  - set_fact: main=/etc/postgresql/9.4/main
+  - set_fact: main=/etc/postgresql/9.6/main
+  - set_fact: libmain=/var/lib/postgresql/9.6/main
 
   - copy:
       dest: "{{main}}/postgresql.conf"
@@ -27,7 +28,7 @@
         datestyle = 'iso, mdy'
         default_text_search_config = 'pg_catalog.english'
         ssl = on
-        data_directory = '/var/lib/postgresql/9.4/main'
+        data_directory = '{{libmain}}'
         hba_file = '{{main}}/pg_hba.conf'
 
         ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'

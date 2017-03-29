@@ -7,19 +7,44 @@
     - ../vars/credentials.yml
   vars:
     - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+
+  pre_tasks:
+    # Note, jessie specific
+    - copy:
+        dest: /etc/apt/sources.list.d/pgdg.list
+        content: |
+          # deployed by ansible!
+          deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
+
+    - apt: name=wget
+    - apt: name=ca-certificates
+
+    - shell: creates=/ansible/pgdg.txt chdir=/root {{item}}
+      with_items:
+        - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+        - apt-get update
+        - touch /ansible/pgdg.txt
+
+
   roles:
     - jessie
+    - apt-update
+    - sshd
     - timezone
     - locale
     - common
+    - users
     - dotfiles
+
+    # specific
     - postgres
+
   tasks:
     - shell: creates=/ansible/postgres-done.txt chdir=/root {{item}}
       with_items:
-        - sudo -u postgres psql -c "create user admin password 'admin'" 
-        - sudo -u postgres psql -c "alter user admin with superuser" 
-        - touch postgres-done.txt      
+        - sudo -u postgres psql -c "create user admin password 'admin'"
+        - sudo -u postgres psql -c "alter user admin with superuser"
+        - touch /ansible/postgres-done.txt
 
   # should use, 'become', 'become_method', and 'become_user
