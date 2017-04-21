@@ -145,6 +145,8 @@
                 host geowebcache    { hardware ethernet 00:01:04:1b:2C:2E; fixed-address 10.1.1.25; }
 
                 # NOTE last byte matche SCHEME!!!
+
+                host geoserver      { hardware ethernet 00:01:04:1b:2C:12; fixed-address 10.1.1.12; }
                 host geonetwork2    { hardware ethernet 00:01:04:1b:2C:13; fixed-address 10.1.1.13; }
                 host aatams         { hardware ethernet 00:01:04:1b:2C:15; fixed-address 10.1.1.15; }
                 host rev-proxy      { hardware ethernet 00:01:04:1b:2C:16; fixed-address 10.1.1.16; }
