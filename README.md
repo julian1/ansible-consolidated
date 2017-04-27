@@ -30,7 +30,10 @@ ansible-playbook -i localhost, plays/devenv-lite.yml
 # plays
 ansible-playbook -i localhost, plays/work-localnet.yml
 ansible-playbook ./plays/restart-tomcat.yml -i n.n.n.n,
-ansible-playbook ./plays/deploy-war.yml     -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
+
+ansible-playbook ./plays/deploy-war.yml -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
+ansible-playbook ./plays/deploy-war.yml -i geowebcache.localnet, --extra-vars "warpath=~/imos/geowebcache/geowebcache/web/target/geowebcache.war warname=geowebcache.war"
+
 
 # aws instances
 ansible-playbook nodes/publications.yml -i n.n.n.n.n, -u admin --private-key ~/.ssh/julian-aws-bsd.pem  -s
