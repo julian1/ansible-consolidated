@@ -68,12 +68,15 @@
 
   # unstage file - deleted only
   # reset can be used unstage ordinary staged files
+  # eg. reset to unstaged
   ru = rm --cached
 
   # undo last commit (or reset to last commit)
   u = checkout HEAD~1
 
+  
   # diff
   dc = diff --color
+  df = diff --name-only
 
 
