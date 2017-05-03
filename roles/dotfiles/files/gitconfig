@@ -80,3 +80,5 @@
   df = diff --name-only
 
 
+  # tags
+  t = tag
