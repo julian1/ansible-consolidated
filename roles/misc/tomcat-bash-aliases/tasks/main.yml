@@ -11,9 +11,9 @@
         # deployed by ansible!
         export L=/var/lib/tomcat7/logs/catalina.out
 
-        alias cl='echo > $L'
-        alias sp='sudo systemctl stop tomcat7'
-        alias st='sudo sh -c "echo > $L && systemctl start tomcat7"'    # '
-        alias rt='sudo sh -c "echo > $L && systemctl restart tomcat7"'  # ' 
+        alias tc ='echo > $L'
+        alias tp ='sudo systemctl stop tomcat7'
+        alias ts ='sudo sh -c "echo > $L && systemctl start tomcat7"'    # '
+        alias tr ='sudo sh -c "echo > $L && systemctl restart tomcat7"'  # ' 
 
 

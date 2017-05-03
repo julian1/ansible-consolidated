@@ -29,21 +29,21 @@
     - users
     - dotfiles
 
+    - misc/tomcat-bash-aliases
+    - misc/root-bash-aliases
+
     # keep deployment separate from the configuration,
     - tomcat-port-forward
     # - deploy-war
 
+
   # TODO, there's an order problem here, that the deploy-war happens before the proper tomca
   # environmnet is set up.
   tasks:
-    - include: ../roles/misc/tasks/tomcat-bash-aliases.yml
-    - include: ../roles/misc/tasks/root-bash-aliases.yml
 
     # install tomcat7
     - apt: name=libxml2-utils
     - apt: name=tomcat7
-
-
 
 
     # create conf dir,

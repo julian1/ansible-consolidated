@@ -1,29 +1,37 @@
 
-- hosts: geonetwork2.localnet
+- hosts:
+    - geonetwork2.localnet
   vars:
-    - mirror: http://mirror.internode.on.net/pub/debian
-    - version: jessie
-    - upgrade: safe
-    - timezone: Australia/Hobart
-    - locale: en_AU.UTF-8
     - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+      - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
+
   vars_files:
     - ../vars/credentials.yml
   roles:
     - jessie
-    - update
+    - apt-update
+    - sshd
     - timezone
     - locale
     - common
+    - users
     - dotfiles
+
+    - misc/tomcat-bash-aliases
+    - misc/root-bash-aliases
+
+
+    # probably shold be a single 
+    # GN specficif
     - tomcat-port-forward
     - postgres
     - geonetwork
 
-  tasks:
+#  tasks:
     # should always do this, since it's necessary to start from scratch,
-    - include: ../roles/geonetwork/tasks/fresh-db.yml
+    # no - it's a pre-task...
+    # - include: ../roles/geonetwork/tasks/fresh-db.yml
 
     # - include: ../roles/geonetwork/tasks/restore-db.yml
 
