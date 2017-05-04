@@ -84,30 +84,13 @@
     - users
     - dotfiles
     - vim
+
+    - admin/apt/postgres
+    - admin/apt/quadrant
+
+  # TODO should be turned into a role
+  # and split between quadrant and non quadrant
   tasks:
-    - apt: name=wget
-    - apt: name=ca-certificates
-
-    - copy:
-        dest: /etc/apt/sources.list.d/2ndquadrant.list
-        content: |
-          # deployed by ansible!
-          deb http://packages.2ndquadrant.com/pglogical/apt/ jessie-2ndquadrant main
-
-    - copy:
-        dest: /etc/apt/sources.list.d/pgdg.list
-        content: |
-          # deployed by ansible!
-          deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
-
-
-    - shell: creates=/ansible/pglogical-done.txt chdir=/root {{item}}
-      with_items:
-        - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-        - wget --quiet -O - http://packages.2ndquadrant.com/pglogical/apt/AA7A6805.asc | sudo apt-key add -
-        - apt-get update
-        - touch /ansible/pglogical-done.txt
-
 
     - set_fact: version=9.6
 

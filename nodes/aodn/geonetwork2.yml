@@ -26,6 +26,7 @@
     # probably shold be a single 
     # GN specficif
     - admin/tomcat-port-forward
+    - admin/postgres-apt
     - admin/postgres
     - aodn/geonetwork
 

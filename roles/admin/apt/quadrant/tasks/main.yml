@@ -1,0 +1,28 @@
+
+# 2nd quadrant repo
+
+  - debug: msg="{{ansible_distribution_release}}"
+
+
+  - apt: name=wget
+  - apt: name=ca-certificates
+
+
+  - copy:
+      dest: /etc/apt/sources.list.d/2ndquadrant.list
+      content: |
+        # deployed by ansible!
+        deb http://packages.2ndquadrant.com/pglogical/apt/ jessie-2ndquadrant main
+
+
+   - shell: creates=/ansible/apt-quadrant-done.txt chdir=/root {{item}}
+      with_items:
+        - wget --quiet -O - http://packages.2ndquadrant.com/pglogical/apt/AA7A6805.asc | sudo apt-key add -
+        - touch /ansible/apt-quadrant-done.txt
+
+
+  - apt: state=latest update_cache=yes upgrade=safe
+
+
+
+
