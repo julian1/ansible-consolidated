@@ -5,6 +5,7 @@
     - dell-work
     vars:
     roles:
+      - admin/apt/testing
     tasks:
       # bind
       # NOTE problem with rndc.key  solved by purge bind9 and reinstall
