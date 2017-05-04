@@ -1,4 +1,0 @@
-
-  # 777 to allow become_user postgres to write files
-  - file: path=/ansible state=directory mode=777
-

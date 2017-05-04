@@ -1,8 +1,6 @@
 
-  # x11-apps libxml2-utils net-tools curl
   # Common tools
   - apt: name=vim
-  # - apt: name=git
   - apt: name=screen
   - apt: name=less
   - apt: name=aptitude
@@ -11,22 +9,24 @@
   - apt: name=curl
   - apt: name=dnsutils    # dig, nslookup
   - apt: name=sudo
-  # - apt: name=nettools
   - apt: name=time
-  # - apt: name=psmisc    # pstree. use ps auxf instead
   - apt: name=iftop
   - apt: name=iotop
   - apt: name=lsof        # or fuser
   - apt: name=iptables
   - apt: name=netcat-traditional
+  - apt: name=rsync
+  - apt: name=pv
+
+  # x11-apps libxml2-utils net-tools curl
+  # these are not general
+  # - apt: name=git
+  # - apt: name=nettools
+  # - apt: name=psmisc    # pstree. use ps auxf instead
   # - apt: name=debootstrap
   # - apt: name=sshfs     # container doesn't like
-  - apt: name=rsync
-  - apt: name=arp-scan
-  - apt: name=tcpdump
-
-  - apt: name=libxml2-utils
-
-  - apt: name=ipcalc      # for subnets
-
-  - apt: name=a2ps        # printing
+  # - apt: name=arp-scan
+  # - apt: name=tcpdump
+  # - apt: name=libxml2-utils
+  # - apt: name=ipcalc      # for subnets
+  # - apt: name=a2ps        # printing
