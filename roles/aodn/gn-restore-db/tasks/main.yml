@@ -2,7 +2,9 @@
   # communication is actually kind of horrid
   # copy db from host
 
+  - debug: msg="rebuilding db {{geonetwork_postgres_dump}}"       # "
   - copy: src={{geonetwork_postgres_dump}} dest=/ansible/gn.dump
+
 
   # check for database
   - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
@@ -11,8 +13,16 @@
     register: have_db
     changed_when: false
 
+
   # ok - there's an issue if the database name is different.
   # how do we handle this?
+
+  # - pg_restore -d postgres -x -O -U geonetwork -C /ansible/gn.dump
+
+
+  # issue -
+  #   public schema - so we can't just set the owner of everything?  actually if it's not postgres database then  
+  # maybe we can
 
   # restore the db and hack an admin, admin account
   - name: Restore Geonetwork db
@@ -22,16 +32,13 @@
     with_items:
       - |
         psql -d postgres -c "drop database if exists geonetwork"
-        psql -d postgres -c "drop database if exists geonetwork_portal;"
-      - |
-        psql -d postgres -c "
-          drop user if exists geonetwork;
-          create user geonetwork password 'geonetwork';
-          "
-      - pg_restore -d postgres -x -C /ansible/gn.dump
+        psql -d postgres -c "drop database if exists geonetwork_portal"
+        psql -d postgres -c "drop user if exists geonetwork"
+        psql -d postgres -c "create user geonetwork password 'geonetwork'"
+
+      - pg_restore -d postgres -x -O -C /ansible/gn.dump
 
       - psql -d postgres -c "alter database geonetwork_portal rename to geonetwork"
- 
 
       - |
         psql -d geonetwork -c "
@@ -39,11 +46,14 @@
           set password='46e44386069f7cf0d4f2a420b9a2383a612f316e2024b0fe84052b0b96c479a23e8a0be8b90fb8c2'
           where name='admin'
           "
-      - psql -d postgres -c "
-          alter database geonetwork owner to geonetwork;
-          "
+      - psql -d postgres -c "alter database geonetwork owner to geonetwork"
+      
+      - psql -d geonetwork -f "/ansible/admin.sql"
+      - psql -d geonetwork -c "select admin.set_owner_of_schema_objects( 'public', 'geonetwork' )" 
+      - psql -d geonetwork -c "select admin.grant_write_on_schema_and_objects( 'public', 'geonetwork' )" 
+
  
-    when: have_db.stdout != "1"
+    #when: have_db.stdout != "1"
     # when: false
 
 
