@@ -9,8 +9,8 @@
   vars_files:
     - ../../vars/credentials.yml
   roles:
-    - admin/jessie
-    - admin/apt-update
+    - admin/apt/jessie
+    - admin/apt/update
     - admin/sshd
     - admin/timezone
     - admin/locale
@@ -26,8 +26,10 @@
     # probably shold be a single 
     # GN specficif
     - admin/tomcat-port-forward
-    - admin/postgres-apt
+
+    - admin/apt/postgres
     - admin/postgres
+
     - aodn/geonetwork
 
 #  tasks:

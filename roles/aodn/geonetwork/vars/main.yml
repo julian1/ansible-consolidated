@@ -1,0 +1,17 @@
+
+tomcat7:      "/var/lib/tomcat7"
+conf:         "{{tomcat7}}/conf"
+webapps:      "{{tomcat7}}/webapps"
+overrides:    "{{conf}}/overrides"
+geonetwork_data: "{{conf}}/geonetwork_data"
+config:       "{{geonetwork_data}}/config"
+aodn_schema_plugins: "{{conf}}/aodn-schema-plugins"
+schema_plugins: "{{config}}/schema_plugins"
+codelist:     "{{config}}/codelist"
+geonetwork:   "{{webapps}}/geonetwork"
+
+vocab_url:    "http://content.aodn.org.au/Vocabularies"
+
+thesauri_theme: "{{codelist}}/external/thesauri/theme/"
+
+

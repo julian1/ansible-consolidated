@@ -5,31 +5,49 @@
 
   - apt: name=tomcat7 update_cache=yes
 
-  # TODO can't we use vars for this stuff, and perhaps make generic tomcat7?
-  - set_fact: tomcat7=/var/lib/tomcat7
-  - set_fact: conf={{tomcat7}}/conf
-  - set_fact: webapps={{tomcat7}}/webapps
-  - set_fact: overrides={{conf}}/overrides
-  - set_fact: geonetwork_data={{conf}}/geonetwork_data
-  - set_fact: config={{geonetwork_data}}/config
-  - set_fact: aodn_schema_plugins={{conf}}/aodn-schema-plugins
-  - set_fact: schema_plugins={{config}}/schema_plugins
-  - set_fact: codelist={{config}}/codelist
-  - set_fact: geonetwork={{webapps}}/geonetwork
+  ## TODO can't we use vars for this stuff, and perhaps make generic tomcat7?
+#  - set_fact: tomcat7=/var/lib/tomcat7
+#  - set_fact: conf={{tomcat7}}/conf
+#  - set_fact: webapps={{tomcat7}}/webapps
+#  - set_fact: overrides={{conf}}/overrides
+#  - set_fact: geonetwork_data={{conf}}/geonetwork_data
+#  - set_fact: config={{geonetwork_data}}/config
+#  - set_fact: aodn_schema_plugins={{conf}}/aodn-schema-plugins
+#  - set_fact: schema_plugins={{config}}/schema_plugins
+#  - set_fact: codelist={{config}}/codelist
+#  - set_fact: geonetwork={{webapps}}/geonetwork
 
 
   # TODO change this to use with_items
 
-  - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
-  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7  # it's a symbolic link
-  - file: path={{webapps}}          state=directory owner=tomcat7 group=tomcat7
-  - file: path={{overrides}}        state=directory owner=tomcat7 group=tomcat7
-  - file: path={{geonetwork_data}}  state=directory owner=tomcat7 group=tomcat7
-  - file: path={{config}}           state=directory owner=tomcat7 group=tomcat7
-  # - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
-  - file: path={{schema_plugins}}   state=directory owner=tomcat7 group=tomcat7 recurse=yes
-  # - file: path={{codelist}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes should be done after git?
-  - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes  # must create
+#  - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
+#  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7  # it's a symbolic link
+#  - file: path={{webapps}}          state=directory owner=tomcat7 group=tomcat7
+#  - file: path={{overrides}}        state=directory owner=tomcat7 group=tomcat7
+#  - file: path={{geonetwork_data}}  state=directory owner=tomcat7 group=tomcat7
+#  - file: path={{config}}           state=directory owner=tomcat7 group=tomcat7
+#  # - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
+#  - file: path={{schema_plugins}}   state=directory owner=tomcat7 group=tomcat7 recurse=yes
+#  - file: path={{codelist}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes 
+#  - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes  # must create
+
+
+  - file: > 
+      path="{{item}}"
+      state=directory owner=tomcat7 group=tomcat7 
+    tags: whoot
+    with_items:
+      - "{{tomcat7}}"
+      - "{{webapps}}"
+      - "{{overrides}}"
+      - "{{geonetwork_data}}"
+      - "{{config}}"
+      - "{{schema_plugins}}"
+      - "{{codelist}}"
+      - "{{geonetwork}}"
+      - "{{thesauri_theme}}"
+
+
 
 
   # jndi
@@ -59,7 +77,10 @@
     notify: restart-tomcat7
 
 
+
+
   # Unpack war to make iso19139 available
+  - debug: msg="unpacking war"
   - apt: name=unzip
   - file: path={{geonetwork}} state=directory
   - unarchive: src={{webapps}}/geonetwork.war dest={{geonetwork}} copy=no
@@ -67,6 +88,7 @@
 
 
   # Schema plugins
+  - debug: msg="schema plugins"
   # https://github.com/ansible/ansible/issues/7474
   - shell: ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts creates=/etc/ssh/ssh_known_hosts
   - git: repo=https://github.com/aodn/schema-plugins  dest={{aodn_schema_plugins}} version=master # # master  version=merge-imos-to-2.10.x
@@ -79,15 +101,34 @@
       dest={{schema_plugins}}/iso19139
       state=link owner=tomcat7 group=tomcat7
 
-  - file: src={{aodn_schema_plugins}}/iso19139.mcp     dest={{schema_plugins}}/iso19139.mcp      state=link owner=tomcat7 group=tomcat7
-  - file: src={{aodn_schema_plugins}}/iso19139.mcp-2.0 dest={{schema_plugins}}/iso19139.mcp-2.0  state=link owner=tomcat7 group=tomcat7
-  - file: src={{aodn_schema_plugins}}/iso19139.anzlic  dest={{schema_plugins}}/iso19139.anzlic   state=link owner=tomcat7 group=tomcat7
-  - file: src={{aodn_schema_plugins}}/iso19135         dest={{schema_plugins}}/iso19135          state=link owner=tomcat7 group=tomcat7
 
-  - file: src={{aodn_schema_plugins}}/iso19139.mcp-1.4 dest={{schema_plugins}}/iso19139.mcp-1.4  state=link owner=tomcat7 group=tomcat7
-  
+  # for some reason variables (eg. aodn_schema_plugins are not expanded properly
+  - file: > 
+      src=/var/lib/tomcat7/conf/aodn-schema-plugins/{{item}}
+      dest=/var/lib/tomcat7/conf/geonetwork_data/config/schema_plugins/{{item}} 
+      state=link owner=tomcat7 group=tomcat7
+    # tags: whoot
+    with_items:
+      - iso19139.mcp
+      - iso19139.mcp-2.0
+      - iso19139.anzlic
+      - iso19135
+      - iso19139.mcp-1.4
+
 
   # codelists
-  - git: repo=https://github.com/aodn/codelist dest={{codelist}} version=master force=yes
-  - file: path={{codelist}} owner=tomcat7 group=tomcat7 recurse=yes
+
+  #  - debug: msg="codelists"
+  #  - git: repo=https://github.com/aodn/codelist dest={{codelist}} version=master force=yes
+  #  - file: path={{codelist}} owner=tomcat7 group=tomcat7 recurse=yes
+  # http://content.aodn.org.au/Vocabularies/discovery-parameter/aodn_aodn-discovery-parameter-vocabulary.rdf 
+
+  - get_url: url="{{item.url}}" dest="{{item.dest}}"
+    tags: whoot
+    with_items:
+      - { url: "{{vocab_url}}/discovery-parameter/aodn_aodn-discovery-parameter-vocabulary.rdf", 
+          dest: "{{thesauri_theme}}/aodn_aodn-discovery-parameter-vocabulary.rdf" } 
+
+
+
 
