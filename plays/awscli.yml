@@ -1,4 +1,5 @@
 
   - hosts: all
-    tasks:
-      - include: "../roles/misc/tasks/awscli.yml"
+    roles:
+      - misc/aswcli
+

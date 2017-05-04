@@ -5,33 +5,6 @@
 
   - apt: name=tomcat7 update_cache=yes
 
-  ## TODO can't we use vars for this stuff, and perhaps make generic tomcat7?
-#  - set_fact: tomcat7=/var/lib/tomcat7
-#  - set_fact: conf={{tomcat7}}/conf
-#  - set_fact: webapps={{tomcat7}}/webapps
-#  - set_fact: overrides={{conf}}/overrides
-#  - set_fact: geonetwork_data={{conf}}/geonetwork_data
-#  - set_fact: config={{geonetwork_data}}/config
-#  - set_fact: aodn_schema_plugins={{conf}}/aodn-schema-plugins
-#  - set_fact: schema_plugins={{config}}/schema_plugins
-#  - set_fact: codelist={{config}}/codelist
-#  - set_fact: geonetwork={{webapps}}/geonetwork
-
-
-  # TODO change this to use with_items
-
-#  - file: path={{tomcat7}}          state=directory owner=tomcat7 group=tomcat7
-#  # - file: path={{conf}}             state=directory owner=tomcat7 group=tomcat7  # it's a symbolic link
-#  - file: path={{webapps}}          state=directory owner=tomcat7 group=tomcat7
-#  - file: path={{overrides}}        state=directory owner=tomcat7 group=tomcat7
-#  - file: path={{geonetwork_data}}  state=directory owner=tomcat7 group=tomcat7
-#  - file: path={{config}}           state=directory owner=tomcat7 group=tomcat7
-#  # - file: path={{aodn_schema_plugins}} state=directory owner=tomcat7 group=tomcat7
-#  - file: path={{schema_plugins}}   state=directory owner=tomcat7 group=tomcat7 recurse=yes
-#  - file: path={{codelist}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes 
-#  - file: path={{geonetwork}}         state=directory owner=tomcat7 group=tomcat7 recurse=yes  # must create
-
-
   - file: > 
       path="{{item}}"
       state=directory owner=tomcat7 group=tomcat7 

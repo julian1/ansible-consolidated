@@ -2,6 +2,7 @@
 tomcat7:      "/var/lib/tomcat7"
 conf:         "{{tomcat7}}/conf"
 webapps:      "{{tomcat7}}/webapps"
+logs:         "{{tomcat7}}/logs"
 overrides:    "{{conf}}/overrides"
 geonetwork_data: "{{conf}}/geonetwork_data"
 config:       "{{geonetwork_data}}/config"

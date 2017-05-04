@@ -1,4 +1,6 @@
 
+  # todo move into roles - into pglogical
+
   # extracted from dell-home
   - hosts: 
     - pg-provider1.localnet
