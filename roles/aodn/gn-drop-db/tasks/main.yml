@@ -1,0 +1,9 @@
+
+  - service: name=tomcat7 state=stopped
+
+  - shell: psql -tAc "drop database if exists geonetwork"
+    become: yes
+    become_user: postgres
+
+
+

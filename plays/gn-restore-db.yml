@@ -1,0 +1,8 @@
+
+- hosts: all
+  vars:
+    - geonetwork_postgres_dump: "/home/meteo/imos/geonetwork_portal.dump"
+  roles:
+    - aodn/gn-drop-db 
+    - aodn/gn-restore-db 
+

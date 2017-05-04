@@ -27,7 +27,7 @@
     # GN specficif
     - admin/tomcat-port-forward
     - admin/postgres
-    - aodn/geonetwork-fresh-db
+    - aodn/gn-fresh-db
     - aodn/geonetwork
 
 #  tasks:

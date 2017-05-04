@@ -1,7 +1,8 @@
 
   # communication is actually kind of horrid
   # copy db from host
-  - copy: src=gn.dump dest=/tmp
+
+  - copy: src={{geonetwork_postgres_dump}} dest=/ansible/gn.dump
 
   # check for database
   - shell: psql -tAc "select 1 from pg_database where datname='geonetwork'"
@@ -10,6 +11,8 @@
     register: have_db
     changed_when: false
 
+  # ok - there's an issue if the database name is different.
+  # how do we handle this?
 
   # restore the db and hack an admin, admin account
   - name: Restore Geonetwork db
@@ -18,11 +21,18 @@
     become_user: postgres
     with_items:
       - |
+        psql -d postgres -c "drop database if exists geonetwork"
+        psql -d postgres -c "drop database if exists geonetwork_portal;"
+      - |
         psql -d postgres -c "
           drop user if exists geonetwork;
           create user geonetwork password 'geonetwork';
           "
-      - pg_restore -d postgres -x -C /tmp/gn.dump
+      - pg_restore -d postgres -x -C /ansible/gn.dump
+
+      - psql -d postgres -c "alter database geonetwork_portal rename to geonetwork"
+ 
+
       - |
         psql -d geonetwork -c "
           update users
