@@ -7,15 +7,16 @@
       - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
 
   vars_files:
-    - ../vars/credentials.yml
+    - ../../vars/credentials.yml
   roles:
-    - jessie
-    - apt-update
-    - sshd
-    - timezone
-    - locale
-    - common
-    - users
+    - admin/jessie
+    - admin/apt-update
+    - admin/sshd
+    - admin/timezone
+    - admin/locale
+    - admin/common
+    - admin/nopass-sudo
+    - admin/users
     - dotfiles
 
     - misc/tomcat-bash-aliases
@@ -24,9 +25,9 @@
 
     # probably shold be a single 
     # GN specficif
-    - tomcat-port-forward
-    - postgres
-    - geonetwork
+    - admin/tomcat-port-forward
+    - admin/postgres
+    - aodn/geonetwork
 
 #  tasks:
     # should always do this, since it's necessary to start from scratch,

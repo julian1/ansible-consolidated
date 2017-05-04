@@ -1,10 +1,16 @@
 
   - debug: msg="{{ansible_distribution_release}}"
 
-  # postgresql-9.6-postgis-2.3
+  # we really have to use vars to set all this... 
+  # or else use different versions for different releases.
+
+  - apt: name=postgresql-9.6-postgis-2.1
+    when: ansible_distribution_release == 'jessie'
 
   - apt: name=postgresql-9.6-postgis-2.3
-    when: ansible_distribution_release == 'jessie'
+    when: ansible_distribution_release == 'testing'
+
+
 
   - set_fact: main=/etc/postgresql/9.6/main
   - set_fact: libmain=/var/lib/postgresql/9.6/main
