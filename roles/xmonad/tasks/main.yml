@@ -1,6 +1,7 @@
 
   # xmonad stuff
 
+  # TODO should not be users. Should be xmonad_users
 
   - copy: src=xmobarrc        dest={{item.home_dir}}/.xmobarrc
     with_items: users
