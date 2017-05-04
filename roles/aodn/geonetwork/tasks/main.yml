@@ -21,8 +21,6 @@
       - "{{thesauri_theme}}"
 
 
-
-
   # jndi
   - template: src=context.j2 dest={{conf}}/context.xml owner=tomcat7 group=tomcat7
     notify: restart-tomcat7
