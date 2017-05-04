@@ -10,6 +10,7 @@
     - ../../vars/credentials.yml
   roles:
     - admin/apt/jessie
+    - admin/apt/postgres
     - admin/apt/update
     - admin/sshd
     - admin/timezone
@@ -22,14 +23,11 @@
     - misc/tomcat-bash-aliases
     - misc/root-bash-aliases
 
-
     # probably shold be a single 
     # GN specficif
     - admin/tomcat-port-forward
-
-    - admin/apt/postgres
     - admin/postgres
-
+    - aodn/geonetwork-fresh-db
     - aodn/geonetwork
 
 #  tasks:
