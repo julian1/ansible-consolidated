@@ -1,6 +1,6 @@
 
   - hosts: all
-    tasks:
-      - include: "../roles/common/tasks/devenv-lite.yml"
+    roles:
+      - roles/misc/devenv
 
 
