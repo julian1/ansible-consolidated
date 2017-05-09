@@ -11,5 +11,5 @@
 
   - hosts: all
     roles:
-      - deploy-war
+      - admin/deploy-war
 
