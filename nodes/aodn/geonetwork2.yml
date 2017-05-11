@@ -30,10 +30,3 @@
     - aodn/gn-fresh-db
     - aodn/geonetwork
 
-#  tasks:
-    # should always do this, since it's necessary to start from scratch,
-    # no - it's a pre-task...
-    # - include: ../roles/geonetwork/tasks/fresh-db.yml
-
-    # - include: ../roles/geonetwork/tasks/restore-db.yml
-
