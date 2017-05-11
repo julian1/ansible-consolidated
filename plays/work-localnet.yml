@@ -36,17 +36,51 @@
           backup: yes
           content: |
             # deployed by ansible!
-            # zone "aodn.org.au" {
-            #  type master;
-            #  file "/etc/bind/zones/aodn.db";
-            # };
+
+            zone "aodn.org.au" {
+              type master;
+              file "/etc/bind/zones/aodn.db";
+            };
 
             zone "localnet" {
               type master;
               file "/etc/bind/zones/localnet.db";
             };
-
         notify: restart-bind
+
+
+
+
+      # aodn zone
+      - copy:
+          dest: /etc/bind/zones/aodn.db
+          owner: root
+          group: bind
+          content: |
+            ; deployed by ansible!
+            ;
+            $TTL 60
+            @ IN SOA ns1.aodn.org.au. root.aodn.org.au. (
+              2001062501 ; serial
+              21600      ; refresh after 6 hours
+              3600       ; retry after 1 hour
+              604800     ; expire after 1 week
+              86400 )    ; minimum TTL of 1 day
+            ;
+            @ IN NS ns1.aodn.org.au.
+            @ IN NS ns2.aodn.org.au.
+            @ IN A 192.168.1.1
+            @ IN AAAA ::1
+
+            ; ok, simple cname redirect
+            catalogue-portal 60 IN CNAME geonetwork2.localnet.
+
+            @ MX 10 mail.aodn.org.au.
+            mail IN A 192.168.1.1
+            ns1 IN A 192.168.1.1
+            ns2 IN A 192.168.1.2
+        notify: restart-bind
+
 
 
 
