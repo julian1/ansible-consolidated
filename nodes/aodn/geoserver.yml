@@ -1,8 +1,8 @@
-
+ 
 - hosts:
-    - all
+    - geoserver.localnet
   vars_files:
-    - ../vars/credentials.yml
+    - ../../vars/credentials.yml
   vars:
     - users:
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
@@ -10,23 +10,24 @@
 #      - { name: bpasquer, group: adm, pubkey: "{{bpasquer_pubkey}}" }
 #      - { name: anguss,   group: adm, pubkey: "{{anguss_pubkey}}" }
   roles:
-    - jessie
-    - apt-update
-    - sshd
-    - timezone
-    - locale
-    - common
-    - users
+    - admin/apt/jessie
+    - admin/apt/update
+    - admin/sshd
+    - admin/timezone
+    - admin/locale
+    - admin/common
+    - admin/users
     - dotfiles
 
     - misc/tomcat-bash-aliases
     - misc/root-bash-aliases
 
     # specific
-    - tomcat-port-forward
-    - geoserver
+    - admin/tomcat-port-forward
+    - aodn/geoserver
 
   tasks:
+    # why is this here?
     - apt: name=libxml2-utils
 
 
