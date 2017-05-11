@@ -1,12 +1,15 @@
 [default]
 dell-work
-rev-proxy
+
 rev-proxy.localnet
-geoserver
-portal
-aatams.localnet
-wordpress
 geonetwork2.localnet
+geoserver.localnet
+portal.localnet
+geowebcache.localnet
+aatams.localnet
+postgres.localnet
+
+wordpress
 geonetwork3
 aatams-test-instance
 aatams-dev-instance
@@ -14,11 +17,7 @@ julian-test-instance
 aodnblog
 aodnblog2
 bind
-postgres.localnet
-geoserver-test
 
-geowebcache.localnet
-portal.localnet
 archiva.localnet
 
 
