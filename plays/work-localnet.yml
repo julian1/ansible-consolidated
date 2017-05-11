@@ -72,8 +72,9 @@
             @ IN A 192.168.1.1
             @ IN AAAA ::1
 
-            ; ok, simple cname redirect
+            ; simple cnames
             catalogue-portal 60 IN CNAME geonetwork2.localnet.
+            geoserver-123    60 IN CNAME geoserver.localnet.
 
             @ MX 10 mail.aodn.org.au.
             mail IN A 192.168.1.1
