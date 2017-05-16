@@ -38,8 +38,8 @@
             # deployed by ansible!
 
             zone "aodn.org.au" {
-              type master;
-              file "/etc/bind/zones/aodn.db";
+                type master;
+                file "/etc/bind/zones/aodn.db";
             };
 
             zone "localnet" {
