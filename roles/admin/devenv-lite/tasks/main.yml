@@ -1,0 +1,12 @@
+
+  - apt: name=vim
+  - apt: name=git
+  - apt: name=screen
+  - apt: name=less
+  - apt: name=aptitude
+  - apt: name=mlocate
+  - apt: name=sudo
+  - apt: name=pv
+
+
+
