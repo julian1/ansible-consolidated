@@ -1,8 +1,7 @@
 # install minimal account and environment. don't change os
 # eg. ansible-playbook plays/meteo.yml -i parity, -u admin -s
 
-# no hostname, sshd_config, no apt-get update, no /ansible dir
-# note, users deploys bash aliases - which isn't that great
+# note, role/users is deploying bash aliases - which isn't that great
 
 - hosts: all
   vars:
@@ -15,5 +14,3 @@
     - admin/devenv-lite
     - dotfiles
     - vim
-
-    
