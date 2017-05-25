@@ -37,10 +37,10 @@
           content: |
             # deployed by ansible!
 
-            zone "aodn.org.au" {
-                type master;
-                file "/etc/bind/zones/aodn.db";
-            };
+            # zone "aodn.org.au" {
+            #    type master;
+            #    file "/etc/bind/zones/aodn.db";
+            #};
 
             zone "localnet" {
               type master;
