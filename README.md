@@ -9,7 +9,7 @@ Requires Ansible version >= 2
 #### Examples
 
 ```
-
+ansible-playbook plays/meteo.yml -i parity, -u admin -s
 ansible-playbook nodes/pglogical.yml -i pglogical.localnet,
 ansible-playbook nodes/bind.yml -u root
 ansible-playbook nodes/dell-home.yml

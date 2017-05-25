@@ -5,18 +5,19 @@
   # this is a bit of a security issue,
   - file: path=/ansible state=directory mode=777
 
+  # nly needed on real instances
   # - include: no-shell-bell.yml
   - replace: dest=/etc/inputrc backup=true regexp='#.*(set bell-style visible.*)' replace='\1'
 
-  # - include: devenv-lite.yml
-  - apt: name=vim
-  - apt: name=git
-  - apt: name=screen
-  - apt: name=less
-  - apt: name=aptitude
-  - apt: name=mlocate
-  - apt: name=sudo
-  - apt: name=pv
+# see roles/admin/devenv-lite
+#  - apt: name=vim
+#  - apt: name=git
+#  - apt: name=screen
+#  - apt: name=less
+#  - apt: name=aptitude
+#  - apt: name=mlocate
+#  - apt: name=sudo
+#  - apt: name=pv
 
 
 

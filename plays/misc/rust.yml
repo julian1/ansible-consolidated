@@ -1,0 +1,6 @@
+# should be run as user meteo 
+
+  - hosts: all
+    roles:
+      - misc/rust
+
