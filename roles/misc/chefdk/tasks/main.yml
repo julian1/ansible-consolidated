@@ -26,6 +26,8 @@
       - rm -rf .chef .chefdk/
       - chef gem install knife-solo
       - chef gem install berkshelf
+      # needed this... - or got conflict with net-ssh
+      - chef gem install knife-solo
       - touch ansible-chefdk-configured
 
   # do this in ~/paths
