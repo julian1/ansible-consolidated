@@ -7,28 +7,43 @@
 
   - file: path=/root/chef_install state=directory
 
-  - shell: chdir=/root/chef_install creates=chefdk-installed {{item}}
+# what a pile of shit this is
+
+  - shell: chdir=/home/meteo  {{item}}
+    become: yes
+    become_user: meteo
+    with_items:
+      - chef gem uninstall net-ssh || true
+      - chef gem uninstall knife-solo || true
+      - chef gem uninstall berkshelf || true
+      - rm -rf .chef .chefdk/
+
+  # creates=chefdk-installed
+  # - touch chefdk-installed
+
+  - shell: chdir=/root/chef_install  {{item}}
     when: ansible_distribution == 'Debian'
     with_items:
       - dpkg --purge chefdk
       # - wget https://opscode-omnibus-packages.s3.amazonaws.com/debian/6/x86_64/chefdk_0.9.0-1_amd64.deb
-      - wget https://packages.chef.io/files/stable/chefdk/0.14.25/debian/8/chefdk_0.14.25-1_amd64.deb
-      # - dpkg -i chefdk_0.9.0-1_amd64.deb
+
+      - wget 'https://packages.chef.io/files/stable/chefdk/0.14.25/debian/8/chefdk_0.14.25-1_amd64.deb'
       - dpkg -i chefdk_0.14.25-1_amd64.deb
 
+      # - wget 'https://packages.chef.io/files/stable/chefdk/1.4.3/debian/8/chefdk_1.4.3-1_amd64.deb'
+      # - dpkg -i chefdk_1.4.3-1_amd64.deb
+  
+  # creates=ansible-chefdk-configured
+  # - touch ansible-chefdk-configured
 
-      - touch chefdk-installed
-
-  - shell: chdir=/home/meteo creates=ansible-chefdk-configured {{item}}
+  - shell: chdir=/home/meteo  {{item}}
     become: yes
     become_user: meteo
     with_items:
-      - rm -rf .chef .chefdk/
-      - chef gem install knife-solo
-      - chef gem install berkshelf
-      # needed this... - or got conflict with net-ssh
-      - chef gem install knife-solo
-      - touch ansible-chefdk-configured
+
+      - export "PATH=/home/meteo/.gem/ruby/2.3.0/bin:$PATH" && chef gem install knife-solo
+      - export "PATH=/home/meteo/.gem/ruby/2.3.0/bin:$PATH" && chef gem install berkshelf
+      #- chef gem install berkshelf
 
   # do this in ~/paths
   # - lineinfile: dest=/home/meteo/paths backup=true state=present insertafter=EOF line='export PATH=$PATH:$HOME/.chefdk/gem/ruby/2.1.0/bin'
