@@ -263,7 +263,8 @@
           # deployed by ansible!
           export JAVA_HOME="$HOME/jdk1.7.0_80"
           export PATH="$JAVA_HOME/bin:$PATH"
-          export INTELLIJ_HOME="$HOME/imos/idea-IU-143.1821.5/"
+          # export INTELLIJ_HOME="$HOME/imos/idea-IU-143.1821.5/"
+          export INTELLIJ_HOME="$HOME/imos/idea-IU-171.4424.56/"
           export PATH="$INTELLIJ_HOME/bin:$PATH:"
       tags: whoot
 
