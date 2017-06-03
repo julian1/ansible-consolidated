@@ -32,10 +32,10 @@ ansible-playbook -i localhost, plays/devenv-lite.yml
 ansible-playbook -i localhost, plays/work-localnet.yml
 ansible-playbook ./plays/restart-tomcat.yml -i n.n.n.n,
 
-ansible-playbook ./plays/deploy-war.yml -i n.n.n.n, --extra-vars "warpath=~/imos/geoserver-1.0.0-imos.war warname=geoserver.war"
-ansible-playbook ./plays/deploy-war.yml -i geowebcache.localnet, --extra-vars "warpath=~/imos/geowebcache/geowebcache/web/target/geowebcache.war warname=geowebcache.war"
+ ansible-playbook ./plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
+ansible-playbook ./plays/admin/deploy-war.yml -i geowebcache.localnet, --extra-vars "warpath=~/imos/geowebcache/geowebcache/web/target/geowebcache.war warname=geowebcache.war"
 
-ansible-playbook ./plays/deploy-war.yml -i geonetwork2.localnet, --extra-vars "warpath=~/imos/core-geonetwork/web/target/geonetwork.war warname=geonetwork.war"
+ansible-playbook ./plays/admin/deploy-war.yml -i geonetwork2.localnet, --extra-vars "warpath=~/imos/core-geonetwork/web/target/geonetwork.war warname=geonetwork.war"
 
 
 
