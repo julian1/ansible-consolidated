@@ -55,17 +55,27 @@
 
   # log history
   l = log --color --graph  --abbrev-commit --decorate --abbrev-commit --decorate --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue) <%an>%Creset'
+
+  # as above but with stat
   ll = log --color --graph  --abbrev-commit --decorate --abbrev-commit --decorate --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue) <%an>%Creset' --numstat
-  lf = log -U1 --follow
-  # show source changes
+
+  # show source changes, p paginage
   lp = log --color -p
-  # show file change stats
+
+  # show file change stats - eg. like file ls
   ls = log --color --stat
 
-  # reset stuff
+  # git history on a file
+  lh = log -U1 --follow
+
+
+  # reset hard
   rh = reset --hard
+
+  # reset to origin
   ro = reset --hard remotes/origin/HEAD
 
+  # reset undo
   # unstage file - deleted only
   # reset can be used unstage ordinary staged files
   # eg. reset to unstaged
@@ -74,7 +84,7 @@
   # undo last commit (or reset to last commit)
   u = checkout HEAD~1
 
-  
+
   # diff
   dc = diff --color
   df = diff --name-only
@@ -83,4 +93,5 @@
   # tags
   t = tag
   tl = tag -l
+
 
