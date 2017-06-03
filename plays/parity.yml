@@ -1,0 +1,8 @@
+
+# note, role/users is deploying bash aliases - which isn't that great
+
+- hosts: all
+  roles:
+    #- misc/rust
+    # - parity
+    - misc/node
