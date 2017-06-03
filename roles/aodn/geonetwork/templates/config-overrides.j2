@@ -75,7 +75,8 @@
             </resource>
         </replaceXML>
 
-        <addXML xpath="appHandler" attName="class" value="org.fao.geonet.Geonetwork">
+
+        <!-- addXML xpath="appHandler" attName="class" value="org.fao.geonet.Geonetwork">
             <!-- param name="LinkMonitorEnabled" value="true"/ JA -->
             <param name="LinkMonitorEnabled" value="true"/>
             <param name="LinkMonitorClass" value="org.fao.geonet.monitor.link.LinkMonitorService"/>
@@ -88,7 +89,24 @@
             <param name="LinkMonitorServiceFreshness" value="3600"/>
             <param name="LinkMonitorServiceUnknownAsWorking" value="true"/>
             <param name="LinkMonitorServiceBetweenChecksIntervalMs" value="2000"/>
+        </addXML -->
+
+        <addXML xpath="appHandler" attName="class" value="org.fao.geonet.Geonetwork">
+            <param name="OnlineResourceMonitorEnabled" value="true"/>
+            <param name="OnlineResourceMonitorClass" value="org.fao.geonet.monitor.link.LinkMonitorService"/>
+            <param name="OnlineResourceMonitorInitialDelaySeconds" value="5"/>
+            <param name="OnlineResourceMonitorFixedDelaySeconds" value="600"/>
+            <param name="OnlineResourceMonitorServiceReindexIntervalSeconds" value="1800"/>
+            <param name="OnlineResourceMonitorServiceMaxFailureRate" value="0.4"/>
+            <param name="OnlineResourceMonitorServiceMaxChecks" value="10"/>
+            <param name="OnlineResourceMonitorServiceTimeout" value="15"/>
+            <param name="OnlineResourceMonitorServiceFreshness" value="3600"/>
+            <param name="OnlineResourceMonitorServiceUnknownAsWorking" value="true"/>
+            <param name="OnlineResourceMonitorServiceBetweenChecksIntervalMs" value="2000"/>
         </addXML>
+
+
+
     </file>
 
 
