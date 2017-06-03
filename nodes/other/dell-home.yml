@@ -108,6 +108,20 @@
       tags: whoot
 
     - copy:
+        dest: /home/meteo/scripts/restart-wifi.sh
+        mode: 0777
+        content: |
+          # deployed by ansible!
+          # not used for a long time... now using wicd-curses
+          ifconfig wlan0 down
+          iwconfig wlan0 essid AP1
+          iwconfig wlan0 ap any
+          iwconfig wlan0 enc off
+          ifconfig wlan0 up
+          iwconfig wlan0
+      tags: whoot
+
+    - copy:
         dest: /home/meteo/scripts/volume.sh
         mode: 0777
         content: |
