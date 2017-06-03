@@ -1,7 +1,7 @@
 
 - hosts: dell-home
   vars_files:
-    - ../vars/credentials.yml
+    - ../../vars/credentials.yml
   vars:
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
@@ -45,16 +45,16 @@
           APT::Default-Release "testing";
 
   roles:
-    - apt-update
-    - zfs
-    - timezone
-    - locale
-    - common
+    - admin/apt/update
+    # - admin/zfs
+    - admin/timezone
+    - admin/locale
+    - admin/common
     - { role: dotfiles, tags: [ 'dotfiles' ] }
     - vim
     - xmonad
-    - ip-forwarding
-    - printer
+    # - ip-forwarding
+    - admin/printer
 
   tasks:
     - hostname: name=dell-home
@@ -87,13 +87,47 @@
 
 
 
-
       # command: bash -c "/usr/sbin/alsactl"
       # not sure if this should be with store or init
     - command: /usr/sbin/alsactl
       args:
         creates: /var/lib/alsa/asound.state
       notify: reboot
+
+    # create home for scripts
+    - file: path=/home/meteo/scripts state=directory mode=777
+      tags: whoot
+
+    ####
+    - copy:
+        dest: /home/meteo/scripts/proxy.sh
+        mode: 0777
+        content: |
+          # deployed by ansible!
+          ssh -N -v  -D 5222  admin@box
+      tags: whoot
+
+    - copy:
+        dest: /home/meteo/scripts/volume.sh
+        mode: 0777
+        content: |
+          # deployed by ansible!
+          # could just use alias
+          amixer set Master $1
+          amixer set PCM 100% 
+      tags: whoot
+
+    - copy:
+        dest: /home/meteo/scripts/brightness.sh
+        mode: 0777
+        content: |
+          # deployed by ansible!
+          # xset -dpms; xset s off
+          xrandr --output eDP-1 --brightness $1
+
+      tags: whoot
+
+
 
     #####
     - copy:

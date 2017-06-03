@@ -1,4 +1,5 @@
 # should be run as user meteo
+# note this installs rustup, to do further management
 
   - get_url: > 
       url='https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init'                
@@ -8,5 +9,14 @@
   - command: >
       ~/rustup-init -y
 
+  # rustup update
+
   # put in scripts? 
   # PATH="~/.cargo/bin/:$PATH"
+
+  # download Parity code
+# $ git clone https://github.com/paritytech/parity
+#$ cd parity
+
+# build in release mode
+#$ cargo build --release

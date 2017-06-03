@@ -19,10 +19,10 @@
 
   roles:
     - testing
-    - apt-update
-    - timezone
-    - locale
-    - common
+    - admin/apt/update
+    - admin/timezone
+    - admin/locale
+    - misc/common
     - users
     - { role: dotfiles, tags: [ 'whoot' ] }
     - vim
@@ -164,9 +164,7 @@
     - file: path=/home/meteo/scripts state=directory mode=777
       tags: whoot
 
-
     ####
-
     - copy:
         dest: /home/meteo/scripts/opam.sh
         content: |

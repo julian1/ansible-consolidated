@@ -4,6 +4,7 @@
 
   # https://nodejs.org/en/download/package-manager/
   - apt: name=curl
+
   - shell: |
       curl -sL https://deb.nodesource.com/setup_4.x | bash -
       creates=/etc/apt/sources.list.d/nodesource.list
