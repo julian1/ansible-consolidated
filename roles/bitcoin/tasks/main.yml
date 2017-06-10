@@ -1,0 +1,75 @@
+
+  # key_file=/home/user/.ssh/id_rsa.github-{{ item.repo }}
+
+  - git: repo=http://github.com/bitcoin/bitcoin
+      dest=/home/meteo/bitcoin 
+      accept_hostkey=yes
+      force=yes
+      recursive=no
+      version=v0.14.1
+
+  - file: path=/home/meteo/bitcoin state=directory owner=meteo group=meteo recurse=yes
+
+  # https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md
+  - apt: name=build-essential
+  - apt: name=libtool
+  - apt: name=autotools-dev 
+  - apt: name=automake 
+  - apt: name=pkg-config
+  - apt: name=libssl-dev
+  - apt: name=libevent-dev
+  - apt: name=bsdmainutils
+
+  # boost
+  - apt: name=libboost-system-dev
+  - apt: name=libboost-filesystem-dev
+  - apt: name=libboost-chrono-dev
+  - apt: name=libboost-program-options-dev
+  - apt: name=libboost-test-dev
+  - apt: name=libboost-thread-dev
+
+
+  # bdb
+  - copy:
+      dest: /home/meteo/bitcoin/build-bd.sh
+      mode: 0755
+      content: |
+        # deployed by ansible!
+        BITCOIN_ROOT=$(pwd)
+
+        # Pick some path to install BDB to, here we create a directory within the bitcoin directory
+        BDB_PREFIX="${BITCOIN_ROOT}/db4"
+        mkdir -p $BDB_PREFIX
+
+        # Fetch the source and verify that it is not tampered with
+        wget 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
+        echo '12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef  db-4.8.30.NC.tar.gz' | sha256sum -c
+        # -> db-4.8.30.NC.tar.gz: OK
+        tar -xzvf db-4.8.30.NC.tar.gz
+
+        # Build the library and install to our prefix
+        cd db-4.8.30.NC/build_unix/
+        #  Note: Do a static build so that it can be embedded into the executable, instead of having to find a .so at runtime
+        ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX
+        make install
+
+
+  - name: build bdb
+    shell: creates=db4/lib/libdb.a chdir=/home/meteo/bitcoin {{item}}
+    with_items:
+      - ./build-bd.sh 
+
+
+  - name: configure 
+    shell: creates=Makefile chdir=/home/meteo/bitcoin {{item}}
+    with_items:
+      - ./configure LDFLAGS="-L$(pwd)/db4/lib/" CPPFLAGS="-I$(pwd)/db4/include/" --disable-shared --without-gui --without-miniupnpc
+    tags: whoot
+
+
+  - name: make bitcoin
+    shell: creates=src/bitcoind chdir=/home/meteo/bitcoin {{item}}
+    with_items:
+      - make
+    tags: whoot
+
