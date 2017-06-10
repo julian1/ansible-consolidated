@@ -27,6 +27,8 @@
   # https://github.com/tpope/vim-pathogen
   - get_url: url='https://tpo.pe/pathogen.vim'                dest={{vim_user_home}}/.vim/autoload/pathogen.vim
 
+  - apt: name=git
+
   # solidity, sol
   - git: repo=https://github.com/tomlion/vim-solidity         dest={{vim_user_home}}/.vim/bundle/vim-solidity
 
