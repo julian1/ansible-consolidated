@@ -3,7 +3,7 @@
 
 - hosts: dell-work
   vars_files:
-    - ../vars/credentials.yml
+    - ../../vars/credentials.yml
   vars:
     - printer:
         name: ImosLexmark
@@ -164,21 +164,7 @@
     - file: path=/home/meteo/scripts state=directory mode=777
       tags: whoot
 
-
     ####
-    - copy:
-        dest: /home/meteo/scripts/mount-utas.sh
-        content: |
-          # deployed by ansible!
-          umount ./home_drive/
-          rmdir ./home_drive/
-          mkdir ./home_drive/
-          chown meteo:meteo ./home_drive
-
-          /sbin/mount.cifs -o username=jfca,domain=utas,uid=1000,gid=1000 //homedrive.its.utas.edu.au/home/j/jf/jfca ./home_drive/
-      tags: whoot
-
-
     - copy:
         dest: /home/meteo/scripts/opam.sh
         content: |
@@ -275,8 +261,7 @@
           # deployed by ansible!
           export JAVA_HOME="$HOME/jdk1.7.0_80"
           export PATH="$JAVA_HOME/bin:$PATH"
-          # export INTELLIJ_HOME="$HOME/imos/idea-IU-143.1821.5/"
-          export INTELLIJ_HOME="$HOME/imos/idea-IU-171.4424.56/"
+          export INTELLIJ_HOME="$HOME/imos/idea-IU-143.1821.5/"
           export PATH="$INTELLIJ_HOME/bin:$PATH:"
       tags: whoot
 
