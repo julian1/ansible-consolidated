@@ -1,0 +1,111 @@
+
+!
+! Last configuration change at 18:09:55 aedt Mon Feb 8 2016 by meteo
+! NVRAM config last updated at 18:10:08 aedt Mon Feb 8 2016 by meteo
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname cisco1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+username meteo privilege 15
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local none 
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone aedt 11 0
+system mtu routing 1500
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-892651904
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-892651904
+ revocation-check none
+ rsakeypair TP-self-signed-892651904
+!
+!
+crypto pki certificate chain TP-self-signed-892651904
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+ip ssh version 2
+ip ssh pubkey-chain
+  username meteo
+   key-hash ssh-rsa EE30E46C8C54A57016F0E1721E2C3926 julian.atkinson@utas.edu.au
+  quit
+ip scp server enable
+!
+!
+!
+!
+!
+interface GigabitEthernet0/1
+ switchport trunk allowed vlan 100,120,200,201
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk allowed vlan 100,120,200,201
+ switchport mode trunk
+!
+interface GigabitEthernet0/3
+!
+interface GigabitEthernet0/4
+ switchport access vlan 201
+ switchport mode access
+!
+interface GigabitEthernet0/5
+ switchport access vlan 201
+ switchport mode access
+!
+interface GigabitEthernet0/6
+ switchport access vlan 201
+ switchport mode access
+!
+interface GigabitEthernet0/7
+ switchport access vlan 201
+ switchport mode access
+!
+interface GigabitEthernet0/8
+!
+interface Vlan1
+ no ip address
+ no ip route-cache
+!
+interface Vlan100
+ ip address 192.168.100.12 255.255.255.0
+ no ip route-cache
+!
+ip default-gateway 192.168.100.1
+ip http server
+ip http secure-server
+logging esm config
+!
+!
+!
+line con 0
+line vty 5 15
+!
+ntp server ntp.internode.on.net
+end
