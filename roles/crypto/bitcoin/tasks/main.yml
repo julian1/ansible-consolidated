@@ -1,37 +1,26 @@
 
   # key_file=/home/user/.ssh/id_rsa.github-{{ item.repo }}
 
+
   - git: repo=http://github.com/bitcoin/bitcoin
-      dest=/home/meteo/bitcoin 
+      dest="{{bitcoin.build_dir}}"
       accept_hostkey=yes
       force=yes
       recursive=no
       version=v0.14.1
 
-  - file: path=/home/meteo/bitcoin state=directory owner=meteo group=meteo recurse=yes
+  - file: path="{{bitcoin.build_dir}}" state=directory owner="{{bitcoin.user}}" group="{{bitcoin.user}}" recurse=yes
 
-  # https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md
-  - apt: name=build-essential
-  - apt: name=libtool
-  - apt: name=autotools-dev 
-  - apt: name=automake 
-  - apt: name=pkg-config
-  - apt: name=libssl-dev
-  - apt: name=libevent-dev
-  - apt: name=bsdmainutils
+# git doesn't support become and become_user
+#      become=yes 
+#      become_user="{{bitcoin.user}}"
 
-  # boost
-  - apt: name=libboost-system-dev
-  - apt: name=libboost-filesystem-dev
-  - apt: name=libboost-chrono-dev
-  - apt: name=libboost-program-options-dev
-  - apt: name=libboost-test-dev
-  - apt: name=libboost-thread-dev
-
+  # needed for become 
+  - apt: name=sudo
 
   # bdb
   - copy:
-      dest: /home/meteo/bitcoin/build-bd.sh
+      dest: "{{bitcoin.build_dir}}/build-bd.sh"
       mode: 0755
       content: |
         # deployed by ansible!
@@ -55,20 +44,27 @@
 
 
   - name: build bdb
-    shell: creates=db4/lib/libdb.a chdir=/home/meteo/bitcoin {{item}}
+    shell: creates=db4/lib/libdb.a chdir={{bitcoin.build_dir}} {{item}}
+    become: yes
+    become_user: "{{bitcoin.user}}"
     with_items:
       - ./build-bd.sh 
 
 
-  - name: configure 
-    shell: creates=Makefile chdir=/home/meteo/bitcoin {{item}}
+  - name: autogen and configure 
+    shell: creates=Makefile chdir={{bitcoin.build_dir}} {{item}}
+    become: yes
+    become_user: "{{bitcoin.user}}"
     with_items:
+      - ./autogen.sh
       - ./configure LDFLAGS="-L$(pwd)/db4/lib/" CPPFLAGS="-I$(pwd)/db4/include/" --disable-shared --without-gui --without-miniupnpc
     tags: whoot
 
 
   - name: make bitcoin
-    shell: creates=src/bitcoind chdir=/home/meteo/bitcoin {{item}}
+    shell: creates=src/bitcoind chdir={{bitcoin.build_dir}} {{item}}
+    become: yes
+    become_user: "{{bitcoin.user}}"
     with_items:
       - make
     tags: whoot
