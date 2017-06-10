@@ -122,6 +122,14 @@
       tags: whoot
 
     - copy:
+        dest: /home/meteo/scripts/nuc-share.sh
+        mode: 0777
+        content: |
+          # deployed by ansible!
+          sshfs root@nuc:/storage mnt/
+      tags: whoot
+
+    - copy:
         dest: /home/meteo/scripts/volume.sh
         mode: 0777
         content: |
