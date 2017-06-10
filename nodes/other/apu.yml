@@ -432,11 +432,25 @@
               host esp12f       { hardware ethernet 18:fe:34:d2:3a:45; fixed-address 192.168.43.19; }
           }
 
+          subnet 192.168.44.0 netmask 255.255.255.0 {
+              interface "wlan1";
+
+              range 192.168.44.1  192.168.44.127;
+              option subnet-mask 255.255.255.0;
+              option broadcast-address 192.168.44.255;
+              option routers 192.168.44.1;
+              option domain-name-servers 192.168.44.1;
+
+              host dell-home2   { hardware ethernet f8:16:54:1c:9e:90; fixed-address 192.168.44.14; }
+          }
+ 
+
           default-lease-time 600;
           max-lease-time 7200;
           # Show that we want to be the only DHCP server in this network:
           authoritative;
       notify: restart-dhcp
+      tags: whoot
 
 
 
