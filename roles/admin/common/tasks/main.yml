@@ -1,9 +1,13 @@
 
+OBSOLETE
+
   # 777 to allow become_user become_user postgres to write to ansible
   # TODO fix and remove....
   # - include: ansible.yml
   # this is a bit of a security issue,
   - file: path=/ansible state=directory mode=777
+
+  # - do this manually if it is really required
 
   # nly needed on real instances
   # - include: no-shell-bell.yml
