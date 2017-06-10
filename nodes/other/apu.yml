@@ -4,8 +4,8 @@
   # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
 - hosts: 192.168.100.1
   vars_files:
-    - ../vars/testing.yml
-    - ../vars/credentials.yml
+    - ../../vars/testing.yml
+    - ../../vars/credentials.yml
   vars:
     - hostname: apu
     - users:

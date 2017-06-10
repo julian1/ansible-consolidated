@@ -6,7 +6,7 @@
 
 - hosts: chromebox
   vars_files:
-    - ../vars/credentials.yml
+    - ../../vars/credentials.yml
   vars:
     - sources_template: tvheadend.j2
     # might be nicer to take from dhcp...

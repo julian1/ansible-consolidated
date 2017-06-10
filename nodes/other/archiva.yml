@@ -3,7 +3,7 @@
     - archiva.localnet
     - archiva
   vars_files:
-    - ../vars/credentials.yml
+    - ../../vars/credentials.yml
   vars:
     - users:
       - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
