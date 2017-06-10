@@ -15,12 +15,12 @@
     - admin/apt/update
     - admin/timezone
     - admin/locale
-    # - hostname
-    # - common
     - admin/ip-forwarding
     - dotfiles
 
   tasks:
+    - hostname: name=apu
+
     - apt: name=ntp             # network time
     - apt: name=tcpdump
     - apt: name=netstat-nat     # nat connections
@@ -274,23 +274,203 @@
 
 
 
+
+      # bind
+      # NOTE problem with rndc.key  solved by purge bind9 and reinstall
+    - apt: name=bind9
+
+    - file: path=/etc/bind/zones state=directory owner=root group=bind
+
+    # named configuration
+    - copy:
+        dest: /etc/bind/named.conf.options
+        backup: yes
+        content: |
+          # deployed by ansible!
+          options {
+            directory "/var/cache/bind";
+            forwarders {
+              8.8.8.8;
+            };
+            dnssec-validation auto;
+            auth-nxdomain no;    # conform to RFC1035
+            listen-on-v6 { any; };
+          };
+      notify: restart-bind
+
+    # zones
+    - copy:
+        dest: /etc/bind/named.conf.local
+        backup: yes
+        content: |
+          # deployed by ansible!
+
+          zone "localnet" {
+            type master;
+            file "/etc/bind/zones/localnet.db";
+          };
+      notify: restart-bind
+
+
+    # localnet zone
+    - copy:
+        dest: /etc/bind/zones/localnet.db
+        owner: root
+        group: bind
+        content: |
+          ; deployed by ansible!
+          ;
+          $TTL 60
+          $ORIGIN localnet.
+          @             IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
+          @             IN NS ns1
+          @             IN NS ns2
+          @             IN A 192.168.1.1
+          ; @           IN AAAA ::1
+          @             IN MX 10 192.168.1.1
+
+          ; vlan 100
+          apu           IN A 192.168.100.1
+          ; these are around the wrong way...
+          cisco1        IN A 192.168.100.11
+          cisco2        IN A 192.168.100.12
+
+          ; vlan 200 - not used
+
+          ; vlan 201
+          budii         IN A 192.168.201.10
+          chromebox     IN A 192.168.201.12
+          brother       IN A 192.168.201.15
+          bravia        IN A 192.168.201.16
+          nuc           IN A 192.168.201.17
+          dell-home-wired IN A 192.168.201.19
+          snom          IN A 192.168.201.20
+
+          ; wireless  wlan0
+          omega         IN A 192.168.43.10
+          dell-home     IN A 192.168.43.14
+          imac          IN A 192.168.43.15
+          esp           IN A 192.168.43.16
+          asus          IN A 192.168.43.17
+          chromebox-wifi IN A 192.168.43.18
+          esp12f        IN A 192.168.43.19
+
+          ; wireless  wlan1
+          dell-home     IN A 192.168.44.14
+          esp           IN A 192.168.44.16
+          chromebox-wifi IN A 192.168.44.18
+
+          mail          IN A 192.168.201.1
+          ns1           IN A 192.168.1.1
+          ns2           IN A 192.168.1.2
+      notify: restart-bind
+
+
+    # dhcp
+    - apt: name=isc-dhcp-server
+
+    - copy:
+        dest: /etc/default/isc-dhcp-server
+        owner: root
+        group: root
+        backup: yes
+        content: |
+          # deployed by ansible!
+          #Separate multiple interfaces with spaces, e.g. “eth0 eth1".
+          INTERFACESv4="eth0.201 wlan0 wlan1"
+          INTERFACESv6=""
+      notify: restart-dhcp
+
+    - copy:
+        dest: /etc/dhcp/dhcpd.conf
+        owner: root
+        group: root
+        backup: yes
+        content: |
+          # deployed by ansible!
+
+          authoritative;
+          option domain-name "localnet";
+          # option domain-name-servers 131.217.38.36, 8.8.4.4;
+          # TODO don't think we need this... because we are explicit
+          option domain-name-servers 10.1.1.1;
+
+          # Set up our desired subnet:
+          # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
+          subnet 192.168.201.0 netmask 255.255.255.0 {
+              interface "eth0.201";
+              range 192.168.201.1  192.168.201.127;
+              option subnet-mask 255.255.255.0;
+              option broadcast-address 192.168.201.255;
+              option routers 192.168.201.1;
+              option domain-name-servers 192.168.201.1;
+
+              host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 192.168.201.10; }
+              host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
+              host brother      { hardware ethernet 00:80:77:34:55:96; fixed-address 192.168.201.15; }
+              host bravia       { hardware ethernet ac:9b:0a:91:6c:37; fixed-address 192.168.201.16; }
+              host nuc          { hardware ethernet b8:ae:ed:7b:b5:b9; fixed-address 192.168.201.17; }
+              host dell-home-wired { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
+              host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.201.20; }
+          }
+
+          subnet 192.168.43.0 netmask 255.255.255.0 {
+              interface "wlan0";
+
+              range 192.168.43.1  192.168.43.127;
+              option subnet-mask 255.255.255.0;
+              option broadcast-address 192.168.43.255;
+              option routers 192.168.43.1;
+              option domain-name-servers 192.168.43.1;
+
+              host omega        { hardware ethernet 40:a3:6b:c1:18:dc; fixed-address 192.168.43.10; }
+              host dell-home    { hardware ethernet f8:16:54:1c:9e:90; fixed-address 192.168.43.14; }
+              host imac         { hardware ethernet 00:19:e3:10:53:89; fixed-address 192.168.43.15; }
+              host esp          { hardware ethernet 18:fe:34:d1:94:4d; fixed-address 192.168.43.16; }
+              host asus         { hardware ethernet 60:57:18:75:3b:cc; fixed-address 192.168.43.17; }
+              host chromebox-wifi { hardware ethernet ac:b5:7d:07:f7:d9; fixed-address 192.168.43.18; }
+              host esp12f       { hardware ethernet 18:fe:34:d2:3a:45; fixed-address 192.168.43.19; }
+          }
+
+          default-lease-time 600;
+          max-lease-time 7200;
+          # Show that we want to be the only DHCP server in this network:
+          authoritative;
+      notify: restart-dhcp
+
+
+
+
   handlers:
-    - name: restart-eth0
-      command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
+    # - name: restart-eth0
+    #  command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
+
+    - name: restart-eth1
+      command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
 
     - name: restart-wlan0
       command: sh -c "/sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0"
 
-    - name: restart-eth0
-      command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
-
-    - name: restart-eth1
-      command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
 
     - name: restart-smcroute
       service: name=smcroute state=restarted
 
     - name: restart-tftpd-hpa
       service: name=tftpd-hpa state=restarted
+
+    - name: reconfigure-iptables
+      command: "{{item}}"
+      with_items:
+        - sh /etc/iptables-rules
+        - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+    # - name: reboot
+    #  command: /sbin/reboot
+
+    - name: restart-bind
+      service: name=bind9 state=restarted
+
+    - name: restart-dhcp
+      service: name=isc-dhcp-server state=restarted
 
 
