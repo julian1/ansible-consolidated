@@ -1,0 +1,25 @@
+
+- hosts: 
+    - piplus2
+  vars_files:
+    - ../../vars/credentials.yml
+  vars:
+    - users:
+      - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+      - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
+
+  roles:
+    # - admin/apt/testing
+    # - admin/apt/update
+    # - admin/timezone
+    # - admin/locale
+    # - admin/users
+    # - dotfiles
+    # - vim
+    - bitcoin
+ 
+
+  tasks:
+    - hostname:
+        name: piplus2.localnet
+      tags: whoot
