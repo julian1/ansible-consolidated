@@ -4,20 +4,21 @@
   # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
 - hosts: 192.168.100.1
   vars_files:
-    - ../../vars/testing.yml
     - ../../vars/credentials.yml
   vars:
     - hostname: apu
     - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}" }
+      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+
   roles:
-    - debian
-    - timezone
-    - locale
-    - hostname
-    - common
-    - meteo-dotfiles
-    - ip-forwarding
+    - admin/apt/testing
+    - admin/apt/update
+    - admin/timezone
+    - admin/locale
+    # - hostname
+    # - common
+    - admin/ip-forwarding
+    - dotfiles
 
   tasks:
     - apt: name=ntp             # network time
@@ -164,76 +165,7 @@
         # - restart-eth2
         - restart-wlan0
 
-    - apt: name=dnsmasq
 
-    - copy:
-        # TODO change this filename!
-        dest: /etc/dnsmasq.d/wifi
-        content: |
-          # deployed by ansible!
-          # https://wiki.debian.org/HowTo/dnsmasq
-          dhcp-ignore-names
-          # only expands dns for dhcp entries, ie. not statically assigned or address entries (eg. apu)
-          expand-hosts
-          domain=localnet
-          # log-queries
-          # dhcp-ignore-names
-          log-dhcp
-          # no-hosts is required to avoid returning the 127.0.0.1 entry for apu in /etc/hosts
-          no-hosts
-
-          # vlan 100
-          # management vlan for cisco switches and now router
-          interface=eth0.100
-
-          # vlan 100 is the most stable interface for assigning the router ip
-          address=/apu/192.168.100.1
-          address=/apu.localnet/192.168.100.1
-
-          # cisco switches have static assignment on vlan100
-          address=/cisco2/192.168.100.11
-          address=/cisco2.localnet/192.168.100.11
-
-          address=/cisco1/192.168.100.12
-          address=/cisco1.localnet/192.168.100.12
-
-          # vlan 200
-          # Not unused
-          interface=eth0.200
-          dhcp-range=eth0.200,192.168.200.10,192.168.200.20,255.255.255.0,12h
-
-          # Note, increased brother dhcp retries to 10 due slow switch startup
-
-          # vlan 201
-          interface=eth0.201
-          dhcp-range=eth0.201,192.168.201.10,192.168.201.20,255.255.255.0,12h
-          dhcp-host=78:a0:51:5c:75:53,budii,192.168.201.10
-          dhcp-host=54:ab:3a:19:b6:d5,chromebox,192.168.201.12
-          dhcp-host=00:80:77:34:55:96,brother,192.168.201.15
-          dhcp-host=ac:9b:0a:91:6c:37,bravia,192.168.201.16
-          dhcp-host=b8:ae:ed:7b:b5:b9,nuc,192.168.201.17
-          dhcp-host=b8:2a:72:c9:fe:d2,dell-home-wired,192.168.201.19
-          dhcp-host=00:04:13:37:1a:f1,snom,192.168.201.20
-
-          # wireless
-          interface=wlan0
-          dhcp-range=wlan0,192.168.43.10,192.168.43.20,255.255.255.0,12h
-          dhcp-host=40:a3:6b:c1:18:dc,omega,192.168.43.10
-          dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.43.14
-          dhcp-host=00:19:e3:10:53:89,imac,192.168.43.15
-          dhcp-host=18:fe:34:d1:94:4d,esp,192.168.43.16
-          dhcp-host=60:57:18:75:3b:cc,asus,192.168.43.17
-          dhcp-host=ac:b5:7d:07:f7:d9,chromebox-wifi,192.168.43.18
-          dhcp-host=18:fe:34:d2:3a:45,esp12f,192.168.43.19
-
-          # wireless-secondary
-          interface=wlan1
-          dhcp-range=wlan1,192.168.44.10,192.168.44.20,255.255.255.0,12h
-          dhcp-host=f8:16:54:1c:9e:90,dell-home,192.168.44.14
-          dhcp-host=18:fe:34:d1:94:4d,esp,192.168.44.16
-          dhcp-host=ac:b5:7d:07:f7:d9,chromebox-wifi,192.168.44.18
-
-      notify: restart-dnsmasq
 
       # may need to restart wlan0 here? at least when install dnsmasq
     - apt: name=iptables-persistent
@@ -340,7 +272,25 @@
     # xmodem protocol support over serial for switch firmware
     - apt: name=lrzsz
 
-  handlers:
-    - include: ../roles/common/handlers/main.yml
 
-  # TODO move restart handlers from ./roles/common here
+
+  handlers:
+    - name: restart-eth0
+      command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
+
+    - name: restart-wlan0
+      command: sh -c "/sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0"
+
+    - name: restart-eth0
+      command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
+
+    - name: restart-eth1
+      command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
+
+    - name: restart-smcroute
+      service: name=smcroute state=restarted
+
+    - name: restart-tftpd-hpa
+      service: name=tftpd-hpa state=restarted
+
+
