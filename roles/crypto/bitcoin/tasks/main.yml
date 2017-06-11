@@ -2,6 +2,25 @@
   # key_file=/home/user/.ssh/id_rsa.github-{{ item.repo }}
 
 
+  # https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md
+  - apt: name=build-essential
+  - apt: name=libtool
+  - apt: name=autotools-dev
+  - apt: name=automake
+  - apt: name=pkg-config
+  - apt: name=libssl-dev
+  - apt: name=libevent-dev
+  - apt: name=bsdmainutils
+
+  # boost
+  - apt: name=libboost-system-dev
+  - apt: name=libboost-filesystem-dev
+  - apt: name=libboost-chrono-dev
+  - apt: name=libboost-program-options-dev
+  - apt: name=libboost-test-dev
+  - apt: name=libboost-thread-dev
+
+
   - git: repo=http://github.com/bitcoin/bitcoin
       dest="{{bitcoin.build_dir}}"
       accept_hostkey=yes
@@ -12,10 +31,10 @@
   - file: path="{{bitcoin.build_dir}}" state=directory owner="{{bitcoin.user}}" group="{{bitcoin.user}}" recurse=yes
 
 # git doesn't support become and become_user
-#      become=yes 
+#      become=yes
 #      become_user="{{bitcoin.user}}"
 
-  # needed for become 
+  # needed for become
   - apt: name=sudo
 
   # bdb
@@ -48,14 +67,15 @@
     become: yes
     become_user: "{{bitcoin.user}}"
     with_items:
-      - ./build-bd.sh 
+      - ./build-bd.sh
 
 
-  - name: autogen and configure 
+  - name: autogen and configure
     shell: creates=Makefile chdir={{bitcoin.build_dir}} {{item}}
     become: yes
     become_user: "{{bitcoin.user}}"
     with_items:
+      - echo doing autogen
       - ./autogen.sh
       - ./configure LDFLAGS="-L$(pwd)/db4/lib/" CPPFLAGS="-I$(pwd)/db4/include/" --disable-shared --without-gui --without-miniupnpc
     tags: whoot
