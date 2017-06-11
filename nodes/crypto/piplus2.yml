@@ -1,12 +1,24 @@
 
-- hosts: 
+- hosts:
     - piplus2
   vars_files:
     - ../../vars/credentials.yml
   vars:
     - users:
-      - { name: meteo,  group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
-      - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
+      - { name: meteo,    group: adm,     pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+      - { name: root,     group: ,        pubkey: "{{meteo_pubkey}}", home_dir: /root }
+
+    - bitcoin:
+        build_dir: /home/bitcoin/bitcoin
+        user: bitcoin
+
+  pre_tasks:
+    - hostname: name=piplus2
+
+    # creating users explicitly works well, needs to be a pretask
+    - user: name=bitcoin shell=/bin/bash
+    - file: path=/home/bitcoin mode=0700
+    - authorized_key: user=bitcoin key="{{meteo_pubkey}}"
 
   roles:
     # - admin/apt/testing
@@ -16,10 +28,5 @@
     # - admin/users
     # - dotfiles
     # - vim
-    - bitcoin
- 
+    - crypto/bitcoin
 
-  tasks:
-    - hostname:
-        name: piplus2.localnet
-      tags: whoot
