@@ -7,7 +7,7 @@
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
     - printer:
         name: Brother
-        url: socket://brother:9100
+        url: socket://brother.localnet:9100
         ppd: BRHL16_2_GPL.ppd
     - apt:
         mirror: http://mirror.internode.on.net/pub/debian
@@ -49,12 +49,12 @@
     # - admin/zfs
     - admin/timezone
     - admin/locale
-    - admin/common
+    #- admin/common
     - { role: dotfiles, tags: [ 'dotfiles' ] }
     - vim
     - xmonad
     # - ip-forwarding
-    - admin/printer
+    - { role: admin/printer, tags: [ 'printer' ] }
 
   tasks:
     - hostname: name=dell-home
