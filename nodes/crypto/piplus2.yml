@@ -20,13 +20,23 @@
     - file: path=/home/bitcoin mode=0700
     - authorized_key: user=bitcoin key="{{meteo_pubkey}}"
 
+    - apt: name=screen
+
   roles:
     # - admin/apt/testing
     # - admin/apt/update
     # - admin/timezone
     # - admin/locale
     # - admin/users
-    # - dotfiles
+    # - dotfiles  NO. 
     # - vim
     - crypto/bitcoin
+
+  bitcoin@piplus2:~$ cat ./start.sh 
+#!/bin/bash
+./bitcoin/src/bitcoind -datadir=./data  -txindex
+bitcoin@piplus2:~$ cat ./cli.sh 
+#!/bin/bash
+./bitcoin/src/bitcoin-cli -datadir=./data "$@" 
+
 
