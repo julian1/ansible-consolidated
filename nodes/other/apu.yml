@@ -2,37 +2,44 @@
 # apu router with wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, tftp, xmodem serial
 
   # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
-- hosts: 192.168.100.1
+# - hosts: 192.168.100.1
+- hosts: 192.168.201.1
   vars_files:
     - ../../vars/credentials.yml
   vars:
-    - hostname: apu
-    - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+
+  pre_tasks:
+    - hostname: name=apu
+
+    # root user 
+    - user: name=root shell=/bin/bash
+    - authorized_key: user=root key="{{meteo_pubkey}}"
 
   roles:
-    - admin/apt/testing
-    - admin/apt/update
+    # - admin/apt/stretch
+    # - admin/apt/update
     - admin/timezone
     - admin/locale
     - admin/ip-forwarding
-    - dotfiles
+    # - dotfiles
 
   tasks:
     - hostname: name=apu
+
+    - apt: name=less
 
     - apt: name=ntp             # network time
     - apt: name=tcpdump
     - apt: name=netstat-nat     # nat connections
     - apt: name=dnsutils        # dig, whois
-    - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
+    - apt: name=wireless-tools  # iwconfig - useful to check wlp4s0 state
     - apt: name=iw
 
     - apt: name=pciutils        # lspci
     - apt: name=usbutils        # lsusb
     - apt: name=ethtool
 
-    - apt: name=firmware-ralink # backup AP
+    #    - apt: name=firmware-ralink # backup AP 
     - apt: name=haveged         # entropy for wifi crypto
 
 
@@ -45,22 +52,22 @@
         - touch ansible-lm-sensors
 
     # WARNING: Nasty, after kernel upgrade, was
-    # missing wlan0. Have to apt-get purge and
+    # missing wlp4s0. Have to apt-get purge and
     # reinstall firmware-realtek as it
     # modifies initrd.img
 
-    # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
-    - apt: name=firmware-realtek
+    # Atheros AR9280 and wlp4s0 should be seen and can do iwlist scan
+    # - apt: name=firmware-realtek
 
     - apt: name=hostapd
 
     # hostapd.conf goes first since referred to by /etc/network/interfaces
     # AP primary
     - copy:
-        dest: /etc/hostapd/hostapd-wlan0.conf
+        dest: /etc/hostapd/hostapd-wlp4s0.conf
         content: |
           # deployed by ansible!
-          interface=wlan0
+          interface=wlp4s0
           ssid=AP1
           hw_mode=g
           channel=7
@@ -70,14 +77,14 @@
           wpa_key_mgmt=WPA-PSK
           wpa_pairwise=TKIP
           rsn_pairwise=CCMP
-      notify: restart-wlan0
+      notify: restart-wlp4s0
 
     # AP2
     - copy:
-        dest: /etc/hostapd/hostapd-wlan1.conf
+        dest: /etc/hostapd/hostapd-wlx0087325587cc.conf
         content: |
           # deployed by ansible!
-          interface=wlan1
+          interface=wlx0087325587cc
           ssid=AP2
           hw_mode=g
           channel=8
@@ -88,7 +95,7 @@
           wpa_key_mgmt=WPA-PSK
           wpa_pairwise=TKIP
           rsn_pairwise=CCMP
-      notify: restart-wlan1
+      notify: restart-wlx0087325587cc
 
     - copy:
         dest: /etc/network/interfaces
@@ -100,50 +107,48 @@
           iface lo inet loopback
 
           # wan
-          # allow-hotplug eth0
-          #   iface eth0 inet dhcp
 
           # http://www.cyberciti.biz/tips/howto-configure-linux-virtual-local-area-network-vlan.html
-          # just had to do /sbin/ifup eth0.100.100
+          # just had to do /sbin/ifup enp1s0.100.100
           # VLAN = Third octet of IPv4 subnets, network identifier in IPv6 addresses.
 
           # vlan 100 switch management
-          auto eth0.100
-          iface eth0.100 inet static
+          auto enp1s0.100
+          iface enp1s0.100 inet static
             address 192.168.100.1
             netmask 255.255.255.0
-            vlan-raw-device eth0
+            vlan-raw-device enp1s0
 
           # vlan 120 wan
-          auto eth0.120
-          iface eth0.120 inet dhcp
-            vlan-raw-device eth0
+          auto enp1s0.120
+          iface enp1s0.120 inet dhcp
+            vlan-raw-device enp1s0
 
           # vlan 200
-          auto eth0.200
-          iface eth0.200 inet static
+          auto enp1s0.200
+          iface enp1s0.200 inet static
             address 192.168.200.1
             netmask 255.255.255.0
-            vlan-raw-device eth0
+            vlan-raw-device enp1s0
 
           # vlan 201
-          auto eth0.201
-          iface eth0.201 inet static
+          auto enp1s0.201
+          iface enp1s0.201 inet static
             address 192.168.201.1
             netmask 255.255.255.0
-            vlan-raw-device eth0
+            vlan-raw-device enp1s0
 
           # router management
           # TODO do we need allow-hotplug?
-          auto eth1
-          iface eth1 inet static
-            address 172.16.1.1
-            netmask 255.255.255.0
+          #          auto eth1
+          #          iface eth1 inet static
+          #            address 172.16.1.1
+          #            netmask 255.255.255.0
 
           # AP primary
-          auto wlan0
-          iface wlan0 inet static
-            hostapd /etc/hostapd/hostapd-wlan0.conf
+          auto wlp4s0
+          iface wlp4s0 inet static
+            hostapd /etc/hostapd/hostapd-wlp4s0.conf
             address 192.168.43.1
             netmask 255.255.255.0
             # gateway to 10.0.0.0 via dell-home
@@ -151,23 +156,23 @@
             post-up ip route add 10.0.0.0/8 via 192.168.43.14
 
           # AP 2
-          auto wlan1
-          iface wlan1 inet static
-            hostapd /etc/hostapd/hostapd-wlan1.conf
+          auto wlx0087325587cc
+          iface wlx0087325587cc inet static
+            hostapd /etc/hostapd/hostapd-wlx0087325587cc.conf
             address 192.168.44.1
             netmask 255.255.255.0
 
       notify:
         # will these all be run together
         # TODO - restart networking generally?
-        # TODO restart-eth0.100 and 200
+        # TODO restart-enp1s0.100 and 200
         - restart-eth1
         # - restart-eth2
-        - restart-wlan0
+        - restart-wlp4s0
 
 
 
-      # may need to restart wlan0 here? at least when install dnsmasq
+      # may need to restart wlp4s0 here? at least when install dnsmasq
     - apt: name=iptables-persistent
 
     - copy:
@@ -184,7 +189,7 @@
           # input default policy
           iptables -P INPUT DROP
 
-          # Incoming from WAN/eth0.120 (TODO state conntrack established, related in forward)
+          # Incoming from WAN/enp1s0.120 (TODO state conntrack established, related in forward)
           # TODO remove the 1
           # http responses - required for apt-get update/upgrade
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
@@ -197,17 +202,17 @@
 
           # Internal
           # ssh
-          iptables -I INPUT 1 ! -i eth0.120 -p tcp --dport 22 -j ACCEPT
+          iptables -I INPUT 1 ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
           # tftp - port-range is inclusive
-          iptables -I INPUT 1 ! -i eth0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+          iptables -I INPUT 1 ! -i enp1s0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
           # dns
-          iptables -I INPUT 1 ! -i eth0.120 -p udp --dport 53 -j ACCEPT
-          iptables -I INPUT 1 ! -i eth0.120 -p tcp --dport 53 -j ACCEPT
+          iptables -I INPUT 1 ! -i enp1s0.120 -p udp --dport 53 -j ACCEPT
+          iptables -I INPUT 1 ! -i enp1s0.120 -p tcp --dport 53 -j ACCEPT
           # dhcp
-          iptables -I INPUT 1 ! -i eth0.120 -p udp --dport 67 -j ACCEPT
+          iptables -I INPUT 1 ! -i enp1s0.120 -p udp --dport 67 -j ACCEPT
           # dlna
-          iptables -I INPUT 1 ! -i eth0.120 -p tcp --dport 8200 -j ACCEPT
-          iptables -I INPUT 1 ! -i eth0.120 -p udp --dport 1900 -j ACCEPT
+          iptables -I INPUT 1 ! -i enp1s0.120 -p tcp --dport 8200 -j ACCEPT
+          iptables -I INPUT 1 ! -i enp1s0.120 -p udp --dport 1900 -j ACCEPT
 
           #####
           # nat
@@ -218,21 +223,21 @@
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
 
           # 15000: # 35000-44999
-          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i eth0.120 -j DNAT --to 192.168.201.20
-          # iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i eth0.120 -j DNAT --to 192.168.201.20
-          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i eth0.120 -j DNAT --to 192.168.201.20
+          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i enp1s0.120 -j DNAT --to 192.168.201.20
+          # iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i enp1s0.120 -j DNAT --to 192.168.201.20
+          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i enp1s0.120 -j DNAT --to 192.168.201.20
 
           # with nat punch-through it's not clear we even need all this
           # or at least tcp on 5060?
           # port forward may even confuse
-          iptables -t nat -A PREROUTING -p udp -s 203.55.231.0/24 -i eth0.120 -j DNAT --to 192.168.201.20
-          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.0/24 -i eth0.120 -j DNAT --to 192.168.201.20
+          iptables -t nat -A PREROUTING -p udp -s 203.55.231.0/24 -i enp1s0.120 -j DNAT --to 192.168.201.20
+          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.0/24 -i enp1s0.120 -j DNAT --to 192.168.201.20
 
           # post-routing
           # private subnet nat
-          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o eth0.120 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o eth0.120 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0.120 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o enp1s0.120 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o enp1s0.120 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o enp1s0.120 -j MASQUERADE
 
           #####
           # mangle
@@ -248,8 +253,8 @@
         content: |
           # deployed by ansible!
           sleep 1
-          smcroute -a wlan0    0.0.0.0 239.255.255.250 eth0.201
-          smcroute -a eth0.201 0.0.0.0 239.255.255.250 wlan0
+          smcroute -a wlp4s0    0.0.0.0 239.255.255.250 enp1s0.201
+          smcroute -a enp1s0.201 0.0.0.0 239.255.255.250 wlp4s0
       notify: restart-smcroute
 
 
@@ -348,7 +353,7 @@
           dell-home-wired IN A 192.168.201.19
           snom          IN A 192.168.201.20
 
-          ; wireless  wlan0
+          ; wireless  wlp4s0
           omega         IN A 192.168.43.10
           dell-home     IN A 192.168.43.14
           imac          IN A 192.168.43.15
@@ -357,7 +362,7 @@
           chromebox-wifi IN A 192.168.43.18
           esp12f        IN A 192.168.43.19
 
-          ; wireless  wlan1
+          ; wireless  wlx0087325587cc
           dell-home     IN A 192.168.44.14
           esp           IN A 192.168.44.16
           chromebox-wifi IN A 192.168.44.18
@@ -378,8 +383,8 @@
         backup: yes
         content: |
           # deployed by ansible!
-          #Separate multiple interfaces with spaces, e.g. “eth0 eth1".
-          INTERFACESv4="eth0.201 wlan0 wlan1"
+          #Separate multiple interfaces with spaces, e.g. “enp1s0 eth1".
+          INTERFACESv4="enp1s0.201 wlp4s0 wlx0087325587cc"
           INTERFACESv6=""
       notify: restart-dhcp
 
@@ -400,7 +405,7 @@
           # Set up our desired subnet:
           # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
           subnet 192.168.201.0 netmask 255.255.255.0 {
-              interface "eth0.201";
+              interface "enp1s0.201";
               range 192.168.201.1  192.168.201.127;
               option subnet-mask 255.255.255.0;
               option broadcast-address 192.168.201.255;
@@ -417,7 +422,7 @@
           }
 
           subnet 192.168.43.0 netmask 255.255.255.0 {
-              interface "wlan0";
+              interface "wlp4s0";
 
               range 192.168.43.1  192.168.43.127;
               option subnet-mask 255.255.255.0;
@@ -435,7 +440,7 @@
           }
 
           subnet 192.168.44.0 netmask 255.255.255.0 {
-              interface "wlan1";
+              interface "wlx0087325587cc";
 
               range 192.168.44.1  192.168.44.127;
               option subnet-mask 255.255.255.0;
@@ -458,14 +463,18 @@
 
 
   handlers:
-    # - name: restart-eth0
-    #  command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
+    - name: restart-enp1s0
+      command: sh -c "/sbin/ifdown enp1s0 && /sbin/ifup enp1s0"
 
-    - name: restart-eth1
-      command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
+    # - name: restart-eth1
+    #  command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
 
-    - name: restart-wlan0
-      command: sh -c "/sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0"
+
+    - name: restart-wlp4s0
+      command: sh -c "/sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0"
+
+    - name: restart-wlx0087325587cc
+      command: sh -c "/sbin/ifdown wlx0087325587cc && sleep 1 && /sbin/ifup wlx0087325587cc"
 
 
     - name: restart-smcroute
