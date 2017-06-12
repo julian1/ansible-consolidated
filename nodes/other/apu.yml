@@ -252,27 +252,29 @@
           smcroute -a eth0.201 0.0.0.0 239.255.255.250 wlan0
       notify: restart-smcroute
 
-    - apt: name=tftp
-    - copy:
-        dest: /etc/default/tftpd-hpa
-        mode: 0644
-        content: |
-          # deployed by ansible!
-          TFTP_USERNAME="tftp"
-          TFTP_DIRECTORY="/srv/tftp"
-          TFTP_ADDRESS="0.0.0.0:69"
-          TFTP_OPTIONS="--secure --port-range 1024:1034"
-      notify: restart-tftpd-hpa
 
-      # /srv/tftp cannot just be owned by tftp. instead must have global read permissions
-      # chown -R root:root /srv/tftp
-      # chmod 755 $( find /srv/tftp -type d )
-      # chmod 644 $( find /srv/tftp -type f )
-
-    # xmodem protocol support over serial for switch firmware
-    - apt: name=lrzsz
-
-
+#
+#    - apt: name=tftp
+#    - copy:
+#        dest: /etc/default/tftpd-hpa
+#        mode: 0644
+#        content: |
+#          # deployed by ansible!
+#          TFTP_USERNAME="tftp"
+#          TFTP_DIRECTORY="/srv/tftp"
+#          TFTP_ADDRESS="0.0.0.0:69"
+#          TFTP_OPTIONS="--secure --port-range 1024:1034"
+#      notify: restart-tftpd-hpa
+#
+#      # /srv/tftp cannot just be owned by tftp. instead must have global read permissions
+#      # chown -R root:root /srv/tftp
+#      # chmod 755 $( find /srv/tftp -type d )
+#      # chmod 644 $( find /srv/tftp -type f )
+#
+#    # xmodem protocol support over serial for switch firmware
+#    - apt: name=lrzsz
+#
+#
 
 
       # bind
@@ -443,7 +445,7 @@
 
               host dell-home2   { hardware ethernet f8:16:54:1c:9e:90; fixed-address 192.168.44.14; }
           }
- 
+
 
           default-lease-time 600;
           max-lease-time 7200;
