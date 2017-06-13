@@ -11,7 +11,7 @@
   pre_tasks:
     - hostname: name=apu
 
-    # root user 
+    # root user
     - user: name=root shell=/bin/bash
     - authorized_key: user=root key="{{meteo_pubkey}}"
 
@@ -40,7 +40,7 @@
     - apt: name=usbutils        # lsusb
     - apt: name=ethtool
 
-    #    - apt: name=firmware-ralink # backup AP 
+    #    - apt: name=firmware-ralink # backup AP
     - apt: name=haveged         # entropy for wifi crypto
 
 
@@ -182,39 +182,60 @@
         content: |
           # deployed by ansible!
           #####
-          # filter
+          # flush current rules
           iptables -t filter --flush
           iptables -t nat --flush
           iptables -t mangle --flush
 
           #####
-          # input default policy
+          # policy
           iptables -P INPUT DROP
+          iptables -P OUTPUT DROP
+          iptables -P FORWARD ACCEPT
 
-          # Incoming from WAN/enp1s0.120 (TODO state conntrack established, related in forward)
-          # TODO remove the 1
-          # http responses - required for apt-get update/upgrade of this node
-          iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
-          iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
-          # dns responses
-          iptables -I INPUT 1 -p udp --sport 53 -j ACCEPT
-          iptables -I INPUT 1 -p tcp --sport 53 -j ACCEPT
-          # ping/icmp responses
-          iptables -I INPUT 1 -p icmp -j ACCEPT
+          # Incoming from WAN/enp1s0.120
+          # But not NAT services
+          # http for apt-get and upstream repositories
+          iptables -I INPUT  -i enp1s0.120 -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -I OUTPUT -o enp1s0.120 -p tcp --sport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -I INPUT  -i enp1s0.120 -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -I OUTPUT -o enp1s0.120 -p tcp --sport 443 -m conntrack --ctstate NEW ESTABLISHED -j ACCEPT
 
-          # Internal
+          # upstream dns services
+          iptables -I INPUT  -i enp1s0.120 -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -I OUTPUT -o enp1s0.120 -p udp --sport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -I INPUT  -i enp1s0.120 -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -I OUTPUT -o enp1s0.120 -p tcp --sport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+
+          # allow ping/icmp from here, eg. check 8.8.8.8 answers
+          iptables -I INPUT  -i enp1s0.120 -p icmp           -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+          iptables -I OUTPUT -o enp1s0.120 -p icmp           -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+
+          # Internal routing for lans
+          # But not NAT!
           # ssh
-          iptables -I INPUT 1 ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
+          iptables -I INPUT  ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
+          iptables -I OUTPUT ! -o enp1s0.120 -p tcp --dport 22 -j ACCEPT
+
           # tftp - port-range is inclusive
-          iptables -I INPUT 1 ! -i enp1s0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+          iptables -I INPUT  ! -i enp1s0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+          iptables -I OUTPUT ! -o enp1s0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+
           # dns
-          iptables -I INPUT 1 ! -i enp1s0.120 -p udp --dport 53 -j ACCEPT
-          iptables -I INPUT 1 ! -i enp1s0.120 -p tcp --dport 53 -j ACCEPT
+          iptables -I INPUT  ! -i enp1s0.120 -p udp --dport 53 -j ACCEPT
+          iptables -I OUTPUT ! -o enp1s0.120 -p udp --dport 53 -j ACCEPT
+          iptables -I INPUT  ! -i enp1s0.120 -p tcp --dport 53 -j ACCEPT
+          iptables -I OUTPUT ! -o enp1s0.120 -p tcp --dport 53 -j ACCEPT
+
           # dhcp
-          iptables -I INPUT 1 ! -i enp1s0.120 -p udp --dport 67 -j ACCEPT
+          iptables -I INPUT  ! -i enp1s0.120 -p udp --dport 67 -j ACCEPT
+          iptables -I OUTPUT ! -o enp1s0.120 -p udp --dport 67 -j ACCEPT
+
           # dlna
-          iptables -I INPUT 1 ! -i enp1s0.120 -p tcp --dport 8200 -j ACCEPT
-          iptables -I INPUT 1 ! -i enp1s0.120 -p udp --dport 1900 -j ACCEPT
+          iptables -I INPUT  ! -i enp1s0.120 -p tcp --dport 8200 -j ACCEPT
+          iptables -I OUTPUT ! -o enp1s0.120 -p tcp --dport 8200 -j ACCEPT
+          iptables -I INPUT  ! -i enp1s0.120 -p udp --dport 1900 -j ACCEPT
+          iptables -I OUTPUT ! -o enp1s0.120 -p udp --dport 1900 -j ACCEPT
 
           #####
           # nat
