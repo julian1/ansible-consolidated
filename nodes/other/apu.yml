@@ -2,8 +2,8 @@
 # apu router with wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, tftp, xmodem serial
 
   # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
-# - hosts: 192.168.100.1
-- hosts: 192.168.201.1
+- hosts: 192.168.100.1
+#- hosts: apu.localnet
   vars_files:
     - ../../vars/credentials.yml
   vars:
@@ -17,7 +17,7 @@
 
   roles:
     # - admin/apt/stretch
-    # - admin/apt/update
+    - admin/apt/update
     - admin/timezone
     - admin/locale
     - admin/ip-forwarding
@@ -27,6 +27,7 @@
     - hostname: name=apu
 
     - apt: name=less
+    - apt: name=net-tools            # ifconfig
 
     - apt: name=ntp             # network time
     - apt: name=tcpdump
@@ -165,9 +166,10 @@
       notify:
         # will these all be run together
         # TODO - restart networking generally?
-        # TODO restart-enp1s0.100 and 200
-        - restart-eth1
+        # - restart-eth1
         # - restart-eth2
+
+        # - restart-enp1s0  disable because kills conns...
         - restart-wlp4s0
 
 
@@ -191,7 +193,7 @@
 
           # Incoming from WAN/enp1s0.120 (TODO state conntrack established, related in forward)
           # TODO remove the 1
-          # http responses - required for apt-get update/upgrade
+          # http responses - required for apt-get update/upgrade of this node
           iptables -I INPUT 1 -p tcp --sport 80 -j ACCEPT
           iptables -I INPUT 1 -p tcp --sport 443 -j ACCEPT
           # dns responses
@@ -243,6 +245,7 @@
           # mangle
 
       notify: reconfigure-iptables
+      tags: iptables
 
     # multicast subnet routing. for example minidlna udp on 1900
     # Use, ip -s mroute to query status
@@ -422,6 +425,7 @@
           }
 
           subnet 192.168.43.0 netmask 255.255.255.0 {
+
               interface "wlp4s0";
 
               range 192.168.43.1  192.168.43.127;
