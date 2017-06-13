@@ -21,6 +21,7 @@
     - authorized_key: user=bitcoin key="{{meteo_pubkey}}"
 
     - apt: name=screen
+    - apt: net-tools            # ifconfig
 
   roles:
     # - admin/apt/testing
@@ -28,15 +29,17 @@
     # - admin/timezone
     # - admin/locale
     # - admin/users
-    # - dotfiles  NO. 
+    # - dotfiles  NO.
     # - vim
     - crypto/bitcoin
 
-  bitcoin@piplus2:~$ cat ./start.sh 
+
+
+  bitcoin@piplus2:~$ cat ./start.sh
 #!/bin/bash
 ./bitcoin/src/bitcoind -datadir=./data  -txindex
-bitcoin@piplus2:~$ cat ./cli.sh 
+bitcoin@piplus2:~$ cat ./cli.sh
 #!/bin/bash
-./bitcoin/src/bitcoin-cli -datadir=./data "$@" 
+./bitcoin/src/bitcoin-cli -datadir=./data "$@"
 
 
