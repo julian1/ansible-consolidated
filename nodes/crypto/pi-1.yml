@@ -1,0 +1,41 @@
+
+- hosts:
+    - pi-1
+  vars_files:
+    - ../../vars/credentials.yml
+  vars:
+    - users:
+      - { name: root,     group: ,        pubkey: "{{meteo_pubkey}}", home_dir: /root }
+
+    - rust:
+        user: parity
+
+    - parity:
+        build_dir: /home/parity/parity
+        user: parity
+
+  pre_tasks:
+    - hostname: name=pi-1
+
+    # creating users explicitly works well, needs to be a pretask
+    - user: name=parity shell=/bin/bash
+    - file: path=/home/parity mode=0700
+    - authorized_key: user=parity key="{{meteo_pubkey}}"
+
+
+  roles:
+    - admin/apt/stretch
+    - admin/apt/update
+    - admin/sshd
+    - admin/timezone
+    - admin/locale
+    - admin/users
+
+    - misc/rust
+    - crypto/parity
+
+  tasks:
+    # must get in the stretch sources before can install anything...
+    - apt: name=screen
+    - apt: name=net-tools            # ifconfig
+
