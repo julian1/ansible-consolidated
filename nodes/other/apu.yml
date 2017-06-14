@@ -201,8 +201,10 @@
           LogLevel INFO
 
           LoginGraceTime 30
-          # JA neeed password for initial provisioning...
+          # if yes, allows password login - eg. for initial provisioning without keys...
           # PermitRootLogin yes
+
+          # If this option is set to “without-password”, password authentication is disabled for root.
           PermitRootLogin without-password
           StrictModes yes
 
@@ -230,7 +232,8 @@
           PrintMotd yes
           # Banner /etc/issue.net
           AcceptEnv LANG LC_*
-        
+
+          # no sftp
           # Subsystem sftp /usr/lib/openssh/sftp-server
           UsePAM yes
 
