@@ -6,10 +6,8 @@
   vars:
     - users:
       - { name: root,     group: ,        pubkey: "{{meteo_pubkey}}", home_dir: /root }
-
     - rust:
         user: parity
-
     - parity:
         build_dir: /home/parity/parity
         user: parity
@@ -33,9 +31,21 @@
 
     - misc/rust
     - crypto/parity
+    # - misc/node
 
   tasks:
-    # must get in the stretch sources before can install anything...
+    # must get the stretch apt repository source before can install anything...
     - apt: name=screen
     - apt: name=net-tools            # ifconfig
+
+    - copy:
+        backup: yes
+        dest: /home/parity/start.sh
+        mode: 0700
+        owner: parity
+        group: parity
+        content: |
+          #!/bin/bash
+          ./parity/target/release/parity -d data/
+      tags: script
 

@@ -11,7 +11,7 @@
 
   - apt: name=git
 
-  - name: checkout git parity 
+  - name: checkout git parity
     git: repo=https://github.com/paritytech/parity
       dest={{parity.build_dir}}
       accept_hostkey=yes
@@ -22,12 +22,13 @@
 
   - file: path="{{parity.build_dir}}" state=directory owner="{{parity.user}}" group="{{parity.user}}" recurse=yes
 
-  - name: build parity 
+  - name: build parity
     become: yes
     become_user: "{{parity.user}}"
     tags: parity
-    shell: > 
+    shell: >
       export PATH=/home/parity/.cargo/bin:$PATH && cargo build --release
       chdir={{parity.build_dir}}
+      creates={{parity.build_dir}}/target/release/parity
 
 
