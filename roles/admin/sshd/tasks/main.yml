@@ -11,6 +11,8 @@
       content: |
         # deployed by ansible!
         Port 22
+        ListenAddress 0.0.0.0
+
         Protocol 2
         HostKey /etc/ssh/ssh_host_rsa_key
         UsePrivilegeSeparation yes
@@ -22,7 +24,7 @@
         LogLevel INFO
 
         LoginGraceTime 30
-        # JA neeed for provisioning...
+        # JA neeed password for initial provisioning...
         # PermitRootLogin yes
         PermitRootLogin without-password
         StrictModes yes
@@ -37,7 +39,7 @@
         PermitEmptyPasswords no
         ChallengeResponseAuthentication no
 
-        # JA the important bit
+        # JA the important bit - only allow keys
         PasswordAuthentication no
 
         # X11Forwarding yes

@@ -21,6 +21,7 @@
     - admin/timezone
     - admin/locale
     - admin/ip-forwarding
+    - admin/sshd
     # - dotfiles
 
   tasks:
@@ -171,6 +172,72 @@
 
         # - restart-enp1s0  disable because kills conns...
         - restart-wlp4s0
+
+
+
+    - copy:
+        backup: yes
+        dest: /etc/motd
+        content: |
+          # deployed by ansible!
+      tags: sshd
+
+    - copy:
+        backup: yes
+        dest: /etc/ssh/sshd_config
+        content: |
+          # deployed by ansible!
+          Port 22
+          # only listen on admin ip, for lan 100
+          # ListenAddress 0.0.0.0
+          ListenAddress 192.168.100.1
+
+          Protocol 2
+          HostKey /etc/ssh/ssh_host_rsa_key
+          UsePrivilegeSeparation yes
+
+          KeyRegenerationInterval 3600
+          ServerKeyBits 1024
+
+          SyslogFacility AUTH
+          LogLevel INFO
+
+          LoginGraceTime 30
+          # JA neeed password for initial provisioning...
+          # PermitRootLogin yes
+          PermitRootLogin without-password
+          StrictModes yes
+
+          RSAAuthentication yes
+          PubkeyAuthentication yes
+
+          IgnoreRhosts yes
+          RhostsRSAAuthentication no
+          HostbasedAuthentication no
+
+          PermitEmptyPasswords no
+          ChallengeResponseAuthentication no
+
+          # JA the important bit - only allow keys
+          PasswordAuthentication no
+
+          # X11Forwarding yes
+          # X11DisplayOffset 10
+          PrintMotd no
+          PrintLastLog yes
+          TCPKeepAlive yes
+
+          # banner is before login, motd is after
+          # JA changed
+          PrintMotd yes
+          # Banner /etc/issue.net
+          AcceptEnv LANG LC_*
+        
+          # Subsystem sftp /usr/lib/openssh/sftp-server
+          UsePAM yes
+
+      notify: restart-sshd
+      tags: sshd
 
 
 
@@ -514,6 +581,9 @@
       with_items:
         - sh /etc/iptables-rules
         - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+    - name: restart-sshd
+      service: name=ssh state=restarted
 
     # - name: reboot
     #  command: /sbin/reboot
