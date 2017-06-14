@@ -1,8 +1,12 @@
 
-# note, role/users is deploying bash aliases - which isn't that great
-
 - hosts: all
+  vars:
+    - rust:
+        user: parity
+    - parity:
+        build_dir: /home/parity/parity
+        user: parity
   roles:
-    #- misc/rust
-    # - parity
-    - misc/node
+    - misc/rust
+    - crypto/parity
+    # - misc/node

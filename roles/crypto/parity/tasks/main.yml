@@ -1,7 +1,3 @@
-# should be run as user meteo
-# note this installs rustup, to do further management
-
-  # assumes rust is installed,
 
   # needs to be root for all this stuff,
   # gcc, g++, libssl-dev/openssl, libudev-dev and pkg-config
@@ -11,18 +7,26 @@
   - apt: name=libudev-dev
   - apt: name=pkg-config
 
+  - apt: name=git
+
+  - name: checkout git parity 
+    git: repo=https://github.com/paritytech/parity
+      dest={{parity.build_dir}}
+      accept_hostkey=yes
+      force=yes
+      recursive=no
+      version=v1.6.8
 
 
-  # rustup update
+  - file: path="{{parity.build_dir}}" state=directory owner="{{parity.user}}" group="{{parity.user}}" recurse=yes
 
-  # put in scripts? 
-  # PATH="~/.cargo/bin/:$PATH"
+  - name: build parity 
+    become: yes
+    become_user: "{{parity.user}}"
+    tags: parity
+    shell: > 
+      export PATH=/home/parity/.cargo/bin:$PATH && cargo build --release
+      chdir={{parity.build_dir}}
 
-  # download Parity code
-# $ git clone https://github.com/paritytech/parity
-#$ cd parity
 
-  # build in release mode
-  #
-
-  # also need node
+  # also need node. handle externally to here...

@@ -1,22 +1,29 @@
-# should be run as user meteo
-# note this installs rustup, to do further management
 
+# install rust to top level dir
+
+  # we need to pass the url, so may as well just install locally here... 
   - get_url: > 
-      url='https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init'                
-      dest=~/rustup-init
+      url='https://sh.rustup.rs'                
+      dest=/home/{{rust.user}}/rustup-init
       mode=755
+    
+  - apt: name=curl
+  - apt: name=sudo
 
-  - command: >
-      ~/rustup-init -y
 
-  # rustup update
+    # Note, this will update bash_profile, /home/rust/.cargo/bin/rustc
+  - name: rustup
+    become: yes
+    become_user: "{{rust.user}}"
+    command: > 
+      /home/{{rust.user}}/rustup-init -y
+      creates=/home/{{rust.user}}/.rustup/settings.toml
 
-  # put in scripts? 
-  # PATH="~/.cargo/bin/:$PATH"
 
-  # download Parity code
-# $ git clone https://github.com/paritytech/parity
-#$ cd parity
+  # not idempotent, must use shell, because command doesn't work with env
+  - name: rustup update
+    become: yes
+    become_user: "{{rust.user}}"
+    shell: > 
+      export PATH=/home/{{rust.user}}/.cargo/bin:$PATH && rustup update
 
-# build in release mode
-#$ cargo build --release
