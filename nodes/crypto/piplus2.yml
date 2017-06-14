@@ -13,7 +13,7 @@
         user: bitcoin
 
   pre_tasks:
-    - hostname: name=piplus2
+    - hostname: name=pi-2
 
     # creating users explicitly works well, needs to be a pretask
     - user: name=bitcoin shell=/bin/bash
@@ -21,7 +21,7 @@
     - authorized_key: user=bitcoin key="{{meteo_pubkey}}"
 
     - apt: name=screen
-    - apt: net-tools            # ifconfig
+    - apt: name=net-tools            # ifconfig
 
   roles:
     # - admin/apt/testing
