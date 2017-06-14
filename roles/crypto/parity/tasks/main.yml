@@ -1,4 +1,6 @@
 
+  # rust and node and handle in other roles
+
   # needs to be root for all this stuff,
   # gcc, g++, libssl-dev/openssl, libudev-dev and pkg-config
   - apt: name=gcc
@@ -29,4 +31,3 @@
       chdir={{parity.build_dir}}
 
 
-  # also need node. handle externally to here...

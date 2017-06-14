@@ -20,7 +20,7 @@
       creates=/home/{{rust.user}}/.rustup/settings.toml
 
 
-  # not idempotent, must use shell, because command doesn't work with env
+  # not idempotent. needs shell, because command handle env vars
   - name: rustup update
     become: yes
     become_user: "{{rust.user}}"
