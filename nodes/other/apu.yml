@@ -21,8 +21,6 @@
     - admin/timezone
     - admin/locale
     - admin/ip-forwarding
-    - admin/sshd
-    # - dotfiles
 
   tasks:
     - hostname: name=apu
