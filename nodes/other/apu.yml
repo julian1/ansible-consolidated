@@ -551,7 +551,7 @@
           # Show that we want to be the only DHCP server in this network:
           authoritative;
       notify: restart-dhcp
-      tags: whoot
+      tags: dhcp
 
 
 
