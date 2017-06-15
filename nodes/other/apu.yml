@@ -233,8 +233,8 @@
           # Banner /etc/issue.net
           AcceptEnv LANG LC_*
 
-          # no sftp
-          # Subsystem sftp /usr/lib/openssh/sftp-server
+          # ansible likes sftp
+          Subsystem sftp /usr/lib/openssh/sftp-server
           UsePAM yes
 
       notify: restart-sshd
