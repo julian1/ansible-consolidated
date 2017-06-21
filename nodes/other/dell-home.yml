@@ -45,16 +45,18 @@
           APT::Default-Release "testing";
 
   roles:
+    # stretch
     - admin/apt/update
-    # - admin/zfs
     - admin/timezone
     - admin/locale
-    #- admin/common
     - { role: dotfiles, tags: [ 'dotfiles' ] }
-    - vim
+    - { role: vim, tags: [ 'vim' ] }
     - xmonad
-    # - ip-forwarding
     - { role: admin/printer, tags: [ 'printer' ] }
+
+    # - ip-forwarding
+    #- admin/common
+    # - admin/zfs
 
   tasks:
     - hostname: name=dell-home

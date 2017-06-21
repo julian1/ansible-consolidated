@@ -48,3 +48,8 @@
 
   # the dammn indirection is wrong...
   # - git: repo=https://github.com/sdiehl/haskell-vim-proto.git  dest={{vim_user_home}}/.vim/bundle/haskell-vim-proto
+
+
+  - git: repo=https://github.com/idris-hackers/idris-vim.git  dest={{vim_user_home}}/.vim/bundle/idris
+
+
