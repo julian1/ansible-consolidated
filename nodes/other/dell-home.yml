@@ -33,7 +33,7 @@
           # deb http://http.us.debian.org/debian/ {{apt.version}} non-free contrib
           deb {{apt.mirror}} {{apt.version}} non-free contrib
 
-          # jessie - for gcc-arm-none-eab - may not need anymore -
+          # jessie - for gcc-arm-none-eab - may not need anymore? 
           # TODO change to stretch?
           deb {{apt.mirror}} jessie main
           deb-src {{apt.mirror}} jessie main

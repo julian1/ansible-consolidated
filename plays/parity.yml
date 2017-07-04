@@ -9,8 +9,8 @@
     - node:
         user: meteo
   roles:
-    - misc/rust
-    - crypto/parity
+    # - misc/rust
+    # - crypto/parity
     - misc/node
 
   tasks:
@@ -18,4 +18,10 @@
       shell: >
         export PATH=/home/{{node.user}}/node-v6.11.0-linux-x64/bin:$PATH && npm install web3
 
+    - copy:
+        dest: /home/{{node.user}}/x.js 
+        content: |
+          Web3 = require("web3")
+          web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+          console.log( web3.eth.blockNumber )
 
