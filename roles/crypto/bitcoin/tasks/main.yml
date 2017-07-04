@@ -1,6 +1,20 @@
 
   # key_file=/home/user/.ssh/id_rsa.github-{{ item.repo }}
 
+  - copy:
+      dest: /home/{{bitcoin.user}}/cli.sh
+      mode: 0755
+      content: |
+        #!/bin/bash
+        ./bitcoin/src/bitcoin-cli -datadir=./data "$@"
+
+  - copy:
+      dest: /home/{{bitcoin.user}}/start.sh
+      mode: 0755
+      content: |
+        #!/bin/bash
+        ./bitcoin/src/bitcoind -datadir=./data  -txindex
+
 
   # https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md
   - apt: name=build-essential

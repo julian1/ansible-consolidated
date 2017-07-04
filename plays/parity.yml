@@ -6,7 +6,16 @@
     - parity:
         build_dir: /home/parity/parity
         user: parity
+    - node:
+        user: meteo
   roles:
     - misc/rust
     - crypto/parity
-    # - misc/node
+    - misc/node
+
+  tasks:
+    - name: install web3
+      shell: >
+        export PATH=/home/{{node.user}}/node-v6.11.0-linux-x64/bin:$PATH && npm install web3
+
+

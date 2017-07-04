@@ -1,16 +1,43 @@
 
-  # deb.nodesource.com needed for jessie 
-  # eg. npm upgrade nodejs only gives version 0.10.29
 
+  - get_url: >
+      url='https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz'
+      dest=/home/{{node.user}}/node-v6.11.0-linux-x64.tar.xz
+      mode=644
+
+  - unarchive:
+      src: /home/{{node.user}}/node-v6.11.0-linux-x64.tar.xz
+      dest: /home/{{node.user}}/
+      remote_src: True
+
+  # use .profile or .bashrc?
+  #  Note that rustup writes over .profile
+  - copy:
+      dest: /home/{{node.user}}/.bash_aliases1
+      mode: 0755
+      content: |
+        export PATH="/home/{{node.user}}/node-v6.11.0-linux-x64/bin:$PATH"
+
+
+
+
+
+#################
+
+# OLD on Debian
+#  - apt: name=nodejs                        # node/nodejs v4.2.4
+#  - npm: name=npm state=latest global=true  # 2.14.12 -> 3.5.3
+
+      #
   # https://nodejs.org/en/download/package-manager/
-  - apt: name=curl
 
-  - shell: |
-      curl -sL https://deb.nodesource.com/setup_4.x | bash -
-      creates=/etc/apt/sources.list.d/nodesource.list
 
-  - apt: name=nodejs                        # node/nodejs v4.2.4
-  - npm: name=npm state=latest global=true  # 2.14.12 -> 3.5.3
+#################
+#
+#  - shell: |
+#      curl -sL https://deb.nodesource.com/setup_4.x | bash -
+#      creates=/etc/apt/sources.list.d/nodesource.list
+
 
 
 #################
@@ -24,7 +51,7 @@
   # upgrade to latest npm 3.5.2
   # - npm: name=npm global=true
 
-  # upgrade/ensure using nodejs 4.2.4. 4.2.0 is the LTS 
+  # upgrade/ensure using nodejs 4.2.4. 4.2.0 is the LTS
   # - npm: name=nodejs global=true
 
 
