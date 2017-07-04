@@ -29,10 +29,12 @@
           deb-src {{apt.mirror}} {{apt.version}}-updates main
 
           # firmware
+          # as written, this generates conflicts
           # deb http://http.us.debian.org/debian/ {{apt.version}} non-free contrib
           deb {{apt.mirror}} {{apt.version}} non-free contrib
 
-          # jessie - for gcc-arm-none-eab
+          # jessie - for gcc-arm-none-eab - may not need anymore -
+          # TODO change to stretch?
           deb {{apt.mirror}} jessie main
           deb-src {{apt.mirror}} jessie main
 
@@ -81,7 +83,7 @@
           options snd-hda-intel index=0 enable=1 vid=8086 pid=9c20
           # Intel HDMI
           # test using: speaker-test -c 2 -D hdmi:HDMI
-          options snd-hda-intel index=1 enable=1 vid=8086 pid=0a0c
+          options snd-hda-intel index=2 enable=1 vid=8086 pid=0a0c
           # hardware beep off
           options snd_hda_intel beep_mode=0
           blacklist pcspkr
@@ -138,7 +140,7 @@
           # deployed by ansible!
           # could just use alias
           amixer set Master $1
-          amixer set PCM 100% 
+          amixer set PCM 100%
       tags: whoot
 
     - copy:

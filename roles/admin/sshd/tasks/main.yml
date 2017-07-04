@@ -55,6 +55,7 @@
 
         AcceptEnv LANG LC_*
 
+        # used by ansible for uploading
         Subsystem sftp /usr/lib/openssh/sftp-server
 
         UsePAM yes

@@ -31,6 +31,7 @@
 
     - misc/rust
     - crypto/parity
+    # node, should be kept separate. not sure. it means exposing the listen address on 0.0.0.0...
     # - misc/node
 
   tasks:

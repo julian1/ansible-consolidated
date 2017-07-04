@@ -39,6 +39,7 @@
     - apt: name=usbutils        # lsusb
     - apt: name=ethtool
 
+    # will need to add contrib to apt sources for ralink firmware.
     #    - apt: name=firmware-ralink # backup AP
     - apt: name=haveged         # entropy for wifi crypto
 
