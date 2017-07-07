@@ -21,7 +21,8 @@ ansible-playbook nodes/geoserver.yml -i geoserver-test, -u debian --private-key 
 ansible-playbook nodes/geoserver.yml -i geoserver-test,
 ansible-playbook nodes/14-nec-hob.yml  -u ubuntu --private-key ~/.ssh/julian3.pem -s
 ansible-playbook ./roles/aatams/redeploy.yml
-ansible-playbook nodes/apu.yml -i 192.168.42.1, -v
+ansible-playbook nodes/other/apu.yml -v
+ansible-playbook nodes/other/apu.yml -t iptables
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 
