@@ -260,45 +260,38 @@
           iptables -t mangle --flush
 
           #####
-          # policy - should be last thing to set, to prevent lockout?
+          # policy - do this last to prevent lockout, versus having open chains during reconfig?
           iptables -P INPUT DROP
           iptables -P OUTPUT DROP
-          iptables -P FORWARD ACCEPT
+          iptables -P FORWARD DROP
 
-          ##### WAN #####
-          # Incoming from WAN/enp1s0.120
-          # not NAT services!
-          # outgoing initiated only
-          # http/s needed for apt-get and upstream repositories
+          ##### WAN to APU #####
+          #
+          # http/s needed for apt-get update etc from upstream repositories
           iptables -A INPUT  -i enp1s0.120 -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 443 -m conntrack --ctstate NEW ESTABLISHED -j ACCEPT
 
-          # dns upstream
+          # dns upstream services
           iptables -A INPUT  -i enp1s0.120 -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o enp1s0.120 -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 
-          # ping/icmp for ping like 8.8.8.8 connectivity check
+          # ping/icmp connectivity check, ie ping 8.8.8.8
           iptables -A INPUT  -i enp1s0.120 -p icmp           -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o enp1s0.120 -p icmp           -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
 
-          # ntpd
+          # ntpd - outgoing initiated only, not incomming
           iptables -A INPUT  -i enp1s0.120 -p udp --sport 123 -m conntrack --ctstate ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o enp1s0.120 -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 
-          ##### LAN #####
-          # Internal routing for lans
-          # But not NAT!
-          # incoming ssh
+          ##### LAN to APU #####
+          #
+          # ssh incomming, TODO restrict ssh to management?
           iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -j ACCEPT
-
-          # tftp - port-range is inclusive
-          iptables -A INPUT  ! -i enp1s0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p udp --match multiport --sport 69,1024:1034 -j ACCEPT
 
           # dns
           iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 53 -j ACCEPT
@@ -310,11 +303,36 @@
           iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 67 -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 67 -j ACCEPT
 
-          # dlna
-          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 8200 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 8200 -j ACCEPT
-          iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 1900 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 1900 -j ACCEPT
+
+          ##### FORWARD LAN #####
+          # source and dst are both other machines. ie. primarily NAT
+          #
+          iptables -A FORWARD -p icmp -j ACCEPT
+
+          iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 443 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 443 -j ACCEPT
+
+          iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 22 -j ACCEPT
+
+          iptables -A FORWARD -p tcp --dport 5222 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 5222 -j ACCEPT
+
+
+          # TODO re-enable dlna multicast routing, and tftp
+          # tftp and dlna services - should be on other lan nodes, if at all.
+          # tftp - disable port-range is inclusive
+          # iptables -A INPUT  ! -i enp1s0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+          # iptables -A OUTPUT ! -o enp1s0.120 -p udp --match multiport --sport 69,1024:1034 -j ACCEPT
+
+          # dlna - disable - service removed from apu
+          # iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 8200 -j ACCEPT
+          # iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 8200 -j ACCEPT
+          # iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 1900 -j ACCEPT
+          # iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 1900 -j ACCEPT
+
 
           ##### NAT #####
           # pre-routing
@@ -330,7 +348,7 @@
 
           # with nat punch-through it's not clear we even need all this
           # or at least tcp on 5060?
-          # port forward may even confuse
+          # VOIP port forward may even confuse
           iptables -t nat -A PREROUTING -p udp -s 203.55.231.0/24 -i enp1s0.120 -j DNAT --to 192.168.201.20
           iptables -t nat -A PREROUTING -p tcp -s 203.55.231.0/24 -i enp1s0.120 -j DNAT --to 192.168.201.20
 
