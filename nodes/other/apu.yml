@@ -265,7 +265,7 @@
           iptables -P OUTPUT DROP
           iptables -P FORWARD DROP
 
-          ##### WAN to APU #####
+          ##### APU to WAN #####
           #
           # host dhcp to get wan ip from isp
           iptables -A OUTPUT -o enp1s0.120 -p udp --dport 67 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
@@ -283,21 +283,21 @@
           iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # ping/icmp connectivity check, ie ping 8.8.8.8
-          # TODO check cstate supported for icmp...
-          iptables -A OUTPUT -o enp1s0.120 -p icmp           -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i enp1s0.120 -p icmp           -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+          # ping, ie ping 8.8.8.8
+          iptables -A OUTPUT -o enp1s0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i enp1s0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
           # ntpd - outgoing initiated only, not incomming
           iptables -A OUTPUT -o enp1s0.120 -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p udp --sport 123 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          ##### LAN to APU #####
+          ##### APU to LAN #####
           #
           # ssh incomming, TODO restrict ssh to management?
           iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -j ACCEPT
 
+          # TODO conntrack
           # dns
           iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 53 -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 53 -j ACCEPT
@@ -308,11 +308,16 @@
           iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 67 -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 67 -j ACCEPT
 
+          # ping
+          iptables -A INPUT  ! -i enp1s0.120 -p icmp --icmp-type 8 -j ACCEPT
+          iptables -A OUTPUT ! -o enp1s0.120 -p icmp --icmp-type 0 -j ACCEPT
+
 
           ##### FORWARD LAN #####
           # source and dst are both other machines. ie. primarily NAT
           #
-          iptables -A FORWARD -p icmp -j ACCEPT
+          iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
+          iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
 
           iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
