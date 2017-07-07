@@ -267,6 +267,10 @@
 
           ##### WAN to APU #####
           #
+          # host dhcp to get wan ip from isp
+          iptables -A OUTPUT -o enp1s0.120 -p udp --dport 67 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i enp1s0.120 -p udp --sport 67 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
           # http/s needed for apt-get update etc from upstream repositories
           iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
