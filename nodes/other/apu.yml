@@ -291,8 +291,12 @@
           ##### APU to LAN #####
           #
           # ssh incomming, TODO restrict ssh to management?
-          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -j ACCEPT
+          # iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
+          # iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -j ACCEPT
+          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
           # TODO conntrack
           # dns
@@ -313,17 +317,23 @@
           ##### FORWARD LAN #####
           # source and dst are both other machines. ie. primarily NAT
 
+          # TODO can do direction and conntrack by using lan addresses for -s and -d eg. 192.168.201.0/24
+
+          # ssh
+          iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
           # ping
           iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
           iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
 
+          # http
           iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
           iptables -A FORWARD -p tcp --dport 443 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 443 -j ACCEPT
-
-          iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 22 -j ACCEPT
 
           # ntp
           iptables -A FORWARD -p udp --dport 123 -j ACCEPT
@@ -332,6 +342,10 @@
           # whois
           iptables -A FORWARD -p tcp --dport 43 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 43 -j ACCEPT
+
+          # irc - port 6667 preferred over 194
+          iptables -A FORWARD -p tcp --dport 6667 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 6667 -j ACCEPT
 
           # ssh proxy
           iptables -A FORWARD -p tcp --dport 5222 -j ACCEPT
@@ -342,9 +356,13 @@
           iptables -A FORWARD -p udp -s 192.168.201.20 -d 203.55.231.192/26 -j ACCEPT
           iptables -A FORWARD -p tcp -d 192.168.201.20 -s 203.55.231.192/26 -j ACCEPT
           iptables -A FORWARD -p tcp -s 192.168.201.20 -d 203.55.231.192/26 -j ACCEPT
+          # iptables -A FORWARD -s 192.168.201.20 -j LOG
+          # iptables -A FORWARD -d 192.168.201.20 -j LOG
 
-          iptables -A FORWARD -s 192.168.201.20 -j LOG
-          iptables -A FORWARD -d 192.168.201.20 -j LOG
+          # bravia
+          # may need specific rules for bravia to allow more media ports
+          iptables -A FORWARD -s 192.168.201.16 -j LOG
+          iptables -A FORWARD -d 192.168.201.16 -j LOG
 
 
           # TODO re-enable dlna multicast routing, and tftp
