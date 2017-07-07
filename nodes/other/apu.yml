@@ -292,7 +292,7 @@
           #
           # ssh incomming, TODO restrict ssh to management?
           # iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
-          # iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -j ACCEPT
+          # -          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -j ACCEPT
           iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
           iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
@@ -361,8 +361,13 @@
 
           # bravia
           # may need specific rules for bravia to allow more media ports
+          # opera/RT
+          iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
+
           iptables -A FORWARD -s 192.168.201.16 -j LOG
           iptables -A FORWARD -d 192.168.201.16 -j LOG
+
 
 
           # TODO re-enable dlna multicast routing, and tftp
