@@ -325,6 +325,7 @@
           iptables -A FORWARD -p udp --dport 123 -j ACCEPT
           iptables -A FORWARD -p udp --sport 123 -j ACCEPT
 
+          # ssh proxy
           iptables -A FORWARD -p tcp --dport 5222 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 5222 -j ACCEPT
 
