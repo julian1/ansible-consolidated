@@ -1,12 +1,9 @@
 
-# TODO
-# needs ntpd incomming port open...
-
-# apu router with wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, tftp, xmodem serial
+# apu for networking services only
+# wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, xmodem serial for switch
 
   # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
 - hosts: 192.168.100.1
-#- hosts: apu.localnet
   vars_files:
     - ../../vars/credentials.yml
   vars:
@@ -619,8 +616,8 @@
     - name: restart-smcroute
       service: name=smcroute state=restarted
 
-    - name: restart-tftpd-hpa
-      service: name=tftpd-hpa state=restarted
+    # - name: restart-tftpd-hpa
+    #      service: name=tftpd-hpa state=restarted
 
     - name: reconfigure-iptables
       command: "{{item}}"
