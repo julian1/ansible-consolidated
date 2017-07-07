@@ -328,6 +328,15 @@
           iptables -A FORWARD -p tcp --dport 5222 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 5222 -j ACCEPT
 
+          # voip
+          iptables -A FORWARD -p udp -d 192.168.201.20 -s 203.55.231.192/26 -j ACCEPT
+          iptables -A FORWARD -p udp -s 192.168.201.20 -d 203.55.231.192/26 -j ACCEPT
+          iptables -A FORWARD -p tcp -d 192.168.201.20 -s 203.55.231.192/26 -j ACCEPT
+          iptables -A FORWARD -p tcp -s 192.168.201.20 -d 203.55.231.192/26 -j ACCEPT
+
+          iptables -A FORWARD -s 192.168.201.20 -j LOG
+          iptables -A FORWARD -d 192.168.201.20 -j LOG
+
 
           # TODO re-enable dlna multicast routing, and tftp
           # tftp and dlna services - should be on other lan nodes, if at all.
@@ -348,17 +357,10 @@
           # http://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables
           # Good voip guide, note the comment to limit stp to smaller port range
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
+          #
+          iptables -t nat -A PREROUTING -p udp -s 203.55.231.192/26 -i enp1s0.120 -j DNAT --to 192.168.201.20
+          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.192/26 -i enp1s0.120 -j DNAT --to 192.168.201.20
 
-          # 15000: # 35000-44999
-          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 5060 -i enp1s0.120 -j DNAT --to 192.168.201.20
-          # iptables -t nat -A PREROUTING -p tcp --match multiport --dport 5060 -i enp1s0.120 -j DNAT --to 192.168.201.20
-          # iptables -t nat -A PREROUTING -p udp --match multiport --dport 15000:49999 -i enp1s0.120 -j DNAT --to 192.168.201.20
-
-          # with nat punch-through it's not clear we even need all this
-          # or at least tcp on 5060?
-          # VOIP port forward may even confuse
-          iptables -t nat -A PREROUTING -p udp -s 203.55.231.0/24 -i enp1s0.120 -j DNAT --to 192.168.201.20
-          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.0/24 -i enp1s0.120 -j DNAT --to 192.168.201.20
 
           # post-routing
           # private subnet nat
