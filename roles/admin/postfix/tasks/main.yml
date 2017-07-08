@@ -4,6 +4,14 @@
 
   - apt: name=postfix
 
+  # may want to run this once after installing postfix
+  #  - name: reconfigure-postfix
+  #  command: "{{item}}"
+  #  with_items:
+  #    - dpkg-reconfigure --frontend noninteractive postfix
+
+
+
   - apt: name=postfix-policyd-spf-python
 
   - copy:
