@@ -1,4 +1,6 @@
 
+  # not sure we needed the spf, stuff...
+  # only needed a spf record...
 
   - apt: name=postfix
 
@@ -29,6 +31,10 @@
         # fresh installs.
         compatibility_level = 2
 
+        # JA https://www.reddit.com/r/selfhosted/comments/4pi5r1/how_to_send_email_encrypted/
+        # http://www.postfix.org/TLS_README.html
+        smtp_tls_security_level = may
+
         # TLS parameters
         smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
         smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
@@ -39,8 +45,16 @@
         # See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
         # information on enabling SSL in the smtp client.
 
-        smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+        # JA
+        # smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+        smtpd_recipient_restrictions =
+           permit_mynetworks
+           permit_sasl_authenticated
+           reject_unauth_destination
+           check_policy_service unix:private/policy-spf
+
         # JA...
+        # myhostname = debian-512mb-sgp1-01.localdomain
         myhostname = debian-512mb-sgp1-01.localdomain
         alias_maps = hash:/etc/aliases
         alias_database = hash:/etc/aliases
@@ -63,11 +77,14 @@
 
 
 
+  # SPF see
+  #   https://help.ubuntu.com/community/Postfix/SPF
+  #   https://www.linode.com/docs/email/postfix/configure-spf-and-dkim-in-postfix-on-debian-8
+  # $ default configuration, grep -v ^# /etc/postfix/master.cf
   - copy:
       dest: /etc/postfix/master.cf
       content: |
         # deployed by ansible!
-        # $ grep -v ^# /etc/postfix/master.cf
         smtp      inet  n       -       y       -       -       smtpd
         pickup    unix  n       -       y       60      1       pickup
         cleanup   unix  n       -       y       -       0       cleanup
@@ -106,6 +123,9 @@
           flags=FR user=list argv=/usr/lib/mailman/bin/postfix-to-mailman.py
           ${nexthop} ${user}
 
+        # JA SPF
+        policy-spf  unix  -       n       n       -       -       spawn
+          user=nobody argv=/usr/bin/policyd-spf
 
     # think this restarts it
     notify: reconfigure-postfix
