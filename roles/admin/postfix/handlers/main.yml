@@ -1,0 +1,8 @@
+
+  - name: reconfigure-postfix
+    command: "{{item}}"
+    with_items:
+      # - sh /etc/iptables-rules
+      - dpkg-reconfigure --frontend noninteractive postfix
+
+  # will this restart postfix?
