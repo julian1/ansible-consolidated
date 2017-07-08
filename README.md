@@ -9,8 +9,7 @@ Requires Ansible version >= 2
 #### Examples
 
 ```
-ansible-playbook plays/misc/chefdk.yml -i dell-work,
-ansible-playbook plays/meteo.yml -i parity, -u admin -s
+# nodes
 ansible-playbook nodes/pglogical.yml -i pglogical.localnet,
 ansible-playbook nodes/bind.yml -u root
 ansible-playbook nodes/dell-home.yml
@@ -20,31 +19,29 @@ ansible-playbook nodes/aatams-dev.yml -i aatams-test-instance, -u debian --priva
 ansible-playbook nodes/geoserver.yml -i geoserver-test, -u debian --private-key ~/.ssh/julian3.pem -s
 ansible-playbook nodes/geoserver.yml -i geoserver-test,
 ansible-playbook nodes/14-nec-hob.yml  -u ubuntu --private-key ~/.ssh/julian3.pem -s
-ansible-playbook ./roles/aatams/redeploy.yml
 ansible-playbook nodes/other/apu.yml -v
 ansible-playbook nodes/other/apu.yml -t iptables
-ansible --list-hosts all
-ansible -i inventory/imos --list-hosts all
 
-# light environment play
-ansible-playbook -i localhost, plays/devenv-lite.yml
 
 # plays
-ansible-playbook -i localhost, plays/work-localnet.yml
-ansible-playbook ./plays/restart-tomcat.yml -i n.n.n.n,
+ansible-playbook plays/misc/chefdk.yml -i dell-work,
+ansible-playbook plays/meteo.yml -i parity, -u admin -s
+ansible-playbook plays/devenv-lite.yml -i localhost,
+ansible-playbook plays/work-localnet.yml -i localhost,
+ansible-playbook plays/restart-tomcat.yml -i n.n.n.n,
+ansible-playbook plays/admin/postfix.yml -i do-01,
 
- ansible-playbook ./plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
-ansible-playbook ./plays/admin/deploy-war.yml -i geowebcache.localnet, --extra-vars "warpath=~/imos/geowebcache/geowebcache/web/target/geowebcache.war warname=geowebcache.war"
+ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
+ansible-playbook plays/admin/deploy-war.yml -i geowebcache.localnet, --extra-vars "warpath=~/imos/geowebcache/geowebcache/web/target/geowebcache.war warname=geowebcache.war"
 
 ansible-playbook ./plays/admin/deploy-war.yml -i geonetwork2.localnet, --extra-vars "warpath=~/imos/core-geonetwork/web/target/geonetwork.war warname=geonetwork.war"
 
-
+# useful
+ansible --list-hosts all
+ansible -i inventory/imos --list-hosts all
 
 # aws instances
 ansible-playbook nodes/publications.yml -i n.n.n.n.n, -u admin --private-key ~/.ssh/julian-aws-bsd.pem  -s
-
-# build zfs kernel module
-ansible-playbook ./roles/zfs/main.yml -c local -i dell-work,
 
 # list and run tagged roles only
 ansible-playbook nodes/dell-home.yml --list-tags
@@ -59,7 +56,7 @@ ansible-playbook nodes/dell-home.yml -t dotfiles
       - locale
       - common
       - { role: dotfiles, tags: [ 'dotfiles' ] }
-   
+
     # for task
     - copy:
         dest: /ansible/provider.sql
