@@ -351,6 +351,10 @@
           iptables -A FORWARD -p tcp --dport 5222 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 5222 -j ACCEPT
 
+          # printer - brother.localnet 9100 - TODO tighten by ip
+          iptables -A FORWARD -p tcp --sport 9100 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 9100 -j ACCEPT
+
           # voip
           iptables -A FORWARD -p udp -d 192.168.201.20 -s 203.55.231.192/26 -j ACCEPT
           iptables -A FORWARD -p udp -s 192.168.201.20 -d 203.55.231.192/26 -j ACCEPT
