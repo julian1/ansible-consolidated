@@ -153,6 +153,17 @@
 
       tags: whoot
 
+    # jdk and maven, for freeroute etc
+    - copy:
+        dest: /home/meteo/scripts/jdk.sh 
+
+          # see plays/misc/jdk-1.8.sh
+          export JAVA_HOME="$HOME/jdk1.8.0_111/"
+          export PATH="$JAVA_HOME/bin:$PATH"
+
+          # see, plays/misc/maven.yml
+          export PATH="$PATH:$HOME/apache-maven-3.3.9/bin/"
+      tags: whoot
 
 
     #####
