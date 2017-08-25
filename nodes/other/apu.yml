@@ -1,4 +1,10 @@
 
+# after powerdown system hostapd had to be restarted manually, 
+# # /sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0
+# service hostapd status shows status active(exited).
+# also had to restart isc-dhcp-server status, so that we got an wifi ip
+# systemd sucks!
+
 # apu for networking services only
 # wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, xmodem serial for switch
 
