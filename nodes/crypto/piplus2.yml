@@ -13,7 +13,7 @@
         user: bitcoin
 
   pre_tasks:
-    - hostname: name=pi-2
+    - hostname: name=piplus2
 
     # creating users explicitly works well, needs to be a pretask
     - user: name=bitcoin shell=/bin/bash
@@ -34,12 +34,21 @@
     - crypto/bitcoin
 
 
+### scripts
 
   bitcoin@piplus2:~$ cat ./start.sh
 #!/bin/bash
 ./bitcoin/src/bitcoind -datadir=./data  -txindex
+
 bitcoin@piplus2:~$ cat ./cli.sh
 #!/bin/bash
 ./bitcoin/src/bitcoin-cli -datadir=./data "$@"
 
+---
+root@piplus2:~# cat mount.sh 
+#!/bin/bash 
+
+cryptsetup luksOpen /dev/sda1 home  || exit
+
+mount /dev/mapper/home /home/
 
