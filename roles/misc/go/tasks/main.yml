@@ -1,0 +1,16 @@
+
+# geth 1.6.7 needs go version 1.7 or later, which is available in stretch
+
+# install Go as root
+#
+#  # Go
+#  # install to /usr/local/go since it's the default for GOROOT
+#  - get_url: |
+#      url=https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
+#      dest=./go1.4.2.linux-amd64.tar.gz
+#
+#  - unarchive: src=/root/go1.4.2.linux-amd64.tar.gz dest=/usr/local copy=no
+#  - file: src=/usr/local/go/bin/go dest=/usr/local/bin/go state=link
+#
+#
+

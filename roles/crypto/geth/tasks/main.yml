@@ -1,0 +1,27 @@
+
+  # Geth
+
+  # TODO chdir should be relative path, so can build under other accounts
+
+
+  # April 10, main branch master, with tags
+  - debug: msg="building geth"
+  - apt: name=make
+  - apt: name=gcc
+  - apt: name=libgmp-dev
+
+  # geth 1.6.7 needs go version 1.7 or later, which is available in stretch
+  - apt: name=golang
+
+
+  # g co v1.4.10
+  # - git: repo=https://github.com/ethereum/go-ethereum dest={{path}}/go-ethereum version=v1.3.6
+  - git: repo=https://github.com/ethereum/go-ethereum dest={{geth.build_dir}}/go-ethereum version=v1.6.7
+    become: true
+    become_user: meteo
+
+  - shell: make creates=build/bin/geth chdir={{geth.build_dir}}/go-ethereum
+    become: true
+    become_user: meteo
+
+

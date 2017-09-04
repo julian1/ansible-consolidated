@@ -1,0 +1,12 @@
+
+- hosts: all
+  vars:
+    - geth:
+        build_dir: /home/meteo/geth
+  roles:
+    - crypto/geth
+    # - misc/node
+
+  tasks:
+  
+    

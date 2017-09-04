@@ -1,5 +1,9 @@
 
 
+#### TODO  
+  - remove root login from sshd, use su.
+  - apu, needs apt/sources.list
+
 #### Ansible CM
 
 Use with systemd-nspawn containers, kvm, cloud instances, VBox etc.
