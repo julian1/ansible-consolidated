@@ -2,11 +2,12 @@
 - hosts: all
   vars:
     - geth:
-        build_dir: /home/meteo/geth
+        #  ie. will be /home/meteo/go-ethereum
+        build_dir: /home/meteo/
+        user: meteo 
   roles:
     - crypto/geth
     # - misc/node
-
   tasks:
   
     

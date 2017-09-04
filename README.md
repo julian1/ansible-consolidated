@@ -1,14 +1,18 @@
 
-
-#### TODO  
-  - remove root login from sshd, use su.
-  - apu, needs apt/sources.list
-
 #### Ansible CM
 
 Use with systemd-nspawn containers, kvm, cloud instances, VBox etc.
 
 Requires Ansible version >= 2
+
+
+#### Notes,
+  - ansible expects either passwordless sudo or root ssh
+    - issue with passwordless sudo on ordinary account means processes under sudo account have privilege 
+    - should consider ansible username
+  - apu, needs apt/sources.list
+  - sudo is needed for downgrading permissions for become_user, but can be added where needed
+
 
 #### Examples
 
@@ -43,6 +47,9 @@ ansible-playbook ./plays/admin/deploy-war.yml -i geonetwork2.localnet, --extra-v
 # useful
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
+
+# specify interpreter
+ansible-playbook -e 'ansible_python_interpreter=/usr/bin/python2.7
 
 # aws instances
 ansible-playbook nodes/publications.yml -i n.n.n.n.n, -u admin --private-key ~/.ssh/julian-aws-bsd.pem  -s
