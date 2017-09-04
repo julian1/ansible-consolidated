@@ -7,6 +7,10 @@ export HISTSIZE=40001
 export HISTTIMEFORMAT="%T " # "
 export EDITOR=vim
 
+# deselect kernel kthreadd
+# use ps2 f for tree listing
+alias ps2='ps --ppid 2 -p 2 --deselect'
+
 alias xclip='xclip -selection clipboard'
 
 alias dmesg='dmesg -T --color=always'

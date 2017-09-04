@@ -4,5 +4,5 @@
       - users:
         - { name: meteo, home_dir: /home/meteo }
     roles:
-      - admin/dotfiles
+      - dotfiles
 
