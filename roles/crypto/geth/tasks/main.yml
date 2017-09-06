@@ -1,5 +1,8 @@
 
   # Geth
+  # build/bin/geth --help | less
+  # build/bin/geth --datadir /home/meteo/data
+  # etc
 
   - debug: msg="building geth"
   - apt: name=make
@@ -7,7 +10,7 @@
   - apt: name=libgmp-dev
 
   # geth 1.6.7 needs go version 1.7 or later, which is available in stretch
-  # else check go role
+  # else check golang role
   - apt: name=golang
 
   # sudo for become_user - to reduce permissions when running build

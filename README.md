@@ -13,6 +13,7 @@ Requires Ansible version >= 2
   - apu, needs apt/sources.list
   - sudo is needed for downgrading permissions for become_user, but can be added where needed
 
+  - may be able to use apt package python-minimal to get /usr/bin/python instead of /usr/bin/python2.7
 
 #### Examples
 
