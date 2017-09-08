@@ -1,20 +1,25 @@
 
-# Config_Stuff/languages/node.txt
+  - hosts: all
+    vars:
+      - node_deploy_path: /home/meteo/
+    roles:
+      - misc/node
 
-- hosts:
-    - all
-  tasks:
-
-    - shell: "{{item}}"
-      with_items:
-        - apt-get purge nodejs
-        - curl -sL https://deb.nodesource.com/setup_0.12 | bash -
-
-    - apt: name=nodejs
-    - apt: name=npm
-
-    - shell: "{{item}}"
-      with_items:
-        - ln -s /usr/bin/nodejs /usr/bin/node
+#
+#- hosts:
+#    - all
+#  tasks:
+#
+#    - shell: "{{item}}"
+#      with_items:
+#        - apt-get purge nodejs
+#        - curl -sL https://deb.nodesource.com/setup_0.12 | bash -
+#
+#    - apt: name=nodejs
+#    - apt: name=npm
+#
+#    - shell: "{{item}}"
+#      with_items:
+#        - ln -s /usr/bin/nodejs /usr/bin/node
 
 

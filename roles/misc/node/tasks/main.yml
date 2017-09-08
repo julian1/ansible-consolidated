@@ -1,23 +1,27 @@
 
+# debian version of node is out of date...
+# we don't set any paths, which should be in scripts
 
   - get_url: >
       url='https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz'
-      dest=/home/{{node.user}}/node-v6.11.0-linux-x64.tar.xz
+      dest="{{node_deploy_path}}/node-v6.11.0-linux-x64.tar.xz"
       mode=644
 
   - unarchive:
-      src: /home/{{node.user}}/node-v6.11.0-linux-x64.tar.xz
-      dest: /home/{{node.user}}/
+      src: "{{node_deploy_path}}/node-v6.11.0-linux-x64.tar.xz"
+      dest: "{{node_deploy_path}}"
       remote_src: True
 
-  # use .profile or .bashrc?
-  #  Note that rustup writes over .profile
-  - copy:
-      dest: /home/{{node.user}}/.bash_aliases1
-      mode: 0755
-      content: |
-        export PATH="/home/{{node.user}}/node-v6.11.0-linux-x64/bin:$PATH"
-
+# this should be in /scripts/...
+#
+#  # use .profile or .bashrc?
+#  #  Note that rustup writes over .profile
+#  - copy:
+#      dest: /home/{{node.user}}/.bash_aliases1
+#      mode: 0755
+#      content: |
+#        export PATH="/home/{{node.user}}/node-v6.11.0-linux-x64/bin:$PATH"
+#
 
 
 
