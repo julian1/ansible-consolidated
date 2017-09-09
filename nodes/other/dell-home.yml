@@ -33,7 +33,7 @@
           # deb http://http.us.debian.org/debian/ {{apt.version}} non-free contrib
           deb {{apt.mirror}} {{apt.version}} non-free contrib
 
-          # jessie - for gcc-arm-none-eab - may not need anymore? 
+          # jessie - for gcc-arm-none-eab - may not need anymore?
           # TODO change to stretch?
           deb {{apt.mirror}} jessie main
           deb-src {{apt.mirror}} jessie main
@@ -175,7 +175,7 @@
 
     # jdk and maven, for freeroute etc
     - copy:
-        dest: /home/meteo/scripts/jdk.sh 
+        dest: /home/meteo/scripts/jdk.sh
         content: |
           # deployed by ansible!
           # see plays/misc/jdk-1.8.sh
@@ -187,7 +187,7 @@
       tags: whoot
 
     - copy:
-        dest: /home/meteo/scripts/node.sh 
+        dest: /home/meteo/scripts/node.sh
         content: |
           # deployed by ansible!
 
@@ -195,7 +195,7 @@
       tags: whoot
 
     - copy:
-        dest: /home/meteo/scripts/idris.sh 
+        dest: /home/meteo/scripts/idris.sh
         content: |
           # deployed by ansible!
 
@@ -204,7 +204,7 @@
       tags: whoot
 
     - copy:
-        dest: /home/meteo/scripts/chromium.sh 
+        dest: /home/meteo/scripts/chromium.sh
         content: |
           #!/bin/bash
           # deployed by ansible!
@@ -219,6 +219,14 @@
     - copy:
         dest: /home/meteo/.xinitrc
         content: |
+          # deployed by ansible!
+
+          # https://raspberrypi.stackexchange.com/questions/752/how-do-i-prevent-the-screen-from-going-blank
+          xset s off         # don't activate screensaver
+          xset -dpms         # disable DPMS (Energy Star) features.
+          xset s noblank     # don't blank the video device
+          # xset -dpms; xset s off
+
           xrdb -merge <<- EOF
             XTerm*selectToClipboard: true
             XTerm*faceName: DejaVu Sans Mono
@@ -228,6 +236,7 @@
             XTerm*Foreground: black
           EOF
 
+          # keymap
           xmodmap - <<- EOF
             ! numpad insert
             keycode 90 = Insert NoSymbol Insert
@@ -243,16 +252,18 @@
 
             ! numpad 3
             keycode 89  = End  NoSymbol End
-
           EOF
 
+          # brightness
           xrandr --output eDP1 --brightness .45
 
-          # xset -dpms; xset s off
           # to turn on trackpad tap to select/button
           synclient TapButton1=1
+
+          # turn bell off
           xset b off
-          # xset q | grep bell
+
+          # start xmonad
           xmonad
 
     #####
@@ -260,7 +271,7 @@
 
     - copy:
         dest: /etc/network/interfaces
-        backup: yes
+        # backup: yes
         content: |
           # deployed by ansible
           auto lo
