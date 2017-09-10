@@ -449,7 +449,7 @@
           smcroute -a enp1s0.201 0.0.0.0 239.255.255.250 wlp4s0
       notify: restart-smcroute
 
-#    tftp should run anywhere except here... 
+#    tftp should run anywhere except here...
 #
 #    - apt: name=tftp
 #    - copy:
@@ -472,8 +472,9 @@
 #    - apt: name=lrzsz
 #
 
-      # bind
-      # NOTE problem with rndc.key  solved by purge bind9 and reinstall
+    # bind
+    # note,  can reload config with 'rndc reload'
+    # NOTE problem with rndc.key  solved by purge bind9 and reinstall
     - apt: name=bind9
 
     - file: path=/etc/bind/zones state=directory owner=root group=bind
@@ -498,7 +499,7 @@
             # listen-on port 53 { 127.0.0.1; 223.1.2.1; };
             response-policy { zone "rpz"; };
 
-            # cause hanging with changes?
+            # notify other dns
             notify no;
           };
 
