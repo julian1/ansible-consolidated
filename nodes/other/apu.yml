@@ -1,5 +1,7 @@
 
-# after powerdown system hostapd had to be restarted manually, 
+# cisco/switches - should use dhcp to configure internal interface ip
+
+# after powerdown system hostapd had to be restarted manually,
 # # /sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0
 # service hostapd status shows status active(exited).
 # also had to restart isc-dhcp-server status, so that we got an wifi ip
@@ -279,11 +281,27 @@
           iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 443 -m conntrack --ctstate NEW ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # dns upstream services
-          iptables -A OUTPUT -o enp1s0.120 -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i enp1s0.120 -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i enp1s0.120 -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          # dns upstream services - on wan and internal?
+          # should restrict
+          iptables -A OUTPUT  -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT   -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT  -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT   -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          # we can see that we can't connect to it... but why not? ip looks correct
+          # nc -v -v 127.0.0.1 953
+          # iptables -A OUTPUT  -p tcp --dport 953 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          # iptables -A INPUT   -p tcp --sport 953 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          # we can't ping ourselves either...
+
+          # lo / 127.0.0.1 - OK this worked to allow port 953
+          iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
+          iptables -A INPUT  -i lo -p tcp  -j ACCEPT
+
+
+
+          # ok, rndc hangs /usr/sbin/rndc stop
 
           # ping, ie ping 8.8.8.8
           iptables -A OUTPUT -o enp1s0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
@@ -333,6 +351,7 @@
           # ping
           iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
           iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
+
 
           # http
           iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
@@ -465,10 +484,10 @@
 
     - file: path=/etc/bind/zones state=directory owner=root group=bind
 
-    # named configuration
+    # named options and configuration
     - copy:
         dest: /etc/bind/named.conf.options
-        backup: yes
+        # backup: yes
         content: |
           # deployed by ansible!
           options {
@@ -478,14 +497,24 @@
             };
             dnssec-validation auto;
             auth-nxdomain no;    # conform to RFC1035
-            listen-on-v6 { any; };
+
+            # listen-on-v6 { any; };
+            listen-on-v6 { none; };
+
+            # listen-on port 53 { 127.0.0.1; 223.1.2.1; };
+            response-policy { zone "rpz"; };
+
+            # cause hanging with changes?
+            notify no;
           };
+
       notify: restart-bind
+      tags: bind
 
     # zones
     - copy:
         dest: /etc/bind/named.conf.local
-        backup: yes
+        # backup: yes
         content: |
           # deployed by ansible!
 
@@ -493,7 +522,40 @@
             type master;
             file "/etc/bind/zones/localnet.db";
           };
+
+          # see, https://www.redpill-linpro.com/sysadvent/2015/12/08/dns-rpz.html
+          zone "rpz" {
+            type master;
+            file "/etc/bind/zones/rpz.db";
+          };
       notify: restart-bind
+      tags: bind
+
+    # rpz zone
+    - copy:
+        dest: /etc/bind/zones/rpz.db
+        owner: root
+        group: bind
+        content: |
+          ; deployed by ansible!
+          ;
+
+          $TTL 60
+          @            IN    SOA  localhost. root.localhost.  (
+                                    2015112501   ; serial
+                                    1h           ; refresh
+                                    30m          ; retry
+                                    1w           ; expiry
+                                    30m)         ; minimum
+                             IN     NS    ns1.
+                             IN     NS    ns2.
+
+          netflix.com   A           127.0.0.1
+          www.netflix.com   A       127.0.0.1
+
+      notify: restart-bind
+      tags: bind
+
 
 
     # localnet zone
@@ -558,19 +620,20 @@
         dest: /etc/default/isc-dhcp-server
         owner: root
         group: root
-        backup: yes
+        # backup: yes
         content: |
           # deployed by ansible!
           #Separate multiple interfaces with spaces, e.g. “enp1s0 eth1".
           INTERFACESv4="enp1s0.201 wlp4s0 wlx0087325587cc"
           INTERFACESv6=""
       notify: restart-dhcp
+      tags: dhcp
 
     - copy:
         dest: /etc/dhcp/dhcpd.conf
         owner: root
         group: root
-        backup: yes
+        # backup: yes
         content: |
           # deployed by ansible!
 
