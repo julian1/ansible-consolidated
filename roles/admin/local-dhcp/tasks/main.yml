@@ -1,0 +1,74 @@
+
+  # turn *off* ip forwarding
+  - lineinfile: >
+      dest=/etc/sysctl.conf
+      state=present
+      regexp='.*net.ipv4.ip_forward.*'
+      line='#net.ipv4.ip_forward = 1'
+    notify: reload-sysctl
+
+
+  # configure eth0
+  - blockinfile:
+      dest: /etc/network/interfaces
+      block: |
+        iface eth0 inet static
+            address 10.0.0.1
+            netmask 255.255.255.0
+    notify:
+      - restart-eth0
+
+
+  # dhcp
+  - apt: name=isc-dhcp-server
+
+  - copy:
+      dest: /etc/default/isc-dhcp-server
+      owner: root
+      group: root
+      # backup: yes
+      content: |
+        # deployed by ansible!
+        #Separate multiple interfaces with spaces, e.g. “enp1s0 eth1".
+        INTERFACESv4="eth0"
+        INTERFACESv6=""
+    notify: restart-dhcp
+    tags: dhcp
+
+  - copy:
+      dest: /etc/dhcp/dhcpd.conf
+      owner: root
+      group: root
+      # backup: yes
+      content: |
+        #  deployed by ansible!
+
+        authoritative;
+        option domain-name "localnet";
+        # option domain-name-servers 131.217.38.36, 8.8.4.4;
+        # TODO don't think we need this... because we are explicit
+        # option domain-name-servers 10.1.1.1;
+
+        # Set up our desired subnet:
+        # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
+        subnet 10.0.0.0 netmask 255.255.255.0 {
+
+            interface "eth0";
+            range 10.0.0.2   10.0.0.10;
+            option subnet-mask 255.255.255.0;
+            option broadcast-address 10.0.0.255;
+            option routers 10.0.0.1;
+            option domain-name-servers 192.168.43.1;   # NOTE
+
+            host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 10.0.0.10; }
+         }
+
+        default-lease-time 600;
+        max-lease-time 7200;
+        # Show that we want to be the only DHCP server in this network:
+        authoritative;
+
+    notify: restart-dhcp
+    tags: dhcp
+
+
