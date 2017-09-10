@@ -281,28 +281,6 @@
           iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 443 -m conntrack --ctstate NEW ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # dns upstream services - on wan and internal?
-          # should restrict
-          iptables -A OUTPUT  -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT   -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT  -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT   -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          # we can see that we can't connect to it... but why not? ip looks correct
-          # nc -v -v 127.0.0.1 953
-          # iptables -A OUTPUT  -p tcp --dport 953 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          # iptables -A INPUT   -p tcp --sport 953 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          # we can't ping ourselves either...
-
-          # lo / 127.0.0.1 - OK this worked to allow port 953
-          iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
-          iptables -A INPUT  -i lo -p tcp  -j ACCEPT
-
-
-
-          # ok, rndc hangs /usr/sbin/rndc stop
-
           # ping, ie ping 8.8.8.8
           iptables -A OUTPUT -o enp1s0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -310,6 +288,25 @@
           # ntpd - outgoing initiated only, not incomming
           iptables -A OUTPUT -o enp1s0.120 -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i enp1s0.120 -p udp --sport 123 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+
+          ##### APU WAN and local processes ####
+          #
+          # dns upstream services - on wan and internal?
+          # and any process on this node has to be able to access the dns service on this node
+          # WAN and locally
+          iptables -A OUTPUT  -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT   -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT  -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT   -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          # lo / 127.0.0.1
+          # allow local processes to talk via lo. needed for rdnc/port 953, needed for bind
+          iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
+          iptables -A INPUT  -i lo -p tcp  -j ACCEPT
+
+          # TODO - allow ping 127.0.0.1?
+
 
           ##### APU to LAN #####
           #
