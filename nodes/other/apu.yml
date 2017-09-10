@@ -300,7 +300,7 @@
           iptables -A INPUT   -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
           # lo / 127.0.0.1
-          # allow local processes to talk via lo. needed for rdnc/port 953, needed for bind
+          # allow local processes to talk via lo. needed for rndc /port 953, needed for bind
           iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
           iptables -A INPUT  -i lo -p tcp  -j ACCEPT
 
