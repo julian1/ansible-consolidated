@@ -180,13 +180,13 @@
         - restart-wlp4s0
 
 
-
     - copy:
         backup: yes
         dest: /etc/motd
         content: |
           # deployed by ansible!
       tags: sshd
+
 
     - copy:
         backup: yes
@@ -247,7 +247,6 @@
 
       notify: restart-sshd
       tags: sshd
-
 
 
       # may need to restart wlp4s0 here? at least when install dnsmasq
@@ -349,7 +348,6 @@
           iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
           iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
 
-
           # http
           iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
@@ -364,11 +362,11 @@
           iptables -A FORWARD -p tcp --dport 43 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 43 -j ACCEPT
 
-          # irc - port 6667 preferred over 194
+          # irc - tighen by ip - port 6667 preferred over 194
           iptables -A FORWARD -p tcp --dport 6667 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 6667 -j ACCEPT
 
-          # ssh proxy
+          # ssh proxy - tighten by ip
           iptables -A FORWARD -p tcp --dport 5222 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 5222 -j ACCEPT
 
@@ -437,6 +435,7 @@
       notify: reconfigure-iptables
       tags: iptables
 
+
     # multicast subnet routing. for example minidlna udp on 1900
     # Use, ip -s mroute to query status
     - apt: name=smcroute
@@ -450,7 +449,7 @@
           smcroute -a enp1s0.201 0.0.0.0 239.255.255.250 wlp4s0
       notify: restart-smcroute
 
-
+#    tftp should run anywhere except here... 
 #
 #    - apt: name=tftp
 #    - copy:
@@ -472,8 +471,6 @@
 #    # xmodem protocol support over serial for switch firmware
 #    - apt: name=lrzsz
 #
-#
-
 
       # bind
       # NOTE problem with rndc.key  solved by purge bind9 and reinstall
@@ -547,7 +544,7 @@
                              IN     NS    ns1.
                              IN     NS    ns2.
 
-          netflix.com   A           127.0.0.1
+          netflix.com       A       127.0.0.1
           www.netflix.com   A       127.0.0.1
 
       notify: restart-bind
