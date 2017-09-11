@@ -1,4 +1,10 @@
 
+  # issues with ifconfig eth0 up not working then configure explicitly
+  # ifconfig eth0 up 10.0.0.1 netmask 255.255.255.0
+
+  # remove any lingering dhcp leases
+  # rm /var/lib/dhcp/dhclient.*.leases
+
   # turn *off* ip forwarding
   - lineinfile: >
       dest=/etc/sysctl.conf
@@ -44,7 +50,7 @@
         #  deployed by ansible!
 
         authoritative;
-        option domain-name "localnet";
+        option domain-name "localnet2";
         # option domain-name-servers 131.217.38.36, 8.8.4.4;
         # TODO don't think we need this... because we are explicit
         # option domain-name-servers 10.1.1.1;

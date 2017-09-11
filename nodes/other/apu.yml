@@ -632,11 +632,16 @@
         content: |
           # deployed by ansible!
 
+          # Show that we want to be the only DHCP server in this network:
           authoritative;
+
           option domain-name "localnet";
           # option domain-name-servers 131.217.38.36, 8.8.4.4;
           # TODO don't think we need this... because we are explicit
           option domain-name-servers 10.1.1.1;
+
+          default-lease-time 600;
+          max-lease-time 7200;
 
           # Set up our desired subnet:
           # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
@@ -688,11 +693,6 @@
               host dell-home2   { hardware ethernet f8:16:54:1c:9e:90; fixed-address 192.168.44.14; }
           }
 
-
-          default-lease-time 600;
-          max-lease-time 7200;
-          # Show that we want to be the only DHCP server in this network:
-          authoritative;
       notify: restart-dhcp
       tags: dhcp
 
