@@ -239,13 +239,18 @@
           # keymap
           xmodmap - <<- EOF
             ! numpad insert
+
             keycode 90 = Insert NoSymbol Insert
 
-            ! pgup
-            keycode 91 = Prior NoSymbol Prior
+            ! next and prev
+            !  = Prior NoSymbol Prior
+            !  = Next NoSymbol Next
 
-            ! pgdown
-            keycode 104  = Next NoSymbol Next
+            ! page up
+            keycode 91 =  Up NoSymbol Up
+
+            ! page down
+            keycode 104 = Down NoSymbol Down
 
             ! numpad 2
             keycode 88 =  Home NoSymbol Home
