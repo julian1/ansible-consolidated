@@ -1,0 +1,46 @@
+
+- hosts: all
+  vars_files:
+    - ../../vars/credentials.yml
+  vars:
+    - geth:
+        #  ie. will be /home/meteo/go-ethereum
+        build_dir: /home/meteo/
+        user: meteo 
+
+  pre_tasks:
+    # creating users explicitly works well
+    - user: name=meteo shell=/bin/bash
+    - file: path=/home/meteo mode=0700
+    - authorized_key: user=meteo key="{{meteo_pubkey}}"
+
+  roles:
+    - admin/devenv-lite
+    - crypto/geth
+
+
+  # geth path or start/stop? check later
+
+#
+#  tasks:
+#    # unused
+#    - copy:
+#        dest: /root/mount.sh
+#        mode: 0755
+#        content: |
+#          #!/bin/bash -x
+#          # deployed by ansible!
+#          cryptsetup luksOpen /dev/mmcblk0p3 luksfs || exit
+#          mount /dev/mapper/luksfs /home
+#
+#    - copy:
+#        dest: /root/umount.sh
+#        mode: 0755
+#        content: |
+#          #!/bin/bash -x
+#          # deployed by ansible!
+#          umount /home
+#          cryptsetup luksClose luksfs
+#
+
+
