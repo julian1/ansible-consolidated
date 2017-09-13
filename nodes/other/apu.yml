@@ -23,7 +23,7 @@
     - authorized_key: user=root key="{{meteo_pubkey}}"
 
   roles:
-    # - admin/apt/stretch
+    - admin/apt/stretch
     - admin/apt/update
     - admin/timezone
     - admin/locale
