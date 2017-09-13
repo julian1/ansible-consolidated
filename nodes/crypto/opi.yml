@@ -1,0 +1,34 @@
+
+- hosts: all
+
+  tasks:
+    - hostname: name=opi
+
+    - apt: name=python-minimal      # for ansible, has 2.7  
+    - apt: name=aptitude
+    - apt: name=less
+    - apt: name=net-tools           # ifconfig
+    - apt: name=screen
+    - apt: name=vim
+    - apt: name=cryptsetup-luks
+
+
+    - copy:
+        dest: /root/mount.sh
+        mode: 0755
+        content: |
+          #!/bin/bash -x
+          # deployed by ansible!
+          cryptsetup luksOpen /dev/mmcblk0p3 luksfs || exit
+          mount /dev/mapper/luksfs /home
+
+    - copy:
+        dest: /root/umount.sh
+        mode: 0755
+        content: |
+          #!/bin/bash -x
+          # deployed by ansible!
+          umount /home
+          cryptsetup luksClose luksfs
+
+
