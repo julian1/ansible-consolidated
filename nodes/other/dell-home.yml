@@ -14,6 +14,7 @@
         version: testing
 
   pre_tasks:
+    # review this, needed jessie for gcc-arm, and firmware
     - copy:
         dest: /etc/apt/sources.list
         mode: 0644
@@ -146,12 +147,13 @@
           iwconfig wlan0
       tags: whoot
 
+
     - copy:
-        dest: /home/meteo/scripts/nuc-share.sh
+        dest: /home/meteo/scripts/nuc-sshfs.sh
         mode: 0777
         content: |
           # deployed by ansible!
-          sshfs root@nuc:/storage mnt/
+          sshfs root@nuc.localnet:/storage /home/meteo/mnt
       tags: whoot
 
     - copy:
