@@ -6,7 +6,7 @@
     - geth:
         #  ie. will be /home/meteo/go-ethereum
         build_dir: /home/meteo/
-        user: meteo 
+        user: meteo
 
   pre_tasks:
     # creating users explicitly works well
@@ -20,6 +20,11 @@
 
 
   # geth path or start/stop? check later
+
+#  export PATH="go-ethereum/build/bin:$PATH"
+#  geth  --maxpeers 0  console 2> /dev/null
+#  geth  --maxpeers 0  console
+
 
 #
 #  tasks:
