@@ -4,11 +4,15 @@
   # TODO should not be users. Should be xmonad_users
 
   - apt: name=xorg
-  - apt: name=xserver-xorg-input-synaptics   # for xserver-xorg-input-synaptics
+  - apt: name=xserver-xorg-input-synaptics   # for synclient
+
+
+  # TODO add meteo to group tty
 
   - apt: name=xmonad
   - apt: name=xmobar
   - apt: name=dmenu
+  - apt: name=xtrlock
 
 
 # we could potentially put xinitrc here, except it differs between deployments, eg. keybindings
