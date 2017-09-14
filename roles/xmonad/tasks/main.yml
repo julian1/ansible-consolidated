@@ -1,7 +1,4 @@
 
-  # xmonad stuff
-
-  # TODO should not be users. Should be xmonad_users
 
   - apt: name=xorg
   - apt: name=xserver-xorg-input-synaptics   # for synclient
@@ -22,7 +19,8 @@
 #    with_items: users
 #    when: item.home_dir
 
-  - file: path="/home{{xmonad_user}}/.xmonad" state=directory mode=0755
+  # this may be created when instsalling xmonad
+  - file: path="/home/{{xmonad_user}}/.xmonad" state=directory mode=0755
 #    with_items: users
 #    when: item.home_dir
 
