@@ -7,8 +7,10 @@
   - apt: name=less
   - apt: name=aptitude
   - apt: name=mlocate
-  # - apt: name=sudo
   - apt: name=pv
+  - apt: name=psmisc          # killall
 
+
+  # - apt: name=sudo, too heavyweight for general install
   # curl, wget
 

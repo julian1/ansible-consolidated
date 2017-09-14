@@ -1,8 +1,10 @@
 
     #   zfs is now maintained in debian repos, and doesn't need to be compiled.
 
+    - apt: name=spl-dkms
+    - apt: name=zfs-dkms
 
-    #  
+    #
     - copy:
         dest: /etc/modprobe.d/zfs.conf
         content: |
@@ -20,8 +22,8 @@
         #!/bin/bash -x
         # deployed by ansible!
 
-        cryptsetup luksOpen /dev/sda2 sda2-luks || exit
-        cryptsetup status sda2-luks || exit
+        cryptsetup luksOpen /dev/sda2 myfs || exit
+        cryptsetup status myfs || exit
         zpool import storage
 
   - copy:
@@ -32,45 +34,45 @@
         # deployed by ansible!
 
         zpool export storage
-        cryptsetup luksClose sda2-luks
+        cryptsetup luksClose myfs
 
-
-  # reinstall simpler
-  - copy:
-      dest: /root/reinstall-zfs-simple.sh
-      mode: 0755
-      content: |
-        #!/bin/bash -x
-        # deployed by ansible!
-
-        apt-get install linux-headers-$( uname -r )
-        apt-get install --reinstall zfs-dkms
-
-
-  # reinstall
-  - copy:
-      dest: /root/reinstall-zfs.sh
-      mode: 0755
-      content: |
-        #!/bin/bash -x
-        # deployed by ansible!
-
-        apt-get -y purge spl
-        apt-get -y purge spl-*
-        apt-get -y purge kmod-spl*
-        apt-get -y purge spl-dkms
-        apt-get -y purge kmod-zfs*
-        apt-get -y purge zfs*
-        apt-get -y purge libzfs*
-
-        # need correct kernel header version k
-        apt-get -y  install linux-headers-$( uname -r )
-
-        apt-get -y install zfs-dkms
-
-        /sbin/modprobe zfs
-
-
+#
+#  # reinstall simpler
+#  - copy:
+#      dest: /root/reinstall-zfs-simple.sh
+#      mode: 0755
+#      content: |
+#        #!/bin/bash -x
+#        # deployed by ansible!
+#
+#        apt-get install linux-headers-$( uname -r )
+#        apt-get install --reinstall zfs-dkms
+#
+#
+#  # reinstall
+#  - copy:
+#      dest: /root/reinstall-zfs.sh
+#      mode: 0755
+#      content: |
+#        #!/bin/bash -x
+#        # deployed by ansible!
+#
+#        apt-get -y purge spl
+#        apt-get -y purge spl-*
+#        apt-get -y purge kmod-spl*
+#        apt-get -y purge spl-dkms
+#        apt-get -y purge kmod-zfs*
+#        apt-get -y purge zfs*
+#        apt-get -y purge libzfs*
+#
+#        # need correct kernel header version k
+#        apt-get -y  install linux-headers-$( uname -r )
+#
+#        apt-get -y install zfs-dkms
+#
+#        /sbin/modprobe zfs
+#
+#
 
 
 

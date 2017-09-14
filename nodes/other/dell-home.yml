@@ -12,42 +12,13 @@
     - apt:
         mirror: http://mirror.internode.on.net/pub/debian
         version: testing
+    - xmonad_user: meteo
 
   pre_tasks:
     # review this, needed jessie for gcc-arm, and firmware
-    - copy:
-        dest: /etc/apt/sources.list
-        mode: 0644
-        content: |
-          # deployed by ansible
-          deb {{apt.mirror}} {{apt.version}} main
-          deb-src {{apt.mirror}} {{apt.version}} main
 
-          deb http://security.debian.org/ {{apt.version}}/updates main
-          deb-src http://security.debian.org/ {{apt.version}}/updates main
-
-          deb {{apt.mirror}} {{apt.version}}-updates main
-          deb-src {{apt.mirror}} {{apt.version}}-updates main
-
-          # firmware
-          # as written, this generates conflicts
-          # deb http://http.us.debian.org/debian/ {{apt.version}} non-free contrib
-          deb {{apt.mirror}} {{apt.version}} non-free contrib
-
-          # jessie - for gcc-arm-none-eab - may not need anymore?
-          # TODO change to stretch?
-          deb {{apt.mirror}} jessie main
-          deb-src {{apt.mirror}} jessie main
-
-    # http://unix.stackexchange.com/questions/107689/how-to-install-a-single-jessie-package-on-wheezy
-    # TODO does this need a number in the name to force order?
-    - copy:
-        dest: /etc/apt/apt.conf.d/default-release
-        content: |
-          # deployed by ansible
-          APT::Default-Release "testing";
-
-
+    # DOESN"T SEEM TO WORK...
+    # IMPORTANT - must be in pre-tasks else, we lose eth0 in /etc/network/interfaces
     # see, https://askubuntu.com/questions/689070/network-interface-name-changes-after-update-to-15-10-udev-changes
     # using persistent-net is still valid..
     # even though the original generator file is no longer used...
@@ -71,27 +42,35 @@
   roles:
     # stretch
     - admin/apt/update
+    - admin/devenv-lite   # vim/screen eg. required for anything
     - admin/timezone
     - admin/locale
     - { role: dotfiles, tags: [ 'dotfiles' ] }
     - { role: vim, tags: [ 'vim' ] }
+
     - xmonad
-    - { role: admin/printer, tags: [ 'printer' ] }
+#    - { role: admin/printer, tags: [ 'printer' ] }
 
     # - ip-forwarding
     #- admin/common
-    # - admin/zfs
+    - admin/zfs
 
   tasks:
     - hostname: name=dell-home
 
     - apt: name=memtest86
 
+    #####
+    # wireless
+    # non-free firmware load for iwlwifi-7260-17.ucode  - worked!
+    - apt: firmware-iwlwifi     
+
     - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
     - apt: name=iw
 
 
     #####
+    # alsa
     - apt: name=alsa-oss
     - apt: name=alsa-utils
     - apt: name=alsa-tools
@@ -119,6 +98,7 @@
       args:
         creates: /var/lib/alsa/asound.state
       notify: reboot
+
 
     # create home for scripts
     - file: path=/home/meteo/scripts state=directory mode=777
@@ -270,7 +250,7 @@
           # turn bell off
           xset b off
 
-          # start xmonad
+          # start xcmonad
           xmonad
       tags: xinitrc
 
@@ -285,6 +265,10 @@
           auto lo
           iface lo inet loopback
 
+          auto enp3s0f1
+          iface enp3s0f1 inet dhcp
+
+          # TODO put this in interfaces.d   - and make the whole thing a role
           auto br0
           iface br0 inet static
             address 10.1.1.1
@@ -296,29 +280,7 @@
       # probably should restart all networking
       notify: restart-br0
 
-    # Using local dnsmasq as a wholesale replacement for using resolvconf is a lot simpler
-    # issue is we want to ping containers from the host,
-    # so make local dns authoritative
-    - apt: name=dnsmasq
-    - copy:
-        dest: /etc/dnsmasq.d/container-dns
-        content: |
-          # deployed by ansible
-          interface=br0
-          # log-queries
-          log-dhcp
-          no-resolv
-          # server=8.8.8.8
-          # server=192.168.42.1
-          server=192.168.43.1
-          expand-hosts
-          domain=container
-          dhcp-range=br0,10.1.1.10,10.1.1.30,4h
-          dhcp-host=00:01:04:1b:2C:1A,ethereum,10.1.1.19
-          dhcp-host=00:01:04:1b:2C:1B,jessie-test,10.1.1.20
-          dhcp-host=00:01:04:1b:2C:1C,ise,10.1.1.21
 
-      notify: restart-dnsmasq
 
     # IMPORTANT - changes to /etc/resolv.conf, need dnsmasq restart to re-read upstream servers
 
@@ -429,6 +391,18 @@
 
 
   handlers:
-    - include: ../roles/common/handlers/main.yml
+    # - include: ../roles/common/handlers/main.yml
 
+    - name: reconfigure-iptables
+      command: "{{item}}"
+      with_items:
+        - sh /etc/iptables-rules
+        - dpkg-reconfigure --frontend noninteractive iptables-persistent
 
+    - name: reboot
+      command: /sbin/reboot
+
+    - name: restart-br0
+      command: sh -c "/sbin/ifdown br0 && /sbin/ifup br0"
+
+  
