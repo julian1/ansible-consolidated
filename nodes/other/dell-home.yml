@@ -49,15 +49,15 @@
     # TODO change var name to dotfile_user_home
 
     - name: dotfiles
+      tags: dotfiles
       dotfile_path: /home/meteo
-      tags: [ 'dotfiles' ]
 
     - name: vim
-      tags: [ 'vim' ]
+      tags: vim
 
     - name: xmonad
+      tags: xmonad
       xmonad_user: meteo
-      tags: [ 'xmonad' ]
 
 #    - { role: admin/printer, tags: [ 'printer' ] }
 
