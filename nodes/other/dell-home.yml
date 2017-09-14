@@ -48,6 +48,7 @@
     # call role twice for different users?
     # TODO change var name to dotfile_user_home
 
+    # https://serverfault.com/questions/758376/local-ansible-playbook-run-playbook-with-vars-for-role
     - name: dotfiles
       tags: dotfiles
       dotfile_path: /home/meteo
