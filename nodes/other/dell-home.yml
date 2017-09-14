@@ -3,8 +3,8 @@
   vars_files:
     - ../../vars/credentials.yml
   vars:
-    - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+    # - users:
+    #  - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
     - printer:
         name: Brother
         url: socket://brother.localnet:9100
@@ -45,7 +45,9 @@
     - admin/devenv-lite   # vim/screen eg. required for anything
     - admin/timezone
     - admin/locale
-    - { role: dotfiles, tags: [ 'dotfiles' ] }
+    # call role twice for different users?
+    # TODO change var name to dotfile_user_home
+    - { role: dotfiles, tags: [ 'dotfiles' ], dotfile_path: /home/meteo  }
     - { role: vim, tags: [ 'vim' ] }
 
     - xmonad
@@ -58,12 +60,17 @@
   tasks:
     - hostname: name=dell-home
 
+    # note the groups removes unlisted items... so we have kind of
+    # meteo
+    - user: name=meteo groups=tty
+    - authorized_key: user=meteo key="{{meteo_pubkey}}"
+
     - apt: name=memtest86
 
     #####
     # wireless
     # non-free firmware load for iwlwifi-7260-17.ucode  - worked!
-    - apt: firmware-iwlwifi     
+    - apt: name=firmware-iwlwifi
 
     - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
     - apt: name=iw
@@ -405,4 +412,4 @@
     - name: restart-br0
       command: sh -c "/sbin/ifdown br0 && /sbin/ifup br0"
 
-  
+
