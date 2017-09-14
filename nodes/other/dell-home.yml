@@ -69,7 +69,7 @@
     - hostname: name=dell-home
 
     # note the groups removes unlisted items... so we have kind of
-    # meteo
+    # meteo   video, floppy
     - user: name=meteo groups=tty
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
@@ -381,12 +381,6 @@
               exit 1
           fi
 
-    #####
-    - apt: name=dnsutils
-    - apt: name=ethtool
-    - apt: name=ffmpeg
-    - apt: name=a2ps
-
 
 
     - copy:
@@ -403,6 +397,16 @@
           # deployed by ansible!
           # for stm32
           ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3748", MODE="0666"
+
+
+
+    #####
+    - apt: name=dnsutils
+    - apt: name=ethtool
+    - apt: name=ffmpeg
+    - apt: name=a2ps
+    - apt: name=mplayer
+
 
 
   handlers:
