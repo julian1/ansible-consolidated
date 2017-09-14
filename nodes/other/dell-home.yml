@@ -5,6 +5,7 @@
   vars:
     # - users:
     #  - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
+    # TODO move all these variables to local roles
     - printer:
         name: Brother
         url: socket://brother.localnet:9100
@@ -12,7 +13,6 @@
     - apt:
         mirror: http://mirror.internode.on.net/pub/debian
         version: testing
-    - xmonad_user: meteo
 
   pre_tasks:
     # review this, needed jessie for gcc-arm, and firmware
@@ -47,10 +47,18 @@
     - admin/locale
     # call role twice for different users?
     # TODO change var name to dotfile_user_home
-    - { role: dotfiles, tags: [ 'dotfiles' ], dotfile_path: /home/meteo  }
-    - { role: vim, tags: [ 'vim' ] }
 
-    - xmonad
+    - name: dotfiles
+      dotfile_path: /home/meteo
+      tags: [ 'dotfiles' ]
+
+    - name: vim
+      tags: [ 'vim' ]
+
+    - name: xmonad
+      xmonad_user: meteo
+      tags: [ 'xmonad' ]
+
 #    - { role: admin/printer, tags: [ 'printer' ] }
 
     # - ip-forwarding

@@ -1,5 +1,7 @@
 
 
+  - debug: msg="dotfiles path {{xmonad_user}}"  # " 
+
   - apt: name=xorg
   - apt: name=xserver-xorg-input-synaptics   # for synclient
 
