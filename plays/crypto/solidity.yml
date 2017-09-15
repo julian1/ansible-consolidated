@@ -1,0 +1,9 @@
+
+- hosts: all
+  vars:
+    - users:
+      - { name: meteo, home_dir: /home/meteo }
+  roles:
+    - name: crypto/solidity
+      solidity_user: meteo
+ 

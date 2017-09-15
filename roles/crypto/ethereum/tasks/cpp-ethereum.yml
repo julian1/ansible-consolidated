@@ -1,4 +1,4 @@
-
+OLD/DEPRECATED - see crypto/solidity/tasks/main.yml
 
   # useful for debugging
   - apt: name=vim
