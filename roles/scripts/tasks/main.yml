@@ -1,0 +1,98 @@
+
+# TODO parameterize deploy location
+
+  # create home for scripts
+  - file: path=/home/meteo/scripts state=directory mode=777
+
+  ####
+  - copy:
+      dest: /home/meteo/scripts/proxy.sh
+      mode: 0777
+      content: |
+        # deployed by ansible!
+        ssh -N -v  -D 5222  admin@proxy
+
+  - copy:
+      dest: /home/meteo/scripts/restart-wifi.sh
+      mode: 0777
+      content: |
+        # deployed by ansible!
+        # not used for a long time... now using wicd-curses
+        ifconfig wlan0 down
+        iwconfig wlan0 essid AP1
+        iwconfig wlan0 ap any
+        iwconfig wlan0 enc off
+        ifconfig wlan0 up
+        iwconfig wlan0
+
+
+  - copy:
+      dest: /home/meteo/scripts/nuc-sshfs.sh
+      mode: 0777
+      content: |
+        # deployed by ansible!
+        sshfs root@nuc.localnet:/storage /home/meteo/mnt
+
+  - copy:
+      dest: /home/meteo/scripts/volume.sh
+      mode: 0777
+      content: |
+        # deployed by ansible!
+        # could just use alias
+        amixer set Master $1
+        amixer set PCM 100%
+
+  - copy:
+      dest: /home/meteo/scripts/brightness.sh
+      mode: 0777
+      content: |
+        # deployed by ansible!
+        # xset -dpms; xset s off
+        xrandr --output eDP-1 --brightness $1
+
+  # jdk and maven, for freeroute etc
+  - copy:
+      dest: /home/meteo/scripts/jdk.sh
+      content: |
+        # deployed by ansible!
+        # see plays/misc/jdk-1.8.sh
+        export JAVA_HOME="$HOME/jdk1.8.0_111/"
+        export PATH="$JAVA_HOME/bin:$PATH"
+
+        # see, plays/misc/maven.yml
+        export PATH="$PATH:$HOME/apache-maven-3.3.9/bin/"
+
+  - copy:
+      dest: /home/meteo/scripts/node.sh
+      content: |
+        # deployed by ansible!
+
+        export PATH="/home/meteo/node-v6.11.0-linux-x64/bin:$PATH"
+
+  - copy:
+      dest: /home/meteo/scripts/idris.sh
+      content: |
+        # deployed by ansible!
+
+        export CABAL_BIN="/home/meteo/.cabal/bin"
+        export PATH="$CABAL_BIN:$PATH"
+
+  - copy:
+      dest: /home/meteo/scripts/chromium.sh
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        chromium \
+          --proxy-server='socks5://127.0.0.1:5222'  \
+          --host-resolver-rules="MAP * ~NOTFOUND , EXCLUDE 127.0.0.1"
+
+  - copy:
+      dest: /home/meteo/scripts/opam.sh
+      content: |
+        # deployed by ansible!
+        . $HOME/.opam/opam-init/init.sh
+        #   /home/meteo/.opam/4.02.3/bin
+        # . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+
