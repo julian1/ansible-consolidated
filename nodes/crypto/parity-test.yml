@@ -1,0 +1,35 @@
+
+- hosts: all
+  vars_files:
+    - ../../vars/credentials.yml
+  vars:
+
+  pre_tasks:
+    - user: name=meteo shell=/bin/bash
+    - file: path=/home/meteo mode=0700
+    - authorized_key: user=meteo key="{{meteo_pubkey}}"
+
+  roles:
+    - admin/devenv-lite
+
+    - name: misc/rust
+      user: meteo
+
+    - name: crypto/parity
+      build_dir: /home/meteo/parity
+      user: meteo
+
+    - name: misc/node
+      deploy_path: /home/meteo
+
+    - name: crypto/web3
+      user: meteo
+
+
+    #- crypto/geth
+    # - crypto/solidity
+
+
+
+# geth path or start/stop? check later
+
