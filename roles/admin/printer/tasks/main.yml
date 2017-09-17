@@ -4,22 +4,22 @@
 
   - service: name=cups state=started
 
-  - shell: lpstat -p | grep -q {{printer.name}}
+  - shell: lpstat -p | grep -q {{pname}}
     register: have_printer
     ignore_errors: yes
     changed_when: "have_printer.rc != 0"
 
-  - copy: src={{printer.ppd}} dest=/tmp
+  - copy: src={{ppd}} dest=/tmp
 
   - shell: |
       # install
       lpadmin \
-        -p '{{printer.name}}' \
-        -v '{{printer.url}}' \
-        -P '/tmp/{{printer.ppd}}' \
+        -p '{{pname}}' \
+        -v '{{url}}' \
+        -P '/tmp/{{ppd}}' \
         -E
       # set default
-      lpadmin -d {{printer.name}}
+      lpadmin -d {{pname}}
     when: "have_printer.rc != 0"
 
 

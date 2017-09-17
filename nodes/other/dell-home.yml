@@ -6,10 +6,6 @@
     # - users:
     #  - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
     # TODO move all these variables to local roles
-    - printer:
-        name: Brother
-        url: socket://brother.localnet:9100
-        ppd: BRHL16_2_GPL.ppd
     - apt:
         mirror: http://mirror.internode.on.net/pub/debian
         version: testing
@@ -63,6 +59,12 @@
     # need the user created before we do this...
     - name: scripts
       tags: scripts
+
+    - name: admin/printer
+      tags: printer
+      pname: Brother
+      url: socket://brother.localnet:9100
+      ppd: BRHL16_2_GPL.ppd
 
 #    - { role: admin/printer, tags: [ 'printer' ] }
 
@@ -315,7 +317,6 @@
     - apt: name=ffmpeg
     - apt: name=a2ps
     - apt: name=mplayer
-
 
 
   handlers:
