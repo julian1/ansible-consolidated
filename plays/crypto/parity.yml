@@ -1,27 +1,14 @@
 
 - hosts: all
-  vars:
-    - rust:
-        user: parity
-    - parity:
-        build_dir: /home/parity/parity
-        user: parity
-    - node:
-        user: meteo
   roles:
-    # - misc/rust
-    # - crypto/parity
-    - misc/node
+    - name: misc/rust
+      user: meteo
 
-  tasks:
-    - name: install web3
-      shell: >
-        export PATH=/home/{{node.user}}/node-v6.11.0-linux-x64/bin:$PATH && npm install web3
+    - name: crypto/parity
+      build_dir: /home/meteo/parity
+      user: meteo
 
-    - copy:
-        dest: /home/{{node.user}}/x.js 
-        content: |
-          Web3 = require("web3")
-          web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-          console.log( web3.eth.blockNumber )
+    # move this somewhere else
+    # - misc/node
+    # - crypto/web3
 

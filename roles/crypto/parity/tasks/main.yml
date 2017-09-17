@@ -11,24 +11,29 @@
 
   - apt: name=git
 
-  - name: checkout git parity
+  - name: git checkout parity
     git: repo=https://github.com/paritytech/parity
-      dest={{parity.build_dir}}
+      dest={{build_dir}}
       accept_hostkey=yes
       force=yes
       recursive=no
-      version=v1.6.8
+      version=v1.6.10
+      # version=v1.6.8
+      # there is v1.7.0,but looks bloated
+    become: yes
+    become_user: "{{user}}"
 
 
-  - file: path="{{parity.build_dir}}" state=directory owner="{{parity.user}}" group="{{parity.user}}" recurse=yes
+
+#  - file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
 
   - name: build parity
     become: yes
-    become_user: "{{parity.user}}"
+    become_user: "{{user}}"
     tags: parity
     shell: >
-      export PATH=/home/parity/.cargo/bin:$PATH && cargo build --release
-      chdir={{parity.build_dir}}
-      creates={{parity.build_dir}}/target/release/parity
+      export PATH="$HOME/.cargo/bin:$PATH" && cargo build --release
+      chdir={{build_dir}}
+      creates={{build_dir}}/target/release/parity
 
 

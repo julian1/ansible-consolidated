@@ -4,7 +4,7 @@
   # we need to pass the url, so may as well just install locally here... 
   - get_url: > 
       url='https://sh.rustup.rs'                
-      dest=/home/{{rust.user}}/rustup-init
+      dest=/home/{{user}}/rustup-init
       mode=755
     
   - apt: name=curl
@@ -14,16 +14,16 @@
     # Note, this will update bash_profile, /home/rust/.cargo/bin/rustc
   - name: rustup
     become: yes
-    become_user: "{{rust.user}}"
+    become_user: "{{user}}"
     command: > 
-      /home/{{rust.user}}/rustup-init -y
-      creates=/home/{{rust.user}}/.rustup/settings.toml
+      /home/{{user}}/rustup-init -y
+      creates=/home/{{user}}/.rustup/settings.toml
 
 
   # not idempotent. needs shell, because command handle env vars
   - name: rustup update
     become: yes
-    become_user: "{{rust.user}}"
+    become_user: "{{user}}"
     shell: > 
-      export PATH=/home/{{rust.user}}/.cargo/bin:$PATH && rustup update
+      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup update
 
