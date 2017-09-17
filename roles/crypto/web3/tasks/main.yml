@@ -1,23 +1,20 @@
 
-DEPRECATE
-  web3 should be installed locally to whatever project needs it in myproject/node_modules
-  just install node first.
 
-# Bug installing, need this versioN
+# Note bug installing latest,
 # https://ethereum.stackexchange.com/questions/23444/getting-error-while-trying-to-install-web3
-npm install web3@0.20.0
+# npm install web3@0.20.0
 
-# TODO move this to a play... and invoke...
-# assumes nodejs has been installed
-
-# this hardly needs this sophistication
+# better to have this here, than mixed up with parity 
 
 - name: install web3
   shell: >
-    export PATH=/home/{{node.user}}/node-v6.11.0-linux-x64/bin:$PATH && npm install web3
+    export PATH=/home/{{user}}/node-v6.11.0-linux-x64/bin:$PATH && npm install web3@0.20.0
+  args:
+    chdir: /home/{{user}}
+    creates: web3
 
 - copy:
-    dest: /home/{{node.user}}/web3/blockNumber.js 
+    dest: /home/{{user}}/blockNumber.js 
     content: |
       Web3 = require("web3")
       web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));

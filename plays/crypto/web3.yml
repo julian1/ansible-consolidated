@@ -1,0 +1,9 @@
+
+- hosts: all
+  roles:
+    - name: misc/node
+      deploy_path: /home/meteo
+
+    - name: crypto/web3
+      user: meteo
+
