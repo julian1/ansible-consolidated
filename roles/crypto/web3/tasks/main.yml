@@ -1,6 +1,7 @@
 
 DEPRECATE
   web3 should be installed locally to whatever project needs it in myproject/node_modules
+  just install node first.
 
 # Bug installing, need this versioN
 # https://ethereum.stackexchange.com/questions/23444/getting-error-while-trying-to-install-web3

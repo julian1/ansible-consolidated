@@ -17,6 +17,16 @@
   roles:
     - admin/devenv-lite
     - crypto/geth
+    - crypto/solidity
+    - name: misc/node
+      node_deploy_path: /home/meteo
+      tags: node
+
+  tasks:
+    $ export PATH="node-v6.11.0-linux-x64/bin/:$PATH"
+    > meteo@geth-test:~$ npm install web3
+    # install this version, 
+    > npm install web3@^0.20.0
 
 
   # geth path or start/stop? check later
