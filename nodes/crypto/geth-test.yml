@@ -17,7 +17,7 @@
   roles:
     - admin/devenv-lite
     - crypto/geth
-    - crypto/solidity
+    # - crypto/solidity
     - name: misc/node
       node_deploy_path: /home/meteo
       tags: node
