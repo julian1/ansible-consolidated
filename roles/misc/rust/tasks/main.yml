@@ -1,12 +1,17 @@
 
+#
+# parity readme says 1.18.0,
+# but v1.6.10 needs rust v1.18.0
+# rm -rf .cargo/ rustup-init .rustup/ .multirust
+
 # install rust to top level dir
 
-  # we need to pass the url, so may as well just install locally here... 
-  - get_url: > 
-      url='https://sh.rustup.rs'                
+  # we need to pass the url, so may as well just install locally here...
+  - get_url: >
+      url='https://sh.rustup.rs'
       dest=/home/{{user}}/rustup-init
       mode=755
-    
+
   - apt: name=curl
   - apt: name=sudo
 
@@ -15,15 +20,25 @@
   - name: rustup
     become: yes
     become_user: "{{user}}"
-    command: > 
+    command: >
       /home/{{user}}/rustup-init -y
       creates=/home/{{user}}/.rustup/settings.toml
 
 
-  # not idempotent. needs shell, because command handle env vars
-  - name: rustup update
+
+  # install version 1.18.0 and switch to it
+  - name: install rust version 1.18.0
     become: yes
     become_user: "{{user}}"
-    shell: > 
-      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup update
+    shell: >
+      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install 1.18.0 && rustup default 1.18.0
+    tags: rust_version
+
+
+ # not idempotent. needs shell, because command handle env vars
+#  - name: rustup update
+#    become: yes
+#    become_user: "{{user}}"
+#    shell: >
+#      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup update
 

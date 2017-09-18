@@ -1,4 +1,7 @@
 
+# important, we may be able to do a port-forward - for the rpc interface to a parity running in cloud
+# or even, iptables to map to infura etc.
+
 - hosts: all
   vars_files:
     - ../../vars/credentials.yml
@@ -25,7 +28,6 @@
     - name: crypto/web3
       user: meteo
 
-
     #- crypto/geth
     # - crypto/solidity
 
@@ -39,8 +41,4 @@
           PATH="$HOME/node-v6.11.0-linux-x64/bin/:$PATH"
           export PATH
       tags: path
-
-
-
-# geth path or start/stop? check later
 
