@@ -29,6 +29,17 @@
     #- crypto/geth
     # - crypto/solidity
 
+  tasks:
+    - copy:
+        dest: /home/meteo/.bash_aliases
+        content: |
+          # deployed by ansible!
+
+          PATH="$HOME/parity/target/release:$PATH"
+          PATH="$HOME/node-v6.11.0-linux-x64/bin/:$PATH"
+          export PATH
+      tags: path
+
 
 
 # geth path or start/stop? check later
