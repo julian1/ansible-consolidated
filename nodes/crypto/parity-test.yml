@@ -44,6 +44,9 @@
 
           PATH="$HOME/parity/target/release:$PATH"
           PATH="$HOME/node-v6.11.0-linux-x64/bin/:$PATH"
+          PATH="$HOME/solidity/build/solc/:$PATH"
+          PATH="$HOME/solidity/build/lllc/:$PATH"
+
           export PATH
       tags: path
 
