@@ -322,6 +322,7 @@
     - apt: name=youtube-dl
     - apt: name=evince
     - apt: name=whois
+    - apt: name=hexchat
 
 
 
