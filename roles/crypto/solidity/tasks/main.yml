@@ -1,31 +1,33 @@
-# not quite done...
-# new
-# https://solidity.readthedocs.io/en/latest/installing-solidity.html#building-from-source
+
+# see, https://solidity.readthedocs.io/en/latest/installing-solidity.html#building-from-source
 
   - apt: name=git
 
-  # only 24MB deps in stretch, version is 3.7.2 
+  # only 24MB deps in stretch, version is 3.7.2
   - apt: name=cmake
 
   # solidity
   - debug: msg="building solidity"
   - git: repo=https://github.com/ethereum/solidity dest=solidity version=v0.4.16 recursive=yes
     become: yes
-    become_user: meteo
+    become_user: "{{user}}"
 
-  # as root
-  # ./scripts/install_deps.sh
-  - shell: creates=xxx chdir=/home/meteo/solidity {{item}}   ./scripts/install_deps.sh
- 
+  # FIXME idempotent, creates what?
+  - shell: creates=xxx chdir="/home/{{user}}/solidity"  ./scripts/install_deps.sh
 
-  # needs more than 1GB on the VM to compile,
-
-  - shell: creates=build/solc/solc chdir=/home/meteo/solidity/build {{item}}
+  # create the build dir
+  - file: path=/home/{{user}}/solidity/build state=directory
     become: yes
-    become_user: meteo
+    become_user: "{{user}}"
+
+
+  # requires more than 1GB on the VM to compile,
+  - shell: creates=build/solc/solc chdir="/home/{{user}}/solidity/build" {{item}}
+    become: yes
+    become_user: "{{user}}"
     with_items:
-      - cmake 
-      - make 
+      - cmake ..
+      - make
 
 
 

@@ -28,6 +28,11 @@
     - name: crypto/web3
       user: meteo
 
+    - name: crypto/solidity
+      user: meteo
+      tags: solidity
+ 
+
     #- crypto/geth
     # - crypto/solidity
 
