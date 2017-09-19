@@ -1,4 +1,9 @@
 
+# OK - the mist, or geth etc - need to be on the client side...
+# we should just look at the source and see if we can see connection.
+# the node
+# so we need to have a local instance - or port forwarded instance.
+
 # important, we may be able to do a port-forward - for the rpc interface to a parity running in cloud
 # or even, iptables to map to infura etc.
 
@@ -28,13 +33,11 @@
     - name: crypto/web3
       user: meteo
 
-    - name: crypto/solidity
-      user: meteo
-      tags: solidity
- 
+#    - name: crypto/solidity
+#      user: meteo
+#      tags: solidity
 
     #- crypto/geth
-    # - crypto/solidity
 
   tasks:
     - copy:
@@ -43,10 +46,18 @@
           # deployed by ansible!
 
           PATH="$HOME/parity/target/release:$PATH"
-          PATH="$HOME/node-v6.11.0-linux-x64/bin/:$PATH"
-          PATH="$HOME/solidity/build/solc/:$PATH"
-          PATH="$HOME/solidity/build/lllc/:$PATH"
+          PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
+          PATH="$HOME/solidity/build/solc:$PATH"
+          PATH="$HOME/solidity/build/lllc:$PATH"
+
+          PATH="$HOME/.meteor:$PATH"
 
           export PATH
       tags: path
+
+  # hmmn, if we just set-up a local parity it might work out of the box...
+
+  # did not
+  # curl https://install.meteor.com/ | sh
+  # npm install  meteor-build-client
 

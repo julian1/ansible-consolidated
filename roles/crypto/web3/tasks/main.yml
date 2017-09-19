@@ -6,12 +6,18 @@
 
 # better to have this here, than mixed up with parity 
 
+# creates node_modules - so needs to be non-root user...
+
 - name: install web3
   shell: >
     export PATH=/home/{{user}}/node-v6.11.0-linux-x64/bin:$PATH && npm install web3@0.20.0
   args:
     chdir: /home/{{user}}
     creates: web3
+  become: yes
+  become_user: "{{user}}"
+
+
 
 - copy:
     dest: /home/{{user}}/blockNumber.js 
