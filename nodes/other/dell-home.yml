@@ -78,6 +78,9 @@
     # note the groups removes unlisted items... so we have kind of
     # meteo   video, floppy
     - user: name=meteo groups=tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
+
+    - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
+
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
     - apt: name=memtest86

@@ -1,14 +1,34 @@
 
+# important
+
 - hosts: all
+  pre_tasks:
+    - user: name=parity shell=/bin/bash
+    - file: path=/home/parity mode=0700 owner=parity group=parity state=directory
+
   roles:
     - name: misc/rust
-      user: meteo
+      user: parity
 
     - name: crypto/parity
-      build_dir: /home/meteo/parity
-      user: meteo
+      build_dir: /home/parity/parity
+      user: parity
 
     # see web3 play
     # - misc/node
     # - crypto/web3
+
+  tasks:
+    - copy:
+        dest: /home/parity/.bash_aliases
+        content: |
+          # deployed by ansible!
+
+          PATH="$HOME/parity/target/release:$PATH"
+          PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
+          PATH="$HOME/solidity/build/solc:$PATH"
+          PATH="$HOME/solidity/build/lllc:$PATH"
+
+          export PATH
+      tags: path
 
