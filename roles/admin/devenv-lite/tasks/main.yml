@@ -1,6 +1,6 @@
 
   - apt: name=python-minimal      # for ansible, has 2.7
-  - apt: name=net-tools           # ifconfig
+  - apt: name=net-tools           # ifconfig, netstat
   - apt: name=vim
   - apt: name=git
   - apt: name=screen
@@ -8,8 +8,8 @@
   - apt: name=aptitude
   - apt: name=mlocate
   - apt: name=pv
-  - apt: name=psmisc          # killall
-
+  - apt: name=psmisc              # killall
+  - apt: name=netcat-traditional  # nc
 
   # - apt: name=sudo, too heavyweight for general install
   # curl, wget
