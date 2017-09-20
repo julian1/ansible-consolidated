@@ -326,6 +326,7 @@
     - apt: name=evince
     - apt: name=whois
     - apt: name=hexchat
+    - apt: name=rlwrap
 
 
 
