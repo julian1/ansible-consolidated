@@ -1,0 +1,38 @@
+
+- hosts: all
+  vars_files:
+    - ../../vars/credentials.yml
+  vars:
+
+  pre_tasks:
+    - user: name=meteo shell=/bin/bash
+    - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
+
+    - authorized_key: user=meteo key="{{meteo_pubkey}}"
+
+  roles:
+    - admin/devenv-lite
+
+  tasks:
+    - get_url: url=https://downloads.getmonero.org/cli/linux64 dest=./linux64
+      become: yes
+      become_user: "meteo"
+      tags: monero
+
+    - unarchive: src=./linux64 dest=/home/meteo copy=no
+      become: yes
+      become_user: "meteo"
+      tags: monero
+
+    - copy:
+        owner: meteo
+        mode: 400
+        dest: /home/meteo/.bash_aliases
+        content: |
+          # deployed by ansible!
+
+          PATH="$HOME/monero-v0.11.0.0:$PATH"
+          export PATH
+      tags: path
+
+
