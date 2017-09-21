@@ -116,6 +116,19 @@
       notify: reboot
 
 
+    # see, https://askubuntu.com/questions/67758/how-can-i-deactivate-bluetooth-on-system-startup
+    # note there are other bluetooth devices also,
+    # lsmod | grep bt
+    - copy:
+        dest: /etc/modprobe.d/alsa-base.conf
+        content: |
+          # deployed by ansible!
+
+          blacklist btusb
+          blacklist bluetooth
+      notify: reboot
+
+
 
       # command: bash -c "/usr/sbin/alsactl"
       # not sure if this should be with store or init
