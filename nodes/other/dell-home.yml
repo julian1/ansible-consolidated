@@ -128,6 +128,12 @@
           blacklist bluetooth
       notify: reboot
 
+    # also, disable bluetooth with systemd
+    # https://askubuntu.com/questions/744640/best-way-to-deactivate-bluetooth-on-system-startup-with-systemd-and-not-upstar
+    # 
+    # systemctl stop bluetooth.service
+    # systemctl disable bluetooth.service
+    # systemctl status bluetooth.service 
 
 
       # command: bash -c "/usr/sbin/alsactl"
