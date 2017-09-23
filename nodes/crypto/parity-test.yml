@@ -64,8 +64,8 @@
           #!/bin/bash
           # deployed by ansible!
 
-          parity -d data --max-peers 8 --no-color
-          # --jsonrpc-interface all
+          # parity -d data --max-peers 8 --no-color
+          parity -d data --max-peers 8 --no-color --jsonrpc-interface all --jsonrpc-hosts all
       tags: path
 
 
