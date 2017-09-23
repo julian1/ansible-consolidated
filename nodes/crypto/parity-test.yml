@@ -65,7 +65,40 @@
           # deployed by ansible!
 
           parity -d data --max-peers 8 --no-color
+          # --jsonrpc-interface all
       tags: path
+
+
+    - apt: name=iptables-persistent
+      tags: iptables
+
+    - copy:
+        dest: /etc/iptables-rules
+        content: |
+          # deployed by ansible!
+
+          iptables -t filter --flush
+
+          iptables -A INPUT  -p tcp --dport 8545 -s 127.0.0.1 -j ACCEPT
+          iptables -A OUTPUT -p tcp --sport 8545 -d 127.0.0.1 -j ACCEPT
+
+          iptables -A INPUT  -p tcp --dport 8545 -s 203.214.90.101 -j ACCEPT
+          iptables -A OUTPUT -p tcp --sport 8545 -d 203.214.90.101 -j ACCEPT
+
+          iptables -A INPUT  -p tcp --dport 8545 -j DROP
+          iptables -A OUTPUT -p tcp --sport 8545 -j DROP
+      notify: reconfigure-iptables
+      tags: iptables
+
+
+  handlers:
+    - name: reconfigure-iptables
+      command: "{{item}}"
+      with_items:
+        - sh /etc/iptables-rules
+        - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+
 
 
   # hmmn, if we just set-up a local parity it might work out of the box...
