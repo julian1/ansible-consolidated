@@ -1,4 +1,5 @@
 
+# Note, 1G is not enough mem for the compile.
 
 - hosts: all
   vars_files:
@@ -11,8 +12,12 @@
 
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
+
   roles:
     - admin/devenv-lite
+
+    - name: admin/swap
+      size: 1000000
 
     - name: misc/rust
       user: meteo
@@ -27,15 +32,15 @@
     - name: crypto/web3
       user: meteo
 
-#    - name: crypto/solidity
-#      user: meteo
-#      tags: solidity
+    - name: crypto/solidity
+      user: meteo
+      tags: solidity
 
     #- crypto/geth
 
   tasks:
     - copy:
-        owner: parity
+        owner: meteo
         mode: 400
         dest: /home/meteo/.bash_aliases
         content: |
