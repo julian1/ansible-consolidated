@@ -338,12 +338,7 @@
 
           # TODO can do direction and conntrack by using lan addresses for -s and -d eg. 192.168.201.0/24
 
-          # ssh
-          iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
+          # EVERYWHERE
           # ping
           iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
           iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
@@ -358,21 +353,38 @@
           iptables -A FORWARD -p udp --dport 123 -j ACCEPT
           iptables -A FORWARD -p udp --sport 123 -j ACCEPT
 
+          # RESTRICTIVE
+          # ssh - outgoing from dell-home
+          iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
           # whois
-          iptables -A FORWARD -p tcp --dport 43 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 43 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 43 -s 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 43 -d 192.168.43.14 -j ACCEPT
 
-          # irc - tighen by ip - port 6667 preferred over 194
-          iptables -A FORWARD -p tcp --dport 6667 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 6667 -j ACCEPT
+          # irc - note, port 6667 preferred over 194
+          iptables -A FORWARD -p tcp --dport 6667 -s 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 6667 -d 192.168.43.14 -j ACCEPT
 
-          # ssh proxy - tighten by ip
-          iptables -A FORWARD -p tcp --dport 5222 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 5222 -j ACCEPT
+          # ssh proxy
+          iptables -A FORWARD -p tcp --dport 5222 -s 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 5222 -d 192.168.43.14 -j ACCEPT
 
-          # printer - brother.localnet 9100 - TODO tighten by ip
-          iptables -A FORWARD -p tcp --sport 9100 -j ACCEPT
-          iptables -A FORWARD -p tcp --dport 9100 -j ACCEPT
+          # eth/parity
+          iptables -A FORWARD -p tcp --dport 8545 -s 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 8545 -d 192.168.43.14 -j ACCEPT
+
+          # btc - for piplus
+          iptables -A FORWARD -p tcp --dport 8333 -s 192.168.201.3 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 8333 -d 192.168.201.3 -j ACCEPT
+
+
+          # printer - brother.localnet 9100 - TODO tighten by ip -eg only to the printer. not dellhome
+          iptables -A FORWARD -p tcp --dport 9100 -d 192.168.201.15 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 9100 -s 192.168.201.15 -j ACCEPT
 
           # voip
           iptables -A FORWARD -p udp -d 192.168.201.20 -s 203.55.231.192/26 -j ACCEPT
@@ -388,13 +400,8 @@
           iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
 
-          iptables -A FORWARD -s 192.168.201.16 -j LOG
-          iptables -A FORWARD -d 192.168.201.16 -j LOG
-
-
-          # piplus2
-          iptables -A FORWARD -p tcp --dport 8333 -s 192.168.201.3 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 8333 -d 192.168.201.3 -j ACCEPT
+          # iptables -A FORWARD -s 192.168.201.16 -j LOG
+          # iptables -A FORWARD -d 192.168.201.16 -j LOG
 
 
 
