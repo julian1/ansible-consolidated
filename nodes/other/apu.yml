@@ -373,9 +373,9 @@
           iptables -A FORWARD -p tcp --dport 5222 -s 192.168.43.14 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 5222 -d 192.168.43.14 -j ACCEPT
 
-          # eth/parity
-          iptables -A FORWARD -p tcp --dport 8545 -s 192.168.43.14 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 8545 -d 192.168.43.14 -j ACCEPT
+          # eth/parity - use reverse ssh tunnel instead
+          # iptables -A FORWARD -p tcp --dport 8545 -s 192.168.43.14 -j ACCEPT
+          # iptables -A FORWARD -p tcp --sport 8545 -d 192.168.43.14 -j ACCEPT
 
           # btc - for piplus
           iptables -A FORWARD -p tcp --dport 8333 -s 192.168.201.3 -j ACCEPT

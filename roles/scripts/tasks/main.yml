@@ -7,14 +7,14 @@
   ####
   - copy:
       dest: /home/meteo/scripts/proxy.sh
-      mode: 0777
+      mode: 0700
       content: |
         # deployed by ansible!
         ssh -N -v  -D 5222  admin@proxy
 
   - copy:
       dest: /home/meteo/scripts/restart-wifi.sh
-      mode: 0777
+      mode: 0700
       content: |
         # deployed by ansible!
         # not used for a long time... now using wicd-curses
@@ -25,17 +25,25 @@
         ifconfig wlan0 up
         iwconfig wlan0
 
+  - copy:
+      dest: /home/meteo/scripts/parity.sh
+      mode: 0700
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        ssh -N -L :8545:localhost:8545  p-test
 
   - copy:
       dest: /home/meteo/scripts/nuc-sshfs.sh
-      mode: 0777
+      mode: 0700
       content: |
         # deployed by ansible!
         sshfs root@nuc.localnet:/storage /home/meteo/mnt
 
   - copy:
       dest: /home/meteo/scripts/volume.sh
-      mode: 0777
+      mode: 0700
       content: |
         # deployed by ansible!
         # could just use alias
@@ -44,7 +52,7 @@
 
   - copy:
       dest: /home/meteo/scripts/brightness.sh
-      mode: 0777
+      mode: 0700
       content: |
         # deployed by ansible!
         # xset -dpms; xset s off

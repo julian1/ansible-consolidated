@@ -58,46 +58,53 @@
 
     - copy:
         owner: meteo
-        mode: 700
+        group: meteo
+        mode: 0700
         dest: /home/meteo/start-parity.sh
         content: |
           #!/bin/bash
           # deployed by ansible!
 
-          # parity -d data --max-peers 8 --no-color
-          parity -d data --max-peers 8 --no-color --jsonrpc-interface all --jsonrpc-hosts all
+          parity -d data --max-peers 8 --no-color
       tags: path
 
+    # for opening
+    # parity -d data --max-peers 8 --no-color --jsonrpc-interface all --jsonrpc-hosts all
+    # we would expect to be doing ssl using apache etc
 
-    - apt: name=iptables-persistent
-      tags: iptables
+    # https://github.com/paritytech/parity/wiki/Wallet-Remote-Access#recommended-ssh-tunneling
 
-    - copy:
-        dest: /etc/iptables-rules
-        content: |
-          # deployed by ansible!
+    # eg. ssh -L :8545:localhost:8545  p-test
 
-          iptables -t filter --flush
-
-          iptables -A INPUT  -p tcp --dport 8545 -s 127.0.0.1 -j ACCEPT
-          iptables -A OUTPUT -p tcp --sport 8545 -d 127.0.0.1 -j ACCEPT
-
-          iptables -A INPUT  -p tcp --dport 8545 -s 203.214.90.101 -j ACCEPT
-          iptables -A OUTPUT -p tcp --sport 8545 -d 203.214.90.101 -j ACCEPT
-
-          iptables -A INPUT  -p tcp --dport 8545 -j DROP
-          iptables -A OUTPUT -p tcp --sport 8545 -j DROP
-      notify: reconfigure-iptables
-      tags: iptables
-
-
-  handlers:
-    - name: reconfigure-iptables
-      command: "{{item}}"
-      with_items:
-        - sh /etc/iptables-rules
-        - dpkg-reconfigure --frontend noninteractive iptables-persistent
-
+#    - apt: name=iptables-persistent
+#      tags: iptables
+#
+#    - copy:
+#        dest: /etc/iptables-rules
+#        content: |
+#          # deployed by ansible!
+#
+#          iptables -t filter --flush
+#
+#          iptables -A INPUT  -p tcp --dport 8545 -s 127.0.0.1 -j ACCEPT
+#          iptables -A OUTPUT -p tcp --sport 8545 -d 127.0.0.1 -j ACCEPT
+#
+#          iptables -A INPUT  -p tcp --dport 8545 -s 203.214.90.101 -j ACCEPT
+#          iptables -A OUTPUT -p tcp --sport 8545 -d 203.214.90.101 -j ACCEPT
+#
+#          iptables -A INPUT  -p tcp --dport 8545 -j DROP
+#          iptables -A OUTPUT -p tcp --sport 8545 -j DROP
+#      notify: reconfigure-iptables
+#      tags: iptables
+#
+#
+#  handlers:
+#    - name: reconfigure-iptables
+#      command: "{{item}}"
+#      with_items:
+#        - sh /etc/iptables-rules
+#        - dpkg-reconfigure --frontend noninteractive iptables-persistent
+#
 
 
 
