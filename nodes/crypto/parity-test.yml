@@ -56,6 +56,18 @@
           export PATH
       tags: path
 
+    - copy:
+        owner: meteo
+        mode: 700
+        dest: /home/meteo/start-parity.sh
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+
+          parity -d data --max-peers 8 --no-color
+      tags: path
+
+
   # hmmn, if we just set-up a local parity it might work out of the box...
 
   # did not
