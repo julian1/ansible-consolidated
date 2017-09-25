@@ -9,6 +9,6 @@
       - chmod 0600 /swap
       - mkswap /swap
       - swapon /swap
-      - echo '/swap swap swap defaults 0 0' >> /etc/fstab
+      - echo '/swap swap swap defaults 0 1' >> /etc/fstab
       - touch /swap.ok
 
