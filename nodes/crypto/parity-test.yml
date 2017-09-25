@@ -65,7 +65,8 @@
           #!/bin/bash
           # deployed by ansible!
 
-          parity -d data --max-peers 8 --no-color
+          # parity -d data --min-peers 8 --max-peers 12 --no-color --pruning fast --pruning-history 16
+          parity -d data --no-ui --no-dapps --min-peers 8 --max-peers 12 --no-color --pruning fast 
       tags: path
 
     # for opening
