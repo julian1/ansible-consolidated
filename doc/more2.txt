@@ -1,4 +1,40 @@
 
+How do I generate crypted passwords for the user module?
+
+The mkpasswd utility that is available on most Linux systems is a great option:
+
+mkpasswd --method=sha-512
+
+
+
+
+ansible-playbook plays/misc/chefdk.yml -i dell-work,
+ansible-playbook plays/work-localnet.yml -i localhost,
+ansible-playbook plays/restart-tomcat.yml -i n.n.n.n,
+ansible-playbook plays/admin/deploy-war.yml -i geowebcache.localnet, --extra-vars "warpath=~/imos/geowebcache/geowebcache/web/target/geowebcache.war warname=geowebcache.war"
+
+ansible-playbook ./plays/admin/deploy-war.yml -i geonetwork2.localnet, --extra-vars "warpath=~/imos/core-geonetwork/web/target/geonetwork.war warname=geonetwork.war"
+
+ansible-playbook nodes/aatams-dev.yml -i aatams-test-instance, -u debian --private-key ~/.ssh/julian3.pem -s
+ansible-playbook nodes/geoserver.yml -i geoserver-test, -u debian --private-key ~/.ssh/julian3.pem -s
+ansible-playbook nodes/geoserver.yml -i geoserver-test,
+ansible-playbook nodes/14-nec-hob.yml  -u ubuntu --private-key ~/.ssh/julian3.pem -s
+
+ansible-playbook nodes/archiva.yml   -i archiva, -u debian --private-key ~/.ssh/julian3.pem -s
+
+ansible-playbook nodes/other/apu.yml -v
+
+ansible-playbook nodes/bind.yml -u root
+
+
+# specify interpreter
+ansible-playbook -e 'ansible_python_interpreter=/usr/bin/python2.7
+
+# aws instances
+ansible-playbook nodes/publications.yml -i n.n.n.n.n, -u admin --private-key ~/.ssh/julian-aws-bsd.pem  -s
+
+# list and run tagged roles only
+
 
   - sudo is needed for downgrading permissions for become_user, but can be added where needed
 
