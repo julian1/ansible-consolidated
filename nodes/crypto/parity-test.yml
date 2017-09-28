@@ -1,5 +1,5 @@
 
-# Note, 1G is not enough mem for the compile.
+# Note, 1G is not enough mem for the compile, needs swap.
 
 - hosts: all
   vars_files:
@@ -11,7 +11,6 @@
     - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
 
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
-
 
   roles:
     - admin/devenv-lite
@@ -36,11 +35,10 @@
       user: meteo
       tags: solidity
 
-    #- crypto/geth
-
   tasks:
     - copy:
         owner: meteo
+        group: meteo
         mode: 400
         dest: /home/meteo/.bash_aliases
         content: |
@@ -50,8 +48,6 @@
           PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
           PATH="$HOME/solidity/build/solc:$PATH"
           PATH="$HOME/solidity/build/lllc:$PATH"
-
-          PATH="$HOME/.meteor:$PATH"
 
           export PATH
       tags: path
@@ -74,6 +70,10 @@
     # we would expect to be doing ssl using apache etc
 
     # https://github.com/paritytech/parity/wiki/Wallet-Remote-Access#recommended-ssh-tunneling
+
+
+
+
 
     # eg. ssh -L :8545:localhost:8545  p-test
 
