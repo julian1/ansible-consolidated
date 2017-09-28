@@ -3,14 +3,17 @@
   vars_files:
     - ../../vars/credentials.yml
   vars:
-    # - users:
-    #  - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
-    # TODO move all these variables to local roles
-    - apt:
-        mirror: http://mirror.internode.on.net/pub/debian
-        version: testing
-
   pre_tasks:
+
+    # root user (no ssh)
+    - user: name=root shell=/bin/bash
+
+    # non-priv user (no ssh)
+    - user: name=meteo groups=sudo,tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
+
+    - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
+
+
     # review this, needed jessie for gcc-arm, and firmware
 
     # DOESN"T SEEM TO WORK...
@@ -36,7 +39,6 @@
 
 
   roles:
-    # stretch
     - admin/apt/update
     - admin/devenv-lite   # vim/screen eg. required for anything
     - admin/timezone
@@ -75,13 +77,6 @@
   tasks:
     - hostname: name=dell-home
 
-    # note the groups removes unlisted items... so we have kind of
-    # meteo   video, floppy
-    - user: name=meteo groups=tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
-
-    - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
-
-    - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
     - apt: name=memtest86
 

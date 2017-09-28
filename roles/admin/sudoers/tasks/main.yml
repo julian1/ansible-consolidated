@@ -1,4 +1,6 @@
 
+OBSOLETE - this is only for passwordless sudo - which we don't generally want.
+
   - apt: name=sudo
 
   - lineinfile: >

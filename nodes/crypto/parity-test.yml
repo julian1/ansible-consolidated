@@ -7,7 +7,7 @@
   vars:
 
   pre_tasks:
-    - user: name=meteo shell=/bin/bash
+    - user: name=meteo shell=/bin/bash groups=sudo
     - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
 
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
