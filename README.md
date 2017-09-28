@@ -3,20 +3,6 @@
 
 Use with systemd-nspawn containers, kvm, cloud instances, VBox etc.
 
-Requires Ansible version >= 2
-
-
-#### Notes,
-  - ansible expects either passwordless sudo or root ssh
-    - issue with passwordless sudo on ordinary account means processes under sudo account have privilege 
-    - should consider ansible username
-  - apu, needs apt/sources.list
-  - sudo is needed for downgrading permissions for become_user, but can be added where needed
-
-  - can use apt package python-minimal to get /usr/bin/python instead of /usr/bin/python2.7
-  
-  VERY IMPORTANT - using command and with_items and chdir
-  https://stackoverflow.com/questions/24851575/ansible-how-to-pass-multiple-commands
 
 #### Examples
 
@@ -65,7 +51,22 @@ ansible-playbook nodes/dell-home.yml -t dotfiles
 
 ```
 
-#### Using tags,
+#### Notes,
+
+  Requires Ansible version >= 2
+
+  - ansible expects either passwordless sudo or root ssh
+    - issue with passwordless sudo on ordinary account means processes potentially can sudo without password
+
+  - sudo is needed for downgrading permissions for become_user, but can be added where needed
+
+  - can use apt package python-minimal to get /usr/bin/python instead of /usr/bin/python2.7
+  
+  VERY IMPORTANT - using command and with_items and chdir
+  https://stackoverflow.com/questions/24851575/ansible-how-to-pass-multiple-commands
+
+
+  - Using Using tags,
 
     # for role
     roles:
