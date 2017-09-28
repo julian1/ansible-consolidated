@@ -212,7 +212,7 @@
           # if yes, allows password login - eg. for initial provisioning without keys...
           # PermitRootLogin yes
 
-          # If this option is set to “without-password”, password authentication is disabled for root.
+          # If this option is set to “without-password”, password authentication is disabled for root, but ssh ok.
           PermitRootLogin without-password
           StrictModes yes
 
@@ -355,9 +355,11 @@
 
           # RESTRICTIVE
           # ssh - outgoing from dell-home
+          # ssh wifi
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
+          # ssh wired
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
@@ -579,7 +581,7 @@
 
           ; vlan 100
           apu           IN A 192.168.100.1
-          ; these are around the wrong way...
+          ; these have the wrong ordering
           cisco1        IN A 192.168.100.11
           cisco2        IN A 192.168.100.12
 
@@ -593,13 +595,14 @@
           nuc           IN A 192.168.201.17
           dell-home-wired IN A 192.168.201.19
           snom          IN A 192.168.201.20
+          pi1           IN A 192.168.201.27
 
           ; wireless  wlp4s0
           omega         IN A 192.168.43.10
           dell-home     IN A 192.168.43.14
           imac          IN A 192.168.43.15
           esp           IN A 192.168.43.16
-          asus          IN A 192.168.43.17
+          asus          IN A 192.168.43.17    ; cat
           chromebox-wifi IN A 192.168.43.18
           esp12f        IN A 192.168.43.19
 
@@ -667,6 +670,7 @@
               host nuc          { hardware ethernet b8:ae:ed:7b:b5:b9; fixed-address 192.168.201.17; }
               host dell-home-wired { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
               host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.201.20; }
+              host pi1          { hardware ethernet 00:9e:9e:9a:39:6e; fixed-address 192.168.201.27; }
           }
 
           subnet 192.168.43.0 netmask 255.255.255.0 {
