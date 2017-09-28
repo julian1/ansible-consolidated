@@ -1,0 +1,113 @@
+
+
+  - sudo is needed for downgrading permissions for become_user, but can be added where needed
+
+
+
+  - Using Using tags,
+
+    # for role
+    roles:
+      - locale
+      - common
+      - { role: dotfiles, tags: [ 'dotfiles' ] }
+
+    # for task
+    - copy:
+        dest: /ansible/provider.sql
+        content: |
+          ...
+      register: last_result
+      tags: whoot
+
+
+
+#### TODO
+
+- should set generic user... so can install root.
+
+
+IMPORTANT
+  - sshd and dnsmasq should only listen internal interfaces - eg. 192.168.100.0/24 not 0.0.0.0
+
+  - ip iptables should only forward 192.168.0.0/16 not 0.0.0.0
+
+  - likewise dnsmasq and other services
+
+make single vlan 200 for ordinary machines - and trunk vlan to cisco2.
+
+
+limit iptables forwarding for non 80,443,dns,dhcp between vlans. 22 only only on vlan 100
+
+do similar for dnsmasq, and use internal network interface only.
+  eg. 192.168.0.0
+
+fix dhcpd and ntpd which are listening on 0.0.0.1
+
+chmod 700 on home directories
+
+Strategy for IOS, md5sum the cisco config file and compare. if different then upload, and reboot.
+
+Maybe directory partition imos from other nodes in the /nodes directory, similar to inventory/dev
+email, tftp, anon ftp
+git server
+snmp
+reverse-proxy kind of belongs on same node as the dns and dhcp
+http authentication on reverse proxy
+routing to aws box
+
+containerise dns and dhcp services
+  - issue of dhcp relay / dhcp broadcast? - no because all on same subnet
+  - gateway (host bridge) at 10.0.0.1, but dns and dhcp at 10.0.0.2
+  - upstream dns can just be set manually.
+
+smb using only port 445
+
+vpn
+
+node definition for catalyst switch
+
+perhaps make router dns delegate to container dns.
+done - apu - vlans and qos
+done - expose locale in the sameway as timezone
+done - tftp on apu
+done  - get rid of double-NAT
+  - use a routing entry for container subnet in the apu to route to the container host.
+  - permits other devices on lan to also interact with container
+done - copy module can take a content argument, which makes it a lot nicer
+            than blockinfile for general deployment
+            - it also supports template arg expansion
+done - zfs build to use fixed release instead of master
+
+#### Notes
+
+If we move the tasks in common/tasks/*.*  up to common/*.*, then they
+  can probably be invoked as roles. which would make them easier
+  to invoke...
+
+It may be that the indirection between node, and role for the node is a bit useless
+  with a one-to-one mapping. for nodes like apu
+  but is that really be an issue. the benefit is the much cleaner lookup paths
+
+
+  - It has to be a task to use the include statement
+  - and a play with full dir structure to use in a role
+  - and a play to call directly from ansible-playbook (which is very useful)
+  - but there doesn't seem to be a way to use
+
+  - BUT - it's easy to have a play and a task
+      just make the play delegate to the task. see devenv-lite.yml for example
+
+
+  - Good practice to have a generalized play that can be run against all hosts...
+  versus specific plays
+  ansible-playbook -i geoserver, roles/zfs/main.yml
+  ansible-playbook -i geoserver, roles/debian/main.yml
+
+  we had this in resources before...
+
+#### Tags
+  http://docs.ansible.com/ansible/playbooks_tags.html
+  If you wanted to just run the “configuration” and “packages” part of a very long playbook, you could do this:
+  ansible-playbook example.yml --tags "configuration,packages"
+

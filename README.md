@@ -1,7 +1,7 @@
 
 #### Ansible CM
 
-Use with systemd-nspawn containers, kvm, cloud instances, VBox etc.
+Set of ansible definitions and plays for use with systemd-nspawn containers, kvm, cloud instances, VBox etc.
 
 
 #### Examples
@@ -51,44 +51,6 @@ ansible-playbook nodes/dell-home.yml -t dotfiles
 
 ```
 
-#### Notes,
-
-  Requires Ansible version >= 2
-
-  - ansible expects either passwordless sudo or root ssh
-    - issue with passwordless sudo on ordinary account means processes potentially can sudo without password
-
-  - sudo is needed for downgrading permissions for become_user, but can be added where needed
-
-  - can use apt package python-minimal to get /usr/bin/python instead of /usr/bin/python2.7
-  
-  VERY IMPORTANT - using command and with_items and chdir
-  https://stackoverflow.com/questions/24851575/ansible-how-to-pass-multiple-commands
-
-
-  - Using Using tags,
-
-    # for role
-    roles:
-      - locale
-      - common
-      - { role: dotfiles, tags: [ 'dotfiles' ] }
-
-    # for task
-    - copy:
-        dest: /ansible/provider.sql
-        content: |
-          ...
-      register: last_result
-      tags: whoot
-
-
-#### Local actions
-
-
-#### register variables
-
-
 #### Useful flags
 ```
 
@@ -109,8 +71,16 @@ ansible all -i nc2, -c local -m ping
 
 #### Important
 
-- rather than use register varaibles to flag the need for service restart, should write a file, and read again at the end.
-this will handle the case, when provision needs to be done again. eg. for network port forwarding etc.
+- rather than use register varaibles to flag the need for service restart, should write a file, and read again at the end.  this will handle the case, when provision needs to be done again. eg. for network port forwarding etc.
+
+-  Requires Ansible version >= 2
+
+- ansible expects either passwordless sudo or root ssh - issue with passwordless sudo on ordinary account means processes potentially can sudo without password so it's reasonable to have password on root
+
+- can use apt package python-minimal to get /usr/bin/python instead of /usr/bin/python2.7
+
+- How to use command item and with_items together with chdir https://stackoverflow.com/questions/24851575/ansible-how-to-pass-multiple-commands
+
 
 
 #### Resources
@@ -129,93 +99,7 @@ http://www.mechanicalfish.net/start-learning-ansible-with-one-line-and-no-files/
 
 http://docs.ansible.com/ansible/playbooks_best_practices.html
 
-#### TODO
-
-- should set generic user... so can install root.
-
-
-IMPORTANT
-  - sshd and dnsmasq should only listen internal interfaces - eg. 192.168.100.0/24 not 0.0.0.0
-
-  - ip iptables should only forward 192.168.0.0/16 not 0.0.0.0
-
-  - likewise dnsmasq and other services
-
-make single vlan 200 for ordinary machines - and trunk vlan to cisco2.
-
-
-limit iptables forwarding for non 80,443,dns,dhcp between vlans. 22 only only on vlan 100
-
-do similar for dnsmasq, and use internal network interface only.
-  eg. 192.168.0.0
-
-fix dhcpd and ntpd which are listening on 0.0.0.1
-
-chmod 700 on home directories
-
-Strategy for IOS, md5sum the cisco config file and compare. if different then upload, and reboot.
-
-Maybe directory partition imos from other nodes in the /nodes directory, similar to inventory/dev
-email, tftp, anon ftp
-git server
-snmp
-reverse-proxy kind of belongs on same node as the dns and dhcp
-http authentication on reverse proxy
-routing to aws box
-
-containerise dns and dhcp services
-  - issue of dhcp relay / dhcp broadcast? - no because all on same subnet
-  - gateway (host bridge) at 10.0.0.1, but dns and dhcp at 10.0.0.2
-  - upstream dns can just be set manually.
-
-smb using only port 445
-
-vpn
-
-node definition for catalyst switch
-
-perhaps make router dns delegate to container dns.
-done - apu - vlans and qos
-done - expose locale in the sameway as timezone
-done - tftp on apu
-done  - get rid of double-NAT
-  - use a routing entry for container subnet in the apu to route to the container host.
-  - permits other devices on lan to also interact with container
-done - copy module can take a content argument, which makes it a lot nicer
-            than blockinfile for general deployment
-            - it also supports template arg expansion
-done - zfs build to use fixed release instead of master
 
 #### Notes
-
-If we move the tasks in common/tasks/*.*  up to common/*.*, then they
-  can probably be invoked as roles. which would make them easier
-  to invoke...
-
-It may be that the indirection between node, and role for the node is a bit useless
-  with a one-to-one mapping. for nodes like apu
-  but is that really be an issue. the benefit is the much cleaner lookup paths
-
-
-  - It has to be a task to use the include statement
-  - and a play with full dir structure to use in a role
-  - and a play to call directly from ansible-playbook (which is very useful)
-  - but there doesn't seem to be a way to use
-
-  - BUT - it's easy to have a play and a task
-      just make the play delegate to the task. see devenv-lite.yml for example
-
-
-  - Good practice to have a generalized play that can be run against all hosts...
-  versus specific plays
-  ansible-playbook -i geoserver, roles/zfs/main.yml
-  ansible-playbook -i geoserver, roles/debian/main.yml
-
-  we had this in resources before...
-
-#### Tags
-  http://docs.ansible.com/ansible/playbooks_tags.html
-  If you wanted to just run the “configuration” and “packages” part of a very long playbook, you could do this:
-  ansible-playbook example.yml --tags "configuration,packages"
 
 
