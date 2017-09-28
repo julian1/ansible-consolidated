@@ -1,5 +1,6 @@
 
-  - apt: name=python-minimal      # for ansible, has 2.7
+  - apt: name=python-minimal      # creates python binary in correct path for ansible, has 2.7
+  - apt: name=sudo                # sudo is needed for ansible for downgrading privileges, ie become, become_user
   - apt: name=net-tools           # ifconfig, netstat
   - apt: name=vim
   - apt: name=git
@@ -11,6 +12,5 @@
   - apt: name=psmisc              # killall
   - apt: name=netcat-traditional  # nc
 
-  # - apt: name=sudo, too heavyweight for general install
   # curl, wget
 
