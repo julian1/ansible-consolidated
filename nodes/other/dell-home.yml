@@ -9,7 +9,7 @@
     - user: name=root shell=/bin/bash
 
     # non-priv user (no ssh)
-    - user: name=meteo groups=sudo,tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
+    - user: name=meteo shell=/bin/bash password={{meteo_password}} groups=sudo,tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
 
     - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
 
@@ -126,10 +126,10 @@
 
     # also, disable bluetooth with systemd
     # https://askubuntu.com/questions/744640/best-way-to-deactivate-bluetooth-on-system-startup-with-systemd-and-not-upstar
-    # 
+    #
     # systemctl stop bluetooth.service
     # systemctl disable bluetooth.service
-    # systemctl status bluetooth.service 
+    # systemctl status bluetooth.service
 
 
       # command: bash -c "/usr/sbin/alsactl"

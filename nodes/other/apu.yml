@@ -20,8 +20,8 @@
     - user: name=root shell=/bin/bash
     - authorized_key: user=root key="{{meteo_pubkey}}"
 
-    # non-privileged user
-    - user: name=meteo shell=/bin/bash groups=sudo
+    # non-privileged user (note, no password so cannot sudo)
+    - user: name=meteo shell=/bin/bash password={{meteo_password}} groups=sudo
     - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
 
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
