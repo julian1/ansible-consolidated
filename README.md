@@ -13,16 +13,19 @@ Requires Ansible version >= 2
   - apu, needs apt/sources.list
   - sudo is needed for downgrading permissions for become_user, but can be added where needed
 
-  - may be able to use apt package python-minimal to get /usr/bin/python instead of /usr/bin/python2.7
-
+  - can use apt package python-minimal to get /usr/bin/python instead of /usr/bin/python2.7
   
-  VERY IMPORTANT - multiple commands with chdir
+  VERY IMPORTANT - using command and with_items and chdir
   https://stackoverflow.com/questions/24851575/ansible-how-to-pass-multiple-commands
 
 #### Examples
 
 ```
 # nodes
+ansible-playbook nodes/other/apu.yml -v
+ansible-playbook nodes/other/apu.yml --tags bind,dhcp
+ansible-playbook nodes/other/apu.yml -t iptables
+
 ansible-playbook nodes/pglogical.yml -i pglogical.localnet,
 ansible-playbook nodes/bind.yml -u root
 ansible-playbook nodes/other/dell-home.yml  -c local
@@ -32,9 +35,6 @@ ansible-playbook nodes/aatams-dev.yml -i aatams-test-instance, -u debian --priva
 ansible-playbook nodes/geoserver.yml -i geoserver-test, -u debian --private-key ~/.ssh/julian3.pem -s
 ansible-playbook nodes/geoserver.yml -i geoserver-test,
 ansible-playbook nodes/14-nec-hob.yml  -u ubuntu --private-key ~/.ssh/julian3.pem -s
-ansible-playbook nodes/other/apu.yml -v
-ansible-playbook nodes/other/apu.yml -t iptables
-
 
 # plays
 ansible-playbook plays/misc/chefdk.yml -i dell-work,
