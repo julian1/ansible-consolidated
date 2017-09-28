@@ -2,60 +2,45 @@
 - hosts: all
   vars_files:
     - ../../vars/credentials.yml
-  vars:
-    - geth:
-        #  ie. will be /home/meteo/go-ethereum
-        build_dir: /home/meteo/
-        user: meteo
 
   pre_tasks:
-    # creating users explicitly works well
     - user: name=meteo shell=/bin/bash
-    - file: path=/home/meteo mode=0700
+    - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
+
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
   roles:
     - admin/devenv-lite
-    - crypto/geth
-    # - crypto/solidity
+
+    - name: crypto/geth
+      build_dir: /home/meteo/
+      user: meteo
+
     - name: misc/node
-      node_deploy_path: /home/meteo
-      tags: node
+      deploy_path: /home/meteo
+
+    - name: crypto/web3
+      user: meteo
 
   tasks:
-    $ export PATH="node-v6.11.0-linux-x64/bin/:$PATH"
-    > meteo@geth-test:~$ npm install web3
-    # install this version, 
-    > npm install web3@^0.20.0
+
+    - copy:
+        owner: meteo
+        group: meteo
+        mode: 400
+        dest: /home/meteo/.bash_aliases
+        content: |
+          # deployed by ansible!
+
+          PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
+          PATH="$HOME/go-ethereum/build/bin:$PATH"
+
+          export PATH
+      tags: path
 
 
-  # geth path or start/stop? check later
 
-#  export PATH="go-ethereum/build/bin:$PATH"
 #  geth  --maxpeers 0  console 2> /dev/null
 #  geth  --maxpeers 0  console
-
-
-#
-#  tasks:
-#    # unused
-#    - copy:
-#        dest: /root/mount.sh
-#        mode: 0755
-#        content: |
-#          #!/bin/bash -x
-#          # deployed by ansible!
-#          cryptsetup luksOpen /dev/mmcblk0p3 luksfs || exit
-#          mount /dev/mapper/luksfs /home
-#
-#    - copy:
-#        dest: /root/umount.sh
-#        mode: 0755
-#        content: |
-#          #!/bin/bash -x
-#          # deployed by ansible!
-#          umount /home
-#          cryptsetup luksClose luksfs
-#
 
 

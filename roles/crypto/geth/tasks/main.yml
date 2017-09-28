@@ -19,11 +19,11 @@
 
   # g co v1.4.10
   # - git: repo=https://github.com/ethereum/go-ethereum dest={{path}}/go-ethereum version=v1.3.6
-  - git: repo=https://github.com/ethereum/go-ethereum dest={{geth.build_dir}}/go-ethereum version=v1.6.7
+  - git: repo=https://github.com/ethereum/go-ethereum dest={{build_dir}}/go-ethereum version=v1.6.7
     become: true
-    become_user: "{{geth.user}}"
+    become_user: "{{user}}"
 
-  - shell: make creates=build/bin/geth chdir={{geth.build_dir}}/go-ethereum
+  - shell: make creates=build/bin/geth chdir={{build_dir}}/go-ethereum
     become: true
-    become_user: "{{geth.user}}"
+    become_user: "{{user}}"
 
