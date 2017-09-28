@@ -57,7 +57,7 @@ ansible all -i nc2, -c local -m ping
 
 - rather than use register varaibles to flag the need for handlers such service restart, can touch/write a file, and read again at the end. this avoids the case of notified handlers not being called, due to some other mistake in the provision.
 
-- ansible needs either passwordless sudo or root for apt-get etc. the issue with passwordless sudo on ordinary account is that processes under that account can theoretically sudo without password. better to use dedicated privileged ansible account or root account.
+- ansible needs either passwordless sudo or root for apt-get etc. the issue with passwordless sudo on ordinary account is that processes under that account can theoretically sudo without password. so better to use dedicated privileged ansible account or root account.
 
 - packages like npm, rust etc should *never* be installed with root privileges - due to large surface area of dependent packages.
 
