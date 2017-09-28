@@ -1,0 +1,44 @@
+
+# run as root, eg. ansible-playbook plays/crypto/trezord.yml -i localhost, -c local
+
+  - apt: name=build-essential
+  - apt: name=cmake
+  - apt: name=curl
+  - apt: name=libcurl4-gnutls-dev
+  - apt: name=libprotobuf-dev
+  - apt: name=pkg-config
+  - apt: name=libusb-1.0-0
+  - apt: name=libusb-1.0-0-dev
+  - apt: name=libmicrohttpd-dev
+  - apt: name=libboost-all-dev
+  - apt: name=protobuf-compiler
+
+  - name: git checkout trezord
+    git: repo=https://github.com/trezor/trezord
+      dest={{build_dir}}
+      recursive=yes
+      force=yes
+    become: true
+    become_user: "{{user}}"
+    tags: git
+
+
+  # VERY IMPORTANT - multiple commands with chdir
+  # https://stackoverflow.com/questions/24851575/ansible-how-to-pass-multiple-commands
+
+  - command: "{{ item }} chdir={{build_dir}}/src/config "
+    with_items:
+      - wget https://raw.githubusercontent.com/trezor/trezor-common/master/protob/config.proto
+      - protoc -I/usr/include -I. --cpp_out=. config.proto
+    become: yes
+    become_user: "{{user}}"
+    tags: git
+
+  - command: "{{ item }} chdir={{build_dir}} creates=./build/trezord"
+    with_items:
+      - ./build.sh
+    become: yes
+    become_user: "{{user}}"
+    tags: git
+
+

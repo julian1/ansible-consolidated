@@ -15,6 +15,10 @@ Requires Ansible version >= 2
 
   - may be able to use apt package python-minimal to get /usr/bin/python instead of /usr/bin/python2.7
 
+  
+  VERY IMPORTANT - multiple commands with chdir
+  https://stackoverflow.com/questions/24851575/ansible-how-to-pass-multiple-commands
+
 #### Examples
 
 ```

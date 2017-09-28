@@ -1,0 +1,9 @@
+
+# run as root, eg. ansible-playbook plays/crypto/trezord.yml -i localhost, -c local
+
+- hosts: all
+  roles:
+    - name: crypto/trezord
+      user: meteo
+      build_dir: /home/meteo/trezord
+
