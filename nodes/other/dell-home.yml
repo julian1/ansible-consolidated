@@ -346,6 +346,7 @@
     - apt: name=whois
     - apt: name=hexchat
     - apt: name=rlwrap
+    - apt: name=feh
 
 
 
