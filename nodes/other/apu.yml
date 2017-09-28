@@ -27,7 +27,7 @@
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
   roles:
-    - admin/apt/stretch
+    # don't manage apt sources.list
     - admin/apt/update
     - admin/timezone
     - admin/locale

@@ -39,6 +39,7 @@
 
 
   roles:
+    # don't manage apt sources.list
     - admin/apt/update
     - admin/devenv-lite   # vim/screen eg. required for anything
     - admin/timezone
