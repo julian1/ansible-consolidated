@@ -15,8 +15,10 @@
 
   tasks:
     # this code won't work on arm...
-    
-    # https://downloads.getmonero.org/cli/linuxarm8
+
+    - apt: name=rlwrap
+
+    # https://downloads.getmonero.org/cli/linuxarm7
 
     - get_url: url=https://downloads.getmonero.org/cli/linux64 dest=./linux64
       become: yes
@@ -39,7 +41,7 @@
           export PATH
       tags: path
 
-    
+
     - file: path=/home/meteo/scripts state=directory mode=777
       tags: path
 
@@ -56,7 +58,7 @@
       tags: path
 
     - copy:
-        dest: /home/meteo/scripts/monero-start.sh
+        dest: /home/meteo/scripts/monerod-start.sh
         mode: 0700
         owner: meteo
         group: meteo
@@ -64,8 +66,21 @@
           #!/bin/bash -x
           # deployed by ansible!
 
-          monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind
+          monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind --restricted-rpc
       tags: path
+
+    - copy:
+        dest: /home/meteo/scripts/monero-cli-start.sh
+        mode: 0700
+        owner: meteo
+        group: meteo
+        content: |
+          #!/bin/bash -x
+          # deployed by ansible!
+
+          monero-wallet-cli --daemon-address m-test:18081
+      tags: path
+
 
     # no do it with unpriviledged meteo account
     # ssh tunnel, requires private keys on the node that creates the tunnel
@@ -79,7 +94,7 @@
     - copy:
         dest: /etc/iptables-rules
         content: |
-          # deployed by ansible! 
+          # deployed by ansible!
 
           iptables -t filter --flush
 
