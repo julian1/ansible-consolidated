@@ -397,6 +397,8 @@
           # monero rpc
           iptables -A FORWARD -p tcp --dport 18081 -s 192.168.201.0/24 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 18081 -d 192.168.201.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 18081 -s 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 18081 -d 192.168.43.14 -j ACCEPT
 
 
           # printer - brother.localnet 9100 - TODO tighten by ip -eg only to the printer. not dellhome
