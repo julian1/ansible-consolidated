@@ -14,6 +14,10 @@
     - admin/devenv-lite
 
   tasks:
+    # this code won't work on arm...
+    
+    # https://downloads.getmonero.org/cli/linuxarm8
+
     - get_url: url=https://downloads.getmonero.org/cli/linux64 dest=./linux64
       become: yes
       become_user: "meteo"
@@ -34,5 +38,68 @@
           PATH="$HOME/monero-v0.11.0.0:$PATH"
           export PATH
       tags: path
+
+    
+    - file: path=/home/meteo/scripts state=directory mode=777
+      tags: path
+
+    - copy:
+        dest: /home/meteo/scripts/monero-tunnel.sh
+        mode: 0700
+        owner: meteo
+        group: meteo
+        content: |
+          #!/bin/bash -x
+          # deployed by ansible!
+
+          ssh -N -L :18081:localhost:18081 m-test
+      tags: path
+
+    - copy:
+        dest: /home/meteo/scripts/monero-start.sh
+        mode: 0700
+        owner: meteo
+        group: meteo
+        content: |
+          #!/bin/bash -x
+          # deployed by ansible!
+
+          monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind
+      tags: path
+
+    # no do it with unpriviledged meteo account
+    # ssh tunnel, requires private keys on the node that creates the tunnel
+
+    - apt: name=iptables-persistent
+      tags: iptables
+
+    - set_fact: rpc_port=18081
+      tags: iptables
+
+    - copy:
+        dest: /etc/iptables-rules
+        content: |
+          # deployed by ansible! 
+
+          iptables -t filter --flush
+
+          iptables -A INPUT  -p tcp --dport {{rpc_port}} -s 127.0.0.1 -j ACCEPT
+          iptables -A OUTPUT -p tcp --sport {{rpc_port}} -d 127.0.0.1 -j ACCEPT
+
+          iptables -A INPUT  -p tcp --dport {{rpc_port}} -s 203.214.90.101 -j ACCEPT
+          iptables -A OUTPUT -p tcp --sport {{rpc_port}} -d 203.214.90.101 -j ACCEPT
+
+          iptables -A INPUT  -p tcp --dport {{rpc_port}} -j DROP
+          iptables -A OUTPUT -p tcp --sport {{rpc_port}} -j DROP
+      notify: reconfigure-iptables
+      tags: iptables
+
+
+  handlers:
+    - name: reconfigure-iptables
+      command: "{{item}}"
+      with_items:
+        - sh /etc/iptables-rules
+        - dpkg-reconfigure --frontend noninteractive iptables-persistent
 
 
