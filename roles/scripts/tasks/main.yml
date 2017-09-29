@@ -8,6 +8,8 @@
   - copy:
       dest: /home/meteo/scripts/proxy.sh
       mode: 0700
+      owner: meteo
+      group: meteo
       content: |
         # deployed by ansible!
         ssh -N -v  -D 5222  admin@proxy
@@ -15,9 +17,13 @@
   - copy:
       dest: /home/meteo/scripts/restart-wifi.sh
       mode: 0700
+      owner: meteo
+      group: meteo
       content: |
         # deployed by ansible!
         # not used for a long time... now using wicd-curses
+        echo 'deprecated?'
+        exit
         ifconfig wlan0 down
         iwconfig wlan0 essid AP1
         iwconfig wlan0 ap any
@@ -26,8 +32,10 @@
         iwconfig wlan0
 
   - copy:
-      dest: /home/meteo/scripts/parity.sh
+      dest: /home/meteo/scripts/parity-tunnel.sh
       mode: 0700
+      owner: meteo
+      group: meteo
       content: |
         #!/bin/bash -x
         # deployed by ansible!
@@ -35,8 +43,22 @@
         ssh -N -L :8545:localhost:8545  p-test
 
   - copy:
+      dest: /home/meteo/scripts/monero-tunnel.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        ssh -N -L :18081:localhost:18081 m-test
+
+
+  - copy:
       dest: /home/meteo/scripts/nuc-sshfs.sh
       mode: 0700
+      owner: meteo
+      group: meteo
       content: |
         # deployed by ansible!
         sshfs root@nuc.localnet:/storage /home/meteo/mnt
@@ -44,6 +66,8 @@
   - copy:
       dest: /home/meteo/scripts/volume.sh
       mode: 0700
+      owner: meteo
+      group: meteo
       content: |
         # deployed by ansible!
         # could just use alias
@@ -53,6 +77,8 @@
   - copy:
       dest: /home/meteo/scripts/brightness.sh
       mode: 0700
+      owner: meteo
+      group: meteo
       content: |
         # deployed by ansible!
         # xset -dpms; xset s off
@@ -60,7 +86,7 @@
 
   # jdk and maven, for freeroute etc
   - copy:
-      dest: /home/meteo/scripts/jdk.sh
+      dest: /home/meteo/scripts/jdk.inc
       content: |
         # deployed by ansible!
         # see plays/misc/jdk-1.8.sh
@@ -71,14 +97,14 @@
         export PATH="$PATH:$HOME/apache-maven-3.3.9/bin/"
 
   - copy:
-      dest: /home/meteo/scripts/node.sh
+      dest: /home/meteo/scripts/node.inc
       content: |
         # deployed by ansible!
 
         export PATH="/home/meteo/node-v6.11.0-linux-x64/bin:$PATH"
 
   - copy:
-      dest: /home/meteo/scripts/idris.sh
+      dest: /home/meteo/scripts/idris.inc
       content: |
         # deployed by ansible!
 
@@ -87,6 +113,8 @@
 
   - copy:
       dest: /home/meteo/scripts/chromium.sh
+      owner: meteo
+      group: meteo
       content: |
         #!/bin/bash
         # deployed by ansible!
@@ -96,7 +124,7 @@
           --host-resolver-rules="MAP * ~NOTFOUND , EXCLUDE 127.0.0.1"
 
   - copy:
-      dest: /home/meteo/scripts/opam.sh
+      dest: /home/meteo/scripts/opam.inc
       content: |
         # deployed by ansible!
         . $HOME/.opam/opam-init/init.sh
