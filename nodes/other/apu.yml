@@ -359,13 +359,18 @@
 
           # RESTRICTIVE
           # ssh - outgoing from dell-home
-          # ssh wifi
+          # ssh dell-home wifi
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # ssh wired
+          # ssh dell-home wired
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          # ssh out for pi1
+          iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.27 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.27 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
 
           # whois
           iptables -A FORWARD -p tcp --dport 43 -s 192.168.43.14 -j ACCEPT
@@ -375,9 +380,11 @@
           iptables -A FORWARD -p tcp --dport 6667 -s 192.168.43.14 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 6667 -d 192.168.43.14 -j ACCEPT
 
-          # ssh proxy
-          iptables -A FORWARD -p tcp --dport 5222 -s 192.168.43.14 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 5222 -d 192.168.43.14 -j ACCEPT
+          # ssh proxy and general open test port
+          iptables -A FORWARD -p tcp --dport 5222 -s 192.168.43.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 5222 -d 192.168.43.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 5222 -s 192.168.201.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 5222 -d 192.168.201.0/24 -j ACCEPT
 
           # eth/parity - use reverse ssh tunnel instead
           # iptables -A FORWARD -p tcp --dport 8545 -s 192.168.43.14 -j ACCEPT
@@ -386,6 +393,10 @@
           # btc - for piplus
           iptables -A FORWARD -p tcp --dport 8333 -s 192.168.201.3 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 8333 -d 192.168.201.3 -j ACCEPT
+
+          # monero rpc
+          iptables -A FORWARD -p tcp --dport 18081 -s 192.168.201.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 18081 -d 192.168.201.0/24 -j ACCEPT
 
 
           # printer - brother.localnet 9100 - TODO tighten by ip -eg only to the printer. not dellhome
