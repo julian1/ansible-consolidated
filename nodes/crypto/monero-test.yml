@@ -30,6 +30,7 @@
       become_user: "meteo"
       tags: monero
 
+    # TODO blockinfile instead??? otherwise overwrites this
     - copy:
         owner: meteo
         mode: 400
