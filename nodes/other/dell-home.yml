@@ -343,6 +343,7 @@
     - apt: name=hexchat
     - apt: name=rlwrap
     - apt: name=feh
+    - apt: name=scrot
 
 
 
