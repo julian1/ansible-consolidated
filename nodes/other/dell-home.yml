@@ -344,6 +344,7 @@
     - apt: name=rlwrap
     - apt: name=feh
     - apt: name=scrot
+    - apt: name=gnuplot
 
 
 
