@@ -576,8 +576,11 @@
                              IN     NS    ns1.
                              IN     NS    ns2.
 
-          netflix.com       A       127.0.0.1
-          www.netflix.com   A       127.0.0.1
+          ; Enable/disable here...
+          ; netflix.com       A       127.0.0.1
+          ; www.netflix.com   A       127.0.0.1
+
+          test.com A 127.0.0.1
 
       notify: restart-bind
       tags: bind
