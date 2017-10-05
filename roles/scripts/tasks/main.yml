@@ -133,4 +133,10 @@
         #   /home/meteo/.opam/4.02.3/bin
         # . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
 
+  - copy:
+      dest: /usr/local/include/nix.inc
+      content: |
+        # deployed by ansible!
+        . $HOME/.nix-profile/etc/profile.d/nix.sh
+
 
