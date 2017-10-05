@@ -1,4 +1,8 @@
 
+# TODO THESE SCRIPTS WOULD PROBABLY ALL BE BETTER OFF IN /usr/local/bin
+# they can be installed with local privileges using staff group.
+
+
 # TODO parameterize deploy location
 
   # create home for scripts
