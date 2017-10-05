@@ -6,12 +6,23 @@
   pre_tasks:
 
     # root user (no ssh)
-    - user: name=root shell=/bin/bash
+    - user: >
+        name=root
+        shell=/bin/bash
+
 
     # non-priv user (no ssh)
-    - user: name=meteo shell=/bin/bash password={{meteo_password}} groups=sudo,tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
+    - user: >
+        name=meteo
+        shell=/bin/bash
+        password={{meteo_password}}
+        groups=staff,sudo,tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
 
-    - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
+    - file: > 
+        path=/home/meteo 
+        mode=0700 
+        owner=meteo group=meteo 
+        state=directory
 
 
     # review this, needed jessie for gcc-arm, and firmware
