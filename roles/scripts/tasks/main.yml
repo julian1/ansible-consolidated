@@ -3,14 +3,6 @@
 
 
   ####
-  - copy:
-      dest: /usr/local/bin/proxy.sh
-      mode: 0700
-      owner: meteo
-      group: meteo
-      content: |
-        # deployed by ansible!
-        ssh -N -v  -D 5222 admin@proxy
 
   - copy:
       dest: /usr/local/bin/restart-wifi.sh
@@ -84,7 +76,16 @@
         xrandr --output eDP-1 --brightness $1
 
   - copy:
-      dest: /usr/local/bin/chromium.sh
+      dest: /usr/local/bin/start-proxy.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+        ssh -N -v -D 5222 admin@proxy
+
+  - copy:
+      dest: /usr/local/bin/chromium-tunnel.sh
       mode: 0700
       owner: meteo
       group: meteo
@@ -94,7 +95,8 @@
 
         chromium \
           --proxy-server='socks5://127.0.0.1:5222'  \
-          --host-resolver-rules="MAP * ~NOTFOUND , EXCLUDE 127.0.0.1"
+          --proxy-bypass-list='localback.net'  \
+          --host-resolver-rules="MAP * ~NOTFOUND , EXCLUDE 127.0.0.1, EXCLUDE localback.net"
 
 
   # jdk and maven, for freeroute etc
