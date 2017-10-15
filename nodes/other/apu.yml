@@ -20,7 +20,7 @@
     - user: name=root shell=/bin/bash
     - authorized_key: user=root key="{{meteo_pubkey}}"
 
-    # non-privileged user (note, no password so cannot sudo)
+    # non-privileged user
     - user: name=meteo shell=/bin/bash password={{meteo_password}} groups=sudo
     - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
 
@@ -377,8 +377,12 @@
           iptables -A FORWARD -p tcp --sport 43 -d 192.168.43.14 -j ACCEPT
 
           # irc - note, port 6667 preferred over 194
+          # freenode uses 6697
           iptables -A FORWARD -p tcp --dport 6667 -s 192.168.43.14 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 6667 -d 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 6697 -s 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 6697 -d 192.168.43.14 -j ACCEPT
+
 
           # ssh proxy and general open test port
           iptables -A FORWARD -p tcp --dport 5222 -s 192.168.43.0/24 -j ACCEPT
@@ -421,11 +425,12 @@
           # bravia
           # may need specific rules for bravia to allow more media ports
           # opera/RT
-          iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
+          # iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
+          # iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
 
-          # iptables -A FORWARD -s 192.168.201.16 -j LOG
-          # iptables -A FORWARD -d 192.168.201.16 -j LOG
+          iptables -A FORWARD -s 192.168.201.16 -j DROP
+          iptables -A FORWARD -d 192.168.201.16 -j DROP
+
 
 
 
@@ -577,8 +582,8 @@
                              IN     NS    ns2.
 
           ; Enable/disable here...
-          ; netflix.com       A       127.0.0.1
-          ; www.netflix.com   A       127.0.0.1
+          netflix.com       A       127.0.0.1
+          www.netflix.com   A       127.0.0.1
 
           test.com A 127.0.0.1
 
