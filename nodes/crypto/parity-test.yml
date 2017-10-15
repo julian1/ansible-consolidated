@@ -7,6 +7,8 @@
   vars:
 
   pre_tasks:
+    # TODO disable password sshd, if have password based sudo
+
     - user: name=meteo shell=/bin/bash password={{meteo_password}} groups=sudo
     - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
 

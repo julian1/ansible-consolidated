@@ -17,7 +17,8 @@
       accept_hostkey=yes
       force=yes
       recursive=no
-      version=v1.6.10
+      version=v1.7.6
+      # version=v1.6.10
       # version=v1.6.8
       # there is v1.7.0,but looks bloated
     become: yes
