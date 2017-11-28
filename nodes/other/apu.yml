@@ -347,15 +347,17 @@
           iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
           iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
 
-          # OK drop stuff has to go before accept
+          # OK specific drop stuff has to go before generic service accept
+
           # bravia
           # may need specific rules for bravia to allow more media ports
           # opera/RT
           # iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
           # iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
           # leave ssh open etc.
-          iptables -A FORWARD -p tcp -s 192.168.201.16 --dport 80 -j DROP
-          iptables -A FORWARD -p tcp -d 192.168.201.16 --sport 80 -j DROP
+          
+          # iptables -A FORWARD -p tcp -s 192.168.201.16 --dport 80 -j DROP
+          # iptables -A FORWARD -p tcp -d 192.168.201.16 --sport 80 -j DROP
 
 
           # http

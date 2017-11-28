@@ -2,6 +2,8 @@
 
   # it's ok to install as root.
 
+  https://nodejs.org/dist/v8.9.1/node-v8.9.1-linux-x64.tar.xz
+
   - get_url: >
       url='https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz'
       dest="{{deploy_path}}/node-v6.11.0-linux-x64.tar.xz"
@@ -11,6 +13,8 @@
       src: "{{deploy_path}}/node-v6.11.0-linux-x64.tar.xz"
       dest: "{{deploy_path}}"
       remote_src: True
+
+
 
 # debian version of node is out of date...
 # we don't set any paths, which should be in scripts

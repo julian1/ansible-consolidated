@@ -356,6 +356,8 @@
     - apt: name=feh
     - apt: name=scrot
     - apt: name=gnuplot
+    - apt: name=unzip
+    # - apt: name=xrandr
 
 
 
