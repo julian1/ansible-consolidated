@@ -3,4 +3,5 @@ firefox-esr - no. use nightly - with script
 sshfs
 pulseaudio
 
-
+lm-sensors
+a2ps

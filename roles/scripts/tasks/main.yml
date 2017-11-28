@@ -22,7 +22,7 @@
         iwconfig wlan0
 
   - copy:
-      dest: /usr/local/bin/parity-tunnel.sh
+      dest: /usr/local/bin/tunnel-parity.sh
       mode: 0700
       owner: meteo
       group: meteo
@@ -34,7 +34,7 @@
 
   # monero rpc client tunnel
   - copy:
-      dest: /usr/local/bin/monero-tunnel.sh
+      dest: /usr/local/bin/tunnel-monero.sh
       mode: 0700
       owner: meteo
       group: meteo
@@ -46,13 +46,24 @@
 
 
   - copy:
-      dest: /usr/local/bin/nuc-sshfs.sh
+      dest: /usr/local/bin/sshfs-nuc.sh
       mode: 0700
       owner: meteo
       group: meteo
       content: |
         # deployed by ansible!
         sshfs root@nuc.localnet:/storage /home/meteo/mnt
+
+
+  - copy:
+      dest: /usr/local/bin/sshfs-dellhome.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+        sshfs meteo@dell-home.localnet:/home/meteo /home/meteo/mnt
+
 
   - copy:
       dest: /usr/local/bin/volume.sh
@@ -85,7 +96,7 @@
         ssh -N -v -D 5222 admin@proxy
 
   - copy:
-      dest: /usr/local/bin/chromium-tunnel.sh
+      dest: /usr/local/bin/tunnel-chromium.sh
       mode: 0700
       owner: meteo
       group: meteo
