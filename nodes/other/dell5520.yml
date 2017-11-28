@@ -1,0 +1,223 @@
+#### xmonad dirs are created as root - when we provision as root. which is required for apt. 
+
+
+- hosts: localhost
+
+  vars:
+  pre_tasks:
+
+    # root user (no ssh)
+    - user: >
+        name=root
+        shell=/bin/bash
+
+
+    # non-priv user (no ssh)
+    - user: >
+        name=meteo
+        shell=/bin/bash
+        groups=staff,sudo,tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
+
+    - file: > 
+        path=/home/meteo 
+        mode=0700 
+        owner=meteo group=meteo 
+        state=directory
+
+    - copy:
+        dest: /etc/apt/sources.list
+        content: |
+          # deployed by ansible!
+
+          deb http://ftp.au.debian.org/debian/ stretch main contrib non-free
+          deb-src http://ftp.au.debian.org/debian/ stretch main contrib non-free
+
+          deb http://security.debian.org/debian-security stretch/updates main contrib non-free
+          deb-src http://security.debian.org/debian-security stretch/updates main contrib non-free
+
+          # stretch-updates, previously known as 'volatile'
+          deb http://ftp.au.debian.org/debian/ stretch-updates main contrib non-free
+          deb-src http://ftp.au.debian.org/debian/ stretch-updates main contrib non-free
+           
+
+  roles:
+    # don't manage apt sources.list
+    - admin/apt/update
+    - admin/devenv-lite   # vim/screen eg. required for anything
+    - admin/timezone
+    - admin/locale
+    # call role twice for different users?
+    # TODO change var name to dotfile_user_home
+
+    # https://serverfault.com/questions/758376/local-ansible-playbook-run-playbook-with-vars-for-role
+    - name: dotfiles
+      tags: dotfiles
+      dotfile_path: /home/meteo
+
+    - name: vim
+      tags: vim
+
+    - name: xmonad
+      tags: xmonad
+      xmonad_user: meteo
+
+    # need the user created before we do this...
+    - name: scripts
+      tags: scripts
+
+    # TODO - should go ini second level stuff...
+    - name: admin/printer
+      tags: printer
+      pname: Brother
+      url: socket://brother.localnet:9100
+      ppd: BRHL16_2_GPL.ppd
+
+
+  tasks:
+
+
+
+    #####
+    # wireless
+    # non-free firmware load for iwlwifi-7260-17.ucode  - worked!
+
+    - apt: name=firmware-iwlwifi   # needs non-free in sources
+
+    - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
+    - apt: name=iw
+
+    - apt: name=wicd-curses
+
+    #####
+    # alsa
+    - apt: name=alsa-oss
+    - apt: name=alsa-utils
+    - apt: name=alsa-tools
+
+
+    # command: bash -c "/usr/sbin/alsactl"
+    # not sure if this should be with store or init
+    - command: /usr/sbin/alsactl
+      args:
+        creates: /var/lib/alsa/asound.state
+      notify: reboot
+
+
+
+
+    #### 
+    # Bluetooth
+    # also, disable bluetooth with systemd
+    # https://askubuntu.com/questions/744640/best-way-to-deactivate-bluetooth-on-system-startup-with-systemd-and-not-upstar
+    #
+    # systemctl stop bluetooth.service
+    # systemctl disable bluetooth.service
+    # systemctl status bluetooth.service
+
+
+    #####
+    # X
+    - copy:
+        dest: /home/meteo/.xinitrc
+        content: |
+          # deployed by ansible!
+
+          # https://raspberrypi.stackexchange.com/questions/752/how-do-i-prevent-the-screen-from-going-blank
+          xset s off         # don't activate screensaver
+          xset -dpms         # disable DPMS (Energy Star) features.
+          xset s noblank     # don't blank the video device
+          # xset -dpms; xset s off
+
+          xrdb -merge <<- EOF
+            XTerm*selectToClipboard: true
+            XTerm*faceName: DejaVu Sans Mono
+            ! XTerm*faceSize: 10 ! desktop
+            XTerm*faceSize: 15   ! laptop
+            XTerm*Background: white
+            XTerm*Foreground: black
+          EOF
+
+          # keymap
+          xmodmap - <<- EOF
+            ! numpad insert
+
+            keycode 90 = Insert NoSymbol Insert
+
+            # TODO - no longer used
+            ! next and prev
+            !  = Prior NoSymbol Prior
+            !  = Next NoSymbol Next
+
+            ! page up
+            keycode 91 =  Up NoSymbol Up
+
+            ! page down
+            keycode 104 = Down NoSymbol Down
+
+            ! numpad 2
+            keycode 88 =  Home NoSymbol Home
+
+            ! numpad 3
+            keycode 89  = End  NoSymbol End
+          EOF
+
+          # brightness
+          # xrandr --output eDP1 --brightness .45
+          xrandr --output eDP-1 --brightness .65
+
+          # MAY OR MAY NOT BE NEEDED with change to libinput replacing synaptics
+          # to turn on trackpad tap to select/button
+          synclient TapButton1=1
+
+          # turn bell off
+          xset b off
+
+          # start xcmonad
+          xmonad
+      tags: xinitrc
+
+
+    #####
+    # trackpad tapping
+    # https://askubuntu.com/questions/838061/touchpad-tap-stopped-working
+    # 
+    # make sure synaptics is not installed
+    - apt: name=xserver-xorg-input-synaptics state=absent 
+
+    - copy:
+        dest: /usr/share/X11/xorg.conf.d/40-libinput.conf
+        content: |
+          # deployed by ansible!
+
+          # Match on all types of devices but tablet devices and joysticks
+          Section "InputClass"
+                  Identifier "libinput pointer catchall"
+                  MatchIsPointer "on"
+                  MatchDevicePath "/dev/input/event*"
+                  Driver "libinput"
+          EndSection
+
+          Section "InputClass"
+                  Identifier "libinput keyboard catchall"
+                  MatchIsKeyboard "on"
+                  MatchDevicePath "/dev/input/event*"
+                  Driver "libinput"
+          EndSection
+
+          Section "InputClass"
+                  Identifier "libinput touchpad catchall"
+                  MatchIsTouchpad "on"
+                  MatchDevicePath "/dev/input/event*"
+                  # The important bit
+                  Option "Tapping" "true"
+                  Driver "libinput"
+          EndSection
+
+
+  handlers:
+    # - include: ../roles/common/handlers/main.yml
+
+    - name: reboot
+      command: /sbin/reboot
+
+

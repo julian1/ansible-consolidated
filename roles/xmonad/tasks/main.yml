@@ -3,7 +3,8 @@
   - debug: msg="dotfiles path {{xmonad_user}}"  # " 
 
   - apt: name=xorg
-  - apt: name=xserver-xorg-input-synaptics   # for synclient
+
+  # - apt: name=xserver-xorg-input-synaptics   # for synclient  - not for stretch and above
 
 
   # TODO add meteo to group tty
@@ -17,10 +18,12 @@
 # we could potentially put xinitrc here, except it differs between deployments, eg. keybindings
 
 
-  - copy: src=xmobarrc        dest=/home/{{xmonad_user}}/.xmobarrc
+  - copy: src=xmobarrc        dest=/home/{{xmonad_user}}/.xmobarrc   owner={{xmonad_user}} group={{xmonad_user}}
 
   # this may be default created when installing xmonad
-  - file: path="/home/{{xmonad_user}}/.xmonad" state=directory mode=0755
+  - file: path="/home/{{xmonad_user}}/.xmonad" state=directory mode=0755   owner={{xmonad_user}} group={{xmonad_user}}
 
-  - copy: src=xmonad.hs       dest=/home/{{xmonad_user}}/.xmonad/xmonad.hs
+  - copy: src=xmonad.hs       dest=/home/{{xmonad_user}}/.xmonad/xmonad.hs  owner={{xmonad_user}} group={{xmonad_user}}
+
+
 
