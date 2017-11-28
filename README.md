@@ -8,8 +8,7 @@ Set of ansible definitions and plays for use with systemd-nspawn containers, kvm
 
 ```
 # nodes
-ansible-playbook nodes/other/apu.yml --tags bind,dhcp
-ansible-playbook nodes/other/apu.yml -t iptables
+ansible-playbook nodes/other/apu.yml --tags bind,dhcp,iptables
 
 ansible-playbook nodes/other/dell-home.yml -c local -i localhost,   # run as root
 
