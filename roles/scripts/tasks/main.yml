@@ -56,7 +56,7 @@
 
 
   - copy:
-      dest: /usr/local/bin/sshfs-dellhome.sh
+      dest: /usr/local/bin/sshfs-dell-home.sh
       mode: 0700
       owner: meteo
       group: meteo
