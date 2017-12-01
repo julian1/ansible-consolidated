@@ -318,8 +318,13 @@
           # -          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -j ACCEPT
           iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
           iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+ 
 
           # TODO conntrack
           # dns
@@ -384,17 +389,21 @@
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.27 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.27 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
+          # ssh out for dell 5520
+          iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
 
           # whois
-          iptables -A FORWARD -p tcp --dport 43 -s 192.168.43.14 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 43 -d 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 43 -s 192.168.43.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 43 -d 192.168.43.0/24 -j ACCEPT
 
           # irc - note, port 6667 preferred over 194
           # freenode uses 6697
-          iptables -A FORWARD -p tcp --dport 6667 -s 192.168.43.14 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 6667 -d 192.168.43.14 -j ACCEPT
-          iptables -A FORWARD -p tcp --dport 6697 -s 192.168.43.14 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 6697 -d 192.168.43.14 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 6667 -s 192.168.43.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 6667 -d 192.168.43.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --dport 6697 -s 192.168.43.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 6697 -d 192.168.43.0/24 -j ACCEPT
 
 
           # ssh proxy and general open test port
@@ -414,8 +423,9 @@
           # monero rpc
           iptables -A FORWARD -p tcp --dport 18081 -s 192.168.201.0/24 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 18081 -d 192.168.201.0/24 -j ACCEPT
-          iptables -A FORWARD -p tcp --dport 18081 -s 192.168.43.14 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 18081 -d 192.168.43.14 -j ACCEPT
+
+          iptables -A FORWARD -p tcp --dport 18081 -s 192.168.43.0/24 -j ACCEPT
+          iptables -A FORWARD -p tcp --sport 18081 -d 192.168.43.0/24 -j ACCEPT
 
           # monero open node
           iptables -A FORWARD -p tcp --dport 18089 -s 192.168.201.0/24 -j ACCEPT
@@ -632,6 +642,7 @@
           pi1           IN A 192.168.201.27
 
           ; wireless  wlp4s0
+          dell-5520     IN A 192.168.43.6
           omega         IN A 192.168.43.10
           dell-home     IN A 192.168.43.14
           imac          IN A 192.168.43.15
@@ -717,6 +728,7 @@
               option routers 192.168.43.1;
               option domain-name-servers 192.168.43.1;
 
+              host dell-5520    { hardware ethernet 00:28:f8:bf:8f:29; fixed-address 192.168.43.6; }
               host omega        { hardware ethernet 40:a3:6b:c1:18:dc; fixed-address 192.168.43.10; }
               host dell-home    { hardware ethernet f8:16:54:1c:9e:90; fixed-address 192.168.43.14; }
               host imac         { hardware ethernet 00:19:e3:10:53:89; fixed-address 192.168.43.15; }
