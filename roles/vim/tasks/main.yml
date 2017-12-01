@@ -8,13 +8,13 @@
 
   # .vimrc
   # TODO maybe templatize
-  - copy: src=vimrc dest={{vim_user_home}}/.vimrc
+  - copy: src=vimrc dest={{vim_path}}/.vimrc
 
 
   # vim directories for temp files and pathogen
   # vim tmp file handling
   # http://stackoverflow.com/questions/821902/disabling-swap-files-creation-in-vim
-  - file: path="{{vim_user_home}}/{{item}}" state=directory owner={{vim_user}} group={{vim_user}}
+  - file: path="{{vim_path}}/{{item}}" state=directory owner={{vim_user}} group={{vim_user}}
     with_items:
       - "/.vim"
       - "/.vim/backup"
@@ -25,31 +25,31 @@
 
   # pathogen
   # https://github.com/tpope/vim-pathogen
-  - get_url: url='https://tpo.pe/pathogen.vim'                dest={{vim_user_home}}/.vim/autoload/pathogen.vim
+  - get_url: url='https://tpo.pe/pathogen.vim'                dest={{vim_path}}/.vim/autoload/pathogen.vim
 
   - apt: name=git
 
   # solidity, sol
-  - git: repo=https://github.com/tomlion/vim-solidity         dest={{vim_user_home}}/.vim/bundle/vim-solidity
+  - git: repo=https://github.com/tomlion/vim-solidity         dest={{vim_path}}/.vim/bundle/vim-solidity
 
   # rust, rs
-  - git: repo=https://github.com/rust-lang/rust.vim           dest={{vim_user_home}}/.vim/bundle/rust
+  - git: repo=https://github.com/rust-lang/rust.vim           dest={{vim_path}}/.vim/bundle/rust
 
   # coquille, v
-  - git: repo=https://github.com/the-lambda-church/coquille   dest={{vim_user_home}}/.vim/bundle/coquille
+  - git: repo=https://github.com/the-lambda-church/coquille   dest={{vim_path}}/.vim/bundle/coquille
 
   # purescript
-  - git: repo=https://github.com/raichoo/purescript-vim.git   dest={{vim_user_home}}/.vim/bundle/purescript
+  - git: repo=https://github.com/raichoo/purescript-vim.git   dest={{vim_path}}/.vim/bundle/purescript
 
   # haskell - just use the built in one,
 
   # recursive... ansible git is recursive by default,
-  # git clone --recursive https://github.com/sdiehl/haskell-vim-proto.git 
+  # git clone --recursive https://github.com/sdiehl/haskell-vim-proto.git
 
   # the dammn indirection is wrong...
-  # - git: repo=https://github.com/sdiehl/haskell-vim-proto.git  dest={{vim_user_home}}/.vim/bundle/haskell-vim-proto
+  # - git: repo=https://github.com/sdiehl/haskell-vim-proto.git  dest={{vim_path}}/.vim/bundle/haskell-vim-proto
 
 
-  - git: repo=https://github.com/idris-hackers/idris-vim.git  dest={{vim_user_home}}/.vim/bundle/idris
+  - git: repo=https://github.com/idris-hackers/idris-vim.git  dest={{vim_path}}/.vim/bundle/idris
 
 

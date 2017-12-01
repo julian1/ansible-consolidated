@@ -110,6 +110,11 @@
           --host-resolver-rules="MAP * ~NOTFOUND , EXCLUDE 127.0.0.1, EXCLUDE localback.net"
 
 
+
+
+  #############################
+  ## devel environments
+
   # jdk and maven, for freeroute etc
   - copy:
       dest: /usr/local/include/jdk.inc
@@ -127,14 +132,14 @@
       content: |
         # deployed by ansible!
 
-        export PATH="/home/meteo/node-v6.11.0-linux-x64/bin:$PATH"
+        export PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
 
   - copy:
       dest: /usr/local/include/cabal.inc
       content: |
         # deployed by ansible!
 
-        export CABAL_BIN="/home/meteo/.cabal/bin"
+        export CABAL_BIN="$HOME/.cabal/bin"
         export PATH="$CABAL_BIN:$PATH"
 
 

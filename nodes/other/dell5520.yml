@@ -1,5 +1,4 @@
-#### xmonad dirs are created as root - when we provision as root. which is required for apt. 
-
+#### xmonad dirs are created as root - when we provision as root. which is required for apt.
 
 - hosts: localhost
 
@@ -18,10 +17,10 @@
         shell=/bin/bash
         groups=staff,sudo,tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
 
-    - file: > 
-        path=/home/meteo 
-        mode=0700 
-        owner=meteo group=meteo 
+    - file: >
+        path=/home/meteo
+        mode=0700
+        owner=meteo group=meteo
         state=directory
 
     - copy:
@@ -38,7 +37,7 @@
           # stretch-updates, previously known as 'volatile'
           deb http://ftp.au.debian.org/debian/ stretch-updates main contrib non-free
           deb-src http://ftp.au.debian.org/debian/ stretch-updates main contrib non-free
-           
+
 
   roles:
     # don't manage apt sources.list
@@ -56,6 +55,8 @@
 
     - name: vim
       tags: vim
+      vim_path: /home/meteo
+      vim_user: meteo
 
     - name: xmonad
       tags: xmonad
@@ -74,8 +75,6 @@
 
 
   tasks:
-
-
 
     #####
     # wireless
@@ -105,7 +104,7 @@
 
 
 
-    #### 
+    ####
     # Bluetooth
     # also, disable bluetooth with systemd
     # https://askubuntu.com/questions/744640/best-way-to-deactivate-bluetooth-on-system-startup-with-systemd-and-not-upstar
@@ -180,9 +179,9 @@
     #####
     # trackpad tapping
     # https://askubuntu.com/questions/838061/touchpad-tap-stopped-working
-    # 
+    #
     # make sure synaptics is not installed
-    - apt: name=xserver-xorg-input-synaptics state=absent 
+    - apt: name=xserver-xorg-input-synaptics state=absent
 
     - copy:
         dest: /usr/share/X11/xorg.conf.d/40-libinput.conf

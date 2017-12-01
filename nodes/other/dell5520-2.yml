@@ -1,8 +1,38 @@
 
-firefox-esr - no. use nightly - with script
-sshfs
-pulseaudio
+- hosts: localhost
+  vars:
+  pre_tasks:
 
-lm-sensors
-a2ps
-evince
+    - user: >
+        name=devel
+        shell=/bin/bash
+
+#    - file: >
+#        path=/home/devel
+#        mode=0755
+#        owner=devel group=devel
+#        state=directory
+
+  roles:
+
+    - name: dotfiles
+      tags: dotfiles
+      dotfile_path: /home/devel
+
+    - name: vim
+      vim_path: /home/devel
+      vim_user: devel
+      tags: vim
+
+
+  tasks:
+
+
+
+# firefox-esr - no. use nightly - with script
+# sshfs
+# pulseaudio
+
+# lm-sensors
+# a2ps
+# evince
