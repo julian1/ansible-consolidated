@@ -599,8 +599,8 @@
                              IN     NS    ns2.
 
           ; Enable/disable here...
-          netflix.com       A       127.0.0.1
-          www.netflix.com   A       127.0.0.1
+          ; netflix.com       A       127.0.0.1
+          ; www.netflix.com   A       127.0.0.1
 
           test.com A 127.0.0.1
 
