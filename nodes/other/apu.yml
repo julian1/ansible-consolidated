@@ -1,10 +1,13 @@
 
 # cisco/switches - should use dhcp to configure internal interface ip
 
-# after powerdown system hostapd had to be restarted manually,
-# # /sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0
-# service hostapd status shows status active(exited).
-# also had to restart isc-dhcp-server status, so that we got an wifi ip
+# after poweroff poweroff
+# 1)  dhclient on 120 
+
+# 2) after powerdown system hostapd had to be restarted manually, by
+#   # /sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0
+
+# 3) and had to restart isc-dhcp-server status, because wlp4s0 was restarted
 
 # apu for networking services only
 # wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, xmodem serial for switch
