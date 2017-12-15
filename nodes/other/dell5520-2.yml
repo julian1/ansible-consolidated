@@ -37,3 +37,6 @@
 # a2ps
 # evince
 # curl
+#  - apt: name=dnsutils        # dig
+#  - apt: name=whois 
+# youtube-dl
