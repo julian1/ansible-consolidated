@@ -4,6 +4,6 @@
 - hosts: all
   roles:
     - name: crypto/trezord
-      user: meteo
-      build_dir: /home/meteo/trezord
+      user: devel
+      build_dir: /home/devel/trezord
 

@@ -30,6 +30,9 @@ xmonad $ defaultConfig
         { manageHook = manageDocks <+> manageHook defaultConfig
         , layoutHook = avoidStruts $ layoutHook defaultConfig
 
+    , focusedBorderColor =  "#009900"
+    , normalBorderColor  =  "#666666" 
+
 		, logHook = myLogHook xmproc 
 
 		, terminal = myterminal 
