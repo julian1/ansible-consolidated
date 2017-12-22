@@ -1,4 +1,11 @@
 
+# TODO 
+# - split out the dhcp/bind/iptables stuff from the low-level and os related stuff...
+#     actually could be made a node-specific role.
+# - also want to name  enp1s0 to eth0, wlp4s0 to wlan0 etc, need to check works with vlans.
+# - order should be dhcp, bind, iptables- actually no iptables should be first.
+
+
 # cisco/switches - should use dhcp to configure internal interface ip
 
 # after powerdown system hostapd had to be restarted manually,
