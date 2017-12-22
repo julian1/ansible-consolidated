@@ -91,6 +91,22 @@
 
     - apt: name=hostapd
 
+
+    # syslinux is conventional except net.ifnames etc, and serial.
+    - copy:
+        # dest: /boot/syslinux/syslinux.cfg 
+        dest: /root/syslinux.cfg 
+        content: |
+          CONSOLE 0
+          SERIAL 0 115200 0
+          DEFAULT linux
+          PROMPT 0
+          LABEL linux
+            SAY Now booting the kernel from SYSLINUX...
+            KERNEL /boot/vmlinuz-4.9.0-3-amd64
+            APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-3-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
+           
+
     # hostapd.conf goes first since referred to by /etc/network/interfaces
     # AP primary
     - copy:
@@ -225,9 +241,8 @@
           # deployed by ansible!
           Port 22
          
-          # needed for eth1 
           # ListenAddress 0.0.0.0
-          # listen on eth1 and for lan 100
+          # listens on both eth1 and lan 100
           ListenAddress 192.168.100.1
           ListenAddress 172.16.0.1 
 
@@ -354,7 +369,7 @@
           iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # eth1 
+          # eth1 configuration
           iptables -A INPUT  -i eth1 -p tcp --dport 22 -s 172.16.0.0/12 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o eth1 -p tcp --sport 22 -d 172.16.0.0/12 -m conntrack --ctstate ESTABLISHED -j ACCEPT
  
@@ -386,7 +401,7 @@
           # TODO can do direction and conntrack by using lan addresses for -s and -d eg. 192.168.201.0/24
 
           # EVERYWHERE
-          # ping
+          # ping everwhere across
           iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
           iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
 
