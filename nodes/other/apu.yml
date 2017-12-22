@@ -680,8 +680,8 @@
           ; vlan 100
           apu           IN A 192.168.100.1
           ; these have the wrong ordering
-          cisco1        IN A 192.168.100.11
-          cisco2        IN A 192.168.100.12
+          cisco1        IN A 192.168.100.12
+          cisco2        IN A 192.168.100.11
 
           ; vlan 200 - not used
 
@@ -694,6 +694,7 @@
           dell-home-wired IN A 192.168.201.19
           snom          IN A 192.168.201.20
           pi1           IN A 192.168.201.27
+          cisco3        IN A 192.168.201.28
 
           ; wireless  wlan0
           dell-5520     IN A 192.168.43.6
@@ -704,6 +705,7 @@
           asus          IN A 192.168.43.17    ; cat
           chromebox-wifi IN A 192.168.43.18
           esp12f        IN A 192.168.43.19
+          xperia        IN A 192.168.43.20
 
           ; wireless  wlan1
           dell-home     IN A 192.168.44.14
@@ -749,7 +751,8 @@
           # TODO don't think we need this... because we are explicit
           option domain-name-servers 10.1.1.1;
 
-          default-lease-time 600;
+          # default-lease-time 600; 10 mins
+          default-lease-time 3600;  # one hour
           max-lease-time 7200;
 
           # requires corresponding entry in /etc/rsyslog.conf 
@@ -774,6 +777,8 @@
               host nuc          { hardware ethernet b8:ae:ed:7b:b5:b9; fixed-address 192.168.201.17; }
               host dell-home-wired { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
               host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.201.20; }
+              host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
+
               host pi1          { hardware ethernet 00:9e:9e:9a:39:6e; fixed-address 192.168.201.27; }
           }
 
@@ -796,6 +801,8 @@
               host asus         { hardware ethernet 60:57:18:75:3b:cc; fixed-address 192.168.43.17; }
               host chromebox-wifi { hardware ethernet ac:b5:7d:07:f7:d9; fixed-address 192.168.43.18; }
               host esp12f       { hardware ethernet 18:fe:34:d2:3a:45; fixed-address 192.168.43.19; }
+              host xperia       { hardware ethernet 30:75:12:ab:7e:23; fixed-address 192.168.43.20; }
+
           }
 
           subnet 192.168.44.0 netmask 255.255.255.0 {
