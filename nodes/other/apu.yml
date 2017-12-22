@@ -105,7 +105,9 @@
           wpa_key_mgmt=WPA-PSK
           wpa_pairwise=TKIP
           rsn_pairwise=CCMP
-      notify: restart-wlp4s0
+
+      # not sure this works, because it won't restart isc-dhcp also
+      # notify: restart-wlp4s0
 
     # AP2
     - copy:
@@ -124,6 +126,8 @@
           wpa_pairwise=TKIP
           rsn_pairwise=CCMP
       notify: restart-wlx0087325587cc
+
+
 
     - copy:
         dest: /etc/network/interfaces
@@ -175,6 +179,7 @@
 
           # AP primary
           auto wlp4s0
+          allow-hotplug wlp4s0
           iface wlp4s0 inet static
             hostapd /etc/hostapd/hostapd-wlp4s0.conf
             address 192.168.43.1
@@ -185,6 +190,7 @@
 
           # AP 2
           auto wlx0087325587cc
+          allow-hotplug wlx0087325587cc
           iface wlx0087325587cc inet static
             hostapd /etc/hostapd/hostapd-wlx0087325587cc.conf
             address 192.168.44.1
@@ -503,6 +509,7 @@
           # mangle
           #  checksum issue for udp bootpc
 
+      # TODO - instead of running this later. should run reconfigure immediately after using a variable
       notify: reconfigure-iptables
       tags: iptables
 
@@ -902,8 +909,8 @@
     #  command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
 
 
-    - name: restart-wlp4s0
-      command: sh -c "/sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0"
+    # - name: restart-wlp4s0
+    #  command: sh -c "/sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0"
 
     - name: restart-wlx0087325587cc
       command: sh -c "/sbin/ifdown wlx0087325587cc && sleep 1 && /sbin/ifup wlx0087325587cc"
