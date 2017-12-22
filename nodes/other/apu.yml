@@ -4,6 +4,11 @@
 #     actually could be made a node-specific role.
 # - also want to name  enp1s0 to eth0, wlp4s0 to wlan0 etc, need to check works with vlans.
 # - order should be dhcp, bind, iptables- actually no iptables should be first.
+# - need to split out the dhcpd log. it's too messy.
+
+# HAVE ERROR - this could be stopping it from starting
+# "Dynamic and static leases present for"
+#  https://serverfault.com/questions/750710/isc-dhcp-server-dynamic-and-static-leases-present
 
 
 # cisco/switches - should use dhcp to configure internal interface ip
@@ -22,7 +27,7 @@
   # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
 - hosts: 192.168.100.1
   vars_files:
-    - ../../vars/credentials.yml
+    - ../../credentials.yml
   vars:
   pre_tasks:
 
@@ -712,7 +717,9 @@
           # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
           subnet 192.168.201.0 netmask 255.255.255.0 {
               interface "enp1s0.201";
-              range 192.168.201.1  192.168.201.127;
+
+              range 192.168.201.30  192.168.201.40;
+
               option subnet-mask 255.255.255.0;
               option broadcast-address 192.168.201.255;
               option routers 192.168.201.1;
@@ -732,7 +739,8 @@
 
               interface "wlp4s0";
 
-              range 192.168.43.1  192.168.43.127;
+              range 192.168.43.30  192.168.43.40;
+
               option subnet-mask 255.255.255.0;
               option broadcast-address 192.168.43.255;
               option routers 192.168.43.1;
@@ -751,7 +759,8 @@
           subnet 192.168.44.0 netmask 255.255.255.0 {
               interface "wlx0087325587cc";
 
-              range 192.168.44.1  192.168.44.127;
+              range 192.168.44.30  192.168.44.40;
+
               option subnet-mask 255.255.255.0;
               option broadcast-address 192.168.44.255;
               option routers 192.168.44.1;
