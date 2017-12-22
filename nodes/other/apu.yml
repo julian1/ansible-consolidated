@@ -94,6 +94,7 @@
 
     # syslinux is conventional except net.ifnames etc, and serial.
     - copy:
+        # DISABLED...
         # dest: /boot/syslinux/syslinux.cfg 
         dest: /root/syslinux.cfg 
         content: |
