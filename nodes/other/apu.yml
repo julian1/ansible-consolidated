@@ -352,9 +352,14 @@
           iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 67 -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 67 -j ACCEPT
 
-          # ping
+          # ping ingress - eg. allow us to ping apu from lan
           iptables -A INPUT  ! -i enp1s0.120 -p icmp --icmp-type 8 -j ACCEPT
           iptables -A OUTPUT ! -o enp1s0.120 -p icmp --icmp-type 0 -j ACCEPT
+
+          # ping out - eg. allow us to ping a node on the lan/wireless from apu
+          # isc-dhcp-server uses this
+          iptables -A INPUT  ! -i enp1s0.120 -p icmp --icmp-type 0 -j ACCEPT
+          iptables -A OUTPUT ! -o enp1s0.120 -p icmp --icmp-type 8 -j ACCEPT
 
 
           ##### FORWARD LAN #####
