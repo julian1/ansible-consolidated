@@ -2,7 +2,7 @@
 # TODO 
 # - split out the dhcp/bind/iptables stuff from the low-level and os related stuff...
 #     actually could be made a node-specific role.
-# - also want to name  enp1s0 to eth0, wlp4s0 to wlan0 etc, need to check works with vlans.
+# - also want to name  eth0 to eth0, wlan0 to wlan0 etc, need to check works with vlans.
 # - order should be dhcp, bind, iptables- actually no iptables should be first.
 # - need to split out the dhcpd log. it's too messy.
 
@@ -18,9 +18,9 @@
 # 1)  dhclient on 120   
 
 # 2) after powerdown system hostapd had to be restarted manually, by
-#   # /sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0
+#   # /sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0
 
-# 3) and had to restart isc-dhcp-server status, because wlp4s0 was restarted
+# 3) and had to restart isc-dhcp-server status, because wlan0 was restarted
 
 # apu for networking services only
 # wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, xmodem serial for switch
@@ -59,7 +59,7 @@
     - apt: name=tcpdump
     - apt: name=netstat-nat     # nat connections
     - apt: name=dnsutils        # dig, whois
-    - apt: name=wireless-tools  # iwconfig - useful to check wlp4s0 state
+    - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
     - apt: name=iw
 
     - apt: name=pciutils        # lspci
@@ -80,11 +80,11 @@
         - touch ansible-lm-sensors
 
     # WARNING: Nasty, after kernel upgrade, was
-    # missing wlp4s0. Have to apt-get purge and
+    # missing wlan0. Have to apt-get purge and
     # reinstall firmware-realtek as it
     # modifies initrd.img
 
-    # Atheros AR9280 and wlp4s0 should be seen and can do iwlist scan
+    # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
     # - apt: name=firmware-realtek
 
     - apt: name=hostapd
@@ -92,10 +92,10 @@
     # hostapd.conf goes first since referred to by /etc/network/interfaces
     # AP primary
     - copy:
-        dest: /etc/hostapd/hostapd-wlp4s0.conf
+        dest: /etc/hostapd/hostapd-wlan0.conf
         content: |
           # deployed by ansible!
-          interface=wlp4s0
+          interface=wlan0
           ssid=AP1
           hw_mode=g
           channel=7
@@ -107,14 +107,16 @@
           rsn_pairwise=CCMP
 
       # not sure this works, because it won't restart isc-dhcp also
-      # notify: restart-wlp4s0
+      # notify: restart-wlan0
 
+    # get wrong driver by default...
+    # https://superuser.com/questions/692229/install-driver-for-rt5370-on-ubuntu
     # AP2
     - copy:
-        dest: /etc/hostapd/hostapd-wlx0087325587cc.conf
+        dest: /etc/hostapd/hostapd-wlan1.conf
         content: |
           # deployed by ansible!
-          interface=wlx0087325587cc
+          interface=wlan1
           ssid=AP2
           hw_mode=g
           channel=8
@@ -125,7 +127,7 @@
           wpa_key_mgmt=WPA-PSK
           wpa_pairwise=TKIP
           rsn_pairwise=CCMP
-      notify: restart-wlx0087325587cc
+      notify: restart-wlan1
 
 
 
@@ -141,34 +143,34 @@
           # wan
 
           # http://www.cyberciti.biz/tips/howto-configure-linux-virtual-local-area-network-vlan.html
-          # just had to do /sbin/ifup enp1s0.100.100
+          # just had to do /sbin/ifup eth0.100.100
           # VLAN = Third octet of IPv4 subnets, network identifier in IPv6 addresses.
 
           # vlan 100 switch management
-          auto enp1s0.100
-          iface enp1s0.100 inet static
+          auto eth0.100
+          iface eth0.100 inet static
             address 192.168.100.1
             netmask 255.255.255.0
-            vlan-raw-device enp1s0
+            vlan-raw-device eth0
 
           # vlan 120 wan
-          auto enp1s0.120
-          iface enp1s0.120 inet dhcp
-            vlan-raw-device enp1s0
+          auto eth0.120
+          iface eth0.120 inet dhcp
+            vlan-raw-device eth0
 
           # vlan 200
-          auto enp1s0.200
-          iface enp1s0.200 inet static
+          auto eth0.200
+          iface eth0.200 inet static
             address 192.168.200.1
             netmask 255.255.255.0
-            vlan-raw-device enp1s0
+            vlan-raw-device eth0
 
           # vlan 201
-          auto enp1s0.201
-          iface enp1s0.201 inet static
+          auto eth0.201
+          iface eth0.201 inet static
             address 192.168.201.1
             netmask 255.255.255.0
-            vlan-raw-device enp1s0
+            vlan-raw-device eth0
 
           # router management
           # TODO do we need allow-hotplug?
@@ -178,10 +180,10 @@
           #            netmask 255.255.255.0
 
           # AP primary
-          auto wlp4s0
-          allow-hotplug wlp4s0
-          iface wlp4s0 inet static
-            hostapd /etc/hostapd/hostapd-wlp4s0.conf
+          auto wlan0
+          allow-hotplug wlan0
+          iface wlan0 inet static
+            hostapd /etc/hostapd/hostapd-wlan0.conf
             address 192.168.43.1
             netmask 255.255.255.0
             # gateway to 10.0.0.0 via dell-home
@@ -189,10 +191,10 @@
             post-up ip route add 10.0.0.0/8 via 192.168.43.14
 
           # AP 2
-          auto wlx0087325587cc
-          allow-hotplug wlx0087325587cc
-          iface wlx0087325587cc inet static
-            hostapd /etc/hostapd/hostapd-wlx0087325587cc.conf
+          auto wlan1
+          allow-hotplug wlan1
+          iface wlan1 inet static
+            hostapd /etc/hostapd/hostapd-wlan1.conf
             address 192.168.44.1
             netmask 255.255.255.0
 
@@ -202,8 +204,8 @@
         # - restart-eth1
         # - restart-eth2
 
-        # - restart-enp1s0  disable because kills conns...
-        - restart-wlp4s0
+        # - restart-eth0  disable because kills conns...
+        - restart-wlan0
 
 
     - copy:
@@ -275,7 +277,7 @@
       tags: sshd
 
 
-      # may need to restart wlp4s0 here? at least when install dnsmasq
+      # may need to restart wlan0 here? at least when install dnsmasq
     - apt: name=iptables-persistent
 
     - copy:
@@ -297,22 +299,22 @@
           ##### APU to WAN #####
           #
           # host dhcp to get wan ip from isp
-          iptables -A OUTPUT -o enp1s0.120 -p udp --dport 67 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i enp1s0.120 -p udp --sport 67 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT -o eth0.120 -p udp --dport 67 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i eth0.120 -p udp --sport 67 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
           # http/s needed for apt-get update etc from upstream repositories
-          iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i enp1s0.120 -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT -o enp1s0.120 -p tcp --dport 443 -m conntrack --ctstate NEW ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i enp1s0.120 -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT -o eth0.120 -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i eth0.120 -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT -o eth0.120 -p tcp --dport 443 -m conntrack --ctstate NEW ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i eth0.120 -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
           # ping, ie ping 8.8.8.8
-          iptables -A OUTPUT -o enp1s0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i enp1s0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT -o eth0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i eth0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
           # ntpd - outgoing initiated only, not incomming
-          iptables -A OUTPUT -o enp1s0.120 -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i enp1s0.120 -p udp --sport 123 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT -o eth0.120 -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i eth0.120 -p udp --sport 123 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 
           ##### APU WAN and local processes ####
@@ -336,37 +338,37 @@
           ##### APU to LAN #####
           #
           # ssh incomming, TODO restrict ssh to management?
-          # iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -j ACCEPT
-          # -          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -j ACCEPT
-          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          # iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -j ACCEPT
+          # -          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
  
 
           # TODO conntrack
           # dns
-          iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 53 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 53 -j ACCEPT
-          iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 53 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 53 -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p udp --dport 53 -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p udp --sport 53 -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 53 -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 53 -j ACCEPT
 
           # dhcp
-          iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 67 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 67 -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p udp --dport 67 -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p udp --sport 67 -j ACCEPT
 
           # ping ingress - eg. allow us to ping apu from lan
-          iptables -A INPUT  ! -i enp1s0.120 -p icmp --icmp-type 8 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p icmp --icmp-type 0 -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 8 -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 0 -j ACCEPT
 
           # ping out - eg. allow us to ping a node on the lan/wireless from apu
           # isc-dhcp-server uses this
-          iptables -A INPUT  ! -i enp1s0.120 -p icmp --icmp-type 0 -j ACCEPT
-          iptables -A OUTPUT ! -o enp1s0.120 -p icmp --icmp-type 8 -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 0 -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 8 -j ACCEPT
 
 
           ##### FORWARD LAN #####
@@ -478,14 +480,14 @@
           # TODO re-enable dlna multicast routing, and tftp
           # tftp and dlna services - should be on other lan nodes, if at all.
           # TFTp - disable port-range is inclusive
-          # iptables -A INPUT  ! -i enp1s0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
-          # iptables -A OUTPUT ! -o enp1s0.120 -p udp --match multiport --sport 69,1024:1034 -j ACCEPT
+          # iptables -A INPUT  ! -i eth0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+          # iptables -A OUTPUT ! -o eth0.120 -p udp --match multiport --sport 69,1024:1034 -j ACCEPT
 
           # dlna - disable - service removed from apu
-          # iptables -A INPUT  ! -i enp1s0.120 -p tcp --dport 8200 -j ACCEPT
-          # iptables -A OUTPUT ! -o enp1s0.120 -p tcp --sport 8200 -j ACCEPT
-          # iptables -A INPUT  ! -i enp1s0.120 -p udp --dport 1900 -j ACCEPT
-          # iptables -A OUTPUT ! -o enp1s0.120 -p udp --sport 1900 -j ACCEPT
+          # iptables -A INPUT  ! -i eth0.120 -p tcp --dport 8200 -j ACCEPT
+          # iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 8200 -j ACCEPT
+          # iptables -A INPUT  ! -i eth0.120 -p udp --dport 1900 -j ACCEPT
+          # iptables -A OUTPUT ! -o eth0.120 -p udp --sport 1900 -j ACCEPT
 
 
           ##### NAT #####
@@ -495,15 +497,15 @@
           # Good voip guide, note the comment to limit stp to smaller port range
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
           #
-          iptables -t nat -A PREROUTING -p udp -s 203.55.231.192/26 -i enp1s0.120 -j DNAT --to 192.168.201.20
-          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.192/26 -i enp1s0.120 -j DNAT --to 192.168.201.20
+          iptables -t nat -A PREROUTING -p udp -s 203.55.231.192/26 -i eth0.120 -j DNAT --to 192.168.201.20
+          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.192/26 -i eth0.120 -j DNAT --to 192.168.201.20
 
 
           # post-routing
           # private subnet nat
-          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o enp1s0.120 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o enp1s0.120 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o enp1s0.120 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o eth0.120 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o eth0.120 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0.120 -j MASQUERADE
 
           #####
           # mangle
@@ -523,8 +525,8 @@
         content: |
           # deployed by ansible!
           sleep 1
-          smcroute -a wlp4s0    0.0.0.0 239.255.255.250 enp1s0.201
-          smcroute -a enp1s0.201 0.0.0.0 239.255.255.250 wlp4s0
+          smcroute -a wlan0    0.0.0.0 239.255.255.250 eth0.201
+          smcroute -a eth0.201 0.0.0.0 239.255.255.250 wlan0
       notify: restart-smcroute
 
 #    tftp should run anywhere except here...
@@ -669,7 +671,7 @@
           snom          IN A 192.168.201.20
           pi1           IN A 192.168.201.27
 
-          ; wireless  wlp4s0
+          ; wireless  wlan0
           dell-5520     IN A 192.168.43.6
           omega         IN A 192.168.43.10
           dell-home     IN A 192.168.43.14
@@ -679,7 +681,7 @@
           chromebox-wifi IN A 192.168.43.18
           esp12f        IN A 192.168.43.19
 
-          ; wireless  wlx0087325587cc
+          ; wireless  wlan1
           dell-home     IN A 192.168.44.14
           esp           IN A 192.168.44.16
           chromebox-wifi IN A 192.168.44.18
@@ -701,8 +703,8 @@
         # backup: yes
         content: |
           # deployed by ansible!
-          #Separate multiple interfaces with spaces, e.g. “enp1s0 eth1".
-          INTERFACESv4="enp1s0.201 wlp4s0 wlx0087325587cc"
+          #Separate multiple interfaces with spaces, e.g. “eth0 eth1".
+          INTERFACESv4="eth0.201 wlan0 wlan1"
           INTERFACESv6=""
       notify: restart-dhcp
       tags: dhcp
@@ -732,7 +734,7 @@
           # Set up our desired subnet:
           # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
           subnet 192.168.201.0 netmask 255.255.255.0 {
-              interface "enp1s0.201";
+              interface "eth0.201";
 
               range 192.168.201.30  192.168.201.40;
 
@@ -753,7 +755,7 @@
 
           subnet 192.168.43.0 netmask 255.255.255.0 {
 
-              interface "wlp4s0";
+              interface "wlan0";
 
               range 192.168.43.30  192.168.43.40;
 
@@ -773,7 +775,7 @@
           }
 
           subnet 192.168.44.0 netmask 255.255.255.0 {
-              interface "wlx0087325587cc";
+              interface "wlan1";
 
               range 192.168.44.30  192.168.44.40;
 
@@ -902,18 +904,18 @@
 
 
   handlers:
-    - name: restart-enp1s0
-      command: sh -c "/sbin/ifdown enp1s0 && /sbin/ifup enp1s0"
+    - name: restart-eth0
+      command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
 
     # - name: restart-eth1
     #  command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
 
 
-    # - name: restart-wlp4s0
-    #  command: sh -c "/sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0"
+    # - name: restart-wlan0
+    #  command: sh -c "/sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0"
 
-    - name: restart-wlx0087325587cc
-      command: sh -c "/sbin/ifdown wlx0087325587cc && sleep 1 && /sbin/ifup wlx0087325587cc"
+    - name: restart-wlan1
+      command: sh -c "/sbin/ifdown wlan1 && sleep 1 && /sbin/ifup wlan1"
 
 
     - name: restart-smcroute
