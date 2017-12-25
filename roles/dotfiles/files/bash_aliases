@@ -16,7 +16,7 @@ alias xclip='xclip -selection clipboard'
 alias dmesg='dmesg -T --color=always'
 alias less='less -R'
 alias vim='vim -p'
-alias top='top -d .7'
+alias top='top -d 1'
 
 # just use  cd $(mktemp -d )
 # alias tmp='export T=$(mktemp -d); pushd $T'
