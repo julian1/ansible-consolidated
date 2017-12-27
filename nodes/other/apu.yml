@@ -2,7 +2,8 @@
 # cisco/switches - should use dhcp to configure internal interface ip
 
 # after poweroff poweroff
-# 1)  dhclient on 120 
+# (on a restart with the switches up - this was ok)
+# 1)  dhclient on 120   
 
 # 2) after powerdown system hostapd had to be restarted manually, by
 #   # /sbin/ifdown wlp4s0 && sleep 1 && /sbin/ifup wlp4s0
