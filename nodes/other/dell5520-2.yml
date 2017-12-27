@@ -1,17 +1,15 @@
 
+# there's actually no reason not to have node specific roles...
+
 - hosts: localhost
   vars:
   pre_tasks:
 
+    # permissions should be default, ie 0755
     - user: >
         name=devel
         shell=/bin/bash
 
-#    - file: >
-#        path=/home/devel
-#        mode=0755
-#        owner=devel group=devel
-#        state=directory
 
   roles:
 
@@ -37,3 +35,6 @@
 # a2ps
 # evince
 # curl
+#  - apt: name=dnsutils        # dig
+#  - apt: name=whois 
+# youtube-dl

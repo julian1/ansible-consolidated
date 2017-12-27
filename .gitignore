@@ -1,4 +1,5 @@
 nodes/*.retry
 plays/*.retry
 vars/credentials.yml
+credentials.yml
 tmp
