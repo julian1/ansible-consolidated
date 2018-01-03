@@ -25,6 +25,16 @@
 
   tasks:
 
+    - copy:
+        dest: /lib/udev/rules.d/99-z.rules
+        content: |
+          # deployed by ansible!
+          # allow writing /dev/sdb device
+ 
+          # to reload, 
+          # udevadm control --reload-rules && udevadm trigger 
+          # KERNEL=="sdb", SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="meteo"
+          SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="meteo"
 
 
 # firefox-esr - no. use nightly - with script
