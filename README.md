@@ -15,6 +15,7 @@ ansible-playbook nodes/other/dell-home.yml -c local -i localhost,   # run as roo
 ansible-playbook nodes/pglogical.yml -i pglogical.localnet,
 
 # plays
+ansible-playbook plays/scripts.yml -c local -i localhost,
 ansible-playbook plays/devenv-lite.yml -i localhost, -c local
 ansible-playbook plays/meteo.yml -i parity, -u admin -s
 ansible-playbook plays/admin/postfix.yml -i do-01,
