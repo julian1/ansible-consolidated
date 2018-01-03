@@ -5,6 +5,59 @@
   ####
 
   - copy:
+      dest: /home/meteo/backup.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        pass=$( cat ~/.ssh/mebackup )
+        cipher=-aes-256-cbc
+
+        # we kind of want to keep the files around...
+        [ -f ./me.tgz.enc ] && echo "me.tgz.enc already exists!!" && exit
+
+        tar -czf ./me.tgz ./me || exit
+
+        openssl enc -e "$cipher" \
+          -pass "pass:$pass" \
+          -in me.tgz \
+          -out me.tgz.enc \
+          || exit
+
+        ls -lh me.tgz.enc
+        rm me.tgz
+
+
+  - copy:
+      dest: /home/meteo/restore.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        pass=$( cat ~/.ssh/mebackup )
+        cipher=-aes-256-cbc
+
+        [ -d restore ] && echo "restore dir already exists!!" && exit
+
+        mkdir restore
+
+        openssl enc -d "$cipher" \
+          -pass "pass:$pass" \
+          -in me.tgz.enc \
+          -out restore/me.tar \
+          || exit
+
+        # untar to different dir
+        tar -xf restore/me.tar -C restore --strip-components 1 || exit
+
+
+  - copy:
       dest: /usr/local/bin/restart-wifi.sh
       mode: 0700
       owner: meteo
