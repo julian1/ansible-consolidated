@@ -74,6 +74,7 @@
         ifconfig wlan0 up
         iwconfig wlan0
 
+
   - copy:
       dest: /usr/local/bin/tunnel-parity.sh
       mode: 0700
