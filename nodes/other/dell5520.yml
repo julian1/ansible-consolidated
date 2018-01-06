@@ -27,6 +27,7 @@
         dest: /etc/apt/sources.list
         content: |
           # deployed by ansible!
+          # see, https://wiki.debian.org/SourcesList  on stretch/updates v stretch-updates
 
           deb http://ftp.au.debian.org/debian/ stretch main contrib non-free
           deb-src http://ftp.au.debian.org/debian/ stretch main contrib non-free
