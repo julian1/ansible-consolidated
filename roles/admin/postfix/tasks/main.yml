@@ -1,7 +1,16 @@
 
-  # needs the following DNS records - MX, A, SPF, PTR (via host)
-  
-  # TODO move logging.
+  # needs the following DNS records - MX, A, SPF, PTR (via host), TXT (same as SPF)
+  # julian1.io
+  #   MX 10 mail.julian1.io - - 60
+  #   SPF "v=spf1 mx -all" - - 60
+  #   TXT "v=spf1 mx -all" - - 60
+  # mail
+  #   A n.n.n.n  - - 60
+  # (host provider)
+  #   PTR
+
+
+  # TODO move logging out of /var/log/syslog.
 
   - apt: name=postfix
 
@@ -12,16 +21,18 @@
       content: |
         # deployed by ansible!
 
-
-        # JA...
+        # JA
+        # set myhostname, in case the machine name isn't set to a fully-qualified domain name
         myhostname = mail.julian1.io
 
+        # JA
+        # not sure if used, or convenience var
         mydomain = julian1.io
 
         # The myorigin parameter specifies the domain that appears in mail that is posted
         # on this machine. The default is to use the local machine name, $myhostname,
         # which defaults to the name of the machine. Unless you are running a really
-        # small site, you probably want to change that into $mydomain, 
+        # small site, you probably want to change that into $mydomain,
         myorigin = julian1.io
 
         # JA not used
@@ -87,7 +98,7 @@
         # JA SPF
         policy-spf_time_limit = 3600s
 
-    # think this restarts it
+    # restarts it
     notify: reconfigure-postfix
     tags: whoot
 
@@ -143,7 +154,8 @@
         policy-spf  unix  -       n       n       -       -       spawn
           user=nobody argv=/usr/bin/policyd-spf
 
-    # think this restarts it
+
+    # reconfigure and restart handler
     notify: reconfigure-postfix
     tags: whoot
 

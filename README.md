@@ -9,13 +9,12 @@ Set of ansible definitions and plays for use with systemd-nspawn containers, kvm
 ```
 # nodes
 ansible-playbook nodes/other/apu.yml --tags bind,dhcp,iptables
-
 ansible-playbook nodes/other/dell-home.yml -c local -i localhost,   # run as root
-
 ansible-playbook nodes/pglogical.yml -i pglogical.localnet,
 
 # plays
-ansible-playbook plays/scripts.yml -c local -i localhost,
+ansible-playbook plays/dotfiles.yml -i localhost, -c local
+ansible-playbook plays/scripts.yml -i localhost, -c local 
 ansible-playbook plays/devenv-lite.yml -i localhost, -c local
 ansible-playbook plays/meteo.yml -i parity, -u admin -s
 ansible-playbook plays/admin/postfix.yml -i do-01,
@@ -26,7 +25,6 @@ ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars 
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 ansible-playbook nodes/dell-home.yml --list-tags
-ansible-playbook nodes/dell-home.yml -t dotfiles -c local
 ansible-playbook nodes/aatams.yml -v
 
 ```

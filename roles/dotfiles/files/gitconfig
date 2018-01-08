@@ -12,7 +12,7 @@
   a = add
   au = add -u
 
-  # unstage
+  # unstage specific file. just do reset instead.
   us = reset HEAD -- 
 
   s = status -s
@@ -50,8 +50,7 @@
   b = branch
   bd = branch -D
 
-  # r can be remote, rebase, reset or rm, seem to use remote the most
-  # remote
+  # r could be aliased to reset, remote, rebase, or rm, seem to use remote the most
   r = remote
   rv = remote -v
 
