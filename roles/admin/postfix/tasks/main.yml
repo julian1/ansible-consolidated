@@ -1,5 +1,7 @@
 
   # needs the following DNS records - MX, A, SPF, PTR (via host)
+  
+  # TODO move logging.
 
   - apt: name=postfix
 
@@ -12,14 +14,24 @@
 
 
         # JA...
-        # myhostname = debian-512mb-sgp1-01.localdomain
-        # myhostname = debian-512mb-sgp1-01.localdomain
         myhostname = mail.julian1.io
+
+        mydomain = julian1.io
+
+        # The myorigin parameter specifies the domain that appears in mail that is posted
+        # on this machine. The default is to use the local machine name, $myhostname,
+        # which defaults to the name of the machine. Unless you are running a really
+        # small site, you probably want to change that into $mydomain, 
+        myorigin = julian1.io
+
+        # JA not used
         alias_maps = hash:/etc/aliases
         alias_database = hash:/etc/aliases
-        myorigin = /etc/mailname
+
         # JA
-        mydestination = $myhostname, localhost
+        # The mydestination parameter specifies what domains this machine will deliver locally,
+        mydestination = $myhostname, $mydomain, localhost
+
         relayhost =
         # mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
         mynetworks = 127.0.0.0/8
