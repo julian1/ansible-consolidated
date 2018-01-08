@@ -10,6 +10,25 @@
       content: |
         # deployed by ansible!
 
+
+        # JA...
+        # myhostname = debian-512mb-sgp1-01.localdomain
+        # myhostname = debian-512mb-sgp1-01.localdomain
+        myhostname = mail.julian1.io
+        alias_maps = hash:/etc/aliases
+        alias_database = hash:/etc/aliases
+        myorigin = /etc/mailname
+        # JA
+        mydestination = $myhostname, localhost
+        relayhost =
+        # mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+        mynetworks = 127.0.0.0/8
+        mailbox_size_limit = 0
+        recipient_delimiter = +
+        inet_interfaces = all
+        inet_protocols = all
+
+
         # Debian specific:  Specifying a file name will cause the first
         # line of that file to be used as the name.  The Debian default
         # is /etc/mailname.
@@ -52,20 +71,6 @@
            reject_unauth_destination
            check_policy_service unix:private/policy-spf
 
-        # JA...
-        # myhostname = debian-512mb-sgp1-01.localdomain
-        myhostname = debian-512mb-sgp1-01.localdomain
-        alias_maps = hash:/etc/aliases
-        alias_database = hash:/etc/aliases
-        myorigin = /etc/mailname
-        # JA
-        mydestination = $myhostname, julian1.io, debian-512mb-sgp1-01.localdomain, localhost.localdomain, localhost
-        relayhost =
-        mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
-        mailbox_size_limit = 0
-        recipient_delimiter = +
-        inet_interfaces = all
-        inet_protocols = all
 
         # JA SPF
         policy-spf_time_limit = 3600s

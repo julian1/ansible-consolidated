@@ -97,6 +97,7 @@
 
     # command: bash -c "/usr/sbin/alsactl"
     # not sure if this should be with store or init
+    # think when run as shell it runs 'init' 
     - command: /usr/sbin/alsactl
       args:
         creates: /var/lib/alsa/asound.state
