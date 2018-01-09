@@ -1,16 +1,23 @@
 
+  # TODO move to node specific role
+
   # needs the following DNS records - MX, A, SPF, PTR (via host), TXT (same as SPF)
   # julian1.io
   #   MX 10 mail.julian1.io - - 60
   #   SPF "v=spf1 mx -all" - - 60
   #   TXT "v=spf1 mx -all" - - 60
+  # 
+  # mail._domainkey.julian1.io 
+  #   TXT  "v=DKIM1; h=sha256; k=rsa; " "p=... " "..." 
+  # 
   # mail
   #   A n.n.n.n  - - 60
+  # 
   # (host provider)
   #   PTR
 
 
-  # TODO move logging out of /var/log/syslog.
+  # TODO maybe move logging out of /var/log/syslog.
 
   - apt: name=postfix
 
@@ -98,11 +105,22 @@
         # JA SPF
         policy-spf_time_limit = 3600s
 
+        # JA DKIM
+        # https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-dkim-with-postfix-on-debian-wheezy
+        milter_protocol = 2
+        milter_default_action = accept
+
+        smtpd_milters = inet:localhost:12301
+        non_smtpd_milters = inet:localhost:12301
+
+
+
     # restarts it
     notify: reconfigure-postfix
     tags: whoot
 
 
+  ##############################################
 
   # SPF see
   #   https://help.ubuntu.com/community/Postfix/SPF
@@ -158,5 +176,113 @@
     # reconfigure and restart handler
     notify: reconfigure-postfix
     tags: whoot
+
+
+
+  ##############################################
+
+  # NOte, that we are not generating restart events for all actions, so potentially need manual restart of dkim
+  # checking dns record, 
+  #  dig google._domainkey.protodave.com TXT
+  #  dig mail._domainkey.julian1.io TXT 
+  # note that p really is in two parts,
+
+  - apt: name=opendkim
+  - apt: name=opendkim-tools   # for signing tool,
+
+
+  # https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-dkim-with-postfix-on-debian-wheezy
+  - copy:
+      dest: /etc/opendkim.conf
+      content: |
+        # deployed by ansible!
+
+        AutoRestart             Yes
+        AutoRestartRate         10/1h
+        UMask                   002
+        Syslog                  yes
+        SyslogSuccess           Yes
+        LogWhy                  Yes
+
+        Canonicalization        relaxed/simple
+
+        ExternalIgnoreList      refile:/etc/opendkim/TrustedHosts
+        InternalHosts           refile:/etc/opendkim/TrustedHosts
+        KeyTable                refile:/etc/opendkim/KeyTable
+        SigningTable            refile:/etc/opendkim/SigningTable
+
+        Mode                    sv
+        PidFile                 /var/run/opendkim/opendkim.pid
+        SignatureAlgorithm      rsa-sha256
+
+        UserID                  opendkim:opendkim
+
+        Socket                  inet:12301@localhost
+    # restarts it
+    notify: reconfigure-dkim
+    tags: whoot
+
+
+  - copy:
+      dest: /etc/default/opendkim
+      content: |
+        # deployed by ansible!
+
+        #DAEMON_OPTS=""
+        RUNDIR=/var/run/opendkim
+        # JA
+        SOCKET="inet:12301@localhost"
+        USER=opendkim
+        GROUP=opendkim
+        PIDFILE=$RUNDIR/$NAME.pid
+        EXTRAAFTER=
+
+    # restarts it
+    notify: reconfigure-dkim
+    tags: whoot
+
+
+  - file: path=/etc/opendkim        state=directory owner=root group=opendkim
+  - file: path=/etc/opendkim/keys   state=directory owner=root group=opendkim
+
+
+  - copy:
+      dest: /etc/opendkim/TrustedHosts
+      content: |
+        # deployed by ansible!
+
+        127.0.0.1
+        localhost
+        192.168.0.1/24
+
+        *.julian1.io
+
+  - copy:
+      dest: /etc/opendkim/KeyTable
+      content: |
+        # deployed by ansible!
+
+        mail._domainkey.julian1.io julian1.io:mail:/etc/opendkim/keys/julian1.io/mail.private
+
+  - copy:
+      dest: /etc/opendkim/SigningTable
+      content: |
+        # deployed by ansible!
+
+        *@julian1.io mail._domainkey.julian1.io
+
+
+  - file: path=/etc/opendkim/keys/julian1.io   state=directory owner=root group=opendkim
+
+
+  # generate keys 
+  - command: opendkim-genkey -s mail -d julian1.io
+    args:
+      chdir:  /etc/opendkim/keys/julian1.io
+      creates: mail.private
+
+  
+  - file: path=/etc/opendkim/keys/julian1.io/mail.private     owner=opendkim group=root
+    tags: whooter
 
 

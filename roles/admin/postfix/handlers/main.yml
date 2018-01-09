@@ -6,6 +6,12 @@
 #      - dpkg-reconfigure --frontend noninteractive postfix
 #
 
+  # change name to restart
+
   - name: reconfigure-postfix
     service: name=postfix state=restarted
+
+ 
+  - name: reconfigure-dkim
+    service: name=opendkim state=restarted
  
