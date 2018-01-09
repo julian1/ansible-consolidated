@@ -1,0 +1,32 @@
+
+  # https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-ubuntu-16-04
+
+  - apt: name=openvpn
+  - apt: name=easy-rsa
+
+  # initialize
+  - command: make-cadir openvpn-ca
+    args:
+      chdir:  /root
+      creates: openvpn-ca/vars
+    tags: whoot
+
+
+  # https://unix.stackexchange.com/questions/92005/key-config-pointing-to-the-wrong-version-of-openssl-cnf
+  # ln -s openssl-1.0.0.cnf openssl.cnf
+  - file: src=/root/openvpn-ca/openssl-1.0.0.cnf dest=/root/openvpn-ca/openssl.cnf  state=link
+    tags: whoot
+
+
+  # can edit vars here, for proper CA
+
+  # generate the keys
+  - command: "bash -c 'source vars && ./clean-all && ./pkitool --initca' "
+    args:
+      chdir:  /root/openvpn-ca
+      creates: keys/ca.key
+    tags: whoot
+
+
+
+

@@ -14,4 +14,10 @@
  
   - name: reconfigure-dkim
     service: name=opendkim state=restarted
- 
+
+
+
+  - name: reconfigure-dmarc
+    service: name=opendmarc state=restarted
+
+

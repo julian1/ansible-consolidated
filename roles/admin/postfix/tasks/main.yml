@@ -6,18 +6,24 @@
   #   MX 10 mail.julian1.io - - 60
   #   SPF "v=spf1 mx -all" - - 60
   #   TXT "v=spf1 mx -all" - - 60
-  # 
-  # mail._domainkey.julian1.io 
-  #   TXT  "v=DKIM1; h=sha256; k=rsa; " "p=... " "..." 
-  # 
+
+  # _dmarc.julian1.io
+  #   TXT  "v=DMARC1; p=quarantine; rua=mailto:dmarc@julian1.io; ruf=mailto:dmarc@julian1.io; fo=0; adkim=r; aspf=r; pct=100; rf=afrf; ri=86400"
+  #
+  # mail._domainkey.julian1.io
+  #   TXT  "v=DKIM1; h=sha256; k=rsa; " "p=... " "..."
+  #
   # mail
   #   A n.n.n.n  - - 60
-  # 
+  #
   # (host provider)
   #   PTR
 
+  # check with, https://www.mail-tester.com/
 
   # TODO maybe move logging out of /var/log/syslog.
+
+  ##############################################
 
   - apt: name=postfix
 
@@ -87,6 +93,8 @@
         smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
         smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
         smtpd_use_tls=yes
+
+        # JA TODO CHECK THIS - what is data_directory?
         smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
         smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 
@@ -110,14 +118,14 @@
         milter_protocol = 2
         milter_default_action = accept
 
-        smtpd_milters = inet:localhost:12301
-        non_smtpd_milters = inet:localhost:12301
+        # DKIM and DMARC services
+        smtpd_milters = inet:localhost:12301,inet:localhost:54321
+        non_smtpd_milters = inet:localhost:12301,inet:localhost:54321
 
 
 
     # restarts it
     notify: reconfigure-postfix
-    tags: whoot
 
 
   ##############################################
@@ -180,11 +188,12 @@
 
 
   ##############################################
+  # DKIM
 
   # NOte, that we are not generating restart events for all actions, so potentially need manual restart of dkim
-  # checking dns record, 
+  # checking dns record,
   #  dig google._domainkey.protodave.com TXT
-  #  dig mail._domainkey.julian1.io TXT 
+  #  dig mail._domainkey.julian1.io TXT
   # note that p really is in two parts,
 
   - apt: name=opendkim
@@ -275,14 +284,105 @@
   - file: path=/etc/opendkim/keys/julian1.io   state=directory owner=root group=opendkim
 
 
-  # generate keys 
+  # generate keys
   - command: opendkim-genkey -s mail -d julian1.io
     args:
       chdir:  /etc/opendkim/keys/julian1.io
       creates: mail.private
 
-  
-  - file: path=/etc/opendkim/keys/julian1.io/mail.private     owner=opendkim group=root
-    tags: whooter
 
+  - file: path=/etc/opendkim/keys/julian1.io/mail.private     owner=opendkim group=root
+
+
+
+  ##############################################
+  # DKIM
+
+  # https://www.skelleton.net/2015/03/21/how-to-eliminate-spam-and-protect-your-name-with-dmarc/#dmarc
+
+
+  # The DMARC record is a txt record for the host “_dmarc.example.com”.
+
+    # non-privileged user
+  - user: name=dmarc shell=/bin/bash
+
+  - apt: name=opendmarc
+
+  - copy:
+      dest: /etc/opendmarc.conf
+      content: |
+        # deployed by ansible!
+
+        AuthservID mail.julian1.io  # JA
+        PidFile /var/run/opendmarc.pid #Debian default
+        RejectFailures false
+        Syslog true
+
+        TrustedAuthservIDs mail.julian1.io   # JA
+        UMask 0002
+        UserID opendmarc:opendmarc
+        IgnoreHosts /etc/opendmarc/ignore.hosts
+        HistoryFile /var/run/opendmarc/opendmarc.dat
+        #for testing:
+        SoftwareHeader true
+
+
+  - file: path=/etc/opendmarc/ state=directory owner=root group=opendmarc
+
+  - copy:
+      dest: /etc/opendmarc/ignore.hosts
+      content: |
+        # deployed by ansible!
+
+        localhost
+
+
+  # seems like it isn't opening the socket port, 
+  # bug on debian stretch,
+  # bug affects dkim and stretch,
+  # https://unix.stackexchange.com/questions/351584/how-to-configure-the-socket-for-opendkim-on-debian-testing-stretch
+  # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=864162
+  - copy:
+      dest: /lib/systemd/system/opendmarc.service
+      content: |
+        # deployed by ansible!
+
+        [Unit]
+        Description=OpenDMARC Milter
+        Documentation=man:opendmarc(8) man:opendmarc.conf(5)
+        After=network.target nss-lookup.target 
+
+        [Service]
+        Type=forking
+        PIDFile=/var/run/opendmarc/opendmarc.pid
+        User=opendmarc
+        # JA ExecStart=/usr/sbin/opendmarc -p local:/var/run/opendmarc/opendmarc.sock  -u opendmarc -P /var/run/opendmarc/opendmarc.pid
+        # it already reads its environment from /etc/default/opendmarc...
+        ExecStart=/usr/sbin/opendmarc 
+        Restart=on-failure
+        ExecReload=/bin/kill -USR1 $MAINPID
+
+        [Install]
+        WantedBy=multi-user.target
+
+    notify: reconfigure-dmarc
+
+      # TODO after modifying file, need to run, systemctl daemon-reload
+
+
+  - copy:
+      dest: /etc/default/opendmarc
+      content: |
+        # deployed by ansible!
+
+        #DAEMON_OPTS=""
+        RUNDIR=/var/run/opendmarc
+        # JA
+        SOCKET="inet:54321@localhost"
+        USER=opendmarc
+        GROUP=opendmarc
+        PIDFILE=$RUNDIR/$NAME.pid
+        EXTRAAFTER=
+    notify: reconfigure-dmarc
+ 
 
