@@ -337,7 +337,7 @@
         localhost
 
 
-  # seems like it isn't opening the socket port, 
+  # seems like is overriding the socket environment variable 
   # bug on debian stretch,
   # bug affects dkim and stretch,
   # https://unix.stackexchange.com/questions/351584/how-to-configure-the-socket-for-opendkim-on-debian-testing-stretch
@@ -367,7 +367,7 @@
 
     notify: reconfigure-dmarc
 
-      # TODO after modifying file, need to run, systemctl daemon-reload
+      # TODO after modifying service file, need to run, systemctl daemon-reload
 
 
   - copy:

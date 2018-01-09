@@ -1,32 +1,189 @@
 
   # https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-ubuntu-16-04
 
+  # stretch
+  # https://linuxconfig.org/how-to-setup-a-vpn-with-openvpn-on-debian-9-stretch-linux
+
+  # TODO - service file - probabaly have an issue - forking from root to changing permissions.
+  # when user does't exist.
+
   - apt: name=openvpn
   - apt: name=easy-rsa
+
+  ##############################################
+  # Step 4: Build the Certificate Authority
 
   # initialize
   - command: make-cadir openvpn-ca
     args:
       chdir:  /root
       creates: openvpn-ca/vars
-    tags: whoot
 
 
   # https://unix.stackexchange.com/questions/92005/key-config-pointing-to-the-wrong-version-of-openssl-cnf
   # ln -s openssl-1.0.0.cnf openssl.cnf
   - file: src=/root/openvpn-ca/openssl-1.0.0.cnf dest=/root/openvpn-ca/openssl.cnf  state=link
-    tags: whoot
 
 
-  # can edit vars here, for proper CA
+  # can edit vars file here, for proper CA
+
+  # SHOULD edit, ~/openvpn-ca/vars
+
+  # export KEY_NAME="server"
+
 
   # generate the keys
+  # look at build-ca to see what it's doiing, and remove interactive prompting
   - command: "bash -c 'source vars && ./clean-all && ./pkitool --initca' "
     args:
       chdir:  /root/openvpn-ca
       creates: keys/ca.key
-    tags: whoot
+
+
+  ##############################################
+  # Step 5: Create the Server Certificate, Key, and Encryption Files
+
+  # missing 'index.txt.attr' is 'harmless',
+  # https://github.com/OpenVPN/easy-rsa/issues/138
+  - command: "bash -c 'source vars && ./pkitool  --server server' "
+    args:
+      chdir:  /root/openvpn-ca
+      creates: keys/server.key
+
+  # diffie hellman for key exchange
+  # NOte, takes a couple of minutes
+  # build-dh is not interactive
+  - command: "bash -c 'source vars  && ./build-dh' "
+    args:
+      chdir:  /root/openvpn-ca
+      creates: keys/dh2048.pem
+
+  # HMAC signature to strengthen the server's TLS integrity verification capabilities:
+  - command: "openvpn --genkey --secret keys/ta.key"
+    args:
+      chdir:  /root/openvpn-ca
+      creates:  keys/ta.key
+
+
+  ##############################################
+  # Step 6: Generate a Client Certificate and Key Pair
+
+  # for client keys - eg. not password protected
+  # see ./build-key
+  - command: "bash -c 'source vars && ./pkitool client1 ' "
+    args:
+      chdir:  /root/openvpn-ca
+      creates: keys/client1.key
 
 
 
 
+  ##############################################
+  # Step 7: Configure the OpenVPN Service
+
+  - command: "cp ca.crt server.crt server.key ta.key dh2048.pem /etc/openvpn "
+    args:
+      chdir:  /root/openvpn-ca/keys
+      creates: /etc/openvpn/ta.key
+
+
+
+  # server.conf modifies from example,
+  # gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz   > server.conf
+
+  # - template: src=log4j-overrides.j2  dest={{overrides}}/log4j-overrides.xml  owner=tomcat7 group=tomcat7
+  - template: src=server.conf.j2 dest=/etc/openvpn/server.conf
+    tags: whooter
+
+
+  ##############################################
+  # Step 8: Adjust the Server Networking Configuration
+
+  # ip forwarding
+  - lineinfile: >
+      dest=/etc/sysctl.conf
+      state=present
+      regexp='.*net.ipv4.ip_forward.*'
+      line='net.ipv4.ip_forward = 1'
+    notify: reload-sysctl
+    tags: whooter
+
+
+  # Warning, be careful of playbook failure, meaning that the handler doesn't get called
+  # and nothing works
+  - apt: name=iptables-persistent
+
+  - copy:
+      dest: /etc/iptables-rules
+      content: |
+        # deployed by ansible
+        iptables -t nat --flush
+
+
+        # does this makes sense, when there is another interface.
+        # checkk
+        iptables -t nat -A POSTROUTING -s '10.8.0.0/8' -o eth0 -j MASQUERADE
+
+    notify: reconfigure-iptables
+
+
+  # the service file lookk completely wrong,
+  #
+  # /usr/sbin/openvpn --cd /etc/openvpn --config /etc/openvpn/server.conf
+
+  # TODO start need to start both of these.
+  # systemctl start openvpn
+  # systemctl start openvpn@server
+
+  # TODO enable at startup
+
+  # check
+  # ip addr show tun0
+
+
+  ##############################################
+  #
+  # SO we need to assemble a bundle with the keys for the client to use.
+  # we'll do it in /etc/openvpn/clients
+
+  # TODO the client1 key generation might be moved here,
+
+
+  - file: path=/etc/openvpn/clients  state=directory
+
+  - template: src=client.conf.j2 dest=/etc/openvpn/clients/client.conf
+
+  - command: "tar cJf /etc/openvpn/clients/client1.tgz -C /root/openvpn-ca/keys/  ca.crt client1.crt client1.key ta.key -C /etc/openvpn/clients/ client.conf"
+    args:
+      creates: /etc/openvpn/clients/client1.tgz
+
+    tags: whooter
+
+  ##############################################
+  # TESTING THE CLIENT
+
+  # COPY back to localhost with,
+  # rsync root@vpn:/etc/openvpn/clients/client1.tgz .
+
+  # cd /etc/openvpn/
+  # ls
+  # tar xf /home/meteo/ansible-consolidated/client1.tgz
+
+  # start like this,, maybe two step
+  # systemctl start openvpn@client
+
+  # client only has to be started once
+  # less /var/log/syslog
+
+  # check server ports are open
+  #  nc -v -v vpn 443
+
+  # check
+  # ping 10.8.0.1
+  # so we can ping the vpn node. so we ought to be able to nat out from it.
+
+  # can ssh to server,
+  # ssh 10.8.0.1
+
+  # we just don't have forwarding - or some server
+  # check wget http://www.google.com
