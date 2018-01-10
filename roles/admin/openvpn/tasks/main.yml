@@ -88,10 +88,9 @@
 
 
 
-  # server.conf modifies from example,
+  # server.conf modified from example,
   # gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz   > server.conf
 
-  # - template: src=log4j-overrides.j2  dest={{overrides}}/log4j-overrides.xml  owner=tomcat7 group=tomcat7
   - template: src=server.conf.j2 dest=/etc/openvpn/server.conf
     tags: whooter
 
@@ -109,7 +108,7 @@
     tags: whooter
 
 
-  # Warning, be careful of playbook failure, meaning that the handler doesn't get called
+  # Warning, be careful of playbook errors, before meaning that the handler won't get called
   # and nothing works
   - apt: name=iptables-persistent
 
@@ -119,30 +118,30 @@
         # deployed by ansible
         iptables -t nat --flush
 
-
-        # does this makes sense, when there is another interface.
-        # checkk
         iptables -t nat -A POSTROUTING -s '10.8.0.0/8' -o eth0 -j MASQUERADE
 
     notify: reconfigure-iptables
 
 
-  # the service file lookk completely wrong,
-  #
+  # Notes,
+  # start manually
   # /usr/sbin/openvpn --cd /etc/openvpn --config /etc/openvpn/server.conf
 
-  # TODO start need to start both of these.
+  # start with systemd need both both of these.
   # systemctl start openvpn
   # systemctl start openvpn@server
 
-  # TODO enable at startup
+  # TODO enable at node startup
 
   # check
   # ip addr show tun0
 
 
+
   ##############################################
-  #
+  # CLIENT
+
+
   # SO we need to assemble a bundle with the keys for the client to use.
   # we'll do it in /etc/openvpn/clients
 
@@ -159,7 +158,11 @@
 
     tags: whooter
 
-  ##############################################
+
+  - apt: name=rsync
+
+
+  #######
   # TESTING THE CLIENT
 
   # COPY back to localhost with,
@@ -176,14 +179,27 @@
   # less /var/log/syslog
 
   # check server ports are open
-  #  nc -v -v vpn 443
+  # nc -v -v vpn 443
 
-  # check
+  # check server nat ok
+  # eg. iptables -L -t nat
+
+  # from client, check can ping the vpn node. 
   # ping 10.8.0.1
-  # so we can ping the vpn node. so we ought to be able to nat out from it.
 
-  # can ssh to server,
+  # check can ssh to server,
   # ssh 10.8.0.1
 
   # we just don't have forwarding - or some server
   # check wget http://www.google.com
+
+  # clean up client route table, to give access back to 192.168 network.
+
+  # need to edit /etc/resolv.conf to prevent dns leaking
+  
+  # delete, default on wlan
+  #   ip route del default via 192.168.43.1
+
+  # access to other lan ips - wired and wireless
+  # ip route add 192.168.0.0/16 via 192.168.43.1
+
