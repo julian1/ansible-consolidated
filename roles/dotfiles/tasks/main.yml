@@ -4,7 +4,7 @@
 # actually it's controlled by the home_dir var - its' ok.
 
 
-  - debug: msg="xmonad_user {{dotfile_path}}"  # "
+  # - debug: msg="xmonad_user {{dotfile_path}}"  # "
 
   - copy: src=bash_aliases    dest={{dotfile_path}}/.bash_aliases
 

@@ -8,17 +8,24 @@
 # see http://durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
 [alias]
 
-  # commit/staging
-  c = commit
-  cm = commit -m
-  cma = commit --amend -m
-
+  # add
   a = add
   au = add -u
+
+  # unstage specific file. just do reset instead.
+  us = reset HEAD -- 
 
   s = status -s
   f = fetch --all
   m = merge
+
+  # commit/staging
+  c = commit
+  cm = commit -m
+
+  # this doesn't seem to work
+  cma = commit --amend -m
+
 
   cp = cherry-pick
 
@@ -43,8 +50,7 @@
   b = branch
   bd = branch -D
 
-  # r can be remote, rebase, reset or rm, seem to use remote the most
-  # remote
+  # r could be aliased to reset, remote, rebase, or rm, seem to use remote the most
   r = remote
   rv = remote -v
 
@@ -79,7 +85,7 @@
   # unstage file - deleted only
   # reset can be used unstage ordinary staged files
   # eg. reset to unstaged
-  ru = rm --cached
+  # ru = rm --cached
 
   # undo last commit (or reset to last commit)
   u = checkout HEAD~1

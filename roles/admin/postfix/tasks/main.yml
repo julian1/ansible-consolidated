@@ -1,5 +1,29 @@
 
-  # needs the following DNS records - MX, A, SPF, PTR (via host)
+  # TODO move to node specific role
+
+  # needs the following DNS records - MX, A, SPF, PTR (via host), TXT (same as SPF)
+  # julian1.io
+  #   MX 10 mail.julian1.io - - 60
+  #   SPF "v=spf1 mx -all" - - 60
+  #   TXT "v=spf1 mx -all" - - 60
+
+  # _dmarc.julian1.io
+  #   TXT  "v=DMARC1; p=quarantine; rua=mailto:dmarc@julian1.io; ruf=mailto:dmarc@julian1.io; fo=0; adkim=r; aspf=r; pct=100; rf=afrf; ri=86400"
+  #
+  # mail._domainkey.julian1.io
+  #   TXT  "v=DKIM1; h=sha256; k=rsa; " "p=... " "..."
+  #
+  # mail
+  #   A n.n.n.n  - - 60
+  #
+  # (host provider)
+  #   PTR
+
+  # check with, https://www.mail-tester.com/
+
+  # TODO maybe move logging out of /var/log/syslog.
+
+  ##############################################
 
   - apt: name=postfix
 
@@ -9,6 +33,37 @@
       dest: /etc/postfix/main.cf
       content: |
         # deployed by ansible!
+
+        # JA
+        # set myhostname, in case the machine name isn't set to a fully-qualified domain name
+        myhostname = mail.julian1.io
+
+        # JA
+        # not sure if used, or convenience var
+        mydomain = julian1.io
+
+        # The myorigin parameter specifies the domain that appears in mail that is posted
+        # on this machine. The default is to use the local machine name, $myhostname,
+        # which defaults to the name of the machine. Unless you are running a really
+        # small site, you probably want to change that into $mydomain,
+        myorigin = julian1.io
+
+        # JA not used
+        alias_maps = hash:/etc/aliases
+        alias_database = hash:/etc/aliases
+
+        # JA
+        # The mydestination parameter specifies what domains this machine will deliver locally,
+        mydestination = $myhostname, $mydomain, localhost
+
+        relayhost =
+        # mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+        mynetworks = 127.0.0.0/8
+        mailbox_size_limit = 0
+        recipient_delimiter = +
+        inet_interfaces = all
+        inet_protocols = all
+
 
         # Debian specific:  Specifying a file name will cause the first
         # line of that file to be used as the name.  The Debian default
@@ -38,6 +93,8 @@
         smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
         smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
         smtpd_use_tls=yes
+
+        # JA TODO CHECK THIS - what is data_directory?
         smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
         smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 
@@ -52,29 +109,26 @@
            reject_unauth_destination
            check_policy_service unix:private/policy-spf
 
-        # JA...
-        # myhostname = debian-512mb-sgp1-01.localdomain
-        myhostname = debian-512mb-sgp1-01.localdomain
-        alias_maps = hash:/etc/aliases
-        alias_database = hash:/etc/aliases
-        myorigin = /etc/mailname
-        # JA
-        mydestination = $myhostname, julian1.io, debian-512mb-sgp1-01.localdomain, localhost.localdomain, localhost
-        relayhost =
-        mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
-        mailbox_size_limit = 0
-        recipient_delimiter = +
-        inet_interfaces = all
-        inet_protocols = all
 
         # JA SPF
         policy-spf_time_limit = 3600s
 
-    # think this restarts it
+        # JA DKIM
+        # https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-dkim-with-postfix-on-debian-wheezy
+        milter_protocol = 2
+        milter_default_action = accept
+
+        # DKIM and DMARC services
+        smtpd_milters = inet:localhost:12301,inet:localhost:54321
+        non_smtpd_milters = inet:localhost:12301,inet:localhost:54321
+
+
+
+    # restarts it
     notify: reconfigure-postfix
-    tags: whoot
 
 
+  ##############################################
 
   # SPF see
   #   https://help.ubuntu.com/community/Postfix/SPF
@@ -126,8 +180,209 @@
         policy-spf  unix  -       n       n       -       -       spawn
           user=nobody argv=/usr/bin/policyd-spf
 
-    # think this restarts it
+
+    # reconfigure and restart handler
     notify: reconfigure-postfix
     tags: whoot
 
+
+
+  ##############################################
+  # DKIM
+
+  # NOte, that we are not generating restart events for all actions, so potentially need manual restart of dkim
+  # checking dns record,
+  #  dig google._domainkey.protodave.com TXT
+  #  dig mail._domainkey.julian1.io TXT
+  # note that p really is in two parts,
+
+  - apt: name=opendkim
+  - apt: name=opendkim-tools   # for signing tool,
+
+
+  # https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-dkim-with-postfix-on-debian-wheezy
+  - copy:
+      dest: /etc/opendkim.conf
+      content: |
+        # deployed by ansible!
+
+        AutoRestart             Yes
+        AutoRestartRate         10/1h
+        UMask                   002
+        Syslog                  yes
+        SyslogSuccess           Yes
+        LogWhy                  Yes
+
+        Canonicalization        relaxed/simple
+
+        ExternalIgnoreList      refile:/etc/opendkim/TrustedHosts
+        InternalHosts           refile:/etc/opendkim/TrustedHosts
+        KeyTable                refile:/etc/opendkim/KeyTable
+        SigningTable            refile:/etc/opendkim/SigningTable
+
+        Mode                    sv
+        PidFile                 /var/run/opendkim/opendkim.pid
+        SignatureAlgorithm      rsa-sha256
+
+        UserID                  opendkim:opendkim
+
+        Socket                  inet:12301@localhost
+    # restarts it
+    notify: reconfigure-dkim
+    tags: whoot
+
+
+  - copy:
+      dest: /etc/default/opendkim
+      content: |
+        # deployed by ansible!
+
+        #DAEMON_OPTS=""
+        RUNDIR=/var/run/opendkim
+        # JA
+        SOCKET="inet:12301@localhost"
+        USER=opendkim
+        GROUP=opendkim
+        PIDFILE=$RUNDIR/$NAME.pid
+        EXTRAAFTER=
+
+    # restarts it
+    notify: reconfigure-dkim
+    tags: whoot
+
+
+  - file: path=/etc/opendkim        state=directory owner=root group=opendkim
+  - file: path=/etc/opendkim/keys   state=directory owner=root group=opendkim
+
+
+  - copy:
+      dest: /etc/opendkim/TrustedHosts
+      content: |
+        # deployed by ansible!
+
+        127.0.0.1
+        localhost
+        192.168.0.1/24
+
+        *.julian1.io
+
+  - copy:
+      dest: /etc/opendkim/KeyTable
+      content: |
+        # deployed by ansible!
+
+        mail._domainkey.julian1.io julian1.io:mail:/etc/opendkim/keys/julian1.io/mail.private
+
+  - copy:
+      dest: /etc/opendkim/SigningTable
+      content: |
+        # deployed by ansible!
+
+        *@julian1.io mail._domainkey.julian1.io
+
+
+  - file: path=/etc/opendkim/keys/julian1.io   state=directory owner=root group=opendkim
+
+
+  # generate keys
+  - command: opendkim-genkey -s mail -d julian1.io
+    args:
+      chdir:  /etc/opendkim/keys/julian1.io
+      creates: mail.private
+
+
+  - file: path=/etc/opendkim/keys/julian1.io/mail.private     owner=opendkim group=root
+
+
+
+  ##############################################
+  # DKIM
+
+  # https://www.skelleton.net/2015/03/21/how-to-eliminate-spam-and-protect-your-name-with-dmarc/#dmarc
+
+
+  # The DMARC record is a txt record for the host “_dmarc.example.com”.
+
+    # non-privileged user
+  - user: name=dmarc shell=/bin/bash
+
+  - apt: name=opendmarc
+
+  - copy:
+      dest: /etc/opendmarc.conf
+      content: |
+        # deployed by ansible!
+
+        AuthservID mail.julian1.io  # JA
+        PidFile /var/run/opendmarc.pid #Debian default
+        RejectFailures false
+        Syslog true
+
+        TrustedAuthservIDs mail.julian1.io   # JA
+        UMask 0002
+        UserID opendmarc:opendmarc
+        IgnoreHosts /etc/opendmarc/ignore.hosts
+        HistoryFile /var/run/opendmarc/opendmarc.dat
+        #for testing:
+        SoftwareHeader true
+
+
+  - file: path=/etc/opendmarc/ state=directory owner=root group=opendmarc
+
+  - copy:
+      dest: /etc/opendmarc/ignore.hosts
+      content: |
+        # deployed by ansible!
+
+        localhost
+
+
+  # seems like is overriding the socket environment variable 
+  # bug on debian stretch,
+  # bug affects dkim and stretch,
+  # https://unix.stackexchange.com/questions/351584/how-to-configure-the-socket-for-opendkim-on-debian-testing-stretch
+  # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=864162
+  - copy:
+      dest: /lib/systemd/system/opendmarc.service
+      content: |
+        # deployed by ansible!
+
+        [Unit]
+        Description=OpenDMARC Milter
+        Documentation=man:opendmarc(8) man:opendmarc.conf(5)
+        After=network.target nss-lookup.target 
+
+        [Service]
+        Type=forking
+        PIDFile=/var/run/opendmarc/opendmarc.pid
+        User=opendmarc
+        # JA ExecStart=/usr/sbin/opendmarc -p local:/var/run/opendmarc/opendmarc.sock  -u opendmarc -P /var/run/opendmarc/opendmarc.pid
+        # it already reads its environment from /etc/default/opendmarc...
+        ExecStart=/usr/sbin/opendmarc 
+        Restart=on-failure
+        ExecReload=/bin/kill -USR1 $MAINPID
+
+        [Install]
+        WantedBy=multi-user.target
+
+    notify: reconfigure-dmarc
+
+      # TODO after modifying service file, need to run, systemctl daemon-reload
+
+
+  - copy:
+      dest: /etc/default/opendmarc
+      content: |
+        # deployed by ansible!
+
+        #DAEMON_OPTS=""
+        RUNDIR=/var/run/opendmarc
+        # JA
+        SOCKET="inet:54321@localhost"
+        USER=opendmarc
+        GROUP=opendmarc
+        PIDFILE=$RUNDIR/$NAME.pid
+        EXTRAAFTER=
+    notify: reconfigure-dmarc
+ 
 

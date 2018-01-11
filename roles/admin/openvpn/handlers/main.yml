@@ -1,0 +1,13 @@
+
+  - name: reload-sysctl
+    command: /sbin/sysctl -p /etc/sysctl.conf
+
+
+  - name: reconfigure-iptables
+    command: "{{item}}"
+    with_items:
+      - sh /etc/iptables-rules
+      - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+
+

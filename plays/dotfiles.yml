@@ -1,8 +1,10 @@
 
   - hosts: all
-    vars:
-      - users:
-        - { name: meteo, home_dir: /home/meteo }
+
     roles:
-      - dotfiles
+      # - dotfiles
+      - name: dotfiles
+        tags: dotfiles
+        dotfile_path: /home/meteo
+
 

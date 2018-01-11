@@ -27,6 +27,7 @@
         dest: /etc/apt/sources.list
         content: |
           # deployed by ansible!
+          # see, https://wiki.debian.org/SourcesList  on stretch/updates v stretch-updates
 
           deb http://ftp.au.debian.org/debian/ stretch main contrib non-free
           deb-src http://ftp.au.debian.org/debian/ stretch main contrib non-free
@@ -96,6 +97,7 @@
 
     # command: bash -c "/usr/sbin/alsactl"
     # not sure if this should be with store or init
+    # think when run as shell it runs 'init' 
     - command: /usr/sbin/alsactl
       args:
         creates: /var/lib/alsa/asound.state
