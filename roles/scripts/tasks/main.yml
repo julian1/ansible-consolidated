@@ -21,6 +21,8 @@
           aws s3 cp ./me.tgz.enc "s3://$bucket/$target"
         fi
 
+  # TODO - change to use -pass file:~/.ssh/file 
+  # also passes in ./mozila, .ssh, `aws
  
   - copy:
       dest: /home/meteo/backup.sh
