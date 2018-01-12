@@ -1,0 +1,16 @@
+
+  # disable /etc/resolv.conf update on dhcpd
+  # http://unix.stackexchange.com/questions/174349/what-overwrites-etc-resolv-conf-on-every-boot
+
+  - copy:
+      dest: /etc/dhcp/dhclient-enter-hooks.d/nodnsupdate
+      mode: 0777
+      content: |
+        #!/bin/sh
+        # deployed by ansible!
+        make_resolv_conf() {
+            :
+        }
+
+
+

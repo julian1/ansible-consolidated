@@ -5,14 +5,12 @@
   vars:
   pre_tasks:
 
-    # permissions should be default, ie 0755
+    # devel user - permissions should be u+r, g+r ie default, ie 0755
     - user: >
         name=devel
         shell=/bin/bash
 
-
   roles:
-
     - name: dotfiles
       tags: dotfiles
       dotfile_path: /home/devel
@@ -22,9 +20,11 @@
       vim_user: devel
       tags: vim
 
+    - disable-resolve-conf
 
   tasks:
 
+    # make thumbdrive device writable for dd, by unpriviledged user
     - copy:
         dest: /lib/udev/rules.d/99-z.rules
         content: |
