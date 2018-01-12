@@ -65,16 +65,6 @@
       creates:  keys/ta.key
 
 
-  ##############################################
-  # Step 6: Generate a Client Certificate and Key Pair
-
-  # for client keys - eg. not password protected
-  # see ./build-key
-  - command: "bash -c 'source vars && ./pkitool client1 ' "
-    args:
-      chdir:  /root/openvpn-ca
-      creates: keys/client1.key
-
 
 
 
@@ -90,6 +80,9 @@
 
   # server.conf modified from example,
   # gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz   > server.conf
+
+  # To filter active config, use
+  # grep '^[^;#]' ./roles/admin/openvpn/templates/server.conf.j2
 
   - template: src=server.conf.j2 dest=/etc/openvpn/server.conf
     tags: whooter
@@ -123,6 +116,7 @@
     notify: reconfigure-iptables
 
 
+  # STARTING SERVER
   # Notes,
   # start manually
   # /usr/sbin/openvpn --cd /etc/openvpn --config /etc/openvpn/server.conf
@@ -147,6 +141,17 @@
 
   # TODO the client1 key generation might be moved here,
 
+  ##############################################
+  # Step 6: Generate a Client Certificate and Key Pair
+
+  # for client keys - eg. not password protected
+  # see ./build-key
+  - command: "bash -c 'source vars && ./pkitool client1 ' "
+    args:
+      chdir:  /root/openvpn-ca
+      creates: keys/client1.key
+
+
 
   - file: path=/etc/openvpn/clients  state=directory
 
@@ -163,28 +168,52 @@
 
 
   #######
-  # TESTING THE CLIENT
+  # CLIENT SETUP
 
   # COPY back to localhost with,
   # rsync root@vpn:/etc/openvpn/clients/client1.tgz .
 
   # cd /etc/openvpn/
-  # ls
-  # tar xf /home/meteo/ansible-consolidated/client1.tgz
+  # rm * -rf
+  # tar xf /home/meteo/client1.tgz
+  # maybe edit client.conf to set the remote server ip
 
-  # start like this,, maybe two step
+  # maybe add route, to remote openvpn server
+  # ip route add  n.n.n.n/32 via 192.168.43.1
+
+  # start is two step
+  # systemctl start openvpn
   # systemctl start openvpn@client
 
-  # client only has to be started once
+  # maybe add defualt gateway if scripts don't generate
+  # ip route add default via 10.8.0.5
+
+  # clean up client route table, to give access back to 192.168 network.
+
+  # edit /etc/resolv.conf to prevent dns leaking
+
+  # delete, any default route for wlan
+  #   ip route del default via 192.168.43.1
+
+  # maybe add routes to other lan ips - wired and wireless
+  # ip route add 192.168.0.0/16 via 192.168.43.1
+
+
+  # TROUBLE SHOOTING
+  #
+  # check logs
   # less /var/log/syslog
 
   # check server ports are open
   # nc -v -v vpn 443
 
+  # check server foreward
+  # sysctl net.ipv4.ip_forward
+
   # check server nat ok
   # eg. iptables -L -t nat
 
-  # from client, check can ping the vpn node. 
+  # from client, check can ping the vpn node.
   # ping 10.8.0.1
 
   # check can ssh to server,
@@ -193,13 +222,4 @@
   # we just don't have forwarding - or some server
   # check wget http://www.google.com
 
-  # clean up client route table, to give access back to 192.168 network.
-
-  # need to edit /etc/resolv.conf to prevent dns leaking
-  
-  # delete, default on wlan
-  #   ip route del default via 192.168.43.1
-
-  # access to other lan ips - wired and wireless
-  # ip route add 192.168.0.0/16 via 192.168.43.1
 
