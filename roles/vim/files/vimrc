@@ -30,10 +30,6 @@ set report=0
 :noremap <C-J> 4j
 
 
-" enable syntax highlyging
-syntax enable
-"set background=light
-
 " shortcut to fix all trailing space
 :nmap <C-X> :%s/\s\+$//<CR>
 
@@ -139,13 +135,20 @@ set undodir=~/.vim/undo//
 
 
      
-
+" idris specific?
 let hs_highlight_delimiters = 1
 let hs_highlight_boolean = 1
 let hs_highlight_types = 1
 let hs_highlight_more_types = 1
 let hs_highlight_debug = 1
 let hs_allow_hash_operator = 1
+
+
+
+" enable syntax highlyging
+syntax enable
+" set background=light
+color koehler
 
 
 " http://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work
