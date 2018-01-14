@@ -128,7 +128,11 @@
         # deployed by ansible
         iptables -t nat --flush
 
+        # do gateway nat for clients,
         iptables -t nat -A POSTROUTING -s '10.8.0.0/8' -o eth0 -j MASQUERADE
+
+        # nat example for port forwarding to a client
+        # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 5222  -j DNAT --to 192.168.43.6
 
     notify: reconfigure-iptables
 
