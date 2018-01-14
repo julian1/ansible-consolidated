@@ -159,6 +159,11 @@ ifconfig-pool-persist ipp.txt
 # First, uncomment out these lines:
 ;client-config-dir ccd
 ;route 192.168.40.128 255.255.255.248
+
+# JA
+client-config-dir ccd
+route 192.168.0.0 255.255.0.0
+
 # Then create a file ccd/Thelonious with this line:
 #   iroute 192.168.40.128 255.255.255.248
 # This will allow Thelonious' private subnet to

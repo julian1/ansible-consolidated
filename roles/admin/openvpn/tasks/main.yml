@@ -88,6 +88,23 @@
     tags: whooter
 
 
+  # CCD client configuration directory
+  - file: path=/etc/openvpn/ccd state=directory
+    tags: whooter
+
+  # allow network 192.168.0.0/16 to be visible
+  - copy:
+      dest: /etc/openvpn/ccd/client1
+      content: |
+        # deployed by ansible
+
+        iroute 192.168.0.0 255.255.0.0
+
+    tags: whooter
+
+
+
+
   ##############################################
   # Step 8: Adjust the Server Networking Configuration
 
@@ -171,7 +188,7 @@
   # CLIENT SETUP
 
   # COPY back to localhost with,
-  # rsync root@vpn:/etc/openvpn/clients/client1.tgz .
+  # Rsync root@vpn:/etc/openvpn/clients/client1.tgz .
 
   # cd /etc/openvpn/
   # rm * -rf
@@ -185,7 +202,7 @@
   # systemctl start openvpn
   # systemctl start openvpn@client
 
-  # maybe add defualt gateway if scripts don't generate
+  # client maybe add defualt gateway if scripts don't generate
   # ip route add default via 10.8.0.5
 
   # clean up client route table, to give access back to 192.168 network.
