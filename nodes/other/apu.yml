@@ -1,5 +1,5 @@
 
-# TODO 
+# TODO
 # - split out the dhcp/bind/iptables stuff from the low-level and os related stuff...
 #     actually could be made a node-specific role.
 # - also want to name  eth0 to eth0, wlan0 to wlan0 etc, need to check works with vlans.
@@ -15,7 +15,7 @@
 
 # after poweroff poweroff
 # (on a restart with the switches up - this was ok)
-# 1)  dhclient on 120   
+# 1)  dhclient on 120
 
 # 2) after powerdown system hostapd had to be restarted manually, by
 #   # /sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0
@@ -26,9 +26,9 @@
 # wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, xmodem serial for switch
 
   # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
-- hosts: 
+- hosts:
     - 192.168.100.1
-    # - 172.16.0.1 
+    # - 172.16.0.1
   vars_files:
     - ../../credentials.yml
   vars:
@@ -38,11 +38,55 @@
     - user: name=root shell=/bin/bash
     - authorized_key: user=root key="{{meteo_pubkey}}"
 
-    # non-privileged user
+    # meteo unprivileged user
     - user: name=meteo shell=/bin/bash password={{meteo_password}} groups=sudo
     - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
 
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
+
+
+    # apt
+    - copy:
+        dest: /etc/apt/sources.list
+        content: |
+          # deployed by ansible!
+
+          deb http://ftp.au.debian.org/debian/ stretch main contrib non-free
+          deb-src http://ftp.au.debian.org/debian/ stretch main contrib non-free
+
+          deb http://security.debian.org/debian-security stretch/updates main contrib non-free
+          deb-src http://security.debian.org/debian-security stretch/updates main contrib non-free
+
+          # stretch-updates, previously known as 'volatile'
+          deb http://ftp.au.debian.org/debian/ stretch-updates main contrib non-free
+          deb-src http://ftp.au.debian.org/debian/ stretch-updates main contrib non-free
+
+      tags: whoot
+
+
+    # syslinux is conventional except net.ifnames to prevent nic renaming, and serial speed.
+    - copy:
+        dest: /boot/syslinux/syslinux.cfg
+        content: |
+          # deployed by ansible!
+
+          CONSOLE 0
+          SERIAL 0 115200 0
+          DEFAULT linux-4.9.0-5
+          PROMPT 0
+          LABEL linux-4.9.0-5
+            SAY Now booting the kernel from SYSLINUX...
+            KERNEL /boot/vmlinuz-4.9.0-5-amd64
+            APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-5-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
+
+          LABEL linux-4.9.0-3
+            SAY Now booting the kernel from SYSLINUX...
+            KERNEL /boot/vmlinuz-4.9.0-3-amd64
+            APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-3-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
+      tags: whoot
+
+
+
 
   roles:
     # don't manage apt sources.list
@@ -55,7 +99,7 @@
     - hostname: name=apu
 
     - apt: name=less
-    - apt: name=net-tools            # ifconfig
+    - apt: name=net-tools       # ifconfig
 
     - apt: name=ntp             # network time
     - apt: name=tcpdump
@@ -91,22 +135,8 @@
 
     - apt: name=hostapd
 
+    # when do kernel update must manually update syslinux.cfg
 
-    # syslinux is conventional except net.ifnames etc, and serial.
-    - copy:
-        # DISABLED...
-        # dest: /boot/syslinux/syslinux.cfg 
-        dest: /root/syslinux.cfg 
-        content: |
-          CONSOLE 0
-          SERIAL 0 115200 0
-          DEFAULT linux
-          PROMPT 0
-          LABEL linux
-            SAY Now booting the kernel from SYSLINUX...
-            KERNEL /boot/vmlinuz-4.9.0-3-amd64
-            APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-3-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
-           
 
     # hostapd.conf goes first since referred to by /etc/network/interfaces
     # AP primary
@@ -197,7 +227,7 @@
 
           # router management
           # TODO do we need allow-hotplug?
-         
+
           # AP primary
           auto wlan0
           allow-hotplug wlan0
@@ -241,11 +271,11 @@
         content: |
           # deployed by ansible!
           Port 22
-         
+
           # ListenAddress 0.0.0.0
           # listens on both eth1 and lan 100
           ListenAddress 192.168.100.1
-          ListenAddress 172.16.0.1 
+          ListenAddress 172.16.0.1
 
           Protocol 2
           HostKey /etc/ssh/ssh_host_rsa_key
@@ -373,7 +403,7 @@
           # eth1 configuration
           iptables -A INPUT  -i eth1 -p tcp --dport 22 -s 172.16.0.0/12 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o eth1 -p tcp --sport 22 -d 172.16.0.0/12 -m conntrack --ctstate ESTABLISHED -j ACCEPT
- 
+
 
           # TODO conntrack
           # dns
@@ -414,7 +444,7 @@
           # iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
           # iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
           # leave ssh open etc.
-          
+
           # iptables -A FORWARD -p tcp -s 192.168.201.16 --dport 80 -j DROP
           # iptables -A FORWARD -p tcp -d 192.168.201.16 --sport 80 -j DROP
 
@@ -654,7 +684,8 @@
           ; netflix.com       A       127.0.0.1
           ; www.netflix.com   A       127.0.0.1
 
-          test.com A 127.0.0.1
+          ; this stuff doesn't work when using an external ns.
+          test.com  A     127.0.0.1
 
       notify: restart-bind
       tags: bind
@@ -756,7 +787,7 @@
           default-lease-time 3600;  # one hour
           max-lease-time 7200;
 
-          # requires corresponding entry in /etc/rsyslog.conf 
+          # requires corresponding entry in /etc/rsyslog.conf
           log-facility local7;
 
           # Set up our desired subnet:
