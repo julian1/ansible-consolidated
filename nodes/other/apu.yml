@@ -64,6 +64,7 @@
       tags: whoot
 
 
+    # must do explicit kernel upgrade. also must manually update syslinux.cfg with new boot label
     # syslinux is conventional except net.ifnames to prevent nic renaming, and serial speed.
     - copy:
         dest: /boot/syslinux/syslinux.cfg
@@ -135,7 +136,6 @@
 
     - apt: name=hostapd
 
-    # when do kernel update must manually update syslinux.cfg
 
 
     # hostapd.conf goes first since referred to by /etc/network/interfaces
