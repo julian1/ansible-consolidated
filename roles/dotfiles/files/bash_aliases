@@ -76,6 +76,11 @@ alias l=less
 alias p=ping
 alias s=sudo
 
+# format in columns really useful for output of 'ip route'
+ct() {
+    column -t $1
+}
+
 # sc conflicts with
 # alias sc=screen
 # https://serverfault.com/questions/116775/sudo-as-different-user-and-running-screen
