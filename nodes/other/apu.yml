@@ -727,6 +727,7 @@
           snom          IN A 192.168.201.20
           pi1           IN A 192.168.201.27
           cisco3        IN A 192.168.201.28
+          apu2          IN A 192.168.201.29
 
           ; wireless  wlan0
           dell-5520     IN A 192.168.43.6
@@ -809,9 +810,9 @@
               host nuc          { hardware ethernet b8:ae:ed:7b:b5:b9; fixed-address 192.168.201.17; }
               host dell-home-wired { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
               host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.201.20; }
-              host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
-
               host pi1          { hardware ethernet 00:9e:9e:9a:39:6e; fixed-address 192.168.201.27; }
+              host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
+              host apu2         { hardware ethernet 00:0d:b9:46:3e:b0; fixed-address 192.168.201.29; }
           }
 
           subnet 192.168.43.0 netmask 255.255.255.0 {
