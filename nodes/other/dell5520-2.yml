@@ -39,7 +39,7 @@
 
 # firefox-esr - no. use nightly - with script
 # sshfs
-# pulseaudio
+# pulseaudio  # for firefox
 
 # lm-sensors
 # a2ps
@@ -48,3 +48,4 @@
 #  - apt: name=dnsutils        # dig
 #  - apt: name=whois 
 # youtube-dl
+# less

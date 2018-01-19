@@ -1,0 +1,14 @@
+
+- hosts: all
+  vars_files:
+    - ../../credentials.yml
+  vars:
+
+  roles:
+    #- crypto/monero
+    - name: crypto/monero
+      #xmonad_user: meteo
+
+  tasks:
+  
+    

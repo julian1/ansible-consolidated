@@ -1,0 +1,154 @@
+
+# it's physical hardware - so we want a root password. but that means we don't want ssh.
+# deploy to user/account monero
+
+  - user: name=monero shell=/bin/bash
+
+  - authorized_key: user=monero key="{{meteo_pubkey}}"
+
+  - file: path=/home/monero mode=0700 state=directory
+
+  - apt: name=sudo                  # for ansible for become_user
+  - apt: name=ca-certificates       # for https
+  - apt: name=rlwrap
+  - apt: name=screen
+  - apt: name=net-tools             # netstat
+  - apt: name=openvpn
+  - apt: name=name=dnsutils         # dig
+
+
+  # for arm...
+  # https://downloads.getmonero.org/cli/linuxarm7
+
+  # Current Version: 0.11.1.0 Helium Hydra
+  # verify hash at, https://github.com/monero-project/monero/releases
+  - get_url:
+      url: https://downloads.getmonero.org/cli/linux64
+      dest: "./linux64"
+      checksum: sha256:6581506f8a030d8d50b38744ba7144f2765c9028d18d990beb316e13655ab248
+    become: yes
+    become_user: monero
+    tags: monero
+
+  - unarchive: src=./linux64 dest=/home/monero copy=no
+    become: yes
+    become_user: monero
+    tags: monero
+
+
+  - copy:
+      dest: /home/monero/start-monerod.sh
+      mode: 0700
+      owner: monero
+      group: monero
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        PATH="$HOME/monero-v0.11.1.0:$PATH"
+
+        # 0.0.0.0 is only to allow remote client access...
+        # monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind --restricted-rpc
+        monerod --data-dir data
+    tags: whoot
+
+  - copy:
+      dest: /home/monero/start-monero-cli.sh
+      mode: 0700
+      owner: monero
+      group: monero
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        PATH="$HOME/monero-v0.11.1.0:$PATH"
+
+        # monero-wallet-cli --daemon-address m-test:18081
+        monero-wallet-cli
+    tags: whoot
+
+
+# - hosts: all
+#   vars_files:
+#    - ../../vars/credentials.yml
+#  vars:
+#
+#  tasks:
+
+
+#  pre_tasks:
+#    # - user: name=meteo shell=/bin/bash groups=sudo
+#    # - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
+#
+#
+#  roles:
+#    - admin/devenv-lite
+
+
+#    # TODO blockinfile instead??? otherwise overwrites this
+#    - copy:
+#        owner: monero
+#        mode: 400
+#        dest: /home/monero/.bash_aliases
+#        content: |
+#          # deployed by ansible!
+#
+#          PATH="$HOME/monero-v0.11.0.0:$PATH"
+#          export PATH
+#      tags: path
+
+
+#    - file: path=/home/monero/scripts state=directory mode=777
+#      tags: path
+
+#    - copy:
+#        dest: /home/monero/scripts/monero-tunnel.sh
+#        mode: 0700
+#        owner: monero
+#        group: monero
+#        content: |
+#          #!/bin/bash -x
+#          # deployed by ansible!
+#
+#          ssh -N -L :18081:localhost:18081 m-test
+#      tags: path
+
+
+    # no do it with unpriviledged meteo account
+    # ssh tunnel, requires private keys on the node that creates the tunnel
+
+#    - apt: name=iptables-persistent
+#      tags: iptables
+#
+#    - set_fact: rpc_port=18081
+#      tags: iptables
+#
+#    - copy:
+#        dest: /etc/iptables-rules
+#        content: |
+#          # deployed by ansible!
+#
+#          iptables -t filter --flush
+#
+#          iptables -A INPUT  -p tcp --dport {{rpc_port}} -s 127.0.0.1 -j ACCEPT
+#          iptables -A OUTPUT -p tcp --sport {{rpc_port}} -d 127.0.0.1 -j ACCEPT
+#
+#          iptables -A INPUT  -p tcp --dport {{rpc_port}} -s 203.214.90.101 -j ACCEPT
+#          iptables -A OUTPUT -p tcp --sport {{rpc_port}} -d 203.214.90.101 -j ACCEPT
+#
+#          iptables -A INPUT  -p tcp --dport {{rpc_port}} -j DROP
+#          iptables -A OUTPUT -p tcp --sport {{rpc_port}} -j DROP
+#      notify: reconfigure-iptables
+#      tags: iptables
+
+
+#  handlers:
+#    - name: reconfigure-iptables
+#      command: "{{item}}"
+#      with_items:
+#        - sh /etc/iptables-rules
+#        - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+
+
+

@@ -5,62 +5,78 @@
       content: |
         # deployed by ansible!
 
+  # grep '^[^#]'  /etc/ssh/sshd_config > out
   - copy:
       backup: yes
       dest: /etc/ssh/sshd_config
       content: |
         # deployed by ansible!
-        Port 22
-        ListenAddress 0.0.0.0
+        # defaults for stretch
 
-        Protocol 2
-        HostKey /etc/ssh/ssh_host_rsa_key
-        UsePrivilegeSeparation yes
-
-        KeyRegenerationInterval 3600
-        ServerKeyBits 1024
-
-        SyslogFacility AUTH
-        LogLevel INFO
-
-        LoginGraceTime 30
-        # JA neeed password for initial provisioning...
-        # PermitRootLogin yes
-        PermitRootLogin without-password
-        StrictModes yes
-
-        RSAAuthentication yes
-        PubkeyAuthentication yes
-
-        IgnoreRhosts yes
-        RhostsRSAAuthentication no
-        HostbasedAuthentication no
-
-        PermitEmptyPasswords no
         ChallengeResponseAuthentication no
-
-        # JA the important bit - only allow keys
-        PasswordAuthentication no
-
-        # X11Forwarding yes
-        # X11DisplayOffset 10
-        PrintMotd no
-        PrintLastLog yes
-        TCPKeepAlive yes
-
-        # banner is before login, motd is after
-        # JA changed
-        PrintMotd yes
-        # Banner /etc/issue.net
-
-        AcceptEnv LANG LC_*
-
-        # used by ansible for uploading
-        Subsystem sftp /usr/lib/openssh/sftp-server
-
         UsePAM yes
+        X11Forwarding yes
+        # JA If this option is set to “without-password”, password authentication is disabled for root, but ssh ok.
+        PermitRootLogin without-password
+        # JA disable password authentication
+        PasswordAuthentication no
+        PrintMotd no
+        AcceptEnv LANG LC_*
+        Subsystem       sftp    /usr/lib/openssh/sftp-server
 
     notify: restart-sshd
 
+
+#
+#        Port 22
+#        ListenAddress 0.0.0.0
+#
+#        Protocol 2
+#        HostKey /etc/ssh/ssh_host_rsa_key
+#        UsePrivilegeSeparation yes
+#
+#        KeyRegenerationInterval 3600
+#        ServerKeyBits 1024
+#
+#        SyslogFacility AUTH
+#        LogLevel INFO
+#
+#        LoginGraceTime 30
+#        # JA neeed password for initial provisioning...
+#        # PermitRootLogin yes
+#        PermitRootLogin without-password
+#        StrictModes yes
+#
+#        RSAAuthentication yes
+#        PubkeyAuthentication yes
+#
+#        IgnoreRhosts yes
+#        RhostsRSAAuthentication no
+#        HostbasedAuthentication no
+#
+#        PermitEmptyPasswords no
+#        ChallengeResponseAuthentication no
+#
+#        # JA the important bit - only allow keys
+#        PasswordAuthentication no
+#
+#        # X11Forwarding yes
+#        # X11DisplayOffset 10
+#        PrintMotd no
+#        PrintLastLog yes
+#        TCPKeepAlive yes
+#
+#        # banner is before login, motd is after
+#        # JA changed
+#        PrintMotd yes
+#        # Banner /etc/issue.net
+#
+#        AcceptEnv LANG LC_*
+#
+#        # used by ansible for uploading
+#        Subsystem sftp /usr/lib/openssh/sftp-server
+#
+#        UsePAM yes
+#
 
 

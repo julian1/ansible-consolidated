@@ -22,6 +22,10 @@ alias top='top -d 1'
 # alias tmp='export T=$(mktemp -d); pushd $T'
 
 # alias hs="history" # conflict with h=home
+# wget http://www.ip-adress.eu/ -O - | grep My
+# curl 'https://api.ipify.org/?format=json'
+# curl https://ident.me
+# 
 alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 
 # alias pg="ping 8.8.8.8 -c 4"

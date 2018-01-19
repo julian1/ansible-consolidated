@@ -1,0 +1,6 @@
+
+  - hosts: all
+    roles:
+      - roles/admin/devenv-lite
+
+
