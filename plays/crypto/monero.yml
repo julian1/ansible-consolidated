@@ -5,6 +5,7 @@
   vars:
 
   roles:
+    - name: admin/nodnsupdate
     #- crypto/monero
     - name: crypto/monero
       #xmonad_user: meteo
