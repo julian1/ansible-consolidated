@@ -129,6 +129,7 @@
 
         # nat example for port forwarding to a client
         # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 5222  -j DNAT --to 192.168.43.6
+        # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 192.168.201.29
 
     notify: reconfigure-iptables
 

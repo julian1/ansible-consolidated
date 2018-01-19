@@ -9,8 +9,8 @@
   - file: path=/home/monero mode=0700 state=directory
 
   - apt: name=sudo                  # for ansible for become_user
-  - apt: name=ca-certificates       # for https
-  - apt: name=rlwrap
+  - apt: name=ca-certificates       # for https to download binary
+  - apt: name=rlwrap                # for client history
   - apt: name=screen
   - apt: name=net-tools             # netstat
   - apt: name=openvpn
