@@ -27,6 +27,7 @@
       # there is v1.7.0,but looks bloated
     become: yes
     become_user: "{{user}}"
+    tags: checkout
 
 
 #  - file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
