@@ -138,22 +138,17 @@
   # Notes,
   # start manually
   # /usr/sbin/openvpn --cd /etc/openvpn --config /etc/openvpn/server.conf
+  # check
+  # ip addr show tun0
 
-  # start with systemd need both both of these.
-  # systemctl start openvpn
-  # systemctl start openvpn@server
 
-  # TODO enable at node startup
-
+  # start and enable
 
   - service: name=openvpn state=restarted enabled=yes
     tags: whooter
 
   - service: name=openvpn@server state=restarted enabled=yes
     tags: whooter
-
-  # check
-  # ip addr show tun0
 
 
 
@@ -177,7 +172,6 @@
       creates: keys/client1.key
 
 
-
   - file: path=/etc/openvpn/clients  state=directory
 
   - template: src=client.conf.j2 dest=/etc/openvpn/clients/client.conf
@@ -187,7 +181,7 @@
       creates: /etc/openvpn/clients/client1.tgz
 
 
-
+  # to support copying back to client
   - apt: name=rsync
 
 

@@ -47,8 +47,9 @@
 
         PATH="$HOME/monero-v0.11.1.0:$PATH"
 
-        # 0.0.0.0 is only to allow remote client access...
-        # monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind --restricted-rpc
+        # default is 127.0.0.1
+        # monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind --restricted-rpc --data-dir data
+        # monerod --rpc-bind-ip 192.168.201.29 --confirm-external-bind --restricted-rpc --data-dir data
         monerod --data-dir data
     tags: whoot
 
