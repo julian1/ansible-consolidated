@@ -3,9 +3,17 @@
 # important
 
 - hosts: all
+  vars_files:
+    - ../../credentials.yml
+
   pre_tasks:
+
     - user: name=parity shell=/bin/bash
-    - file: path=/home/parity mode=0700 owner=parity group=parity state=directory
+
+    - authorized_key: user=parity key="{{meteo_pubkey}}"
+
+    - file: path=/home/parity mode=0700 state=directory
+
 
   roles:
     - name: misc/rust
@@ -21,7 +29,7 @@
 
   tasks:
     - copy:
-        dest: /home/parity/.bash_aliases
+        dest: /home/parity/vars.inc
         content: |
           # deployed by ansible!
 

@@ -1,4 +1,7 @@
 
+  # see parity play for rust and node etc.
+  # note, this differs from monero where everything is in the role, 
+
   # rust and node and handle in other roles
 
   # needs to be root for all this stuff,
@@ -17,13 +20,13 @@
       accept_hostkey=yes
       force=yes
       recursive=no
-      version=v1.7.6
+      version=v1.7.12
+      # version=v1.7.6
       # version=v1.6.10
       # version=v1.6.8
       # there is v1.7.0,but looks bloated
     become: yes
     become_user: "{{user}}"
-
 
 
 #  - file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes

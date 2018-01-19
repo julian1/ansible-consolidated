@@ -27,12 +27,12 @@
 
 
   # install version 1.18.0 and switch to it
-  - name: install rust version 1.18.0
+  # parity v1.7.6 needed 1.18.0
+  - name: install rust version 1.21.0
     become: yes
     become_user: "{{user}}"
     shell: >
-      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install 1.18.0 && rustup default 1.18.0
-    tags: rust_version
+      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install 1.21.0 && rustup default 1.21.0
 
 
  # not idempotent. needs shell, because command handle env vars
