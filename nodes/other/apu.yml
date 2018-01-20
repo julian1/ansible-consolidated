@@ -792,6 +792,7 @@
           log-facility local7;
 
           # https://gauvain.pocentek.net/docs/dhcpd-push-routes/
+          # https://ercpe.de/blog/pushing-static-routes-with-isc-dhcp-server
           # defines the type of data used to send the routing informations
           option classless-routes code 121 = array of unsigned integer 8;
 
@@ -809,7 +810,7 @@
               option domain-name-servers 192.168.201.1;
 
 
-              # defines 2 gateways for 2 subnets:
+              # gateways for subnets when default route is openvpn
               option classless-routes 16, 192,168,    192,168,201,1,
                                       24, 10,4,0,     192,168,201,1;
 
@@ -836,7 +837,7 @@
               option routers 192.168.43.1;
               option domain-name-servers 192.168.43.1;
 
-              # defines 2 gateways for 2 subnets:
+              # gateways for subnets when default route is openvpn
               option classless-routes 16, 192,168,    192,168,43,1,
                                       24, 10,4,0,     192,168,43,1;
 
