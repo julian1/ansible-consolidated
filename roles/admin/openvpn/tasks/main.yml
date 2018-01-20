@@ -10,6 +10,15 @@
   - apt: name=openvpn
   - apt: name=easy-rsa
 
+  # allow client to rsync client config
+  - apt: name=rsync
+  # to monitor connections
+  - apt: name=netstat-nat
+
+  - apt: name=iptables-persistent
+  - apt: name=netcat-traditional
+
+
   ##############################################
   # Step 4: Build the Certificate Authority
 
@@ -116,7 +125,6 @@
 
   # Warning, be careful of playbook errors, before meaning that the handler won't get called
   # and nothing works
-  - apt: name=iptables-persistent
 
   - copy:
       dest: /etc/iptables-rules
@@ -124,14 +132,18 @@
         # deployed by ansible
         iptables -t nat --flush
 
-        # do gateway nat for clients,
+        # do gateway nat for openvpn clients,
         iptables -t nat -A POSTROUTING -s '10.8.0.0/8' -o eth0 -j MASQUERADE
 
-        # nat example for port forwarding to a client
+        # port forwards to a client
         # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 5222  -j DNAT --to 192.168.43.6
-        # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 192.168.201.29
+
+        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 10.8.0.6
+        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 30303 -j DNAT --to 10.8.0.6
+
 
     notify: reconfigure-iptables
+    tags: iptables
 
 
   # STARTING SERVER
@@ -181,9 +193,6 @@
       creates: /etc/openvpn/clients/client1.tgz
 
 
-  # to support copying back to client
-  - apt: name=rsync
-
 
   #######
   # CLIENT SETUP
@@ -196,45 +205,37 @@
   # tar xf /home/meteo/client1.tgz
   # maybe edit client.conf to set the remote server ip
 
-  # maybe add route, to remote openvpn server
-  # ip route add  n.n.n.n/32 via 192.168.43.1
 
-  # start is two step
+  # start is two-step
   # systemctl start openvpn
   # systemctl start openvpn@client
 
-  # client maybe add defualt gateway if scripts don't generate
-  # ip route add default via 10.8.0.5
-
-  # clean up client route table, to give access back to 192.168 network.
 
   # edit /etc/resolv.conf to prevent dns leaking
 
-  # must delete the pre-existing default route.
+  # openvpn pushes specific default route 10.0.0.0/1 and 128.0.0.0/1 to take precedence
+  # must still have ordinary default root, which is used to work out conn to openvpn server
 
-  # delete, any default route for wlan
-  #   ip route del default via 192.168.43.1
+  # we need ordinary dhcp to push a default route for localnet
+  # ip route add 192.168.0.0/16 via 192.168.201.1
 
-  # maybe add routes to other lan ips - wired and wireless
-  # ip route add 192.168.0.0/16 via 192.168.43.1
-
-  # actually only need for 43 network
-  # ip route add 192.168.43.0/24   via  192.168.201.1  
-  
 
 
   # TROUBLE SHOOTING
-  #
-  # check logs
+
+  # check client
+  # wget http://www.google.com
+
+  # check server logs, then client
   # less /var/log/syslog
 
-  # check server ports are open
+  # check server connectivity and open ports
   # nc -v -v vpn 443
 
   # check server foreward
   # sysctl net.ipv4.ip_forward
 
-  # check server nat ok
+  # check server nat
   # eg. iptables -L -t nat
 
   # from client, check can ping the vpn node.
@@ -242,8 +243,5 @@
 
   # check can ssh to server,
   # ssh 10.8.0.1
-
-  # we just don't have forwarding - or some server
-  # check wget http://www.google.com
 
 
