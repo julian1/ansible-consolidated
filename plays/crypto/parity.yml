@@ -1,6 +1,7 @@
 
-# see nodes/crypto/parity-test instead...
-# important
+# solidity should be a different play.
+# as should node...
+
 
 - hosts: all
   vars_files:
@@ -23,6 +24,7 @@
       build_dir: /home/parity/parity
       user: parity
 
+    # do not install web3 and all dependencies under same user/group
     # see web3 play
     # - devel/node
     # - crypto/web3
@@ -40,4 +42,38 @@
 
           export PATH
       tags: path
+
+    - copy:
+        dest: /home/parity/start-parity.sh
+        owner: parity
+        group: parity
+        mode: 0700
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+
+          PATH="$HOME/parity/target/release:$PATH"
+
+          # parity -d data --min-peers 8 --max-peers 12 --no-color --pruning fast --pruning-history 16
+          parity -d data --no-ui --no-dapps --min-peers 8 --max-peers 12 --no-color --pruning fast
+      tags: path
+
+    # may need port forward for port 30303
+
+    # useful to avoid installing, or when we don't have node
+    - copy:
+        dest: /home/parity/blocknumber.sh
+        owner: parity
+        group: parity
+        mode: 0700
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[ ],"id":1}' \
+            http://127.0.0.1:8545
+      tags: path
+
 
