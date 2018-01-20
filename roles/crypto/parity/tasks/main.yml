@@ -8,6 +8,7 @@
   # gcc, g++, libssl-dev/openssl, libudev-dev and pkg-config
   - apt: name=gcc
   - apt: name=g++
+  - apt: name=make
   - apt: name=libssl-dev
   - apt: name=libudev-dev
   - apt: name=pkg-config
@@ -32,13 +33,15 @@
 
 #  - file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
 
+# export PATH="$HOME/.cargo/bin:$PATH" && cargo build --release 2>&1 | tee log.txt
+
   - name: build parity
     become: yes
     become_user: "{{user}}"
-    tags: parity
     shell: >
-      export PATH="$HOME/.cargo/bin:$PATH" && cargo build --release
+      export PATH="$HOME/.cargo/bin:$PATH" && cargo build --release 2>&1 | tee log.txt
       chdir={{build_dir}}
       creates={{build_dir}}/target/release/parity
+    tags: build
 
 
