@@ -1,4 +1,4 @@
 
   - hosts: all
     tasks:
-    - include: "../roles/misc/tasks/restart-tomcat.yml"
+    - include: "../roles/devel/tasks/restart-tomcat.yml"

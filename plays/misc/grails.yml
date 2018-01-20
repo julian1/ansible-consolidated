@@ -3,6 +3,6 @@
     vars:
       - grails_deploy_path: /home/meteo/imos/
     roles:
-      - misc/grails-1.3.7
+      - devel/grails-1.3.7
 
 

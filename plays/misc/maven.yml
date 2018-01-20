@@ -5,5 +5,5 @@
     vars:
       - maven_deploy_path: /home/meteo
     tasks:
-      - include: "../roles/misc/tasks/maven.yml"
+      - include: "../roles/devel/tasks/maven.yml"
 

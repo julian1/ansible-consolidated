@@ -27,8 +27,8 @@
 
 
   tasks:
-    - include: ../roles/misc/tasks/tomcat-bash-aliases.yml
-    - include: ../roles/misc/tasks/root-bash-aliases.yml
+    - include: ../roles/devel/tasks/tomcat-bash-aliases.yml
+    - include: ../roles/devel/tasks/root-bash-aliases.yml
 
     # anyone can write the log for easier truncation with echo
     - file: >

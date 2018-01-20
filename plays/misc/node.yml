@@ -3,7 +3,7 @@
     vars:
       - node_deploy_path: /home/meteo/
     roles:
-      - misc/node
+      - devel/node
 
 #
 #- hosts:

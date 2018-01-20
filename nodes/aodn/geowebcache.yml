@@ -29,8 +29,8 @@
     - users
     - dotfiles
 
-    - misc/tomcat-bash-aliases
-    - misc/root-bash-aliases
+    - devel/tomcat-bash-aliases
+    - devel/root-bash-aliases
 
     # keep deployment separate from the configuration,
     - tomcat-port-forward
@@ -73,7 +73,7 @@
         mode=666
 
     # install java 8 to /var/lib/tomcat7
-    - include: ../roles/misc/tasks/jdk-1.8.yml
+    - include: ../roles/devel/tasks/jdk-1.8.yml
 
 
     # set up tomcat7 to use java 1.8

@@ -16,7 +16,7 @@
 
 
   roles:
-    - name: misc/rust
+    - name: devel/rust
       user: parity
 
     - name: crypto/parity
@@ -24,7 +24,7 @@
       user: parity
 
     # see web3 play
-    # - misc/node
+    # - devel/node
     # - crypto/web3
 
   tasks:

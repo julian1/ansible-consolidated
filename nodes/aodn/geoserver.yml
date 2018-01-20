@@ -19,8 +19,8 @@
     - admin/users
     - dotfiles
 
-    - misc/tomcat-bash-aliases
-    - misc/root-bash-aliases
+    - devel/tomcat-bash-aliases
+    - devel/root-bash-aliases
 
     # specific
     - admin/tomcat-port-forward

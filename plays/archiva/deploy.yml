@@ -5,7 +5,7 @@
     - jdk_deploy_path: /home/{{user}}
     - archiva_deploy_path: /home/{{user}}
   roles:
-      - misc/jdk-1.7
+      - devel/jdk-1.7
       - archiva/deploy
 
   # run with

@@ -29,10 +29,10 @@
     - admin/locale
     - admin/users
 
-    - misc/rust
+    - devel/rust
     - crypto/parity
     # node, should be kept separate. not sure. it means exposing the listen address on 0.0.0.0...
-    # - misc/node
+    # - devel/node
 
   tasks:
     # must get the stretch apt repository source before can install anything...

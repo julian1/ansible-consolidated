@@ -7,7 +7,7 @@
         user: meteo 
   roles:
     - crypto/geth
-    # - misc/node
+    # - devel/node
   tasks:
   
     

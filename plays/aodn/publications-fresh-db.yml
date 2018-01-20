@@ -1,5 +1,5 @@
 
-# move to roles/misc and parameterize so that it's generally available?
+# move to roles/devel and parameterize so that it's generally available?
 
 - hosts: all
   tasks:

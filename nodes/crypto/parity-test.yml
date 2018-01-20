@@ -20,14 +20,14 @@
     - name: admin/swap
       size: 1000000
 
-    - name: misc/rust
+    - name: devel/rust
       user: meteo
 
     - name: crypto/parity
       build_dir: /home/meteo/parity
       user: meteo
 
-    - name: misc/node
+    - name: devel/node
       deploy_path: /home/meteo
 
     - name: crypto/web3

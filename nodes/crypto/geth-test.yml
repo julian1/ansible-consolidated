@@ -16,7 +16,7 @@
       build_dir: /home/meteo/
       user: meteo
 
-    - name: misc/node
+    - name: devel/node
       deploy_path: /home/meteo
 
     - name: crypto/web3

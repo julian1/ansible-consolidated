@@ -38,8 +38,8 @@
     - dotfiles
   
     # aatams specific
-    - misc/jdk-1.7
-    - misc/grails-1.3.7
+    - devel/jdk-1.7
+    - devel/grails-1.3.7
     - postgres
     - tomcat-port-forward
     # should reinstate this

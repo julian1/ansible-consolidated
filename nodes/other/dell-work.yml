@@ -22,7 +22,7 @@
     - admin/apt/update
     - admin/timezone
     - admin/locale
-    - misc/common
+    - devel/common
     - users
     - { role: dotfiles, tags: [ 'whoot' ] }
     - vim
@@ -154,11 +154,11 @@
     # jdk, grails, etc
 
     # TODO avoid /ansible since it is only a small root partition
-    - include: ../roles/misc/tasks/jdk-1.7.yml
-    - include: ../roles/misc/tasks/jdk-1.8.yml
+    - include: ../roles/devel/tasks/jdk-1.7.yml
+    - include: ../roles/devel/tasks/jdk-1.8.yml
     # TODO separate version numbers,
-    - include: ../roles/misc/tasks/grails.yml
-    - include: ../roles/misc/tasks/intellij.yml
+    - include: ../roles/devel/tasks/grails.yml
+    - include: ../roles/devel/tasks/intellij.yml
 
     ##############################################
     # create home for scripts

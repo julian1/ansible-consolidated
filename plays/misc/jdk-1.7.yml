@@ -3,5 +3,5 @@
     vars:
       - jdk_deploy_path: /home/meteo
     roles:
-      roles/misc/jdk-1.7
+      roles/devel/jdk-1.7
 

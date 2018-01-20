@@ -25,7 +25,7 @@
 
     # archiva specific
     - tomcat-port-forward
-    - misc/jdk-1.7
+    - devel/jdk-1.7
     - archiva/deploy
 
 
