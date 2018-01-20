@@ -1,6 +1,7 @@
 
   # SHOULD PROBABLY RENAME TO PATHGEN
 
+  # should make pathogen plugins independent of just vimrc
 
   # TODO factor out the hard-coded user directory
   # vimrc requires the appropriate assocation to be set eg, #  au BufNewFile,BufRead *.sol setf solidity
@@ -8,7 +9,7 @@
 
   # .vimrc
   # TODO maybe templatize
-  - copy: src=vimrc dest={{vim_path}}/.vimrc
+  # - copy: src=vimrc dest={{vim_path}}/.vimrc
 
 
   # vim directories for temp files and pathogen

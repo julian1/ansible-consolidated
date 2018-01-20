@@ -15,10 +15,10 @@
       tags: dotfiles
       dotfile_path: /home/devel
 
-    - name: vim
+    - name: pathogen
       vim_path: /home/devel
       vim_user: devel
-      tags: vim
+      tags: pathogen
 
     - disable-resolve-conf
 

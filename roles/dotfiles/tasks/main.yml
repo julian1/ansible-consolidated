@@ -1,14 +1,14 @@
 
-# note that, vim needs pathogen and is its own role
-# why not have dotfiles_users
-# actually it's controlled by the home_dir var - its' ok.
+# we install vimrc here. 
+# but keep pathogen in its own role
 
-
-  # - debug: msg="xmonad_user {{dotfile_path}}"  # "
 
   - copy: src=bash_aliases    dest={{dotfile_path}}/.bash_aliases
 
   - copy: src=gitconfig       dest={{dotfile_path}}/.gitconfig
 
   - copy: src=screenrc        dest={{dotfile_path}}/.screenrc
+
+  - copy: src=vimrc           dest={{dotfile_path}}/.vimrc
+
 
