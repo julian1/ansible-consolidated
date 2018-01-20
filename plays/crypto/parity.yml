@@ -1,5 +1,5 @@
 
-# see parity-test instead...
+# see nodes/crypto/parity-test instead...
 # important
 
 - hosts: all
