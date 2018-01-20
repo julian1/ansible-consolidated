@@ -54,24 +54,23 @@
 
           export PATH="$HOME/parity/target/release:$PATH"
 
-          # useful flags,
           # pruning history normally 24
           # --pruning-history 16
-          # prevent parity connecting to itself
-          # --allow-ips=public
+          # prevents parity connecting to itself
+          #  --allow-ips=public    
           # don't scan for new peers
-          # --no-discovery
+          # --no-discovery \
           # pruning fast is default
-          # --pruning fast
-          # --no-color
+          # --pruning fast \
 
+          # --min-peers 8 --max-peers 12 \
+
+          # this worked to start warp
           parity \
             -d data \
-            --nat extip:n.n.n.n \
+            --nat extip:128.199.165.106 \
             --no-ui --no-ws --no-dapps \
-            --min-peers 8 --max-peers 12 \
             --allow-ips=public \
-
 
       tags: path
 
