@@ -22,6 +22,13 @@ ansible-playbook plays/admin/postfix.yml -i mail.n.n,
 
 ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 
+# initial
+apt-get install python-minimal
+ansible-playbook plays/admin/sshd.yml -i apu2,
+ansible-playbook plays/admin/devenv-lite.yml -i apu2,
+ansible-playbook plays/admin/timezone-locale.yml -i apu2,
+
+
 # flags 
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
