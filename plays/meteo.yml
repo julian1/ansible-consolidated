@@ -1,16 +1,21 @@
-# install minimal account and environment. don't change os
+
+# install minimal user and environment
 # eg. ansible-playbook plays/meteo.yml -i parity, -u admin -s
 
-# note, role/users is deploying bash aliases - which isn't that great
 
 - hosts: all
-  vars:
-    - users:
-      - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
   vars_files:
-    - ../vars/credentials.yml
+    - ../../credentials.yml
+  vars:
+  pre_tasks:
+    - user: name=meteo shell=/bin/bash
+    - authorized_key: user=meteo key="{{meteo_pubkey}}"
+    - file: path=/home/meteo mode=0700 state=directory
+
   roles:
-    - admin/users
+    # - name: admin/timezone
+    # - name: admin/locale
     - admin/devenv-lite
     - dotfiles
     - vim
+
