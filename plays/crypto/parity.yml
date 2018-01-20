@@ -52,10 +52,27 @@
           #!/bin/bash
           # deployed by ansible!
 
-          PATH="$HOME/parity/target/release:$PATH"
+          export PATH="$HOME/parity/target/release:$PATH"
 
-          # parity -d data --min-peers 8 --max-peers 12 --no-color --pruning fast --pruning-history 16
-          parity -d data --no-ui --no-dapps --min-peers 8 --max-peers 12 --no-color --pruning fast
+          # useful flags,
+          # pruning history normally 24
+          # --pruning-history 16
+          # prevent parity connecting to itself
+          # --allow-ips=public
+          # don't scan for new peers
+          # --no-discovery
+          # pruning fast is default
+          # --pruning fast
+          # --no-color
+
+          parity \
+            -d data \
+            --nat extip:n.n.n.n \
+            --no-ui --no-ws --no-dapps \
+            --min-peers 8 --max-peers 12 \
+            --allow-ips=public \
+
+
       tags: path
 
     # may need port forward for port 30303
