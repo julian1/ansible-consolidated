@@ -56,21 +56,24 @@
 
           # pruning history normally 24
           # --pruning-history 16
-          # prevents parity connecting to itself
-          #  --allow-ips=public    
+          # prevent parity connecting to itself over 127.0.0.1
+          # --allow-ips=public
           # don't scan for new peers
           # --no-discovery \
           # pruning fast is default
           # --pruning fast \
-
           # --min-peers 8 --max-peers 12 \
+          # --nat extip:n.n.n.n \
+          # --no-warp
 
           # this worked to start warp
           parity \
             -d data \
-            --nat extip:128.199.165.106 \
             --no-ui --no-ws --no-dapps \
+            --pruning fast \
+            --min-peers 8 --max-peers 12 \
             --allow-ips=public \
+            --no-warp
 
       tags: path
 
