@@ -791,6 +791,11 @@
           # requires corresponding entry in /etc/rsyslog.conf
           log-facility local7;
 
+          # https://gauvain.pocentek.net/docs/dhcpd-push-routes/
+          # defines the type of data used to send the routing informations
+          option classless-routes code 121 = array of unsigned integer 8;
+
+
           # Set up our desired subnet:
           # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
           subnet 192.168.201.0 netmask 255.255.255.0 {
@@ -802,6 +807,11 @@
               option broadcast-address 192.168.201.255;
               option routers 192.168.201.1;
               option domain-name-servers 192.168.201.1;
+
+
+              # defines 2 gateways for 2 subnets:
+              option classless-routes 16, 192,168,    192,168,201,1,
+                                      24, 10,4,0,     192,168,201,1;
 
               host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 192.168.201.10; }
               host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
@@ -825,6 +835,11 @@
               option broadcast-address 192.168.43.255;
               option routers 192.168.43.1;
               option domain-name-servers 192.168.43.1;
+
+              # defines 2 gateways for 2 subnets:
+              option classless-routes 16, 192,168,    192,168,43,1,
+                                      24, 10,4,0,     192,168,43,1;
+
 
               host dell-5520    { hardware ethernet 00:28:f8:bf:8f:29; fixed-address 192.168.43.6; }
               host omega        { hardware ethernet 40:a3:6b:c1:18:dc; fixed-address 192.168.43.10; }
