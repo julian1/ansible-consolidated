@@ -1,4 +1,10 @@
 
+OBSOLETE
+  use parity play, and solidiyt play and node play. 
+  not sure we even want solidity in the same user/group space. OK. if no keys
+
+  - actually no. they are pretty client side...
+
 # Note, 1G is not enough mem for the compile, needs swap.
 
 - hosts: all
