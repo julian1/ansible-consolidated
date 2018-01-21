@@ -1,6 +1,6 @@
 
   - hosts: all
     roles:
-      - roles/scripts
+      - personal/scripts
 
 

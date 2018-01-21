@@ -10,13 +10,13 @@ Set of ansible definitions and plays for use with systemd-nspawn containers, kvm
 # nodes
 ansible-playbook nodes/other/apu.yml --tags bind,dhcp,iptables
 ansible-playbook nodes/other/dell-home.yml -c local -i localhost,   # run as root
-ansible-playbook nodes/pglogical.yml -i pglogical.localnet,
+ansible-playbook nodes/other/pglogical.yml -i pglogical.localnet,
 
 # plays
+ansible-playbook plays/personal/dotfiles.yml -i localhost, -c local
+ansible-playbook plays/personal/scripts.yml -i localhost, -c local 
 ansible-playbook plays/admin/openvpn.yml -i vpn,
-ansible-playbook plays/dotfiles.yml -i localhost, -c local
-ansible-playbook plays/scripts.yml -i localhost, -c local 
-ansible-playbook plays/devenv-lite.yml -i localhost, -c local
+ansible-playbook plays/admin/devenv-lite.yml -i localhost, -c local
 ansible-playbook plays/admin/postfix.yml -i mail.n.n,
 
 ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
@@ -29,23 +29,23 @@ ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-va
 apt-get install python-minimal
 
 ansible-playbook plays/admin/hostname.yml -i myhost, --extra-vars "hostname=myhost"
-ansible-playbook plays/admin/meteo.yml -i myhost,
-ansible-playbook plays/admin/meteo-sudo.yml -i myhost,
+ansible-playbook plays/admin/sshd.yml -i myhost,
+ansible-playbook plays/personal/meteo.yml -i myhost,
+ansible-playbook plays/personal/meteo-sudo.yml -i myhost,
 
 
 or specific,
-ansible-playbook plays/admin/sshd.yml -i myhost,
 ansible-playbook plays/admin/devenv-lite.yml -i myhost,
 ansible-playbook plays/admin/timezone.yml -i myhost,
 ansible-playbook plays/admin/locale.yml -i myhost,
-ansible-playbook plays/admin/dotfiles.yml -i myhost,
+ansible-playbook plays/personal/dotfiles.yml -i myhost,
 
 
 # flags 
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
-ansible-playbook nodes/dell-home.yml --list-tags
-ansible-playbook nodes/aatams.yml -v
+ansible-playbook nodes/other/dell-home.yml --list-tags
+ansible-playbook nodes/aodn/aatams.yml -v
 
 ```
 
