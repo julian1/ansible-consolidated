@@ -1,9 +1,9 @@
 
-
 # install generic minimal user and environment for server
+
 # eg. ansible-playbook plays/meteo.yml -i parity, -u admin -s
 
-# need sudo and pass, issue that may want other groups than just sudo so cannot make generic
+# use meteo-sudo.yml to add sudo and passwd. cannot be made generic, since group membership may be different
 
 - hosts: all
   vars_files:
@@ -18,10 +18,10 @@
     - name: admin/sshd
     - name: admin/timezone
     - name: admin/locale
-    - admin/devenv-lite
+    - name: admin/devenv-lite
 
-    # note, have to edit /root/.bashrc to include .bash_aliases
-    # also disable pathogen.
+    # note, must manually edit /root/.bashrc to include . .bash_aliases
+    # and .vimrc to disable pathogen
     - name: dotfiles
       tags: root_dotfiles
       dotfile_path: /root
@@ -38,5 +38,4 @@
       tags: pathogen
       vim_path: /home/meteo
       vim_user: meteo
-
 
