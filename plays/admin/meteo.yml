@@ -20,6 +20,8 @@
     - name: admin/locale
     - admin/devenv-lite
 
+    # note, have to edit /root/.bashrc to include .bash_aliases
+    # also disable pathogen.
     - name: dotfiles
       tags: root_dotfiles
       dotfile_path: /root
