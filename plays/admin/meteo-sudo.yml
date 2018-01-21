@@ -1,0 +1,22 @@
+
+# this adjusts group membership so cannot be used generically if a different groups are needed 
+
+- hosts: all
+  vars_files:
+    - ../../credentials.yml
+  vars:
+  tasks:
+    # - user: name=meteo shell=/bin/bash
+    # - authorized_key: user=meteo key="{{meteo_pubkey}}"
+    # - file: path=/home/meteo mode=0700 state=directory
+
+    # note staff group is equivalent to root, since can put binaries in /usr/local/bin and usurp root privileges
+
+    - user: >
+        name=meteo
+        password={{meteo_password}}
+        groups=sudo
+
+
+
+
