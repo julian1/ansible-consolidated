@@ -1,8 +1,9 @@
 
 
-# install minimal user and environment
+# install generic minimal user and environment for server
 # eg. ansible-playbook plays/meteo.yml -i parity, -u admin -s
 
+# need sudo and pass, issue that may want other groups than just sudo so cannot make generic
 
 - hosts: all
   vars_files:
@@ -14,8 +15,9 @@
     - file: path=/home/meteo mode=0700 state=directory
 
   roles:
-    # - name: admin/timezone
-    # - name: admin/locale
+    - name: admin/sshd
+    - name: admin/timezone
+    - name: admin/locale
     - admin/devenv-lite
 
     - name: dotfiles
