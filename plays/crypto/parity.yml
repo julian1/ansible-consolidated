@@ -18,7 +18,7 @@
 
   roles:
 
-    - name: dotfiles
+    - name: personal/dotfiles
       tags: dotfiles
       dotfile_path: /home/parity
       dotfile_user: parity

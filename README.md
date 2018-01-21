@@ -21,12 +21,17 @@ ansible-playbook plays/admin/postfix.yml -i mail.n.n,
 
 ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 
+# overriding play vars
+ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-vars "dotfile_path=/root dotfile_user=root"
+
+
 # initial
 apt-get install python-minimal
 
 ansible-playbook plays/admin/hostname.yml -i myhost, --extra-vars "hostname=myhost"
 ansible-playbook plays/admin/meteo.yml -i myhost,
 ansible-playbook plays/admin/meteo-sudo.yml -i myhost,
+
 
 or specific,
 ansible-playbook plays/admin/sshd.yml -i myhost,

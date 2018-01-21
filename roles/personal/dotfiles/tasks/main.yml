@@ -1,0 +1,25 @@
+
+# we install vimrc here. 
+# but keep pathogen in its own role
+
+
+- copy: src=bash_aliases    dest={{dotfile_path}}/.bash_aliases
+
+- copy: src=gitconfig       dest={{dotfile_path}}/.gitconfig
+
+- copy: src=screenrc        dest={{dotfile_path}}/.screenrc
+
+- copy: src=vimrc           dest={{dotfile_path}}/.vimrc
+
+# vim directories for temp files and pathogen - required for .vimrc
+# vim tmp file handling
+# http://stackoverflow.com/questions/821902/disabling-swap-files-creation-in-vim
+- file: path="{{dotfile_path}}/{{item}}" state=directory owner={{dotfile_user}} group={{dotfile_user}}
+  with_items:
+    - "/.vim"
+    - "/.vim/backup"
+    - "/.vim/swap"
+    - "/.vim/undo"
+    - "/.vim/autoload"
+    - "/.vim/bundle"
+

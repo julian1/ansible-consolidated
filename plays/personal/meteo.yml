@@ -22,19 +22,19 @@
 
     # note, must manually edit /root/.bashrc to include . .bash_aliases
     # and .vimrc to disable pathogen
-    - name: dotfiles
+    - name: personal/dotfiles
       tags: root_dotfiles
       dotfile_path: /root
       dotfile_user: root
 
 
-    - name: dotfiles
+    - name: personal/dotfiles
       tags: dotfiles
       dotfile_path: /home/meteo
       dotfile_user: meteo
 
 
-    - name: pathogen
+    - name: personal/pathogen
       tags: pathogen
       vim_path: /home/meteo
       vim_user: meteo

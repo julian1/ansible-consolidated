@@ -1,0 +1,8 @@
+
+- hosts: all
+  roles:
+    - name: personal/dotfiles
+      dotfile_path: /home/meteo
+      dotfile_user: meteo
+      tags: dotfiles
+
