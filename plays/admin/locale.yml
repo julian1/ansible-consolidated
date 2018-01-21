@@ -1,9 +1,5 @@
 
-
 - hosts: all
   roles:
-    - name: admin/timezone
-
     - name: admin/locale
-
 

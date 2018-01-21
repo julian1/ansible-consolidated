@@ -31,7 +31,8 @@ ansible-playbook plays/admin/meteo-sudo.yml -i myhost,
 or specific,
 ansible-playbook plays/admin/sshd.yml -i myhost,
 ansible-playbook plays/admin/devenv-lite.yml -i myhost,
-ansible-playbook plays/admin/timezone-locale.yml -i myhost,
+ansible-playbook plays/admin/timezone.yml -i myhost,
+ansible-playbook plays/admin/locale.yml -i myhost,
 ansible-playbook plays/admin/dotfiles.yml -i myhost,
 
 
