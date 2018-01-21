@@ -26,13 +26,14 @@ ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars 
 apt-get install python-minimal
 
 ansible-playbook plays/admin/hostname.yml -i myhost, --extra-vars "hostname=myhost"
-ansible-playbook plays/admin/sshd.yml -i apu2,
-ansible-playbook plays/admin/devenv-lite.yml -i apu2,
-ansible-playbook plays/admin/timezone-locale.yml -i apu2,
-ansible-playbook plays/admin/dotfiles.yml -i apu2,
+ansible-playbook plays/admin/sshd.yml -i myhost,
+ansible-playbook plays/admin/devenv-lite.yml -i myhost,
+ansible-playbook plays/admin/timezone-locale.yml -i myhost,
+ansible-playbook plays/admin/dotfiles.yml -i myhost,
 
 or
-ansible-playbook plays/admin/meteo.yml -i apu2,
+ansible-playbook plays/admin/meteo.yml -i myhost,
+ansible-playbook plays/admin/meteo-sudo.yml -i myhost,
 
 
 
