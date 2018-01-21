@@ -17,7 +17,6 @@ ansible-playbook plays/admin/openvpn.yml -i vpn,
 ansible-playbook plays/dotfiles.yml -i localhost, -c local
 ansible-playbook plays/scripts.yml -i localhost, -c local 
 ansible-playbook plays/devenv-lite.yml -i localhost, -c local
-ansible-playbook plays/meteo.yml -i parity, -u admin -s
 ansible-playbook plays/admin/postfix.yml -i mail.n.n,
 
 ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"

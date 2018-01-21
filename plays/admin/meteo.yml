@@ -21,8 +21,15 @@
     - admin/devenv-lite
 
     - name: dotfiles
+      tags: root_dotfiles
+      dotfile_path: /root
+      vim_user: root
+
+
+    - name: dotfiles
       tags: dotfiles
       dotfile_path: /home/meteo
+      vim_user: meteo
 
 
     - name: pathogen

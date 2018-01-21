@@ -6,5 +6,6 @@
       - name: dotfiles
         tags: dotfiles
         dotfile_path: /home/meteo
+        vim_user: meteo
 
 
