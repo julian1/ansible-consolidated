@@ -1,9 +1,13 @@
 
+  # note, this does write /etc/hostname as well
+
   - hostname: name="{{hostname}}"
 
+  # cidr for 127.0.0.0 is just 8. 
+  # so use 127.0.2.1 to avoid overwriting other entries
   - lineinfile: >
       dest=/etc/hosts
       state=present
-      line='127.0.1.1       {{hostname}}'
+      line='127.0.2.1       {{hostname}}'
 
 

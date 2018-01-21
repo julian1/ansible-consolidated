@@ -1,0 +1,8 @@
+
+# eg. ansible-playbook plays/admin/hostname.yml  -i myhost, --extra-vars "hostname=myhost"
+
+- hosts: all
+  roles:
+    - name: admin/hostname
+    # hostname: 
+ 
