@@ -53,22 +53,22 @@
     # TODO change var name to dotfile_user_home
 
     # https://serverfault.com/questions/758376/local-ansible-playbook-run-playbook-with-vars-for-role
-    - name: dotfiles
+    - name: personal/dotfiles
       tags: dotfiles
       dotfile_path: /home/meteo
       dotfile_user: meteo
 
-    - name: vim
-      tags: vim
-      vim_path: /home/meteo
-      vim_user: meteo
+    - name: personal/pathogen
+      tags: pathogen
+      pathogen_path: /home/meteo
+      pathogen_user: meteo
 
-    - name: xmonad
+    - name: personal/xmonad
       tags: xmonad
       xmonad_user: meteo
 
     # need the user created before we do this...
-    - name: scripts
+    - name: personal/scripts
       tags: scripts
 
     # TODO - should go ini second level stuff...
