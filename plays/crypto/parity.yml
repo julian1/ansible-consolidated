@@ -17,6 +17,13 @@
 
 
   roles:
+
+    - name: dotfiles
+      tags: dotfiles
+      dotfile_path: /home/parity
+      dotfile_user: parity
+
+
     - name: devel/rust
       user: parity
 
