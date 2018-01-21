@@ -11,7 +11,7 @@
 
 # curl, wget
 #  - apt: name=sudo                # sudo is needed for ansible for downgrading privileges, ie become, become_user
-#  - apt: name=net-tools           # ifconfig, netstat
+#  - apt: name=net-tools           # netstat, ifconfig
 #  - apt: name=pv
 
 
