@@ -12,6 +12,9 @@
 
 
     # non-priv user (no ssh)
+
+    # note staff group is equivalent to root, since can put binaries in /usr/local/bin and usurp root privileges
+    # so must be trusted
     - user: >
         name=meteo
         shell=/bin/bash

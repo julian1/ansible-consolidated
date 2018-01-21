@@ -11,6 +11,9 @@
         shell=/bin/bash
 
 
+    # note staff group is equivalent to root, since can put binaries in /usr/local/bin and usurp root privileges
+    # so must be trusted
+
     # non-priv user (no ssh)
     - user: >
         name=meteo
