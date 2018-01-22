@@ -23,6 +23,7 @@ ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars 
 
 # overriding play vars
 ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-vars "dotfile_path=/root dotfile_user=root"
+ansible-playbook ./plays/personal/dotfiles.yml -i apu2,  --extra-vars "dotfile_path=/home/parity dotfile_user=parity"
 
 
 # initial
@@ -33,8 +34,7 @@ ansible-playbook plays/admin/sshd.yml -i myhost,
 ansible-playbook plays/personal/meteo.yml -i myhost,
 ansible-playbook plays/personal/meteo-sudo.yml -i myhost,
 
-
-or specific,
+# or specific,
 ansible-playbook plays/admin/devenv-lite.yml -i myhost,
 ansible-playbook plays/admin/timezone.yml -i myhost,
 ansible-playbook plays/admin/locale.yml -i myhost,

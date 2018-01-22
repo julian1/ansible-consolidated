@@ -134,7 +134,7 @@ set directory=~/.vim/swap//
 set undodir=~/.vim/undo//
 
 
-     
+
 " idris specific?
 let hs_highlight_delimiters = 1
 let hs_highlight_boolean = 1
@@ -159,7 +159,13 @@ cmap wx w !sudo tee  %
 
 " *************** PATHOGEN *******
 
-execute pathogen#infect()
+" execute pathogen#infect()
 
+" autodetect if have pathogen before load
+runtime autoload/pathogen.vim
+if exists('g:loaded_pathogen')
+    call pathogen#infect()  "load the bundles, if possible
+    Helptags                "plus any bundled help
+endif
 
 
