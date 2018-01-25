@@ -16,12 +16,13 @@
         ChallengeResponseAuthentication no
         UsePAM yes
         X11Forwarding yes
-        # JA If this option is set to “without-password”, password authentication is disabled for root, but ssh ok.
+        # JA If this option is set to “without-password”, password authentication is disabled for root, but key ssh ok.
         PermitRootLogin without-password
-        # JA disable password authentication
+        # JA disable password authentication for all users
         PasswordAuthentication no
         PrintMotd no
         AcceptEnv LANG LC_*
+        # JA needed for rsync
         Subsystem       sftp    /usr/lib/openssh/sftp-server
 
     notify: restart-sshd
