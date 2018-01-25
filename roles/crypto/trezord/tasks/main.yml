@@ -13,6 +13,8 @@
   - apt: name=libboost-all-dev
   - apt: name=protobuf-compiler
 
+  # TODO need version/branch
+
   - name: git checkout trezord
     git: repo=https://github.com/trezor/trezord
       dest={{build_dir}}
@@ -40,5 +42,4 @@
     become: yes
     become_user: "{{user}}"
     tags: git
-
 
