@@ -1,0 +1,46 @@
+
+# nixos - should we be using?
+
+UNFINISHED. needs python virtual environment, to install in local environment.
+
+
+  #  https://github.com/trezor/python-trezor
+
+  - apt: name=python-dev
+  - apt: name=cython
+  - apt: name=libusb-1.0-0-dev
+  - apt: name=libudev-dev
+  - apt: name=git
+
+
+  - name: checkout python trezor
+    git: repo=https://github.com/trezor/python-trezor
+      dest={{build_dir}}
+      recursive=yes
+      force=yes
+    become: true
+    become_user: "{{user}}"
+    tags: git
+
+#  - command: "{{ item }} chdir={{build_dir}}"
+#    with_items:
+#      - pip install --user devel setuptools
+#      - pip install --user devel -r requirements.txt
+#      - pip install --user devel trezor
+#    become: yes
+#    become_user: "{{user}}"
+#    tags: git
+
+
+  - pip:
+      name: setuptools
+      virtualenv: "{{build_dir}}/venv"
+    become_user: "{{user}}"
+    become: true
+
+
+# sudo -H pip install setuptools
+# sudo -H pip install -r requirements.txt
+# sudo -H pip install trezor
+
+

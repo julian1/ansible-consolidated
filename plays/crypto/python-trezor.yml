@@ -1,0 +1,11 @@
+
+# run as root, eg. ansible-playbook plays/crypto/trezord.yml -i localhost, -c local
+
+UNFINISHED. needs python virtual environment, to install in local environment.
+
+- hosts: all
+  roles:
+    - name: crypto/python-trezor
+      user: devel
+      build_dir: /home/devel/python-trezor
+
