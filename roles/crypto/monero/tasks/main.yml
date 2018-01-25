@@ -55,25 +55,27 @@
         #!/bin/bash -x
         # deployed by ansible!
 
+
         PATH="$HOME/monero-v0.11.1.0:$PATH"
 
-        # default rpc is 127.0.0.1
-        # monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind --restricted-rpc --data-dir data
-        # monerod --rpc-bind-ip 192.168.201.29 --confirm-external-bind --restricted-rpc --data-dir data
-        # monerod --data-dir data
+        # 0.0.0.0 is only to allow remote client access...
+        # monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind --restricted-rpc
+        #  --out-peers 10 \
 
-        # --out-peers arg (=-1)                 set max number of out peers
-        # --limit-rate-up arg (=-1)             set limit-rate-up [kB/s]
+        # 10kB/s is  0.6MB/minute, 36MB/hr,  860MB/day.
+        # 100kB/s is               360MB/hr, 8.6GB / day.
+        # having more peers, means may get faster download options.
+        #  --limit-rate-up 10 \
 
         monerod \
           --data-dir data \
+          --limit-rate-up 100 \
           --p2p-bind-ip 10.8.0.6 \
           --rpc-bind-ip 192.168.201.29 --confirm-external-bind --restricted-rpc
 
+        # monerod --rpc-bind-ip 192.168.201.29  --data-dir data
 
     tags: whoot
-
-
 
 
   - copy:
