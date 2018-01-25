@@ -8,10 +8,12 @@
   - apt: name=mlocate
   - apt: name=psmisc              # killall
   - apt: name=netcat-traditional  # nc
+  - apt: name=dnsutils            # dig, needed for myip
 
 # curl, wget
 #  - apt: name=sudo                # sudo is needed for ansible for downgrading privileges, ie become, become_user
-#  - apt: name=net-tools           # netstat, ifconfig
+#  - apt: name=net-tools           # nnetstat, ifconfig
 #  - apt: name=pv
+# - pkgng: name=dnsutils           # dig, nslookup
 
 

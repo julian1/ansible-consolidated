@@ -28,11 +28,12 @@ ansible-playbook ./plays/personal/dotfiles.yml -i apu2,  --extra-vars "dotfile_p
 
 # initial
 apt-get install python-minimal
+export myhost=n.n.n.n
 
-ansible-playbook plays/admin/hostname.yml -i myhost, --extra-vars "hostname=myhost"
-ansible-playbook plays/admin/sshd.yml -i myhost,
-ansible-playbook plays/personal/meteo.yml -i myhost,
-ansible-playbook plays/personal/meteo-sudo.yml -i myhost,
+ansible-playbook plays/admin/hostname.yml -i $myhost, --extra-vars "hostname=$myhost"
+ansible-playbook plays/admin/sshd.yml -i $myhost,
+ansible-playbook plays/personal/meteo.yml -i $myhost,
+ansible-playbook plays/personal/meteo-sudo.yml -i $myhost,
 
 # or specific,
 ansible-playbook plays/admin/devenv-lite.yml -i myhost,
@@ -53,6 +54,9 @@ NOTE - can push everything into roles
       - then plays just associate. 
       - and nodes associate ip - except pre-tasks are useful and it becomes confusing.
 
+
+to force handler to run immediately.
+- meta: flush_handlers
 
 #### Useful flags
 ```

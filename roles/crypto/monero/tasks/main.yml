@@ -37,6 +37,16 @@
 
 
   - copy:
+      dest: /home/monero/vars.inc
+      content: |
+        # deployed by ansible!
+
+        PATH="$HOME/monero-v0.11.1.0:$PATH"
+        export PATH
+    tags: path
+
+
+  - copy:
       dest: /home/monero/start-monerod.sh
       mode: 0700
       owner: monero
@@ -52,6 +62,9 @@
         # monerod --rpc-bind-ip 192.168.201.29 --confirm-external-bind --restricted-rpc --data-dir data
         # monerod --data-dir data
 
+        # --out-peers arg (=-1)                 set max number of out peers
+        # --limit-rate-up arg (=-1)             set limit-rate-up [kB/s]
+
         monerod \
           --data-dir data \
           --p2p-bind-ip 10.8.0.6 \
@@ -59,6 +72,9 @@
 
 
     tags: whoot
+
+
+
 
   - copy:
       dest: /home/monero/start-monero-cli.sh
