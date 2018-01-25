@@ -55,7 +55,6 @@
         #!/bin/bash -x
         # deployed by ansible!
 
-
         PATH="$HOME/monero-v0.11.1.0:$PATH"
 
         # 0.0.0.0 is only to allow remote client access...
@@ -66,14 +65,12 @@
         # 100kB/s is               360MB/hr, 8.6GB / day.
         # having more peers, means may get faster download options.
         #  --limit-rate-up 10 \
+        #  --rpc-bind-ip 192.168.201.29 --confirm-external-bind --restricted-rpc
 
         monerod \
           --data-dir data \
           --limit-rate-up 100 \
           --p2p-bind-ip 10.8.0.6 \
-          --rpc-bind-ip 192.168.201.29 --confirm-external-bind --restricted-rpc
-
-        # monerod --rpc-bind-ip 192.168.201.29  --data-dir data
 
     tags: whoot
 
@@ -89,8 +86,9 @@
 
         PATH="$HOME/monero-v0.11.1.0:$PATH"
 
-        # monero-wallet-cli --daemon-address m-test:18081
-        monero-wallet-cli
+        # rlwrap monero-wallet-cli --daemon-address m-test:18081
+        rlwrap monero-wallet-cli
+
     tags: whoot
 
 
