@@ -32,7 +32,7 @@
     become: yes
     become_user: "{{user}}"
     shell: >
-      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install 1.21.0 && rustup default 1.21.0
+      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install {{version}}  && rustup default 1.21.0
 
 
  # not idempotent. needs shell, because command handle env vars
