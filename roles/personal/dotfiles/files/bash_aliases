@@ -7,7 +7,7 @@ export HISTSIZE=40001
 export HISTTIMEFORMAT="%T " # "
 export EDITOR=vim
 
-# deselect kernel kthreadd
+# ps except deselect kernel kthreadd
 # use ps2 f for tree listing without kernel processes
 alias ps2='ps --ppid 2 -p 2 --deselect'
 
@@ -25,7 +25,7 @@ alias top='top -d 1'
 alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias myip2='curl https://api.ipify.org/?format=json'
 alias myip3='curl https://ident.me'
-alias myip4="curl -s http://www.ip-adress.eu/ | grep My  | sed 's/.*\">//' "
+alias myip4="curl -s http://www.ip-adress.eu/ | grep My | sed 's/.*\">//' "
 
 
 # alias pg="ping 8.8.8.8 -c 4"
@@ -67,12 +67,12 @@ function ls2() {
 # alias f=find
 # alias h=history
 # alias ps='ps auxf'
-# alias t='top -d .7'
 # alias sv='sudo vim -p'
 # TODO issue ss conflicts with sockets util, also
 # alias ss='sudo -s'
 # alias se='sudo -sE'
 # alias v='vim -p'
+# alias sc='systemctl'
 
 # shortcuts
 alias g=git
@@ -121,15 +121,15 @@ function logs() {
 
 
 
-# TODO  test which /bin/systemctl
+# should we use sc instead? although conflict with screen
 # systemd specific
 if [ -f /bin/systemctl ]; then
-function start()    { sudo systemctl start $@;   }
-function stop()     { sudo systemctl stop $@;    }
-function restart()  { sudo systemctl restart $@; }
-function status()   { sudo systemctl status $@;  }
-function enable()   { sudo systemctl enable $@;  }
-function disable()  { sudo systemctl disable $@; }
+function start()    { systemctl start $@;   }
+function stop()     { systemctl stop $@;    }
+function restart()  { systemctl restart $@; }
+function status()   { systemctl status $@;  }
+function enable()   { systemctl enable $@;  }
+function disable()  { systemctl disable $@; }
 fi
 
 # shell colors...
