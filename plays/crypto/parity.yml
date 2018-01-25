@@ -8,28 +8,30 @@
     - ../../credentials.yml
 
   pre_tasks:
-
     - user: name=parity shell=/bin/bash
-
     - authorized_key: user=parity key="{{meteo_pubkey}}"
-
     - file: path=/home/parity mode=0700 state=directory
 
-
   roles:
-
     - name: personal/dotfiles
       tags: dotfiles
       dotfile_path: /home/parity
       dotfile_user: parity
 
 
+    # somehow 1.23 gets installed?
+    # /home/parity/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --version
+    # rustc 1.23.0 (766bd11c8 2018-01-01)
+
     - name: devel/rust
       user: parity
+      version: 1.21.0
 
     - name: crypto/parity
       build_dir: /home/parity/parity
       user: parity
+      version: v1.8.6
+      # avoid 1.7.12, which has db space leak.
 
     # do not install web3 and all dependencies under same user/group
     # see web3 play
@@ -49,6 +51,26 @@
 
           export PATH
       tags: path
+
+
+    - copy:
+        dest: /home/parity/start-parity-sync.sh
+        owner: parity
+        group: parity
+        mode: 0700
+        content: |
+          #!/bin/bash
+          # deployed by ansible!
+
+          export PATH="$HOME/parity/target/release:$PATH"
+          
+          # with --no-discovery option
+          parity \
+            -d data \
+            --no-ui --no-ws --no-dapps \
+            --allow-ips=public \
+            --no-discovery \
+ 
 
     - copy:
         dest: /home/parity/start-parity.sh
@@ -73,7 +95,6 @@
           # --nat extip:n.n.n.n \
           # --no-warp
 
-          # this worked to start warp
           parity \
             -d data \
             --no-ui --no-ws --no-dapps \
