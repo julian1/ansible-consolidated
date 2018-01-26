@@ -1,0 +1,33 @@
+
+
+  - copy:
+      dest: "{{path}}/bitcoin-cli.sh"
+      mode: 0755
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        bitcoin-cli -datadir=./data -testnet $@ | less
+
+
+  - copy:
+      dest: "{{path}}/bitcoind.sh"
+      mode: 0755
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        bitcoind -datadir=./data -testnet -txindex
+
+
+  - file: path={{path}} mode=0700 owner={{user}} group={{user}} state=directory
+
+  - copy:
+      dest: "{{path}}/data/bitcoin.conf"
+      content: |
+        # deployed by ansible!
+        server=1
+        rpcuser=test
+        rpcpassword=test
+
+

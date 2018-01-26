@@ -1,0 +1,8 @@
+
+- hosts: all
+  roles:
+    - name: crypto/bitcoin-config
+      path: /home/meteo
+      user: meteo
+
+
