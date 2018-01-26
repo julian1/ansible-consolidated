@@ -1,0 +1,21 @@
+
+  # note that installing nix, writes .profile
+
+  - file: path=/nix mode=0755 owner={{user}} group={{user}} state=directory
+
+  - command: >
+      bash -c "curl https://nixos.org/nix/install | sh"
+      creates=/nix/var/nix/profiles/default 
+    become: yes
+    become_user: "{{user}}"
+
+
+  # TODO make idempotent
+  # issue is determining user/$HOME in ansible context
+  #creates=/nix/
+  - command: >
+      bash -c "ln -s $HOME/.nix-profile/etc/profile.d/nix.sh $HOME/nix.sh"
+    become: yes
+    become_user: "{{user}}"
+
+
