@@ -69,7 +69,7 @@
 
         monerod \
           --data-dir data \
-          --limit-rate-up 100 \
+          --limit-rate-up 30 \
           --p2p-bind-ip 10.8.0.6 \
 
     tags: whoot
