@@ -1,12 +1,21 @@
 
-    ###########################
-    # Ok, issue is that the deploy templates for timezone are not available
-    # options are to specify the full file path directly
-    # or separate it into a separate role to be included...
-    ###########################3
+# ok, had to remove AcceptEnv from ssh_config, an reboot to get clean locale
 
+
+# sshd sets locales for ssh. so issues can relate to config
+
+# ALSO
+#   uncomment the en_AU.UTF-8
+#   s vi  /etc/locale.gen   
+#   sudo locale-gen en_AU.UTF-8
+#  sudo dpkg-reconfigure --frontend noninteractive  locales
+
+# locales-all installed, skipping locales generation
+
+# NOT sure this even works
 
   - apt: name=locales
 
-  - locale_gen: name={{locale}} state=present
+  - locale_gen: name="{{locale}}" state=present
+
 
