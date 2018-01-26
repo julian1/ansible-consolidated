@@ -50,7 +50,7 @@
           PATH="$HOME/solidity/build/lllc:$PATH"
 
           export PATH
-      tags: path
+      tags: config
 
 
     - copy:
@@ -70,6 +70,8 @@
             --no-ui --no-ws --no-dapps \
             --allow-ips=public \
             --no-discovery \
+
+      tags: config
  
 
     - copy:
@@ -95,15 +97,15 @@
           # --nat extip:n.n.n.n \
           # --no-warp
 
+          trickle -s -u 50 -d 100 \
           parity \
             -d data \
             --no-ui --no-ws --no-dapps \
-            --pruning fast \
             --min-peers 8 --max-peers 12 \
             --allow-ips=public \
-            --no-warp
 
-      tags: path
+
+      tags: config
 
     # may need port forward for port 30303
 
@@ -121,6 +123,6 @@
             -H "Content-Type: application/json" \
             --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[ ],"id":1}' \
             http://127.0.0.1:8545
-      tags: path
+      tags: config
 
 
