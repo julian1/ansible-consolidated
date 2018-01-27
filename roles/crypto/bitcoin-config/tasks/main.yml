@@ -1,5 +1,7 @@
 
 
+   # eg. usage, ./bitcoin-cli.sh getrawtransaction 'xxx' 1
+
   - copy:
       dest: "{{path}}/bitcoin-cli.sh"
       mode: 0755
@@ -20,7 +22,7 @@
         bitcoind -datadir=./data -testnet -txindex
 
 
-  - file: path={{path}} mode=0700 owner={{user}} group={{user}} state=directory
+  - file: path={{path}}/data mode=0700 owner={{user}} group={{user}} state=directory
 
   - copy:
       dest: "{{path}}/data/bitcoin.conf"
