@@ -1,0 +1,25 @@
+
+
+- hosts: all
+  vars_files:
+    - ../../credentials.yml
+
+  # creating users - with dotfiles is dont often enough 
+  # should consider factoring...
+  pre_tasks:
+    - user: name=c-lightning shell=/bin/bash
+    - authorized_key: user=c-lightning key="{{meteo_pubkey}}"
+    - file: path=/home/c-lightning mode=0700 state=directory
+
+  roles:
+    - name: personal/dotfiles
+      tags: dotfiles
+      path: /home/c-lightning
+      user: c-lightning
+
+    - name: crypto/c-lightning
+      build_dir: /home/c-lightning/c-lightning
+      user: c-lightning
+      
+#version: v1.8.6
+ 

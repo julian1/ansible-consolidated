@@ -1,0 +1,40 @@
+
+
+  #sudo apt-get install -y 
+
+  - apt: name=autoconf 
+  - apt: name=automake 
+  - apt: name=build-essential 
+  - apt: name=git 
+  - apt: name=libtool 
+  - apt: name=libgmp-dev 
+  - apt: name=libsqlite3-dev 
+  - apt: name=python 
+  - apt: name=python3 
+  - apt: name=net-tools
+
+
+  - name: checkout c-lightning
+    git: repo=https://github.com/ElementsProject/lightning
+      dest={{build_dir}}
+      force=yes
+    become: true
+    become_user: "{{user}}"
+    tags: git
+
+
+  - name: build c-lightning
+    become: yes
+    become_user: "{{user}}"
+    shell: >
+      make 
+      chdir={{build_dir}}
+    tags: build
+
+
+      ##creates={{build_dir}}/target/release/parity
+#      recursive=yes
+
+#--git clone https://github.com/ElementsProject/lightning.git
+#cd lightning
+#make
