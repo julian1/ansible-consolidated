@@ -2,7 +2,7 @@
 - hosts: all
   roles:
     - name: personal/dotfiles
-      dotfile_path: /home/meteo
-      dotfile_user: meteo
+      path: /home/meteo
+      user: meteo
       tags: dotfiles
 

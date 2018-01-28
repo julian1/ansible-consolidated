@@ -15,8 +15,8 @@
   roles:
     - name: personal/dotfiles
       tags: dotfiles
-      dotfile_path: /home/parity
-      dotfile_user: parity
+      path: /home/parity
+      user: parity
 
 
     # somehow 1.23 gets installed?

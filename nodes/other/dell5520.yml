@@ -50,13 +50,12 @@
     - admin/timezone
     - admin/locale
     # call role twice for different users?
-    # TODO change var name to dotfile_user_home
 
     # https://serverfault.com/questions/758376/local-ansible-playbook-run-playbook-with-vars-for-role
     - name: personal/dotfiles
       tags: dotfiles
-      dotfile_path: /home/meteo
-      dotfile_user: meteo
+      path: /home/meteo
+      user: meteo
 
     - name: personal/pathogen
       tags: pathogen

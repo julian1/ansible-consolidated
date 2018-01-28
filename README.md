@@ -22,8 +22,8 @@ ansible-playbook plays/admin/postfix.yml -i mail.n.n,
 ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 
 # overriding play vars
-ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-vars "dotfile_path=/root dotfile_user=root"
-ansible-playbook ./plays/personal/dotfiles.yml -i apu2,  --extra-vars "dotfile_path=/home/parity dotfile_user=parity"
+ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-vars "path=/root user=root"
+ansible-playbook ./plays/personal/dotfiles.yml -i apu2,  --extra-vars "path=/home/parity user=parity"
 
 
 # initial

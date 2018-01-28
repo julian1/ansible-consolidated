@@ -26,14 +26,14 @@
     # and .vimrc to disable pathogen
     - name: personal/dotfiles
       tags: root_dotfiles
-      dotfile_path: /root
-      dotfile_user: root
+      path: /root
+      user: root
 
 
     - name: personal/dotfiles
       tags: dotfiles
-      dotfile_path: /home/meteo
-      dotfile_user: meteo
+      path: /home/meteo
+      user: meteo
 
 
     - name: personal/pathogen
