@@ -8,13 +8,13 @@ Set of ansible definitions and plays for use with systemd-nspawn containers, kvm
 
 ```
 # nodes
-ansible-playbook nodes/other/apu.yml --tags bind,dhcp,iptables
-ansible-playbook nodes/other/dell-home.yml -c local -i localhost,   # run as root
-ansible-playbook nodes/other/pglogical.yml -i pglogical.localnet,
+ansible-playbook plays/nodes/other/apu.yml --tags bind,dhcp,iptables
+ansible-playbook plays/nodes/other/dell-home.yml -c local -i localhost,   # run as root
+ansible-playbook plays/nodes/other/pglogical.yml -i pglogical.localnet,
 
 # plays
 ansible-playbook plays/personal/dotfiles.yml -i localhost, -c local
-ansible-playbook plays/personal/scripts.yml -i localhost, -c local 
+ansible-playbook plays/personal/scripts.yml -i localhost, -c local
 ansible-playbook plays/admin/openvpn.yml -i vpn,
 ansible-playbook plays/admin/devenv-lite.yml -i localhost, -c local
 ansible-playbook plays/admin/postfix.yml -i mail.n.n,
@@ -42,7 +42,7 @@ ansible-playbook plays/admin/locale.yml -i $myhost,
 ansible-playbook plays/personal/dotfiles.yml -i $myhost,
 
 
-# flags 
+# flags
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 ansible-playbook nodes/other/dell-home.yml --list-tags
@@ -50,12 +50,15 @@ ansible-playbook nodes/aodn/aatams.yml -v
 
 ```
 
-NOTE - can push everything into roles
-      - then plays just associate. 
-      - and nodes associate ip - except pre-tasks are useful and it becomes confusing.
+TODO
+  - to keep code composible, where it can be used in different contexts, it must be in a role, rather than
+    a play. the play is just the thing that co-ordinates the plays.
+      - therefore we want to factor stuff out of the play - especially the pre_tasks user creation
+      - actually that doesn't even matter too much...
 
 
-to force handler to run immediately.
+
+force a handler to run immediately.
 - meta: flush_handlers
 
 #### Useful flags
@@ -74,13 +77,16 @@ to force handler to run immediately.
 
 # Use ping module
 ansible all -i nc2, -c local -m ping
+
+# predefined vars of target
+ansible -m setup localhost
 ```
 
 #### Notes
 
 -  Requires Ansible version >= 2
 
-- it seems eaiser to not to manage /etc/apt/sources.list 
+- it seems eaiser to not to manage /etc/apt/sources.list
 
 - rather than use register varaibles to flag the need for handlers such service restart, can touch/write a file, and read again at the end. this avoids the case of notified handlers not being called, due to some other mistake in the provision.
 
