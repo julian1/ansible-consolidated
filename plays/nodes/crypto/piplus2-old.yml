@@ -2,7 +2,7 @@
 - hosts:
     - piplus2
   vars_files:
-    - ../../vars/credentials.yml
+    - "{{lookup('env','PWD')}}/credentials.yml"
   vars:
     - users:
       - { name: meteo,    group: adm,     pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }

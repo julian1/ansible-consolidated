@@ -30,9 +30,19 @@
     - 192.168.100.1
     # - 172.16.0.1
   vars_files:
-    - ../../../credentials.yml
+    - "{{lookup('env','PWD')}}/credentials.yml"
+
   vars:
   pre_tasks:
+
+  # https://stackoverflow.com/questions/30787273/variable-that-has-the-path-to-the-current-ansible-playbook-that-is-executing
+    # ok this works....
+    #- debug: msg="here is {{lookup('env','PWD')}}"   # "
+    # this is the drilled down playbook.
+    #- debug: msg="playbook_dir is {{playbook_dir}}"   # "
+    #- debug: msg="inventory_dir is {{inventory_dir}}"   # "
+    # ansible_env.PWD is the target address - ie. /root.
+    #- debug: msg="path is {{ansible_env.PWD}}"   # "
 
     # root user
     - user: name=root shell=/bin/bash

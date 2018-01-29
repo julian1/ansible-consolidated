@@ -2,7 +2,7 @@
 - hosts:
     - 14-nec-hob
   vars_files:
-    - ../vars/credentials.yml
+    - "{{lookup('env','PWD')}}/credentials.yml"
   vars:
     - upgrade: safe
     - users:

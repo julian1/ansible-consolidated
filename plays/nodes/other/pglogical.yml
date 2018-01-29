@@ -71,7 +71,7 @@
     - pg-provider1.localnet
     - pg-subscriber1.localnet
   vars_files:
-    - ../vars/credentials.yml
+    - "{{lookup('env','PWD')}}/credentials.yml"
   vars:
     - users:
       - { name: meteo, group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }

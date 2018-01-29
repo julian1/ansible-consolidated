@@ -1,7 +1,7 @@
 
 - hosts: all
   vars_files:
-    - ../../vars/credentials.yml
+    - "{{lookup('env','PWD')}}/credentials.yml"
 
   pre_tasks:
     - user: name=meteo shell=/bin/bash password={{meteo_password}} groups=sudo
