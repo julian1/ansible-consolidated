@@ -3,7 +3,7 @@
 
 - hosts: dell-work
   vars_files:
-    - "{{lookup('env','PWD')}}/credentials.yml"
+    - "{{inventory_dir | dirname}}/credentials.yml"
   vars:
     - printer:
         name: ImosLexmark

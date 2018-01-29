@@ -1,7 +1,7 @@
 
 - hosts: dell-home
   vars_files:
-    - "{{lookup('env','PWD')}}/credentials.yml"
+    - "{{inventory_dir | dirname}}/credentials.yml"
   vars:
   pre_tasks:
 

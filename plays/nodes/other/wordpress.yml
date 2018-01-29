@@ -6,7 +6,7 @@
     - aodnblog
     - aodnblog2
   vars_files:
-    - "{{lookup('env','PWD')}}/credentials.yml"
+    - "{{inventory_dir | dirname}}/credentials.yml"
   vars:
     - users:
       - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}" }

@@ -7,7 +7,7 @@
     - timezone: Australia/Hobart
     - locale: en_AU.UTF-8
   vars_files:
-    - "{{lookup('env','PWD')}}/credentials.yml"
+    - "{{inventory_dir | dirname}}/credentials.yml"
   roles:
     - jessie
     - update

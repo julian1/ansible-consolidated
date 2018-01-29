@@ -5,7 +5,7 @@
     - aatams-test-instance
     - aatams-dev-instance
   vars_files:
-    - "{{lookup('env','PWD')}}/credentials.yml"
+    - "{{inventory_dir | dirname}}/credentials.yml"
   vars:
     - users:
       - { name: root,     group: ,    pubkey: "{{meteo_pubkey}}",   home_dir: /root }

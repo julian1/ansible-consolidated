@@ -7,7 +7,7 @@
       - { name: root,   group: ,    pubkey: "{{meteo_pubkey}}", home_dir: /root }
 
   vars_files:
-    - "{{lookup('env','PWD')}}/credentials.yml"
+    - "{{inventory_dir | dirname}}/credentials.yml"
   roles:
     - admin/apt/jessie
     - admin/apt/postgres
