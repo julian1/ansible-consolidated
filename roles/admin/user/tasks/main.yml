@@ -1,0 +1,12 @@
+
+# this isn't really valuable in terms of factorization, but allows us 
+# to avoid pre_tasks to do this in playsname
+
+    - user: name={{username}} shell=/bin/bash
+
+    - authorized_key: user={{username}} key="{{meteo_pubkey}}"
+
+    - file: path={{path}} mode={{mode}} state=directory
+
+
+
