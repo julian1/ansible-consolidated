@@ -25,14 +25,15 @@
       creates=/home/{{user}}/.rustup/settings.toml
 
 
-
   # install version 1.18.0 and switch to it
   # parity v1.7.6 needed 1.18.0
-  - name: install rust version 1.21.0
+  - name: install rust
     become: yes
     become_user: "{{user}}"
     shell: >
-      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install {{version}}  && rustup default 1.21.0
+      # TODO review me!
+      # export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install {{version}}  && rustup default 1.21.0
+      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install {{version}}  && rustup default {{version}}
 
 
  # not idempotent. needs shell, because command handle env vars
