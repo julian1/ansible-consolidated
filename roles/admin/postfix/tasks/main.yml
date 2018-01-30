@@ -92,6 +92,7 @@
         # TLS parameters
         # TODO not signed by CA presents MITM problem for clients
         # https://askubuntu.com/questions/396120/what-is-the-purpose-of-the-ssl-cert-snakeoil-key
+        # https://superuser.com/questions/700170/are-ssls-default-snake-oil-certificates-truly-snake-oil-as-opposed-to-being-gen
         smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
         smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
         smtpd_use_tls=yes
