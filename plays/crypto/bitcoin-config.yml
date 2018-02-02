@@ -1,8 +1,23 @@
 
+# SO WE DO WANT IT RUNNING IN A SEPERATE ACCOUNT
+
 - hosts: all
+  vars_files:
+    - ../../credentials.yml
+  vars:
+    user: bitcoin
+    path: /home/bitcoin
+
   roles:
+    - name: admin/user
+      username: "{{user}}"
+      mode: 0700
+
+    - name: personal/dotfiles
+      tags: dotfiles
+
     - name: crypto/bitcoin-config
-      path: /home/meteo
-      user: meteo
+      path: /home/bitcoin
+      user: bitcoin
 
 

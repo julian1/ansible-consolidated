@@ -1,40 +1,34 @@
 
-# install generic minimal user and environment for server
-
-# eg. ansible-playbook plays/meteo.yml -i parity, -u admin -s
-
-# use meteo-sudo.yml to add sudo and passwd. cannot be made generic, since group membership may be different
-
-# keep sshd separate - because that makes it a server which we don't always want
-#  - name: admin/sshd
+#   install generic minimal user and environment for server
+#   eg. ansible-playbook plays/meteo.yml -i parity, -u admin -s
+#   use meteo-sudo.yml to add sudo and passwd. cannot be made generic, since group membership may be different
+#   keep sshd separate - because that makes it a server which we don't always want
 
 - hosts: all
   vars_files:
     - ../../credentials.yml
   vars:
-  pre_tasks:
-    - user: name=meteo shell=/bin/bash
-    - authorized_key: user=meteo key="{{meteo_pubkey}}"
-    - file: path=/home/meteo mode=0700 state=directory
 
   roles:
     - name: admin/timezone
     - name: admin/locale
     - name: admin/devenv-lite
 
-    # note, for root, must manually edit /root/.bashrc to include . .bash_aliases
-    # and .vimrc to disable pathogen
+    - name: admin/user
+      username: meteo
+      path: /home/meteo
+      mode: 0700
+
+
     - name: personal/dotfiles
       tags: root_dotfiles
       path: /root
       user: root
 
-
     - name: personal/dotfiles
       tags: dotfiles
       path: /home/meteo
       user: meteo
-
 
     - name: personal/pathogen
       tags: pathogen

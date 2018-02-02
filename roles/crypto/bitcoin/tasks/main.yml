@@ -1,4 +1,6 @@
 
+  just use nix pkg
+
   # key_file=/home/user/.ssh/id_rsa.github-{{ item.repo }}
 
   - copy:

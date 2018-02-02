@@ -1,70 +1,41 @@
 
+# SO WE DO WANT IT RUNNING IN A SEPERATE ACCOUNT
+
+# ok,  so we can't just run this to create a new user...
+# but we can factor the role.
+
+# hang on no. we do have to build lightning. but it's messy to build it twice...
+# but would be interesting to test whether it works.
+
+# change name path to home_dir?
+# building services in /usr/local/bin
+# that puts them in the path
+
+# ---
+# ok, so there's a probem, we can't have two instances running, because we can't bind the port....
+
+# ok - do we want to rebuild before we fund.
+
+# SO WE DO WANT IT RUNNING IN A SEPERATE ACCOUNT
+
 - hosts: all
   vars_files:
     - ../../credentials.yml
 
+  vars:
+    user: lightning
+    path: /home/lightning
+    build_dir: "{{path}}/lightning"
 
   roles:
     - name: admin/user
-      username: c-lightning
-      path: /home/c-lightning
-      mode: 0700 
+      username: "{{user}}"
+      mode: 0700
 
     - name: personal/dotfiles
       tags: dotfiles
-      path: /home/c-lightning
-      user: c-lightning
 
     - name: crypto/c-lightning
-      build_dir: /home/c-lightning/c-lightning
-      user: c-lightning
 
+    - name: crypto/c-lightning-config
 
-  tasks:
-
-    # move to c-lighting-config or just into c-lightning.
-    - copy:
-        dest: /home/c-lightning/c-lightningd.sh
-        owner: c-lightning
-        group: c-lightning
-        mode: 0700
-        content: |
-          #!/bin/bash
-          # deployed by ansible!
-
-          PATH="c-lightning/lightningd/:$PATH"
-          PATH="/nix/var/nix/profiles/default/bin/:$PATH"
-
-          lightningd --lightning-dir=data --bitcoin-datadir /home/testnet/data --network=testnet
-
-      tags: config
-
-    - copy:
-        dest: /home/c-lightning/cli.sh
-        owner: c-lightning
-        group: c-lightning
-        mode: 0700
-        content: |
-          #!/bin/bash
-          # deployed by ansible!
-
-          PATH="c-lightning/cli/:$PATH"
-
-          lightning-cli --lightning-dir data "$@"
-
-      tags: config
-
-
-      # ./cli.sh help
-      # ./cli.sh getinfo
-      # ./cli.sh listfunds
-
-      # need address to open a channel
-      # ./cli.sh newaddr
-
-
-
-     
- 
-#version: v1.8.6
- 

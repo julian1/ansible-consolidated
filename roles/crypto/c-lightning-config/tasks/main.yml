@@ -1,0 +1,75 @@
+
+  # we have user, path,  the install dir is below that
+  # rather than same
+
+  # use locally relative paths where we can
+
+  - copy:
+      dest: "{{path}}/lightningd.sh"
+      owner: "{{user}}"
+      group: "{{user}}"
+      mode: 0700
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        PATH="./lightning/lightningd/:$PATH"
+        PATH="/nix/var/nix/profiles/default/bin/:$PATH"
+
+        lightningd --lightning-dir=data --bitcoin-datadir /home/testnet/data --network=testnet
+
+    tags: config
+
+  - copy:
+      dest: "{{path}}/cli.sh"
+      owner: "{{user}}"
+      group: "{{user}}"
+      mode: 0700
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        PATH="./lightning/cli/:$PATH"
+
+        lightning-cli --lightning-dir data "$@"
+
+    tags: config
+
+
+    # ./cli.sh help
+    # ./cli.sh getinfo
+    # ./cli.sh listfunds
+
+    # need address to open a channel
+    # ./cli.sh newaddr
+    # fund with btc
+
+    # ./cli.sh  connect 03656a4c737b98b7ca5ad1ee4b411f5929f53552018b3925f341bcfa1c832287b7 104.131.26.124 9735 
+
+    # should show we are connected. ie. state=gossiping
+    # ./cli.sh listpeers 
+    # and should show lots of channels
+    # ./cli.sh listchannels 
+
+    # fund channel - think the 50000 is the fee, not the funding
+    # no fundchannel is the amount, but in satoshis. because the 50000 is locked, and there is a change address.
+    # ./cli.sh fundchannel 03656a4c737b98b7ca5ad1ee4b411f5929f53552018b3925f341bcfa1c832287b7 50000
+    # "state" : "CHANNELD_AWAITING_LOCKIN"
+
+    # but it created a transaction for the full amount...
+
+    # ./cli.sh listpeers
+    # then after one confirmation, ONCHAIND_OUR_UNILATERAL 
+
+    # can see/and decode tx, and confirmations, using bitcoin cli, 
+    # ./cli.sh getrawtransaction "0e201ad3739d9d67e37815061670e4b5815ff5149d742ef13d744699383668a3" 1
+
+    # it returns a tx.
+    
+#    a=nnnn
+#    ./cli.sh connect $a 45.76.235.75:9735 ^C
+#    ./cli.sh fundchannel $a 1000000
+        
+
+    #version: v1.8.6
+

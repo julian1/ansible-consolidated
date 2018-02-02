@@ -1,4 +1,5 @@
 
+  # testnet by default
 
   # eg. usage, 
   # ./cli.sh getinfo
@@ -16,6 +17,8 @@
         #!/bin/bash
         # deployed by ansible!
 
+        export PATH="/nix/var/nix/profiles/default/bin/:$PATH"
+
         bitcoin-cli -datadir=./data -testnet $@ | less
 
 
@@ -25,6 +28,8 @@
       content: |
         #!/bin/bash
         # deployed by ansible!
+
+        export PATH="/nix/var/nix/profiles/default/bin/:$PATH"
 
         bitcoind -datadir=./data -testnet -txindex
 
