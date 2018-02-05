@@ -1,0 +1,12 @@
+
+
+
+- hosts: all
+
+  roles:
+    - name: admin/swap
+      size: 2000000
+
+
+# 2m*1024=2GB
+#      - dd if=/dev/zero of=/swap bs=1024 count={{size}}
