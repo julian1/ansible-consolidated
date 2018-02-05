@@ -1,7 +1,7 @@
 
   # testnet by default
 
-  # eg. usage, 
+  # eg. usage,
   # ./cli.sh getinfo
   # ./cli.sh listreceivedbyaddress 0 true
   # ./cli.sh getrawtransaction 'xxx' 1
@@ -19,7 +19,13 @@
 
         export PATH="/nix/var/nix/profiles/default/bin/:$PATH"
 
-        bitcoin-cli -datadir=./data -testnet $@ | less
+        # bitcoin-cli -datadir=./data -testnet $@ | less
+        # we don't need the datadir
+        bitcoin-cli  \
+          --rpcuser=test  \
+          --rpcpassword=test \
+          -testnet \
+          $@ | less
 
 
   - copy:

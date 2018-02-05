@@ -1,8 +1,7 @@
 
-  # we have user, path,  the install dir is below that
-  # rather than same
 
-  # use locally relative paths where we can
+  # have to chmod 755 on /home/bitcoin/data
+  # does it make sense to use the same user for both services - since they're both trusted the same.
 
   - copy:
       dest: "{{path}}/lightningd.sh"
@@ -16,7 +15,17 @@
         PATH="./lightning/lightningd/:$PATH"
         PATH="/nix/var/nix/profiles/default/bin/:$PATH"
 
-        lightningd --lightning-dir=data --bitcoin-datadir /home/testnet/data --network=testnet
+        # ndata is bitcoin data dir
+        # lightningd --lightning-dir=data --bitcoin-datadir /home/bitcoin/data --network=testnet | json_pp
+
+        # no longer need the bitcoin.conf in the bitcoin datadir... nice.
+        lightningd  \
+          --bitcoin-rpcuser test \
+          --bitcoin-rpcpassword test \
+          --bitcoin-rpcconnect 127.00.1 \
+          --lightning-dir=data  \
+          --network=testnet \
+          | json_pp
 
     tags: config
 
@@ -31,10 +40,38 @@
 
         PATH="./lightning/cli/:$PATH"
 
-        lightning-cli --lightning-dir data "$@"
+        # data is lightning data dir
+        lightning-cli --lightning-dir ./data "$@"
 
     tags: config
 
+
+  # access bitcoin-cli
+  # useful to do from the same account
+  - copy:
+      dest: "{{path}}/clib.sh"
+      owner: "{{user}}"
+      group: "{{user}}"
+      mode: 0700
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        export PATH="/nix/var/nix/profiles/default/bin/:$PATH"
+
+        # we don't need the datadir
+        bitcoin-cli  \
+          --rpcuser=test  \
+          --rpcpassword=test \
+          -testnet \
+          $@ | less
+
+    tags: config
+
+    ##################################
+
+    # faucet, https://testnet.manu.backend.hamburg/faucet
+    # ln explorer, https://explorer.acinq.co/
 
     # ./cli.sh help
     # ./cli.sh getinfo
@@ -42,34 +79,42 @@
 
     # need address to open a channel
     # ./cli.sh newaddr
-    # fund with btc
+    # then send btc from faucet direct
 
-    # ./cli.sh  connect 03656a4c737b98b7ca5ad1ee4b411f5929f53552018b3925f341bcfa1c832287b7 104.131.26.124 9735 
+    # check tx with btc
+    # ./cli.sh getrawtransaction xxx 1 | grep conF
+
+    # ./cli.sh connect $ch 104.131.26.124 9735
 
     # should show we are connected. ie. state=gossiping
-    # ./cli.sh listpeers 
+    # ./cli.sh listnodes
+    # ./cli.sh listpeers
     # and should show lots of channels
-    # ./cli.sh listchannels 
+    # ./cli.sh listchannels
 
-    # fund channel - think the 50000 is the fee, not the funding
-    # no fundchannel is the amount, but in satoshis. because the 50000 is locked, and there is a change address.
-    # ./cli.sh fundchannel 03656a4c737b98b7ca5ad1ee4b411f5929f53552018b3925f341bcfa1c832287b7 50000
+    # fundchannel amount is amount (not fee), in satoshis. ie 1000000 is 0.01btc is locked,
+
+    # ./cli.sh fundchannel $ch 1000000
     # "state" : "CHANNELD_AWAITING_LOCKIN"
 
-    # but it created a transaction for the full amount...
+    # took 3 confirmations before got state change to CHANNELD_NORMAL
 
-    # ./cli.sh listpeers
-    # then after one confirmation, ONCHAIND_OUR_UNILATERAL 
-
-    # can see/and decode tx, and confirmations, using bitcoin cli, 
-    # ./cli.sh getrawtransaction "0e201ad3739d9d67e37815061670e4b5815ff5149d742ef13d744699383668a3" 1
+    # can see/and decode tx, and confirmations, using bitcoin cli,
+    # ./cli.sh getrawtransaction $tx  1
 
     # it returns a tx.
-    
-#    a=nnnn
-#    ./cli.sh connect $a 45.76.235.75:9735 ^C
-#    ./cli.sh fundchannel $a 1000000
-        
 
-    #version: v1.8.6
+    # note. just put in desc, otherwise it's interpreted as the locktime
+    # ./cli.sh  invoice 163 'gem3' 'desc' 86400
+
+    # ./cli.sh pay $invoice
+    # ./cli.sh listpayments
+
+    # getroute does show a route,
+    # ./cli.sh  getroute $n 1 0
+
+    # when reset - must delete THE hsm file, otherwise network/channel state will be preserved
+    # based on node identifers.
+
+    # we're not allowed to disconnect, from a peer, because then how would we settle if needed.
 
