@@ -11,19 +11,19 @@
       group: meteo
       content: |
         #!/bin/bash -x
-        
+
         target="$HOSTNAME-$(date '+%F-%H-%M').me.tgz.enc"
         bucket=""
-        if [ -z $bucket ]; then 
+        if [ -z $bucket ]; then
           echo "set the bucket!"
           exit
         else
           aws s3 cp ./me.tgz.enc "s3://$bucket/$target"
         fi
 
-  # TODO - change to use -pass file:~/.ssh/file 
+  # TODO - change to use -pass file:~/.ssh/file
   # also passes in ./mozila, .ssh, `aws
- 
+
   - copy:
       dest: /home/meteo/backup.sh
       mode: 0700
@@ -126,7 +126,11 @@
       group: meteo
       content: |
         # deployed by ansible!
-        sshfs root@nuc.localnet:/storage /home/meteo/mnt
+
+        target="$HOME/mnt/nuc"
+        [ -d $target ] || mkdir -p $target
+
+        sshfs root@nuc.localnet:/storage $target
 
 
   - copy:
@@ -136,7 +140,10 @@
       group: meteo
       content: |
         # deployed by ansible!
-        sshfs meteo@dell-home.localnet:/home/meteo /home/meteo/mnt
+        target="$HOME/mnt/dell-home"
+        [ -d $target ] || mkdir -p $target
+
+        sshfs meteo@dell-home.localnet:/home/meteo $target
 
 
   - copy:
