@@ -141,6 +141,7 @@
         iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 10.8.0.6
         iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 30303 -j DNAT --to 10.8.0.6
 
+        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.6
 
     notify: reconfigure-iptables
     tags: iptables
