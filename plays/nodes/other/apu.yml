@@ -151,7 +151,7 @@
           interface=wlan0
           ssid=AP1
           hw_mode=g
-          channel=7
+          channel=9
           auth_algs=1
           wpa=2
           wpa_passphrase={{wpa_passphrase}}

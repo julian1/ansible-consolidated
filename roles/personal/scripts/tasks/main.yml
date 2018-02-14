@@ -134,6 +134,20 @@
 
 
   - copy:
+      dest: /usr/local/bin/sshfs-apu2.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+
+        target="$HOME/mnt/apu2"
+        [ -d $target ] || mkdir -p $target
+
+        sshfs root@apu2:/home/transmission/downloads $target
+
+
+  - copy:
       dest: /usr/local/bin/sshfs-dell-home.sh
       mode: 0700
       owner: meteo
