@@ -1,0 +1,9 @@
+
+  - name: restart-br0
+    command: sh -c "/sbin/ifdown br0 && sleep 1 && /sbin/ifup br0"
+
+  - name: restart-dhcp
+    service: name=isc-dhcp-server state=restarted
+
+
+

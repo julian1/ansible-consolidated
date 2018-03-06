@@ -268,7 +268,9 @@
 
 
     ##############################################
-     
+
+
+    
 
     #####
     - apt: name=bridge-utils
@@ -285,6 +287,7 @@
           allow-hotplug eth0
           iface eth0 inet dhcp
 
+          # DEPRECATED - use /admin/bridge-tap 
           auto br0
           iface br0 inet static
             address 10.1.1.1
@@ -396,6 +399,8 @@
     - apt: name=ethtool
 
 
+
+    DEPRECATED - use /admin/bridge-tap 
 
     #####
     # Support bridge addif for qemu

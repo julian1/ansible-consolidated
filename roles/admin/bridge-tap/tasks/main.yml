@@ -1,0 +1,142 @@
+
+
+# hmmm. we are still going to need dhcp... and nat.  actually no.
+# dhcp - just use static. for nat. we might get away with the vpn, router
+
+  # insertafter: "<body>"
+
+# TODO ordinary permisson on creation of TUN dnevice.
+# https://unix.stackexchange.com/questions/243382/making-dev-net-tun-available-to-qemu/243405
+
+  - apt: name=bridge-utils
+
+
+  - blockinfile:
+      dest: /etc/network/interfaces
+      marker: "# {mark} ANSIBLE MANAGED BLOCK" 
+      content: |
+        auto br0
+        iface br0 inet static
+          address 10.3.0.1
+          netmask 255.255.255.0
+          bridge_ports dummy0
+          bridge_stp off
+          bridge_fd 0
+    notify: restart-br0
+ 
+
+  #####
+  # Support bridge addif for qemu
+  # tunctl from uml-utilities only needed for permissions, not strictly needed
+  - apt: name=qemu-kvm
+  - apt: name=uml-utilities
+
+  - copy:
+      dest: /etc/qemu-ifup
+      mode: 0755
+      content: |
+        #!/bin/sh -x
+        # deployed by ansible
+        echo "i am $(whoami)"
+        switch=br0
+        if [ -n "$1" ];then
+            # has to be run as root...
+            # tunctl -u `whoami` -t $1
+            ip link set $1 up
+            sleep 0.5s
+            brctl addif $switch $1
+            exit 0
+        else
+            ECHO "Error: no interface specified"
+            exit 1
+        fi
+
+  - copy:
+      dest: /etc/qemu-ifdown
+      mode: 0755
+      content: |
+        #!/bin/sh -x
+        # deployed by ansible
+        switch=br0
+        if [ -n "$1" ];then
+            # permissions...
+            brctl delif $switch $1
+            ip link delete $1
+            exit 0
+        else
+            echo "Error: no interface specified"
+            exit 1
+        fi
+
+
+
+  # dhcp
+  - apt: name=isc-dhcp-server
+
+  - copy:
+      dest: /etc/default/isc-dhcp-server
+      owner: root
+      group: root
+      # backup: yes
+      content: |
+        # deployed by ansible!
+        #Separate multiple interfaces with spaces, e.g. “eth0 eth1".
+        INTERFACESv4="br0"
+        INTERFACESv6=""
+    notify: restart-dhcp
+    tags: dhcp
+
+  # see apu, config to change logging...
+
+  - copy:
+      dest: /etc/dhcp/dhcpd.conf
+      owner: root
+      group: root
+      # backup: yes
+      content: |
+        # deployed by ansible!
+
+        # Show that we want to be the only DHCP server in this network:
+        authoritative;
+
+        option domain-name "localnet";
+        # option domain-name-servers 131.217.38.36, 8.8.4.4;
+        # TODO don't think we need this... because we are explicit
+        option domain-name-servers 208.67.222.222;
+
+        # default-lease-time 600; 10 mins
+        default-lease-time 3600;  # one hour
+        max-lease-time 7200;
+
+        # requires corresponding entry in /etc/rsyslog.conf
+        log-facility local7;
+
+        # https://gauvain.pocentek.net/docs/dhcpd-push-routes/
+        # https://ercpe.de/blog/pushing-static-routes-with-isc-dhcp-server
+        # defines the type of data used to send the routing informations
+        option classless-routes code 121 = array of unsigned integer 8;
+
+        # Set up our desired subnet:
+        # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
+        subnet 10.3.0.0 netmask 255.255.255.0 {
+            interface "br0";
+
+            range 10.3.0.30  10.3.0.40;
+
+            option subnet-mask 255.255.255.0;
+            option broadcast-address 10.3.0.255;
+            option routers 10.3.0.1;
+            option domain-name-servers 8.8.8.8;
+
+            # gateways for subnets when default route is openvpn
+            # option classless-routes 16, 192,168,    192,168,201,1,
+            #                        24, 10,4,0,     192,168,201,1;
+
+            host budii        { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
+            # host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
+        }
+
+    notify: restart-dhcp
+    tags: dhcp
+
+
