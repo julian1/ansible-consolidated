@@ -13,7 +13,7 @@
 
   - blockinfile:
       dest: /etc/network/interfaces
-      marker: "# {mark} ANSIBLE MANAGED BLOCK" 
+      marker: "# {mark} ANSIBLE MANAGED BLOCK"
       content: |
         auto br0
         iface br0 inet static
@@ -23,7 +23,7 @@
           bridge_stp off
           bridge_fd 0
     notify: restart-br0
- 
+
 
   #####
   # Support bridge addif for qemu
@@ -109,7 +109,7 @@
         max-lease-time 7200;
 
         # requires corresponding entry in /etc/rsyslog.conf
-        log-facility local7;
+        # log-facility local7;
 
         # https://gauvain.pocentek.net/docs/dhcpd-push-routes/
         # https://ercpe.de/blog/pushing-static-routes-with-isc-dhcp-server
@@ -132,7 +132,7 @@
             # option classless-routes 16, 192,168,    192,168,201,1,
             #                        24, 10,4,0,     192,168,201,1;
 
-            host budii        { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
+            host kvm-inst     { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
             # host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
         }
 

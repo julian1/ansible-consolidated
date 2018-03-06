@@ -879,7 +879,8 @@
       notify: restart-dhcp
       tags: dhcp
 
-
+  
+    # configure rsyslog to move dhcp logging out of syslog
     # See, http://shallowsky.com/blog/linux/rsyslog-conf-tutorial.html
     - copy:
         dest: /etc/rsyslog.conf
