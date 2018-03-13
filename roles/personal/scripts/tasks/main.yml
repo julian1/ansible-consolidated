@@ -1,6 +1,8 @@
 
 # meteo must be part of group staff for /usr/local/bin
 
+# TODO - perhaps organize by content - and split out of main.yml
+# eg. separate out backup...
 
   ####
 

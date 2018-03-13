@@ -3,7 +3,6 @@
 # hmmm. we are still going to need dhcp... and nat.  actually no.
 # dhcp - just use static. for nat. we might get away with the vpn, router
 
-  # insertafter: "<body>"
 
 # TODO ordinary permisson on creation of TUN dnevice.
 # https://unix.stackexchange.com/questions/243382/making-dev-net-tun-available-to-qemu/243405
@@ -11,9 +10,10 @@
   - apt: name=bridge-utils
 
 
+  # insertafter: "<body>"
   - blockinfile:
       dest: /etc/network/interfaces
-      marker: "# {mark} ANSIBLE MANAGED BLOCK"
+      marker: "# {mark} ansible bridge"
       content: |
         auto br0
         iface br0 inet static
@@ -126,7 +126,9 @@
             option subnet-mask 255.255.255.0;
             option broadcast-address 10.3.0.255;
             option routers 10.3.0.1;
-            option domain-name-servers 8.8.8.8;
+            option domain-name-servers 208.67.222.222;
+            # option domain-name-servers 10.3.0.1;    # locally hosted bind
+
 
             # gateways for subnets when default route is openvpn
             # option classless-routes 16, 192,168,    192,168,201,1,
@@ -139,4 +141,22 @@
     notify: restart-dhcp
     tags: dhcp
 
+
+
+
+
+###############
+# from host, give instance access out the vpn...
+# iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
+
+# or to the host 192.168.0.0/16 network
+# iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0  -j MASQUERADE
+
+# note both router and vpn do egress nat'ing.
+# we should be able to route from vpn node with a routing entry for 10.3.0.0/24 via 10.8.0.6 on vpn node
+# or with a routing entry for 10.3.0.0/24 via 192.168.43.6 from router
+
+# also could consider source routing...
+
+# what's next? containers? bind. windows/osx.  gpu pass-through. 
 
