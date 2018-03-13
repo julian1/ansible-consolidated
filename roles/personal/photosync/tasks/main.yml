@@ -1,0 +1,64 @@
+
+  - file: path=/home/meteo/Pictures/rx100 mode=0755 owner=meteo group=meteo state=directory
+
+  - copy:
+      dest: /home/meteo/Pictures/rx100/sync.sh
+      mode: 0755
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash -x
+
+        dir=$(pwd)
+        mnt=./mnt
+
+        # mount and rsync
+        [ -d $mnt/ ] || mkdir $mnt
+
+        mount -U 6236-3431 $mnt/ || exit
+        # blkid 6236-3431
+
+        # images
+        rsync -avP $mnt/DCIM/100MSDCF $dir || exit
+
+        # videos
+        rsync -avP $mnt/MP_ROOT/100ANV01 $dir || exit
+
+        umount $mnt/
+
+        # needed if root is required to run this, to perform the mount
+        # should be a way to do the mount without root.
+        chown -R meteo $dir 
+
+
+  - copy:
+      dest: /home/meteo/Pictures/rx100/smaller.sh
+      mode: 0755
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash
+        # needs to be root
+
+        dir=$(pwd)
+
+        [ -d $dir/smaller ] || mkdir $dir/smaller 
+
+        # chown -R meteo: $dir || exit
+
+        find $dir/100MSDCF -type f | grep '.*JPG$' | sort -n | while read i; do 
+
+          target="$dir/smaller/$(basename $i)"
+
+          if [ -f $target ]; then
+            echo $target already exists, ignoring!
+
+          else
+            # convert $i -resize 2048 $target; 
+            echo "converting $i -> $target" 
+            # convert $i -resize 2048  -level 0%,100%,1.2  -colorspace srgb  $target; 
+            convert $i -resize 1024  -level 0%,100%,1.2  -colorspace srgb $target; 
+          fi
+        done
+
+
