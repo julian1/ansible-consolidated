@@ -7,8 +7,10 @@
 # TODO ordinary permisson on creation of TUN dnevice.
 # https://unix.stackexchange.com/questions/243382/making-dev-net-tun-available-to-qemu/243405
 
-  - apt: name=bridge-utils
+  #############################
+  # bridge
 
+  - apt: name=bridge-utils
 
   # insertafter: "<body>"
   - blockinfile:
@@ -70,6 +72,7 @@
 
 
 
+  #############################
   # dhcp
   - apt: name=isc-dhcp-server
 
@@ -87,6 +90,10 @@
     tags: dhcp
 
   # see apu, config to change logging...
+
+  # systemctl enable isc-dhcp-server
+  # systemctl start isc-dhcp-server
+  # /usr/sbin/dhcpd -4 -q -cf /etc/dhcp/dhcpd.conf br0
 
   - copy:
       dest: /etc/dhcp/dhcpd.conf
@@ -126,20 +133,169 @@
             option subnet-mask 255.255.255.0;
             option broadcast-address 10.3.0.255;
             option routers 10.3.0.1;
-            option domain-name-servers 208.67.222.222;
-            # option domain-name-servers 10.3.0.1;    # locally hosted bind
+            # option domain-name-servers 208.67.222.222;
+            option domain-name-servers 10.3.0.1;    # locally hosted bind
 
 
             # gateways for subnets when default route is openvpn
             # option classless-routes 16, 192,168,    192,168,201,1,
             #                        24, 10,4,0,     192,168,201,1;
 
-            host kvm-inst     { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
+            host kvm-inst             { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
+
+            host stretch.chroot.devel { hardware ethernet 02:01:02:03:04:08; fixed-address 10.3.0.11; }
+
+
             # host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
         }
 
     notify: restart-dhcp
     tags: dhcp
+
+
+  # enable
+  # this isn't really right... we just want it enabled.
+  # - service: name=isc-dhcp-server enabled=yes state=started
+
+
+
+  #############################
+  # bind
+
+  # need ntp time, or can get, 'broken trust chain resolving' 
+  # https://www.centos.org/forums/viewtopic.php?t=49614
+  - apt: name=ntp             # network time
+
+  # note,  can reload config with 'rndc reload'
+  # NOTE problem with rndc.key  solved by purge bind9 and reinstall
+  - apt: name=bind9
+
+  - file: path=/etc/bind/zones state=directory owner=root group=bind
+
+  # named options and configuration
+  - copy:
+      dest: /etc/bind/named.conf.options
+      # backup: yes
+      content: |
+        # deployed by ansible!
+        options {
+          directory "/var/cache/bind";
+          forwarders {
+            208.67.222.222;
+            # 8.8.8.8;
+          };
+
+          # https://stackoverflow.com/questions/13342003/ns-got-insecure-response-parent-indicates-it-should-be-secure
+          dnssec-enable no; 
+          dnssec-validation no;
+
+          # dnssec-validation auto;
+          auth-nxdomain no;    # conform to RFC1035
+
+          # listen-on-v6 { any; };
+          listen-on-v6 { none; };
+
+          # listen-on port 53 { 127.0.0.1; 223.1.2.1; };
+          response-policy { zone "rpz"; };
+
+          # notify other dns
+          notify no;
+        };
+
+    notify: restart-bind
+    tags: bind
+
+  # zones
+  - copy:
+      dest: /etc/bind/named.conf.local
+      # backup: yes
+      content: |
+        # deployed by ansible!
+
+        zone "localnet2" {
+          type master;
+          file "/etc/bind/zones/localnet2.db";
+        };
+
+        # see, https://www.redpill-linpro.com/sysadvent/2015/12/08/dns-rpz.html
+        zone "rpz" {
+          type master;
+          file "/etc/bind/zones/rpz.db";
+        };
+    notify: restart-bind
+    tags: bind
+
+
+  # rpz zone
+  - copy:
+      dest: /etc/bind/zones/rpz.db
+      owner: root
+      group: bind
+      content: |
+        ; deployed by ansible!
+        ;
+
+        $TTL 60
+        @            IN    SOA  localhost. root.localhost.  (
+                                  2015112501   ; serial
+                                  1h           ; refresh
+                                  30m          ; retry
+                                  1w           ; expiry
+                                  30m)         ; minimum
+                           IN     NS    ns1.
+                           IN     NS    ns2.
+
+        ; Enable/disable here...
+        test.com  A     127.0.0.1
+
+    notify: restart-bind
+    tags: bind
+
+
+  # localnet2 zone
+  - copy:
+      dest: /etc/bind/zones/localnet2.db
+      owner: root
+      group: bind
+      content: |
+        ; deployed by ansible!
+        ;
+        $TTL 60
+        $ORIGIN localnet2.
+        @             IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
+        @             IN NS ns1
+        ; @             IN NS ns2
+        @             IN A 10.3.0.1
+        ; @           IN AAAA ::1
+        @             IN MX 10 10.3.0.1
+
+        ;
+        stretch.chroot.devel IN A 10.3.0.11;
+
+        mail          IN A 10.3.0.1
+        ns1           IN A 10.3.0.1
+        ; ns2           IN A 10.3.0.1
+    notify: restart-bind
+    tags: bind
+
+
+
+  - apt: name=iptables-persistent
+
+
+  - copy:
+      dest: /etc/iptables-rules
+      content: |
+        # deployed by ansible!
+        #####
+        # flush current chain rules
+        iptables -t nat --flush
+
+        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
+
+    notify: reconfigure-iptables
+    tags: iptables
+
 
 
 

@@ -3,7 +3,15 @@
     command: sh -c "/sbin/ifdown br0 && sleep 1 && /sbin/ifup br0"
 
   - name: restart-dhcp
-    service: name=isc-dhcp-server state=restarted
+    service: name=isc-dhcp-server enabled=yes state=restarted
 
+  - name: restart-bind
+    service: name=bind9 enabled=yes state=restarted
+
+  - name: reconfigure-iptables
+    command: "{{item}}"
+    with_items:
+      - sh /etc/iptables-rules
+      - dpkg-reconfigure --frontend noninteractive iptables-persistent
 
 
