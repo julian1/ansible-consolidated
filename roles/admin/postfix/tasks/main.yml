@@ -1,6 +1,4 @@
 
-  # TODO alias https://www.digitalocean.com/community/tutorials/how-to-set-up-a-postfix-e-mail-server-with-dovecot
-
   # TODO move to node specific role
 
   # needs the following DNS records - MX, A, SPF, PTR (via host), TXT (same as SPF)
@@ -456,6 +454,17 @@
           }
         }
 
+
+        # disable imap, only imaps
+        service imap-login {
+          inet_listener imap {
+            port = 0
+          }
+          inet_listener imaps {
+            port = 993
+          }
+        }
+
       
         # standard imap (143), 
         # imaps 993
@@ -465,8 +474,10 @@
     tags: dovecot
 
 
-  ##
+  ##############################################
   # aliases
+  # TODO alias https://www.digitalocean.com/community/tutorials/how-to-set-up-a-postfix-e-mail-server-with-dovecot
+  # we redirect 'mail' user here,
 
   - copy:
       dest: /etc/aliases
