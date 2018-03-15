@@ -105,6 +105,9 @@
         # See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
         # information on enabling SSL in the smtp client.
 
+        # this might just be for ciryal sasl
+        smtpd_sasl_auth_enable = yes 
+
         # JA
         # smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
         smtpd_recipient_restrictions =
@@ -119,9 +122,9 @@
         # https://wiki2.dovecot.org/HowTo/PostfixAndDovecotSASL
         smtpd_sasl_type = dovecot
       
-        # for postfix/ dovecot smtp  communication. use tcp instead of domain socket to be consistent with dkim and dmarc
+        # for postfix/ dovecot smtp communication. use tcp instead of domain socket to be consistent with dkim and dmarc
         smtpd_sasl_path = inet:127.0.0.1:12345
-
+       
 
         # JA SPF
         policy-spf_time_limit = 3600s
@@ -139,6 +142,7 @@
 
     # restarts it
     notify: reconfigure-postfix
+    tags: postfix
 
 
   ##############################################
@@ -193,10 +197,35 @@
         policy-spf  unix  -       n       n       -       -       spawn
           user=nobody argv=/usr/bin/policyd-spf
 
+        # JA port 587
+        # https://www.faqforge.com/linux/how-to-enable-port-587-submission-in-postfix/
+        #submission inet n - n - - smtpd
+        # https://serverfault.com/questions/481477/in-postfix-how-to-enforce-tls-auth-over-587-while-leaving-tls-optional-for-25
+
+        submission inet n       -       n       -       -       smtpd
+          -o smtpd_tls_security_level=encrypt
+
+
+        # https://wiki2.dovecot.org/HowTo/PostfixAndDovecotSASL
+        # these work as overrides - note that many are repeated
+
+          # -o smtpd_sasl_path=private/auth
+#        submission inet n - n - - smtpd
+#          -o smtpd_tls_security_level=encrypt
+#          -o smtpd_sasl_auth_enable=yes
+#          -o smtpd_sasl_type=dovecot
+#          -o smtpd_sasl_security_options=noanonymous
+#          -o smtpd_sasl_local_domain=$myhostname
+#          -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+#          -o smtpd_sender_login_maps=hash:/etc/postfix/virtual
+#          -o smtpd_sender_restrictions=reject_sender_login_mismatch
+#          -o smtpd_recipient_restrictions=reject_non_fqdn_recipient,reject_unknown_recipient_domain,permit_sasl_authenticated,reject
+
+
 
     # reconfigure and restart handler
     notify: reconfigure-postfix
-    tags: whoot
+    tags: postfix
 
 
 
@@ -446,7 +475,7 @@
         ssl_key = </etc/ssl/private/ssl-cert-snakeoil.key
 
 
-        # JA communciation with postfix, tcp rather than domain socket,
+        # JA communciation with postfix, tcp rather than domain socket, to be consistent
         service auth {
           inet_listener {
             address=127.0.0.1
@@ -464,11 +493,6 @@
             port = 993
           }
         }
-
-      
-        # standard imap (143), 
-        # imaps 993
-
 
     notify: reconfigure-dovecot
     tags: dovecot
