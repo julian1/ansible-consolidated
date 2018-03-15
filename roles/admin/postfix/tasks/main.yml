@@ -1,4 +1,6 @@
 
+  # TODO alias https://www.digitalocean.com/community/tutorials/how-to-set-up-a-postfix-e-mail-server-with-dovecot
+
   # TODO move to node specific role
 
   # needs the following DNS records - MX, A, SPF, PTR (via host), TXT (same as SPF)
@@ -24,6 +26,7 @@
   # TODO maybe move logging out of /var/log/syslog.
 
   ##############################################
+  # postfix
 
   - apt: name=postfix
 
@@ -112,6 +115,15 @@
            reject_unauth_destination
            check_policy_service unix:private/policy-spf
 
+        # JA Dovecot
+        # sasl type
+        # http://www.postfix.org/SASL_README.html#server_sasl_enable
+        # https://wiki2.dovecot.org/HowTo/PostfixAndDovecotSASL
+        smtpd_sasl_type = dovecot
+      
+        # for postfix/ dovecot smtp  communication. use tcp instead of domain socket to be consistent with dkim and dmarc
+        smtpd_sasl_path = inet:127.0.0.1:12345
+
 
         # JA SPF
         policy-spf_time_limit = 3600s
@@ -132,11 +144,11 @@
 
 
   ##############################################
-
-  # SPF see
+  # SPF see,
   #   https://help.ubuntu.com/community/Postfix/SPF
   #   https://www.linode.com/docs/email/postfix/configure-spf-and-dkim-in-postfix-on-debian-8
   # $ default configuration, grep -v ^# /etc/postfix/master.cf
+
   - copy:
       dest: /etc/postfix/master.cf
       content: |
@@ -299,7 +311,7 @@
 
 
   ##############################################
-  # DKIM
+  # Dmarc
 
   # https://www.skelleton.net/2015/03/21/how-to-eliminate-spam-and-protect-your-name-with-dmarc/#dmarc
 
@@ -340,7 +352,7 @@
         localhost
 
 
-  # seems like is overriding the socket environment variable 
+  # seems like is overriding the socket environment variable
   # bug on debian stretch,
   # bug affects dkim and stretch,
   # https://unix.stackexchange.com/questions/351584/how-to-configure-the-socket-for-opendkim-on-debian-testing-stretch
@@ -353,7 +365,7 @@
         [Unit]
         Description=OpenDMARC Milter
         Documentation=man:opendmarc(8) man:opendmarc.conf(5)
-        After=network.target nss-lookup.target 
+        After=network.target nss-lookup.target
 
         [Service]
         Type=forking
@@ -361,7 +373,7 @@
         User=opendmarc
         # JA ExecStart=/usr/sbin/opendmarc -p local:/var/run/opendmarc/opendmarc.sock  -u opendmarc -P /var/run/opendmarc/opendmarc.pid
         # it already reads its environment from /etc/default/opendmarc...
-        ExecStart=/usr/sbin/opendmarc 
+        ExecStart=/usr/sbin/opendmarc
         Restart=on-failure
         ExecReload=/bin/kill -USR1 $MAINPID
 
@@ -378,7 +390,7 @@
       content: |
         # deployed by ansible!
 
-        #DAEMON_OPTS=""
+        # DAEMON_OPTS=""
         RUNDIR=/var/run/opendmarc
         # JA
         SOCKET="inet:54321@localhost"
@@ -387,5 +399,99 @@
         PIDFILE=$RUNDIR/$NAME.pid
         EXTRAAFTER=
     notify: reconfigure-dmarc
- 
+
+
+
+
+
+  ##############################################
+  # Dovecot
+  # https://www.digitalocean.com/community/tutorials/how-to-set-up-a-postfix-e-mail-server-with-dovecot
+
+  - apt: name=dovecot-core
+    tags: dovecot
+
+  - apt: name=dovecot-imapd
+    tags: dovecot
+
+  # for all the default packages,
+  # - apt: name=dovecot-common
+
+  # disable port 143 - unencrypted...
+  # pam is localpasswords
+
+  - copy:
+      dest: /etc/dovecot/dovecot.conf
+      backup: yes
+      content: |
+        # deployed by ansible!
+
+        # JA The "plaintext" authentication will be tunneled through TLS
+        disable_plaintext_auth = no
+        mail_privileged_group = mail
+        mail_location = mbox:~/mail:INBOX=/var/mail/%u
+        userdb {
+          driver = passwd
+        }
+        passdb {
+          args = %s
+          driver = pam
+        }
+        protocols = " imap"
+
+
+        ssl=required
+        # ssl_cert = </etc/ssl/certs/mailcert.pem
+        # ssl_key = </etc/ssl/private/mail.key
+
+        ssl_cert = </etc/ssl/certs/ssl-cert-snakeoil.pem
+        ssl_key = </etc/ssl/private/ssl-cert-snakeoil.key
+
+
+        # JA communciation with postfix, tcp rather than domain socket,
+        service auth {
+          inet_listener {
+            address=127.0.0.1
+            port = 12345
+          }
+        }
+
+      
+        # standard imap (143), 
+        # imaps 993
+
+
+    notify: reconfigure-dovecot
+    tags: dovecot
+
+
+  ##
+  # aliases
+
+  - copy:
+      dest: /etc/aliases
+      backup: yes
+      content: |
+        # deployed by ansible!
+
+        mailer-daemon: postmaster
+        postmaster:    root
+        # JA
+        mail: meteo
+        root: meteo
+        nobody: root
+        hostmaster: root
+        usenet: root
+        news: root
+        webmaster: root
+        www: root
+        ftp: root
+        abuse: root
+
+    notify: reconfigure-aliases
+    tags: aliases
+
+
+
+
 

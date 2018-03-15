@@ -9,15 +9,24 @@
   # change name to restart
 
   - name: reconfigure-postfix
-    service: name=postfix state=restarted
+    service: name=postfix enabled=yes state=restarted
 
  
   - name: reconfigure-dkim
-    service: name=opendkim state=restarted
-
+    service: name=opendkim enabled=yes state=restarted
 
 
   - name: reconfigure-dmarc
-    service: name=opendmarc state=restarted
+    service: name=opendmarc enabled=yes state=restarted
+
+
+  - name: reconfigure-dovecot
+    service: name=dovecot enabled=yes state=restarted
+
+  - name: reconfigure-aliases
+    command: "{{item}}"
+    with_items:
+       - newaliases
+
 
 
