@@ -105,8 +105,8 @@
         # See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
         # information on enabling SSL in the smtp client.
 
-        # this might just be for ciryal sasl
-        smtpd_sasl_auth_enable = yes 
+        # JA required, not just cyrus or dovecot sasl access to smtpd
+        smtpd_sasl_auth_enable = yes
 
         # JA
         # smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
@@ -121,10 +121,10 @@
         # http://www.postfix.org/SASL_README.html#server_sasl_enable
         # https://wiki2.dovecot.org/HowTo/PostfixAndDovecotSASL
         smtpd_sasl_type = dovecot
-      
+
         # for postfix/ dovecot smtp communication. use tcp instead of domain socket to be consistent with dkim and dmarc
         smtpd_sasl_path = inet:127.0.0.1:12345
-       
+
 
         # JA SPF
         policy-spf_time_limit = 3600s
@@ -134,13 +134,15 @@
         milter_protocol = 2
         milter_default_action = accept
 
-        # DKIM and DMARC services
+        # JA DKIM and DMARC services
         smtpd_milters = inet:localhost:12301,inet:localhost:54321
         non_smtpd_milters = inet:localhost:12301,inet:localhost:54321
 
+        # JA
+        header_checks = regexp:/etc/postfix/header_checks
 
 
-    # restarts it
+    # restart
     notify: reconfigure-postfix
     tags: postfix
 
@@ -209,18 +211,17 @@
         # https://wiki2.dovecot.org/HowTo/PostfixAndDovecotSASL
         # these work as overrides - note that many are repeated
 
-          # -o smtpd_sasl_path=private/auth
-#        submission inet n - n - - smtpd
-#          -o smtpd_tls_security_level=encrypt
-#          -o smtpd_sasl_auth_enable=yes
-#          -o smtpd_sasl_type=dovecot
-#          -o smtpd_sasl_security_options=noanonymous
-#          -o smtpd_sasl_local_domain=$myhostname
-#          -o smtpd_client_restrictions=permit_sasl_authenticated,reject
-#          -o smtpd_sender_login_maps=hash:/etc/postfix/virtual
-#          -o smtpd_sender_restrictions=reject_sender_login_mismatch
-#          -o smtpd_recipient_restrictions=reject_non_fqdn_recipient,reject_unknown_recipient_domain,permit_sasl_authenticated,reject
-
+        # -o smtpd_sasl_path=private/auth
+        #        submission inet n - n - - smtpd
+        #          -o smtpd_tls_security_level=encrypt
+        #          -o smtpd_sasl_auth_enable=yes
+        #          -o smtpd_sasl_type=dovecot
+        #          -o smtpd_sasl_security_options=noanonymous
+        #          -o smtpd_sasl_local_domain=$myhostname
+        #          -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+        #          -o smtpd_sender_login_maps=hash:/etc/postfix/virtual
+        #          -o smtpd_sender_restrictions=reject_sender_login_mismatch
+        #          -o smtpd_recipient_restrictions=reject_non_fqdn_recipient,reject_unknown_recipient_domain,permit_sasl_authenticated,reject
 
 
     # reconfigure and restart handler
@@ -475,7 +476,7 @@
         ssl_key = </etc/ssl/private/ssl-cert-snakeoil.key
 
 
-        # JA communciation with postfix, tcp rather than domain socket, to be consistent
+        # JA communciation with postfix, tcp rather than domain socket, to be consistent with dkim and dmarc
         service auth {
           inet_listener {
             address=127.0.0.1
@@ -484,7 +485,7 @@
         }
 
 
-        # disable imap, only imaps
+        # support imaps only, disable imap
         service imap-login {
           inet_listener imap {
             port = 0
@@ -502,6 +503,9 @@
   # aliases
   # TODO alias https://www.digitalocean.com/community/tutorials/how-to-set-up-a-postfix-e-mail-server-with-dovecot
   # we redirect 'mail' user here,
+
+  # simplest way to do service specific accounts, and direct to a 'generic' account, to avoid needing to create a real pam user
+  # also avoids a generic catchall, which is not good against automatic mail attacks
 
   - copy:
       dest: /etc/aliases
@@ -527,6 +531,29 @@
     tags: aliases
 
 
+  ##############################################
+  # header_checks
+  # http://www.postfix.org/header_checks.5.html
+  # http://mattshaw.org/news/how-to-filter-mail-with-postfix-header_checks/
 
+  # REJECT - sends rejected reply
+  # DISCARD - discards silently
+
+  - copy:
+      dest: /etc/postfix/header_checks
+      content: |
+        # deployed by ansible!
+
+        /^From:.*support@gitter.im/           DISCARD
+        /^From:.*jobs-noreply@linkedin.com/   DISCARD
+        /^From:.*jobs-listings@linkedin.com/  DISCARD
+
+        /^Subject: test rejects 123/          REJECT
+
+        /^From:.*catriona.*/                  REDIRECT mail@julian1.io
+
+        # /^To: bob@here.com/ REDIRECT bob@there.com
+
+    tags: header_checks
 
 
