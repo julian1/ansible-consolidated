@@ -7,6 +7,7 @@
 # TODO ordinary permisson on creation of TUN dnevice.
 # https://unix.stackexchange.com/questions/243382/making-dev-net-tun-available-to-qemu/243405
 
+
   #############################
   # bridge
 
@@ -133,20 +134,18 @@
             option subnet-mask 255.255.255.0;
             option broadcast-address 10.3.0.255;
             option routers 10.3.0.1;
-            # option domain-name-servers 208.67.222.222;
-            option domain-name-servers 10.3.0.1;    # locally hosted bind
+            # option domain-name-servers 208.67.222.222;  # opendns
+            option domain-name-servers 10.3.0.1;          # locally hosted bind
 
 
-            # gateways for subnets when default route is openvpn
+            # push gateways for subnets when default route is openvpn
             # option classless-routes 16, 192,168,    192,168,201,1,
             #                        24, 10,4,0,     192,168,201,1;
 
-            host kvm-inst             { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
+            host kvm-inst     { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
 
-            host stretch.chroot.devel { hardware ethernet 02:01:02:03:04:08; fixed-address 10.3.0.11; }
+            host devel01      { hardware ethernet 02:01:02:03:04:08; fixed-address 10.3.0.11; }
 
-
-            # host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
         }
 
     notify: restart-dhcp
@@ -154,15 +153,15 @@
 
 
   # enable
-  # this isn't really right... we just want it enabled.
+  # NOTE, we handle the enable state, in the restart handler
   # - service: name=isc-dhcp-server enabled=yes state=started
 
 
 
   #############################
-  # bind
+  # dns
 
-  # need ntp time, or can get, 'broken trust chain resolving' 
+  # need ntp time, or can get, 'broken trust chain resolving'
   # https://www.centos.org/forums/viewtopic.php?t=49614
   - apt: name=ntp             # network time
 
@@ -186,7 +185,7 @@
           };
 
           # https://stackoverflow.com/questions/13342003/ns-got-insecure-response-parent-indicates-it-should-be-secure
-          dnssec-enable no; 
+          dnssec-enable no;
           dnssec-validation no;
 
           # dnssec-validation auto;
@@ -196,6 +195,9 @@
           listen-on-v6 { none; };
 
           # listen-on port 53 { 127.0.0.1; 223.1.2.1; };
+
+          # IMPORTANT - very useful for overriding a specific host on a domain, but without needing to be
+          # the authoritative ns for the zone, which need a complete set of records for all nodes
           response-policy { zone "rpz"; };
 
           # notify other dns
@@ -204,6 +206,7 @@
 
     notify: restart-bind
     tags: bind
+
 
   # zones
   - copy:
@@ -222,6 +225,7 @@
           type master;
           file "/etc/bind/zones/rpz.db";
         };
+
     notify: restart-bind
     tags: bind
 
@@ -234,6 +238,9 @@
       content: |
         ; deployed by ansible!
         ;
+        ;  IMPORTANT - very useful for overriding a specific host on a domain, but without needing to be
+        ;  the authoritative ns for the zone, which need a complete set of records for all nodes
+
 
         $TTL 60
         @            IN    SOA  localhost. root.localhost.  (
@@ -270,7 +277,7 @@
         @             IN MX 10 10.3.0.1
 
         ;
-        stretch.chroot.devel IN A 10.3.0.11;
+        devel01       IN A 10.3.0.11;
 
         mail          IN A 10.3.0.1
         ns1           IN A 10.3.0.1
@@ -279,6 +286,11 @@
     tags: bind
 
 
+
+  #############################
+  # firewall, nat
+  # must be integrated whatever else is needed on the host
+  # unless there was a way to apply this on the forked network namespace...
 
   - apt: name=iptables-persistent
 
@@ -314,5 +326,5 @@
 
 # also could consider source routing...
 
-# what's next? containers? bind. windows/osx.  gpu pass-through. 
+# what's next? containers? bind. windows/osx.  gpu pass-through.
 
