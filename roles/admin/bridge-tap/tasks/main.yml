@@ -197,7 +197,7 @@
           # listen-on port 53 { 127.0.0.1; 223.1.2.1; };
 
           # IMPORTANT - very useful for overriding a specific host on a domain, but without needing to be
-          # the authoritative ns for the zone, which need a complete set of records for all nodes
+          # the authoritative ns for the zone, which requires a complete set of records for all nodes
           response-policy { zone "rpz"; };
 
           # notify other dns
@@ -239,7 +239,7 @@
         ; deployed by ansible!
         ;
         ;  IMPORTANT - very useful for overriding a specific host on a domain, but without needing to be
-        ;  the authoritative ns for the zone, which need a complete set of records for all nodes
+        ;  the authoritative ns for the zone, which requires a complete set of records for all nodes
 
 
         $TTL 60
