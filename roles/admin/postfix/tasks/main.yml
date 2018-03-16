@@ -504,8 +504,8 @@
   # TODO alias https://www.digitalocean.com/community/tutorials/how-to-set-up-a-postfix-e-mail-server-with-dovecot
   # we redirect 'mail' user here,
 
-  # simplest way to do service specific accounts, and direct to a 'generic' account, to avoid needing to create a real pam user
-  # also avoids a generic catchall, which is not good against automatic mail attacks
+  # this is a simple way to create service specific users, while redirecting to a 'generic' user, so no pam entry is needed
+  # also avoids a generic catchall, which will fail against script attacks
 
   - copy:
       dest: /etc/aliases
