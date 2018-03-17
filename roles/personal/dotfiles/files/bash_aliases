@@ -28,7 +28,8 @@ alias myip3='curl https://ident.me'
 alias myip4="curl -s http://www.ip-adress.eu/ | grep My | sed 's/.*\">//' "
 
 
-# alias pg="ping 8.8.8.8 -c 4"
+alias p8="ping 8.8.8.8 -c 4"
+
 alias pw="cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 18 | head -n 1"
 alias pr='a2ps -1 -R -f 9'
 
@@ -48,7 +49,7 @@ alias utctime='date --utc'
 
 alias ls='ls --group-directories-first --color=always' # or less, or locate?
 
-# add numberic permissions to ls
+# add numeric permissions to ls
 function ls2() {
   ls -lh --group-directories-first --color=always $@ | awk '{
     k=0;

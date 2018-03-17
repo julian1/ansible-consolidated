@@ -1,7 +1,8 @@
 
 # TODO
-# - split out the dhcp/bind/iptables stuff from the low-level and os related stuff...
-#     actually could be made a node-specific role.
+# - split out the dhcp/bind/iptables stuff from the low-level os/boot/dev/user config stuff...
+# - and make it a node-specific role, with a simple play entry point.
+
 # - also want to name  eth0 to eth0, wlan0 to wlan0 etc, need to check works with vlans.
 # - order should be dhcp, bind, iptables- actually no iptables should be first.
 # - need to split out the dhcpd log. it's too messy.
@@ -483,6 +484,12 @@
           # dell 5520 ssh outgoing
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          # NOTE rules don't apply for traffic going via vpntunnel. which is 443, and not 1194
+          # test.... for 5520, when node did
+          # iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.6
+          # iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.6
+
 
           # IMPORTANT - Logging doesn't see much traffic here, because most stuff has already been accepted - eg. dns,https
 

@@ -51,6 +51,8 @@ ansible-playbook nodes/aodn/aatams.yml -v
 ```
 
 TODO
+  - for complicated sequences, a deployable template/script that gets deployed and called, may be simpler.
+
   - to keep code composible, where it can be used in different contexts, it must be in a role, rather than
     a play. the play is just the thing that co-ordinates the plays.
       - therefore we want to factor stuff out of the play - especially the pre_tasks user creation
