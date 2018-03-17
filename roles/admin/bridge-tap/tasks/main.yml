@@ -330,7 +330,7 @@
         iptables -A FORWARD -p udp --dport 123 -j ACCEPT
         iptables -A FORWARD -p udp --sport 123 -j ACCEPT
 
-        # tcp - why doesn't this work? because of something on the apu?
+        # Note, won't work for nodes, using host routing exceptions to openvpn tunnel gateway
         iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
         iptables -A FORWARD -p tcp --sport 22 -j ACCEPT
 
