@@ -18,17 +18,39 @@ alias less='less -R'
 alias vim='vim -p'
 alias top='top -d 1'
 
+# shortcuts
+alias g=git
+alias l=less
+alias s=sudo
+
+
+
 # just use  cd $(mktemp -d )
 # alias tmp='export T=$(mktemp -d); pushd $T'
 
-# 
+# figure out ip doing nat
 alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias myip2='curl https://api.ipify.org/?format=json'
 alias myip3='curl https://ident.me'
 alias myip4="curl -s http://www.ip-adress.eu/ | grep My | sed 's/.*\">//' "
 
+# ping
+alias p=ping
+# ping gateway
+function p6() {
+  gateway=$( ip route | grep '^default' | cut -d ' ' -f 3  )
+  ping $gateway
+}
+# ping dns server
+function p7() {
+  dns=$( grep '^nameserver' /etc/resolv.conf | cut -d ' ' -f 2 )
+  ping $dns
+}
+# ping google
+alias p8="ping 8.8.8.8"
+# ping opendns
+alias p9="ping 208.67.222.222"
 
-alias p8="ping 8.8.8.8 -c 4"
 
 alias pw="cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 18 | head -n 1"
 alias pr='a2ps -1 -R -f 9'
@@ -49,7 +71,7 @@ alias utctime='date --utc'
 
 alias ls='ls --group-directories-first --color=always' # or less, or locate?
 
-# add numeric permissions to ls
+# add numeric permissions. (eg 755) to ls
 function ls2() {
   ls -lh --group-directories-first --color=always $@ | awk '{
     k=0;
@@ -75,12 +97,6 @@ function ls2() {
 # alias v='vim -p'
 # alias sc='systemctl'
 
-# shortcuts
-alias g=git
-alias l=less
-alias p=ping
-alias s=sudo
-
 # format in columns really useful for output of 'ip route'
 ct() {
     column -t $1
@@ -103,7 +119,7 @@ mcd() {
     cd $1
 }
 
-# cd up directory with numerical argument
+# cd up n directories with numerical argument
 cdu() {
     if [ -z "$1" ]; then
       cd ..
