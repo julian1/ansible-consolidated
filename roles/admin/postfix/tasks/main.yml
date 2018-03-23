@@ -559,8 +559,31 @@
 
 
   ##############################################
+  # TODO move this to its own role
+
   - apt: name=fail2ban
     tags: fail2ban
+
+
+  # once only
+  - command: cp jail.conf jail.local
+    args:
+      chdir:  /etc/fail2ban/
+      creates: jail.local
+    tags: fail2ban
+
+
+  - blockinfile:
+      dest: /etc/fail2ban/jail.local
+      insertafter: '^\[sshd\].*'
+      marker: "# {mark} ansible content"
+      content: |
+        bantime = 7200
+        maxretry = 3
+        findtime = 7200
+    notify: restart-fail2ban
+    tags: fail2ban
+
 
 
 

@@ -29,4 +29,7 @@
        - newaliases
 
 
+  - name: restart-fail2ban
+    service: name=fail2ban enabled=yes state=restarted
+
 
