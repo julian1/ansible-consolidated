@@ -557,3 +557,10 @@
     tags: header_checks
 
 
+
+  ##############################################
+  - apt: name=fail2ban
+    tags: fail2ban
+
+
+
