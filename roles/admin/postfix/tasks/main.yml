@@ -559,7 +559,7 @@
 
 
   ##############################################
-  # TODO move this to its own role
+  # TODO maybe move to its own role, although config is specific not generic.
 
   - apt: name=fail2ban
     tags: fail2ban
@@ -572,15 +572,16 @@
       creates: jail.local
     tags: fail2ban
 
+  # change to work on [default] ?
 
   - blockinfile:
       dest: /etc/fail2ban/jail.local
       insertafter: '^\[sshd\].*'
       marker: "# {mark} ansible content"
       content: |
-        bantime = 7200
+        bantime = 86400
+        findtime = 86400
         maxretry = 3
-        findtime = 7200
     notify: restart-fail2ban
     tags: fail2ban
 
