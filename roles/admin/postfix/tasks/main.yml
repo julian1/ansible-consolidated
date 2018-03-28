@@ -1,4 +1,6 @@
 
+  # TODO - maybe be an issue with opendmarc not restarting after reboot?
+
   # TODO move to node specific role
 
   # needs the following DNS records - MX, A, SPF, PTR (via host), TXT (same as SPF)
