@@ -30,10 +30,8 @@ ansible-playbook ./plays/personal/dotfiles.yml -i apu2,  --extra-vars "path=/hom
 # initial
 apt-get install python-minimal
 export myhost=n.n.n.n
-
 ansible-playbook plays/admin/hostname.yml -i $myhost, --extra-vars "hostname=$myhost"
-ansible-playbook plays/personal/generic.yml -i $myhost,
-ansible-playbook plays/personal/meteo-sudo.yml -i $myhost,
+ansible-playbook plays/personal/bootstrap.yml -i $myhost,
 
 
 # or specific,
@@ -41,6 +39,7 @@ ansible-playbook plays/admin/devenv-lite.yml -i $myhost,
 ansible-playbook plays/admin/timezone.yml -i $myhost,
 ansible-playbook plays/admin/locale.yml -i $myhost,
 ansible-playbook plays/personal/dotfiles.yml -i $myhost,
+ansible-playbook plays/personal/meteo-sudo.yml -i $myhost,
 
 
 # flags
