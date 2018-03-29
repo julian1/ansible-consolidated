@@ -8,9 +8,9 @@ Ansible plays for use with dev, systemd-nspawn containers, kvm, cloud instances,
 
 ```
 # nodes
-ansible-playbook plays/nodes/other/apu.yml --tags bind,dhcp,iptables
-ansible-playbook plays/nodes/other/dell-home.yml -c local -i localhost,   # run as root
-ansible-playbook plays/nodes/other/pglogical.yml -i pglogical.localnet,
+ansible-playbook plays/nodes/misc/apu.yml --tags bind,dhcp,iptables
+ansible-playbook plays/nodes/misc/dell-home.yml -c local -i localhost,   # run as root
+ansible-playbook plays/nodes/misc/pglogical.yml -i pglogical.localnet,
 
 # plays
 ansible-playbook plays/personal/dotfiles.yml -i localhost, -c local
@@ -42,7 +42,7 @@ ansible-playbook plays/personal/meteo-sudo.yml -i $myhost,
 # flags
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
-ansible-playbook nodes/other/dell-home.yml --list-tags
+ansible-playbook nodes/misc/dell-home.yml --list-tags
 ansible-playbook nodes/aodn/aatams.yml -v
 ```
 
