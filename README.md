@@ -26,13 +26,11 @@ ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars 
 ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-vars "path=/root user=root"
 ansible-playbook ./plays/personal/dotfiles.yml -i apu2,  --extra-vars "path=/home/parity user=parity"
 
-
-# initial
+# bootstrap
 apt-get install python-minimal
 export myhost=n.n.n.n
 ansible-playbook plays/admin/hostname.yml -i $myhost, --extra-vars "hostname=$myhost"
 ansible-playbook plays/personal/bootstrap.yml -i $myhost,
-
 
 # or specific,
 ansible-playbook plays/admin/devenv-lite.yml -i $myhost,
@@ -41,13 +39,11 @@ ansible-playbook plays/admin/locale.yml -i $myhost,
 ansible-playbook plays/personal/dotfiles.yml -i $myhost,
 ansible-playbook plays/personal/meteo-sudo.yml -i $myhost,
 
-
 # flags
 ansible --list-hosts all
 ansible -i inventory/imos --list-hosts all
 ansible-playbook nodes/other/dell-home.yml --list-tags
 ansible-playbook nodes/aodn/aatams.yml -v
-
 ```
 
 
@@ -75,7 +71,7 @@ ansible -m setup localhost
 #### Notes
 
 
--  Requires Ansible version >= 2
+- Include roles in tasks, ver 2.2  http://docs.ansible.com/ansible/latest/modules/include_role_module.html
 
 - for complicated sequences of actions, deploying a template/script and running it as a command server side, may be simpler
 
