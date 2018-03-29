@@ -1,7 +1,7 @@
 
 #### Ansible CM
 
-Ansible plays and node defn's for use with systemd-nspawn containers, kvm, cloud instances, vbox etc.
+Ansible plays for use with dev, systemd-nspawn containers, kvm, cloud instances, vbox etc.
 
 
 #### Examples
@@ -80,20 +80,20 @@ ansible -m setup localhost
 
 - for complicated sequences of actions, deploying a template/script and running it as a command server side, may be simpler
 
-- to keep code composible, and maximize flexible use in different contexts, code must be in a role, rather than a play.  implications :-
-    - must factor stuff out of the play - especially specific stuff like pre_tasks user creation
-    - it's ok to have node-specific roles. don't need to force code into a node specific play
+- to keep code composible, and generalizable in different contexts, code must be in a role, rather than a play.  implications :-
+    - must factor stuff out of the play - especially node-specific stuff like pre_tasks user creation
+    - it's ok to have node-specific roles. no need to to use a play, just becacuse plays allow constraints on node inventory
 
 - use the following to force a handler to run immediately.
     - meta: flush_handlers
 
-- it seems eaiser to not to manage /etc/apt/sources.list. simiarly to disk partitioning
+- it seems eaiser to not to manage /etc/apt/sources.list. similar to disk partitioning
 
-- rather than use register varaibles to flag handlers that need to be calle for service restarts, can touch/write a file, and read again at the end of the role. communicating restart information is then persisted across ansible-playbook invocations. And this avoids the case of handlers not being called, due to some other error in the playbook.
+- rather than use register varaibles to flag handlers that need to be calle for service restarts, can touch/write a file, and read again at the end of the role. communicating restart information is then persisted across ansible-playbook invocations - and avoids handlers not being called, due to other errors in the playbook/provision.
 
-- ansible needs either passwordless sudo or root for apt-get etc. the issue with passwordless sudo on ordinary account is that processes under that account can theoretically sudo without password. so better to use dedicated privileged ansible account or root account.
+- ansible needs either passwordless sudo or root for apt-get etc. the issue with passwordless sudo on ordinary account is that processes under that account can theoretically sudo without password. so better to use dedicated privileged ansible account or else just use root.
 
-- packages like npm, rust, bundler, python etc should *not* be installed using root privileges - due to large surface area of install code and dependent packages.
+- packages like npm, rust, bundler, python etc should *never* be installed using globally/ or using root privileges - due to large surface area of install code and dependent packages.
 
 - can use apt package python-minimal to get /usr/bin/python binary instead of /usr/bin/python2.7
 
