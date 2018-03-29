@@ -70,6 +70,7 @@ ansible -m setup localhost
 
 #### Notes
 
+- force_handlers, http://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html
 
 - Include roles in tasks, ver 2.2  http://docs.ansible.com/ansible/latest/modules/include_role_module.html
 
