@@ -144,7 +144,9 @@
 
             host kvm-inst     { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
 
+            # nspawn
             host devel01      { hardware ethernet 02:01:02:03:04:08; fixed-address 10.3.0.11; }
+            host postgres     { hardware ethernet 02:01:02:03:04:12; fixed-address 10.3.0.12; }
 
         }
 
@@ -278,12 +280,13 @@
         ; @           IN AAAA ::1
         @             IN MX 10 10.3.0.1
 
-        ;
-        devel01       IN A 10.3.0.11;
+        ; nspawn
+        devel01       IN A  10.3.0.11
+        postgres      IN A  10.3.0.12
 
-        mail          IN A 10.3.0.1
-        ns1           IN A 10.3.0.1
-        ; ns2           IN A 10.3.0.1
+        mail          IN A  10.3.0.1
+        ns1           IN A  10.3.0.1
+        ; ns2         IN A  10.3.0.1
     notify: restart-bind
     tags: bind
 

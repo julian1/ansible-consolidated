@@ -1,43 +1,16 @@
 # eg.
 # psql -h postgres.localnet -U admin -d postgres
 
+# OK... I think the role to add postgres
+
 - hosts:
     - postgres.localnet
   vars_files:
     - "{{inventory_dir | dirname}}/credentials.yml"
-  vars:
-    - users:
-      - { name: meteo,    group: adm, pubkey: "{{meteo_pubkey}}", home_dir: /home/meteo }
-
-  pre_tasks:
-    # Note, jessie specific
-    - copy:
-        dest: /etc/apt/sources.list.d/pgdg.list
-        content: |
-          # deployed by ansible!
-          deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
-
-    - apt: name=wget
-    - apt: name=ca-certificates
-
-    - shell: creates=/ansible/pgdg.txt chdir=/root {{item}}
-      with_items:
-        - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-        - apt-get update
-        - touch /ansible/pgdg.txt
-
 
   roles:
-    - jessie
-    - apt-update
-    - sshd
-    - timezone
-    - locale
-    - common
-    - users
-    - dotfiles
-
-    # specific
+    # NOTE assumes AU locale or not?
+    - postgres-apt
     - postgres
 
   tasks:
