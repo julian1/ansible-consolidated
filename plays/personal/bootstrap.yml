@@ -13,12 +13,13 @@
     - name: admin/timezone
     - name: admin/locale
     - name: admin/devenv-lite
+    # needed to disable env passing
+    - name: admin/sshd
 
     - name: admin/user
       username: meteo
       path: /home/meteo
       mode: 0700
-
 
     - name: personal/dotfiles
       tags: root_dotfiles
