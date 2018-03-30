@@ -352,50 +352,64 @@
           iptables -P OUTPUT DROP
           iptables -P FORWARD DROP
 
+
           ##### APU to WAN #####
-          #
+          #  should all be egress initiated only, out wan eth0.120 interface
+
           # host dhcp to get wan ip from isp
           iptables -A OUTPUT -o eth0.120 -p udp --dport 67 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i eth0.120 -p udp --sport 67 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # http/s needed for apt-get update etc from upstream repositories
+          # dns
+          iptables -A OUTPUT -o eth0.120 -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i eth0.120 -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A OUTPUT -o eth0.120 -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i eth0.120 -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          # ping, ie wan test connectivity ping 8.8.8.8
+          iptables -A OUTPUT -o eth0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i eth0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+          # http/s for apt-get update etc from upstream repositories
           iptables -A OUTPUT -o eth0.120 -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i eth0.120 -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o eth0.120 -p tcp --dport 443 -m conntrack --ctstate NEW ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i eth0.120 -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # ping, ie ping 8.8.8.8
-          iptables -A OUTPUT -o eth0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i eth0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-
-          # ntpd - outgoing initiated only, not incomming
+          # ntpd
           iptables -A OUTPUT -o eth0.120 -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i eth0.120 -p udp --sport 123 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 
-          ##### APU WAN and local processes ####
-          #
-          # dns upstream services - on wan and internal?
-          # and any process on this node has to be able to access the dns service on this node
-          # WAN and locally
-          iptables -A OUTPUT  -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT   -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT  -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT   -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
+          ##### APU local #####
           # lo / 127.0.0.1
           # allow local processes to talk via lo. needed for rndc /port 953, needed for bind
           iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
           iptables -A INPUT  -i lo -p tcp  -j ACCEPT
 
-          # TODO - allow ping 127.0.0.1?
 
 
-          ##### APU to LAN #####
+          ##### APU to LAN and LAN to LAN #####
           #
-          # ssh incomming, TODO restrict ssh to management?
-          # iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -j ACCEPT
-          # -          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -j ACCEPT
+
+          # TODO limit dns and dhcp, to only router, rather than any lan node
+          # dns
+          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          iptables -A INPUT  ! -i eth0.120 -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          # dhcp
+          iptables -A INPUT  ! -i eth0.120 -p udp --dport 67 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p udp --sport 67 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+          # ping ingress and outgress - eg. allow ping any lan node from any lan node
+          iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 8 -j ACCEPT
+          iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 0 -j ACCEPT
+
+
+          # ssh - limit hosts that can initiate ssh
           iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
@@ -405,39 +419,24 @@
           iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
+          # ping out - eg. allow us to ping a node on the lan/wireless from apu
+          # isc-dhcp-server uses this
+          # iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 0 -j ACCEPT
+          # iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 8 -j ACCEPT
+
+
           # eth1 configuration
           iptables -A INPUT  -i eth1 -p tcp --dport 22 -s 172.16.0.0/12 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A OUTPUT -o eth1 -p tcp --sport 22 -d 172.16.0.0/12 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 
-          # TODO conntrack
-          # dns
-          iptables -A INPUT  ! -i eth0.120 -p udp --dport 53 -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p udp --sport 53 -j ACCEPT
-          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 53 -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 53 -j ACCEPT
-
-          # dhcp
-          iptables -A INPUT  ! -i eth0.120 -p udp --dport 67 -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p udp --sport 67 -j ACCEPT
-
-          # ping ingress - eg. allow us to ping apu from lan
-          iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 8 -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 0 -j ACCEPT
-
-          # ping out - eg. allow us to ping a node on the lan/wireless from apu
-          # isc-dhcp-server uses this
-          iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 0 -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 8 -j ACCEPT
 
 
           ##### FORWARD LAN #####
+          #
           # source and dst are both other machines, and not this node. ie. primarily NAT
-
-          # TODO can do direction and conntrack by using lan addresses for -s and -d eg. 192.168.201.0/24
-          # OK specific drop stuff has to go before generic service accept
-
           # COMMON/GENERIC
+          # NOTE - no dns. must use apu dns, or else vpn.
 
           # ping everwhere across
           iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
@@ -446,7 +445,6 @@
           # http
           iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
-
           iptables -A FORWARD -p tcp --dport 443 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 443 -j ACCEPT
 
@@ -468,20 +466,20 @@
 
 
           # SPECIFIC
-          # ssh - outgoing from dell-home
-          # dell-home wifi ssh outgoing
+          # ssh - egress from dell-home
+          # dell-home wifi ssh egress
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # dell-home wired ssh outgoing
+          # dell-home wired ssh egress
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # pi1 ssh outgoing
+          # pi1 ssh egress
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.27 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.27 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # dell 5520 ssh outgoing
+          # dell 5520 ssh egress
           iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
@@ -534,7 +532,7 @@
           iptables -A FORWARD -p tcp --sport 6697 -d 192.168.43.0/24 -j ACCEPT
 
 
-          # ssh proxy and general open test port
+          # 5222 test port - ssh proxy and general open test port
           iptables -A FORWARD -p tcp --dport 5222 -s 192.168.43.0/24 -j ACCEPT
           iptables -A FORWARD -p tcp --sport 5222 -d 192.168.43.0/24 -j ACCEPT
           iptables -A FORWARD -p tcp --dport 5222 -s 192.168.201.0/24 -j ACCEPT
@@ -543,7 +541,6 @@
           # eth/parity - use reverse ssh tunnel instead
           # iptables -A FORWARD -p tcp --dport 8545 -s 192.168.43.14 -j ACCEPT
           # iptables -A FORWARD -p tcp --sport 8545 -d 192.168.43.14 -j ACCEPT
-
 
 
           # btc - for piplus

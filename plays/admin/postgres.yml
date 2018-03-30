@@ -1,7 +1,9 @@
 
+# WARNING, crates an insecure hostssl user
+
 # eg.
-# psql -h 127.0.0.1 -U admin -d postgres
-# NOTE assumes AU locale or not?
+# psql -h localhost -U admin -d postgres
+# Review: assumes AU locale or not? need to verify...
 
 - hosts:
     - all
@@ -25,8 +27,8 @@
 
     - apt: name=sudo
 
-    # create admin user, via ssl
 
+    # WARNING, crates an insecure hostssl user
     # become, become_user, would be better, but fails
     # not just issue that postgres user cannot touch /ansible
     - shell: creates=/ansible/postgres-admin-user.txt chdir=/root {{item}}
@@ -36,5 +38,13 @@
         - sudo -u postgres psql -c "create user admin password 'admin'"
         - sudo -u postgres psql -c "alter user admin with superuser"
         - touch /ansible/postgres-admin-user.txt 
+
+
+    - copy:
+        dest: /root/.pgpass
+        mode: 0400
+        content: |
+          # deployed by ansible
+          127.0.0.1:5432:postgres:admin:admin
 
 
