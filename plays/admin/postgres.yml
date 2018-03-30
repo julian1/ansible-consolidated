@@ -1,13 +1,19 @@
 
+# eg.
+# psql -h 127.0.0.1 -U admin -d postgres
 # NOTE assumes AU locale or not?
 
 - hosts:
     - all
   roles:
     - admin/postgres-apt
-    - admin/postgres
 
-  # specific stuff...
+    - name: admin/postgres
+      postgres_version: 9.6
+      postgis_version: 2.3
+
+
+  # useful, general stuff
   tasks:
     # TODO review better way?
     - file: path=/ansible state=directory
@@ -19,10 +25,10 @@
 
     - apt: name=sudo
 
-    # admin user, via using network permissions
-    # become, become_user, would be better, but seem to need sudo. 
+    # create admin user, via ssl
+
+    # become, become_user, would be better, but fails
     # not just issue that postgres user cannot touch /ansible
-    # - shell: chdir=/root {{item}}
     - shell: creates=/ansible/postgres-admin-user.txt chdir=/root {{item}}
       tags: whoot
       with_items:
