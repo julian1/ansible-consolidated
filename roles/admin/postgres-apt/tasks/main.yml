@@ -1,7 +1,10 @@
 
-# just add the official postgres.org repository distribution
+# add official postgres.org repository
 
-  - debug: msg="{{ansible_distribution_release}}"
+  # - debug: msg="{{ansible_distribution_release}}"
+
+  # TODO review better way?
+  - file: path=/ansible state=directory
 
 
   - apt: name=wget
@@ -11,20 +14,20 @@
       dest: /etc/apt/sources.list.d/pgdg.list
       content: |
         # deployed by ansible!
-        deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
+        # deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
+        deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main
 
 
-  - shell: creates=/ansible/pg-apt-done.txt chdir=/root {{item}}
+  - shell: creates=/ansible/postgres-apt-done.txt chdir=/root {{item}}
     with_items:
-      - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-      - touch /ansible/pg-apt-done.txt
+      - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+      - touch /ansible/postgres-apt-done.txt
 
 
   - apt: state=latest update_cache=yes upgrade=safe
 
 
-
-
-  # don't install anything
+  # install and configure postgres in a separate role
   #    - apt: name=postgresql-9.6-postgis-2.3
-
+  
+  # - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -

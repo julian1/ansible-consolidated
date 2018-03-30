@@ -1,0 +1,34 @@
+
+# NOTE assumes AU locale or not?
+
+- hosts:
+    - all
+  roles:
+    - admin/postgres-apt
+    - admin/postgres
+
+  # specific stuff...
+  tasks:
+    # TODO review better way?
+    - file: path=/ansible state=directory
+
+    - copy:
+        # src: "./{{inventory_dir | dirname}}/roles/admin/postgres/files/admin.sql"
+        src: "../../roles/admin/postgres/files/admin.sql"
+        dest: /ansible/admin.sql
+
+    - apt: name=sudo
+
+    # admin user, via using network permissions
+    # become, become_user, would be better, but seem to need sudo. 
+    # not just issue that postgres user cannot touch /ansible
+    # - shell: chdir=/root {{item}}
+    - shell: creates=/ansible/postgres-admin-user.txt chdir=/root {{item}}
+      tags: whoot
+      with_items:
+        - sudo -u postgres psql -c "drop user admin"
+        - sudo -u postgres psql -c "create user admin password 'admin'"
+        - sudo -u postgres psql -c "alter user admin with superuser"
+        - touch /ansible/postgres-admin-user.txt 
+
+

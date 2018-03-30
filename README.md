@@ -17,8 +17,9 @@ ansible-playbook plays/personal/dotfiles.yml -i localhost, -c local
 ansible-playbook plays/admin/bridge-tap.yml -i localhost, -c local
 ansible-playbook plays/personal/scripts.yml -i localhost, -c local
 ansible-playbook plays/admin/devenv-lite.yml -i localhost, -c local
-ansible-playbook plays/admin/openvpn.yml -i vpn,
-ansible-playbook plays/admin/postfix.yml -i mail.n.n,
+ansible-playbook plays/admin/openvpn.yml -i $myhost,
+ansible-playbook plays/admin/postfix.yml -i $myhost,
+ansible-playbook plays/admin/postgres.yml -i $myhost,
 
 ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 
@@ -32,7 +33,7 @@ export myhost=n.n.n.n
 ansible-playbook plays/admin/hostname.yml -i $myhost, --extra-vars "hostname=$myhost"
 ansible-playbook plays/personal/bootstrap.yml -i $myhost,
 
-# or specific,
+# or bootstrap specific,
 ansible-playbook plays/admin/devenv-lite.yml -i $myhost,
 ansible-playbook plays/admin/timezone.yml -i $myhost,
 ansible-playbook plays/admin/locale.yml -i $myhost,

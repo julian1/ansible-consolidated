@@ -46,7 +46,4 @@
 
   - file: path=/ansible state=directory
 
-  - copy:
-      src: admin.sql
-      dest: /ansible/admin.sql
 
