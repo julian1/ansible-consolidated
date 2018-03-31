@@ -335,9 +335,11 @@
 
       # may need to restart wlan0 here? at least when install dnsmasq
     - apt: name=iptables-persistent
+    - apt: name=m4
+      tags: iptables
 
     - copy:
-        dest: /etc/iptables-rules
+        dest: /etc/iptables-rules.m4
         content: |
           # deployed by ansible!
           #####
@@ -348,237 +350,184 @@
 
           #####
           # policy - do this last to prevent lockout, versus having open chains during reconfig?
+          # any errors before ssh is configured means we lose access...
           iptables -P INPUT DROP
           iptables -P OUTPUT DROP
           iptables -P FORWARD DROP
 
 
           ##### APU to WAN #####
-          #  should all be egress initiated only, out wan eth0.120 interface
+          #
+          # egress only, out eth0.120 wan interface
 
-          # host dhcp to get wan ip from isp
-          iptables -A OUTPUT -o eth0.120 -p udp --dport 67 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i eth0.120 -p udp --sport 67 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          # proto, port
+          define(`APU_WAN',
+          `iptables -A OUTPUT -o eth0.120 -p $1 --dport $2 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+          `iptables -A INPUT  -i eth0.120 -p $1 --sport $2 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+          # dhcp
+          APU_WAN(udp, 67)
 
           # dns
-          iptables -A OUTPUT -o eth0.120 -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i eth0.120 -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT -o eth0.120 -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i eth0.120 -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          APU_WAN(tcp, 53)
+          APU_WAN(udp, 53)
 
-          # ping, for wan egress, test connectivity
+          # http - needed for apt
+          APU_WAN(tcp, 80)
+          APU_WAN(tcp, 443)
+
+          # ntp
+          APU_WAN(udp, 123)
+
+          # ping, ie wan test connectivity ping 8.8.8.8
           iptables -A OUTPUT -o eth0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
           iptables -A INPUT  -i eth0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
-          # http/s for apt-get update etc from upstream repositories
-          iptables -A OUTPUT -o eth0.120 -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i eth0.120 -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT -o eth0.120 -p tcp --dport 443 -m conntrack --ctstate NEW ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i eth0.120 -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          # ntpd
-          iptables -A OUTPUT -o eth0.120 -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i eth0.120 -p udp --sport 123 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-
 
           ##### APU local #####
+          #
           # lo / 127.0.0.1
           # allow local processes to talk via lo. needed for rndc /port 953, needed for bind
+          # TODO add icmp ??
           iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
           iptables -A INPUT  -i lo -p tcp  -j ACCEPT
+          iptables -A OUTPUT -o lo -p udp  -j ACCEPT
+          iptables -A INPUT  -i lo -p udp  -j ACCEPT
 
 
 
-          ##### APU to LAN and LAN to LAN #####
+          ##### LAN to APU #####
           #
-
+          # uses input and output
           # TODO limit dns and dhcp, to only router, rather than any lan node
+          # should be able to just add a macro....
+
+          # proto, port, src, dst
+          define(`LAN_APU',
+          `iptables -A INPUT  ! -i eth0.120 -p $1 --dport $2 -s $3 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT'
+          `iptables -A OUTPUT ! -o eth0.120 -p $1 --sport $2 -d $3 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+          # TODO limit dns and dhcp, to the interfaces on apu/router node, rather than any lan node
           # dns
-          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A INPUT  ! -i eth0.120 -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          LAN_APU(tcp, 53, 0.0.0.0/0)
+          LAN_APU(udp, 53, 0.0.0.0/0)
 
           # dhcp
-          iptables -A INPUT  ! -i eth0.120 -p udp --dport 67 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p udp --sport 67 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          LAN_APU(udp, 67, 0.0.0.0/0)
+
+          # ssh - limit hosts that can initiate ssh
+          LAN_APU(tcp, 22, 192.168.43.14)
+          LAN_APU(tcp, 22, 192.168.201.19)
+          LAN_APU(tcp, 22, 192.168.43.6)
+          # eth1
+          LAN_APU(tcp, 22, 172.16.0.0/12)
 
           # ping ingress and outgress - eg. allow ping any lan node from any lan node
+          # isc-dhcp-server uses this
           iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 8 -j ACCEPT
           iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 0 -j ACCEPT
 
 
-          # ssh - limit hosts that can initiate ssh
-          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          iptables -A INPUT  ! -i eth0.120 -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          # ping out - eg. allow us to ping a node on the lan/wireless from apu
-          # isc-dhcp-server uses this
-          # iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 0 -j ACCEPT
-          # iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 8 -j ACCEPT
-
-
-          # eth1 configuration
-          iptables -A INPUT  -i eth1 -p tcp --dport 22 -s 172.16.0.0/12 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A OUTPUT -o eth1 -p tcp --sport 22 -d 172.16.0.0/12 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-
-
-
-          ##### FORWARD LAN #####
+          ##### FORWARD LAN to WAN and LAN to LAN #####
           #
-          # source and dst are both other machines, and not this node. ie. primarily NAT
-          # COMMON/GENERIC
+          # source and dst are both other machines, and not this node.
+          # either lan to lan, or lan to wan
           # NOTE - no dns or dhcp. must use apu, or else vpn.
-          # TODO egress,ingress
-          # iptables -A OUTPUT -o eth0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-          # iptables -A INPUT  -i eth0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+          # IMPORTANT can express port range without need for multiport, see second answer,
+          # see, https://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables/594837
 
+          # proto, port, src(egress), dst
+          define(`FORWARD_',
+          `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+          `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+          # define(`FORWARD_ALL',
+          # `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4  -j ACCEPT'
+          # `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4  -j ACCEPT' )
+
+          # COMMON/GENERIC
 
           # ping everwhere across
           iptables -A FORWARD -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
           iptables -A FORWARD -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
           # http
-          iptables -A FORWARD -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          FORWARD_(tcp, 80,  0.0.0.0/0, 0.0.0.0/0)
+          FORWARD_(tcp, 443, 0.0.0.0/0, 0.0.0.0/0)
 
           # ntp
-          iptables -A FORWARD -p udp --dport 123 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p udp --sport 123 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          FORWARD_(udp, 123, 0.0.0.0/0, 0.0.0.0/0)
 
           # whois
-          iptables -A FORWARD -p tcp --dport 43 -s 192.168.43.0/24 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 43 -d 192.168.43.0/24 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          FORWARD_(tcp, 43, 192.168.43.0/24, 0.0.0.0/0)
 
           # smtp - note, iinet blocks port 25
-          # iptables -A FORWARD -p tcp --dport 25  -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          # iptables -A FORWARD -p tcp --sport 25  -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          # FORWARD_(tcp, 25, 192.168.43.0/24)
 
           # smtpd submission, tls, starttls
-          iptables -A FORWARD -p tcp --dport 587 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 587 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
+          FORWARD_(tcp, 587, 192.168.43.0/24, 0.0.0.0/0)
           # imap tls
-          iptables -A FORWARD -p tcp --dport 993 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 993 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          FORWARD_(tcp, 993, 192.168.43.0/24, 0.0.0.0/0)
 
-          # irc - note, port 6667 preferred over 194
-          # freenode uses 6697
-          iptables -A FORWARD -p tcp --dport 6667 -s 192.168.43.0/24 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 6667 -d 192.168.43.0/24 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
+          # irc - note, port 6667 preferred over 194, freenode uses 6697
+          FORWARD_(tcp, 6667, 192.168.43.0/24, 0.0.0.0/0)
 
           # 5222 test port - ssh proxy and general open test port
-          iptables -A FORWARD -p tcp --dport 5222 -s 192.168.43.0/24 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 5222 -d 192.168.43.0/24 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --dport 5222 -s 192.168.201.0/24 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 5222 -d 192.168.201.0/24 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          FORWARD_(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
+          FORWARD_(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
 
 
           # SPECIFIC Nodes,
+
+          # ssh
+          # dell-home wifi
+          FORWARD_(tcp, 22, 192.168.43.14, 0.0.0.0/0)
+          FORWARD_(tcp, 22, 192.168.43.6, 0.0.0.0/0)
+          FORWARD_(tcp, 22, 192.168.201.19, 0.0.0.0/0)
+          FORWARD_(tcp, 22, 192.168.201.27, 0.0.0.0/0)
+
+          # printer - brother.localnet 9100
+          FORWARD_(tcp, 9100, 192.168.43.0/24, 192.168.201.15)
+
           #
-          # ssh - egress from dell-home
-          # dell-home wifi ssh egress
-          iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.14 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.14 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+          # IMPORTANT
+          # - generally want to use ssh forwarding for rpc nodes
+          # - and port forwards do not require forward table iptables , they are pre-routinig
+          # eth/parity - use reverse ssh tunnel instead
+          FORWARD_(tcp, 8545, 192.168.43.6, 0.0.0.0/0)
+          # btc incoming - for piplus - might be port forwarded both...
+          # FORWARD_(tcp, 8333, 0.0.0.0/24, 192.168.201.3)
+          # monero rpc
+          FORWARD_(tcp, 18081, 192.168.43.6, 0.0.0.0/0)
+          # transmission rpc - use web-api instead...
+          # FORWARD_(tcp, 9091, 192.168.43.6, 0.0.0.0/0)
+          # monero open node
+          FORWARD_(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
 
-          # dell-home wired ssh egress
-          iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.19 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.19 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-          # pi1 ssh egress
-          iptables -A FORWARD -p tcp --dport 22 -s 192.168.201.27 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 22 -d 192.168.201.27 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          # dell 5520 ssh egress
-          iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.6 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.6 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          # NOTE rules don't apply for any node with traffic tunneled via openvpn, which uses 443 (not 1194)..
-          # test.... for 5520, when node did
-          # iptables -A FORWARD -p tcp --dport 22 -s 192.168.43.6
-          # iptables -A FORWARD -p tcp --sport 22 -d 192.168.43.6
-
+          # voip - both ingress and egress
+          # but... probably only needs egress. because ingress is handled with pre-routing...
+          FORWARD_(tcp, 1:65535, 192.168.201.20, 203.55.231.192/26 )
+          FORWARD_(udp, 1:65535, 192.168.201.20, 203.55.231.192/26 )
+          # iptables -A FORWARD -s 192.168.201.20 -j LOG
+          # iptables -A FORWARD -d 192.168.201.20 -j LOG
+          # ....
 
           # IMPORTANT - Logging doesn't see much traffic here, because most stuff has already been accepted - eg. dns,https
-
           # bravia log everything
           #          iptables -A FORWARD -s 192.168.201.16 -j LOG ACCEPT
           #          iptables -A FORWARD -d 192.168.201.16 -j LOG
 
           # bravia outgoing  - all outgoing tcp
-          #          iptables -A FORWARD -p tcp -s 192.168.201.16 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          #          iptables -A FORWARD -p tcp -d 192.168.201.16 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-          #          iptables -A FORWARD -p udp -s 192.168.201.16 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-          #          iptables -A FORWARD -p udp -d 192.168.201.16 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-
-          # bravia
-          # may need specific rules for bravia to allow more media ports
           # opera/RT
           # iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
           # iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
           # leave ssh open etc.
 
-          # iptables -A FORWARD -p tcp -s 192.168.201.16 --dport 80 -j DROP
-          # iptables -A FORWARD -p tcp -d 192.168.201.16 --sport 80 -j DROP
-
-
-          # TODO - review this
+          # TODO - review this - STUN ? any ingress?
           # bravia everything
-          iptables -A FORWARD -p tcp -s 192.168.201.16 -j ACCEPT
-          iptables -A FORWARD -p tcp -d 192.168.201.16 -j ACCEPT
-          iptables -A FORWARD -p udp -s 192.168.201.16 -j ACCEPT
-          iptables -A FORWARD -p udp -d 192.168.201.16 -j ACCEPT
-
-
-          # eth/parity - use reverse ssh tunnel instead
-          # iptables -A FORWARD -p tcp --dport 8545 -s 192.168.43.14 -j ACCEPT
-          # iptables -A FORWARD -p tcp --sport 8545 -d 192.168.43.14 -j ACCEPT
-
-
-          # btc - for piplus
-          iptables -A FORWARD -p tcp --dport 8333 -s 192.168.201.3 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 8333 -d 192.168.201.3 -j ACCEPT
-
-          # monero rpc
-          iptables -A FORWARD -p tcp --dport 18081 -s 192.168.201.0/24 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 18081 -d 192.168.201.0/24 -j ACCEPT
-          iptables -A FORWARD -p tcp --dport 18081 -s 192.168.43.0/24 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 18081 -d 192.168.43.0/24 -j ACCEPT
-
-          # transmission rpc
-          iptables -A FORWARD -p tcp --dport 9091 -s 192.168.201.0/24 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 9091 -d 192.168.201.0/24 -j ACCEPT
-          iptables -A FORWARD -p tcp --dport 9091 -s 192.168.43.0/24 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 9091 -d 192.168.43.0/24 -j ACCEPT
-
-          # monero open node
-          iptables -A FORWARD -p tcp --dport 18089 -s 192.168.201.0/24 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 18089 -d 192.168.201.0/24 -j ACCEPT
-
-          # printer - brother.localnet 9100 - TODO tighten by ip -eg only to the printer. not dellhome
-          iptables -A FORWARD -p tcp --dport 9100 -d 192.168.201.15 -j ACCEPT
-          iptables -A FORWARD -p tcp --sport 9100 -s 192.168.201.15 -j ACCEPT
-
-          # voip
-          iptables -A FORWARD -p udp -d 192.168.201.20 -s 203.55.231.192/26 -j ACCEPT
-          iptables -A FORWARD -p udp -s 192.168.201.20 -d 203.55.231.192/26 -j ACCEPT
-          iptables -A FORWARD -p tcp -d 192.168.201.20 -s 203.55.231.192/26 -j ACCEPT
-          iptables -A FORWARD -p tcp -s 192.168.201.20 -d 203.55.231.192/26 -j ACCEPT
-          # iptables -A FORWARD -s 192.168.201.20 -j LOG
-          # iptables -A FORWARD -d 192.168.201.20 -j LOG
-
-
+          FORWARD_(tcp, 1:65535, 192.168.201.16, 0.0.0.0/0)
+          FORWARD_(udp, 1:65535, 192.168.201.16, 0.0.0.0/0)
 
 
           # TODO re-enable dlna multicast routing, and tftp
@@ -1057,6 +1006,7 @@
     - name: reconfigure-iptables
       command: "{{item}}"
       with_items:
+        - sh -c 'm4 /etc/iptables-rules.m4 > /etc/iptables-rules'
         - sh /etc/iptables-rules
         - dpkg-reconfigure --frontend noninteractive iptables-persistent
 
