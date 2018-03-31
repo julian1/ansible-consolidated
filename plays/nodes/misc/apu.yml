@@ -342,6 +342,7 @@
         dest: /etc/iptables-rules.m4
         content: |
           # deployed by ansible!
+
           #####
           # flush current chain rules
           iptables -t filter --flush
@@ -349,101 +350,129 @@
           iptables -t mangle --flush
 
           #####
-          # policy - do this last to prevent lockout, versus having open chains during reconfig?
-          # any errors before ssh is configured means we lose access...
-          iptables -P INPUT DROP
-          iptables -P OUTPUT DROP
-          iptables -P FORWARD DROP
+          # set policy to accept during configuration, so we are not locked out on error
+          iptables -P INPUT ACCEPT
+          iptables -P OUTPUT ACCEPT
+          iptables -P FORWARD ACCEPT
 
+          # todo define wan interface with m4 macro to be generalizable...
 
-          ##### APU to WAN #####
-          #
-          # egress only, out eth0.120 wan interface
+          define(`WAN_INTERFACE', `eth0.120')
 
-          # proto, port
-          define(`APU_WAN',
-          `iptables -A OUTPUT -o eth0.120 -p $1 --dport $2 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
-          `iptables -A INPUT  -i eth0.120 -p $1 --sport $2 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+          # WAN_INGRESS proto, port, address
+          define(`WAN_INGRESS',
+          `iptables -A INPUT  -i WAN_INTERFACE -p $1 --dport $2 --source $3      -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+          `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
-          # dhcp
-          APU_WAN(udp, 67)
+          # WAN_EGRESS proto, port, address
+          define(`WAN_EGRESS',
+          `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+          `iptables -A INPUT  -i WAN_INTERFACE -p $1 --sport $2 --source $3      -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
-          # dns
-          APU_WAN(tcp, 53)
-          APU_WAN(udp, 53)
+          # LAN_INGRESS proto, port, address
+          define(`LAN_INGRESS',
+          `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --dport $2 --source $3      -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT'
+          `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
-          # http - needed for apt
-          APU_WAN(tcp, 80)
-          APU_WAN(tcp, 443)
+          # LAN_EGRESS proto, port, address
+          define(`LAN_EGRESS',
+          `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT'
+          `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --sport $2 --source $3      -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
-          # ntp
-          APU_WAN(udp, 123)
-
-          # ping, ie wan test connectivity ping 8.8.8.8
-          iptables -A OUTPUT -o eth0.120 -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-          iptables -A INPUT  -i eth0.120 -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+          # FORWARD_ proto, port, src(egress), dst
+          define(`FORWARD_',
+          `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+          `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
 
           ##### APU local #####
           #
           # lo / 127.0.0.1
           # allow local processes to talk via lo. needed for rndc /port 953, needed for bind
-          # TODO add icmp ??
           iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
           iptables -A INPUT  -i lo -p tcp  -j ACCEPT
           iptables -A OUTPUT -o lo -p udp  -j ACCEPT
           iptables -A INPUT  -i lo -p udp  -j ACCEPT
+          iptables -A OUTPUT -o lo -p icmp -j ACCEPT
+          iptables -A INPUT  -i lo -p icmp -j ACCEPT
 
 
+          ##### WAN_INGRESS #####
+          # test
+          # WAN_INGRESS(tcp, 5555, 0.0.0.0/0)
 
-          ##### LAN to APU #####
+          # none
+          
+
+          ##### WAN_EGRESS #####
+          #
+          # egress, outbound via WAN_INTERFACE wan interface
+          # keep the dst address arg, even if 0.0.0.0, since may want to specify, also symmetrical
+
+          # dhcp
+          WAN_EGRESS(udp, 67, 0.0.0.0/0)
+
+          # dns
+          WAN_EGRESS(tcp, 53, 0.0.0.0/0)
+          WAN_EGRESS(udp, 53, 0.0.0.0/0)
+
+          # http - needed for apt updates
+          WAN_EGRESS(tcp, 80, 0.0.0.0/0)
+          WAN_EGRESS(tcp, 443, 0.0.0.0/0)
+
+          # ntp
+          WAN_EGRESS(udp, 123, 0.0.0.0/0)
+
+          # ping, ie wan test connectivity ping 8.8.8.8
+          iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+          iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+
+          ##### LAN_EGRESS #####
+
+          # test
+          # LAN_EGRESS(tcp, 5556, 0.0.0.0/0)
+
+
+          ##### LAN_INGRESS, lan to apu #####
           #
           # uses input and output
-          # TODO limit dns and dhcp, to only router, rather than any lan node
+          # TODO limit dns and dhcp, to only lan interface addresses, rather than any lan node
           # should be able to just add a macro....
-
-          # proto, port, src, dst
-          define(`LAN_APU',
-          `iptables -A INPUT  ! -i eth0.120 -p $1 --dport $2 -s $3 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT'
-          `iptables -A OUTPUT ! -o eth0.120 -p $1 --sport $2 -d $3 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
           # TODO limit dns and dhcp, to the interfaces on apu/router node, rather than any lan node
           # dns
-          LAN_APU(tcp, 53, 0.0.0.0/0)
-          LAN_APU(udp, 53, 0.0.0.0/0)
+          LAN_INGRESS(tcp, 53, 0.0.0.0/0)
+          LAN_INGRESS(udp, 53, 0.0.0.0/0)
 
           # dhcp
-          LAN_APU(udp, 67, 0.0.0.0/0)
+          LAN_INGRESS(udp, 67, 0.0.0.0/0)
 
-          # ssh - limit hosts that can initiate ssh
-          LAN_APU(tcp, 22, 192.168.43.14)
-          LAN_APU(tcp, 22, 192.168.201.19)
-          LAN_APU(tcp, 22, 192.168.43.6)
+          # ssh - limit hosts
+          LAN_INGRESS(tcp, 22, 192.168.43.14)
+          LAN_INGRESS(tcp, 22, 192.168.201.19)
+          LAN_INGRESS(tcp, 22, 192.168.43.6)
           # eth1
-          LAN_APU(tcp, 22, 172.16.0.0/12)
+          LAN_INGRESS(tcp, 22, 172.16.0.0/12)
+
+          # LAN_EGRESS_OR_INGRESS
 
           # ping ingress and outgress - eg. allow ping any lan node from any lan node
           # isc-dhcp-server uses this
-          iptables -A INPUT  ! -i eth0.120 -p icmp --icmp-type 8 -j ACCEPT
-          iptables -A OUTPUT ! -o eth0.120 -p icmp --icmp-type 0 -j ACCEPT
+          iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8 -j ACCEPT
+          iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0 -j ACCEPT
+
+          # TODO LAN_OUTGERSS. 
+          # ping doesn't use ports. therefore needs separate definitions...  
 
 
           ##### FORWARD LAN to WAN and LAN to LAN #####
           #
-          # source and dst are both other machines, and not this node.
-          # either lan to lan, or lan to wan
-          # NOTE - no dns or dhcp. must use apu, or else vpn.
+          # either lan to lan, or lan to wan with nat'ing.
+          # source and dst are both other machines
+          # NOTE - block external dns. instead, must use apu dns, or else local vpn.
           # IMPORTANT can express port range without need for multiport, see second answer,
           # see, https://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables/594837
-
-          # proto, port, src(egress), dst
-          define(`FORWARD_',
-          `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
-          `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
-
-          # define(`FORWARD_ALL',
-          # `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4  -j ACCEPT'
-          # `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4  -j ACCEPT' )
 
           # COMMON/GENERIC
 
@@ -499,8 +528,8 @@
           # FORWARD_(tcp, 8333, 0.0.0.0/24, 192.168.201.3)
           # monero rpc
           FORWARD_(tcp, 18081, 192.168.43.6, 0.0.0.0/0)
-          # transmission rpc - use web-api instead...
-          # FORWARD_(tcp, 9091, 192.168.43.6, 0.0.0.0/0)
+          # transmission http web rpc
+          FORWARD_(tcp, 9091, 192.168.43.0/24, 192.168.201.29)
           # monero open node
           FORWARD_(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
 
@@ -533,14 +562,14 @@
           # TODO re-enable dlna multicast routing, and tftp
           # tftp and dlna services - should be on other lan nodes, if at all.
           # TFTp - disable port-range is inclusive
-          # iptables -A INPUT  ! -i eth0.120 -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
-          # iptables -A OUTPUT ! -o eth0.120 -p udp --match multiport --sport 69,1024:1034 -j ACCEPT
+          # iptables -A INPUT  ! -i WAN_INTERFACE -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+          # iptables -A OUTPUT ! -o WAN_INTERFACE -p udp --match multiport --sport 69,1024:1034 -j ACCEPT
 
           # dlna - disable - service removed from apu
-          # iptables -A INPUT  ! -i eth0.120 -p tcp --dport 8200 -j ACCEPT
-          # iptables -A OUTPUT ! -o eth0.120 -p tcp --sport 8200 -j ACCEPT
-          # iptables -A INPUT  ! -i eth0.120 -p udp --dport 1900 -j ACCEPT
-          # iptables -A OUTPUT ! -o eth0.120 -p udp --sport 1900 -j ACCEPT
+          # iptables -A INPUT  ! -i WAN_INTERFACE -p tcp --dport 8200 -j ACCEPT
+          # iptables -A OUTPUT ! -o WAN_INTERFACE -p tcp --sport 8200 -j ACCEPT
+          # iptables -A INPUT  ! -i WAN_INTERFACE -p udp --dport 1900 -j ACCEPT
+          # iptables -A OUTPUT ! -o WAN_INTERFACE -p udp --sport 1900 -j ACCEPT
 
 
           ##### NAT #####
@@ -550,19 +579,28 @@
           # Good voip guide, note the comment to limit stp to smaller port range
           # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
           #
-          iptables -t nat -A PREROUTING -p udp -s 203.55.231.192/26 -i eth0.120 -j DNAT --to 192.168.201.20
-          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.192/26 -i eth0.120 -j DNAT --to 192.168.201.20
+          iptables -t nat -A PREROUTING -p udp -s 203.55.231.192/26 -i WAN_INTERFACE -j DNAT --to 192.168.201.20
+          iptables -t nat -A PREROUTING -p tcp -s 203.55.231.192/26 -i WAN_INTERFACE -j DNAT --to 192.168.201.20
 
+          # No port forwarding for 201.29 due to vpn
 
           # post-routing
           # private subnet nat
-          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o eth0.120 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o eth0.120 -j MASQUERADE
-          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0.120 -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o WAN_INTERFACE -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o WAN_INTERFACE -j MASQUERADE
+          iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o WAN_INTERFACE -j MASQUERADE
 
           #####
           # mangle
           #  checksum issue for udp bootpc
+
+
+          # change policies to drop
+          iptables -P INPUT DROP
+          iptables -P OUTPUT DROP
+          iptables -P FORWARD DROP
+
+
 
       # TODO - instead of running this later. should run reconfigure immediately after using a variable
       notify: reconfigure-iptables
