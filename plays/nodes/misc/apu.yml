@@ -350,15 +350,15 @@
           iptables -t mangle --flush
 
           #####
-          # set policy to accept during configuration, so we are not locked out on error
+          # set policy to accept during configuration, to avoid being locked out on error
           iptables -P INPUT ACCEPT
           iptables -P OUTPUT ACCEPT
           iptables -P FORWARD ACCEPT
 
-          # todo define wan interface with m4 macro to be generalizable...
 
           define(`WAN_INTERFACE', `eth0.120')
 
+          # ingress or egress indicates which node inititated the connection
           # WAN_INGRESS proto, port, address
           define(`WAN_INGRESS',
           `iptables -A INPUT  -i WAN_INTERFACE -p $1 --dport $2 --source $3      -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
@@ -401,13 +401,9 @@
           # test
           # WAN_INGRESS(tcp, 5555, 0.0.0.0/0)
 
-          # none
-          
 
           ##### WAN_EGRESS #####
           #
-          # egress, outbound via WAN_INTERFACE wan interface
-          # keep the dst address arg, even if 0.0.0.0, since may want to specify, also symmetrical
 
           # dhcp
           WAN_EGRESS(udp, 67, 0.0.0.0/0)
@@ -436,11 +432,8 @@
 
           ##### LAN_INGRESS, lan to apu #####
           #
-          # uses input and output
-          # TODO limit dns and dhcp, to only lan interface addresses, rather than any lan node
-          # should be able to just add a macro....
+          # TODO does every lan, need dns and dhcp?
 
-          # TODO limit dns and dhcp, to the interfaces on apu/router node, rather than any lan node
           # dns
           LAN_INGRESS(tcp, 53, 0.0.0.0/0)
           LAN_INGRESS(udp, 53, 0.0.0.0/0)
@@ -462,17 +455,14 @@
           iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8 -j ACCEPT
           iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0 -j ACCEPT
 
-          # TODO LAN_OUTGERSS. 
-          # ping doesn't use ports. therefore needs separate definitions...  
-
 
           ##### FORWARD LAN to WAN and LAN to LAN #####
           #
           # either lan to lan, or lan to wan with nat'ing.
           # source and dst are both other machines
-          # NOTE - block external dns. instead, must use apu dns, or else local vpn.
+          # NOTE - we block external dns. instead, must use apu dns, or else local vpn.
           # IMPORTANT can express port range without need for multiport, see second answer,
-          # see, https://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables/594837
+          #   see, https://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables/594837
 
           # COMMON/GENERIC
 
@@ -505,8 +495,7 @@
           FORWARD_(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
           FORWARD_(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
 
-
-          # SPECIFIC Nodes,
+          # SPECIFIC NODES,
 
           # ssh
           # dell-home wifi
@@ -595,7 +584,7 @@
           #  checksum issue for udp bootpc
 
 
-          # change policies to drop
+          # everything ok? change policies back to drop
           iptables -P INPUT DROP
           iptables -P OUTPUT DROP
           iptables -P FORWARD DROP
