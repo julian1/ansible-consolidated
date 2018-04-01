@@ -281,35 +281,44 @@
 
         define(`WAN_INTERFACE', `eth0.120')
 
+        # REVIEW, do we even need conntrack if have source and dest, address and port is explicit?
+
         # ingress or egress indicates which node inititated the connection
         # WAN_INGRESS proto, port, address
         define(`WAN_INGRESS',
-        `iptables -A INPUT  -i WAN_INTERFACE -p $1 --dport $2 --source $3      -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
-        `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+        `iptables -A INPUT  -i WAN_INTERFACE -p $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -j ACCEPT' )
 
         # WAN_EGRESS proto, port, address
         define(`WAN_EGRESS',
-        `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
-        `iptables -A INPUT  -i WAN_INTERFACE -p $1 --sport $2 --source $3      -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+        `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  -i WAN_INTERFACE -p $1 --sport $2 --source $3      -j ACCEPT' )
 
         # LAN_INGRESS proto, port, address
         define(`LAN_INGRESS',
-        `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --dport $2 --source $3      -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT'
-        `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+        `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -j ACCEPT' )
 
         # LAN_EGRESS proto, port, address
         define(`LAN_EGRESS',
-        `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT'
-        `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --sport $2 --source $3      -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+        `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --sport $2 --source $3      -j ACCEPT' )
+
+        # FORWARD_ proto, port, src(egress), dst
+        # define(`FORWARD_',
+        # `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+        # `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
         # FORWARD_ proto, port, src(egress), dst
         define(`FORWARD_',
-        `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
-        `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+        `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -j ACCEPT'
+        `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
+
 
         # DROP_ proto, port, src(egress), dst
         define(`DROP_',
-        `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -j DROP')
+        `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -j DROP'
+        `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -j DROP')
 
         # `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW -j DROP')
 
@@ -350,8 +359,13 @@
         WAN_EGRESS(udp, 123, 0.0.0.0/0)
 
         # ping, ie wan test connectivity ping 8.8.8.8
-        iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-        iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+        # should specify address...
+        # iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+        # iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+        # this is egress only, because of association between icmp request/response type and the input or output chain 
+        iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 --source 0.0.0.0/0      -j ACCEPT
+        iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 --destination 0.0.0.0/0 -j ACCEPT
 
 
         ##### LAN_EGRESS #####
@@ -381,10 +395,12 @@
 
         # LAN_EGRESS_OR_INGRESS
 
-        # ping ingress and outgress - eg. allow ping any lan node from any lan node
+        # REVIEW
+        # ping ingress and outgress - eg. allow any node to ping apu, or apu to ping any node
         # isc-dhcp-server uses this
-        iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8 -j ACCEPT
-        iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0 -j ACCEPT
+        # also allows ping from 172.16.0.0/12
+        iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8   -j ACCEPT
+        iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0   -j ACCEPT
 
 
         ##### FORWARD LAN to WAN and LAN to LAN #####
@@ -398,14 +414,18 @@
         # General form, order is important,
         # drop http destined to intranet, that originates from intranet, or internet
         # DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)   
-        # otherwise permit http egress to internet
+        # otherwise permit http egress
         # FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)        
 
         # COMMON/GENERIC
 
         # TODO maybe tighten ping, with drop to prevent network discovery
-        iptables -A FORWARD -p icmp --icmp-type 8 --source      192.168.0.0/16 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-        iptables -A FORWARD -p icmp --icmp-type 0 --destination 192.168.0.0/16 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+        # iptables -A FORWARD -p icmp --icmp-type 8 --source      192.168.0.0/16 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+        # iptables -A FORWARD -p icmp --icmp-type 0 --destination 192.168.0.0/16 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+        iptables -A FORWARD -p icmp --icmp-type 8 --source      192.168.0.0/16 -j ACCEPT
+        iptables -A FORWARD -p icmp --icmp-type 0 --destination 192.168.0.0/16 -j ACCEPT
+
 
         # http
         DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)   
