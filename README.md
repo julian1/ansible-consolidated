@@ -74,6 +74,13 @@ ansible -m setup localhost
 
 #### Notes
 
+- is it possible to use -c local - directly on a chroot?
+
+- role paths
+  - https://stackoverflow.com/questions/30787273/variable-that-has-the-path-to-the-current-ansible-playbook-that-is-executing
+  - https://stackoverflow.com/questions/22201306/ansible-galaxy-roles-install-in-to-a-specific-directory
+
+
 - force_handlers, http://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html
 
 - Include roles in tasks, ver 2.2  http://docs.ansible.com/ansible/latest/modules/include_role_module.html

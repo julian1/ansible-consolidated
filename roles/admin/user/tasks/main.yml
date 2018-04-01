@@ -1,12 +1,14 @@
 
-# this isn't really valuable in terms of factorization, but allows us 
-# to avoid pre_tasks to do this in playsname
+# this is so small it's not valuable in terms of factorization. 
+# but it allows user creation to be sequenced in ordinary rolelist, rather than pre_tasks.  
 
-    - user: name={{username}} shell=/bin/bash
+# TODO issue is ability to set groups.
 
-    - authorized_key: user={{username}} key="{{meteo_pubkey}}"
+  - user: name={{username}} shell=/bin/bash
 
-    - file: path={{path}} mode={{mode}} state=directory
+  - authorized_key: user={{username}} key="{{meteo_pubkey}}"
+
+  - file: path={{path}} mode={{mode}} state=directory
 
 
 

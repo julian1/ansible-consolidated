@@ -1,42 +1,41 @@
 
-# TODO
-# - split out the dhcp/bind/iptables stuff from the low-level os/boot/dev/user config stuff...
-# - and make it a node-specific role, with a simple play entry point.
 
-# - also want to name  eth0 to eth0, wlan0 to wlan0 etc, need to check works with vlans.
-# - order should be dhcp, bind, iptables- actually no iptables should be first.
-# - need to split out the dhcpd log. it's too messy.
-
-# HAVE ERROR - this could be stopping it from starting
-# "Dynamic and static leases present for"
-#  https://serverfault.com/questions/750710/isc-dhcp-server-dynamic-and-static-leases-present
-
-
-# cisco/switches - should use dhcp to configure internal interface ip
-
-# after poweroff poweroff
-# (on a restart with the switches up - this was ok)
-# 1)  dhclient on 120
-
-# 2) after powerdown system hostapd had to be restarted manually, by
-#   # /sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0
-
-# 3) and had to restart isc-dhcp-server status, because wlan0 was restarted
-
-# apu for networking services only
-# wireless ap, vlan trunking, dns/dhcp, multicast-routing, voip, nat, xmodem serial for switch
-
-  # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
 - hosts:
+    # Use static ip, since if dns goes wrong, we can end up provisioning 127.0.0.1
     - 192.168.100.1
     # - 172.16.0.1
   vars_files:
-    # https://stackoverflow.com/questions/30787273/variable-that-has-the-path-to-the-current-ansible-playbook-that-is-executing
-    # https://stackoverflow.com/questions/22201306/ansible-galaxy-roles-install-in-to-a-specific-directory
     - "{{inventory_dir | dirname}}/credentials.yml"
 
   vars:
+    kernel: 4.9.0-5
+    uuid: 89c7d75c-67eb-41f4-83cb-e1fa8890e8d5
+
   pre_tasks:
+
+    # - apt: name=extlinux
+    # ~$ ls /boot/syslinux/
+    # ldlinux.c32  ldlinux.sys  syslinux.cfg
+    # for kernel upgrade version - must manually update syslinux.cfg with new boot label
+    # syslinux is conventional, except net.ifnames to prevent nic renaming, and serial speed.
+    - copy:
+        dest: /boot/syslinux/syslinux.cfg
+        content: |
+          # deployed by ansible!
+
+          CONSOLE 0
+          SERIAL 0 115200 0
+          DEFAULT linux-{{kernel}}
+          PROMPT 0
+          LABEL linux-{{kernel}}
+            SAY Now booting the kernel from SYSLINUX...
+            KERNEL /boot/vmlinuz-{{kernel}}-amd64
+            APPEND rw root=UUID={{uuid}} initrd=/boot/initrd.img-{{kernel}}-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
+
+          LABEL linux-4.9.0-3
+            SAY Now booting the kernel from SYSLINUX...
+            KERNEL /boot/vmlinuz-4.9.0-3-amd64
+            APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-3-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
 
     # root user
     - user: name=root shell=/bin/bash
@@ -48,26 +47,6 @@
 
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
-    # must do explicit kernel upgrade. also must manually update syslinux.cfg with new boot label
-    # syslinux is conventional, except net.ifnames to prevent nic renaming, and serial speed.
-    - copy:
-        dest: /boot/syslinux/syslinux.cfg
-        content: |
-          # deployed by ansible!
-
-          CONSOLE 0
-          SERIAL 0 115200 0
-          DEFAULT linux-4.9.0-5
-          PROMPT 0
-          LABEL linux-4.9.0-5
-            SAY Now booting the kernel from SYSLINUX...
-            KERNEL /boot/vmlinuz-4.9.0-5-amd64
-            APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-5-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
-
-          LABEL linux-4.9.0-3
-            SAY Now booting the kernel from SYSLINUX...
-            KERNEL /boot/vmlinuz-4.9.0-3-amd64
-            APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-3-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
 
   roles:
     - name: admin/stretch
@@ -80,7 +59,7 @@
     - name: admin/hostname
       hostname: apu
 
-    # the main role
+    # the main node-specific role
     - admin/apu
 
   tasks:
