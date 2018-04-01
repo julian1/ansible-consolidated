@@ -307,6 +307,13 @@
         `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
         `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
+        # DROP_ proto, port, src(egress), dst
+        define(`DROP_',
+        `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -j DROP')
+
+        # `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW -j DROP')
+
+
 
         ##### APU local #####
         #
@@ -358,16 +365,17 @@
         # TODO does every lan, need dns and dhcp?
 
         # dns
-        LAN_INGRESS(tcp, 53, 0.0.0.0/0)
-        LAN_INGRESS(udp, 53, 0.0.0.0/0)
+        LAN_INGRESS(tcp, 53, 192.168.0.0/16)
+        LAN_INGRESS(udp, 53, 192.168.0.0/16)
 
         # dhcp
-        LAN_INGRESS(udp, 67, 0.0.0.0/0)
+        LAN_INGRESS(udp, 67, 192.168.0.0/16)
 
         # ssh - limit hosts
         LAN_INGRESS(tcp, 22, 192.168.43.14)
         LAN_INGRESS(tcp, 22, 192.168.201.19)
         LAN_INGRESS(tcp, 22, 192.168.43.6)
+
         # eth1
         LAN_INGRESS(tcp, 22, 172.16.0.0/12)
 
@@ -387,31 +395,46 @@
         # IMPORTANT can express port range without need for multiport, see second answer,
         #   see, https://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables/594837
 
+        # General form, order is important,
+        # drop http destined to intranet, that originates from intranet, or internet
+        # DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)   
+        # otherwise permit http egress to internet
+        # FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)        
+
         # COMMON/GENERIC
 
-        # ping everwhere across
-        iptables -A FORWARD -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-        iptables -A FORWARD -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+        # TODO maybe tighten ping, with drop to prevent network discovery
+        iptables -A FORWARD -p icmp --icmp-type 8 --source      192.168.0.0/16 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+        iptables -A FORWARD -p icmp --icmp-type 0 --destination 192.168.0.0/16 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
         # http
-        FORWARD_(tcp, 80,  0.0.0.0/0, 0.0.0.0/0)
-        FORWARD_(tcp, 443, 0.0.0.0/0, 0.0.0.0/0)
+        DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)   
+        FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)        
+        DROP_(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)   
+        FORWARD_(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
 
         # ntp
-        FORWARD_(udp, 123, 0.0.0.0/0, 0.0.0.0/0)
+        DROP_(   tcp, 123, 0.0.0.0/0, 192.168.0.0/16)   
+        FORWARD_(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
 
         # whois
+        DROP_(   tcp, 43, 0.0.0.0/0, 192.168.0.0/16)   
         FORWARD_(tcp, 43, 192.168.43.0/24, 0.0.0.0/0)
 
         # smtp - note, iinet blocks port 25
-        # FORWARD_(tcp, 25, 192.168.43.0/24)
+        DROP_(   tcp, 25, 0.0.0.0/0, 192.168.0.0/16)   
+        FORWARD_(tcp, 25, 192.168.43.0/24, 0.0.0.0/0)
 
         # smtpd submission, tls, starttls
+        DROP_(   tcp, 587, 0.0.0.0/0, 192.168.0.0/16)   
         FORWARD_(tcp, 587, 192.168.43.0/24, 0.0.0.0/0)
+
         # imap tls
+        DROP_(   tcp, 993, 0.0.0.0/0, 192.168.0.0/16)   
         FORWARD_(tcp, 993, 192.168.43.0/24, 0.0.0.0/0)
 
         # irc - note, port 6667 preferred over 194, freenode uses 6697
+        DROP_(   tcp, 6667, 0.0.0.0/0, 192.168.0.0/16)   
         FORWARD_(tcp, 6667, 192.168.43.0/24, 0.0.0.0/0)
 
         # 5222 test port - ssh proxy and general open test port
@@ -420,8 +443,7 @@
 
         # SPECIFIC NODES,
 
-        # ssh
-        # dell-home wifi
+        # ssh permitted egress
         FORWARD_(tcp, 22, 192.168.43.14, 0.0.0.0/0)
         FORWARD_(tcp, 22, 192.168.43.6, 0.0.0.0/0)
         FORWARD_(tcp, 22, 192.168.201.19, 0.0.0.0/0)
