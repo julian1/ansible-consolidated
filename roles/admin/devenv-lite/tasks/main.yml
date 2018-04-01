@@ -1,4 +1,6 @@
 
+  # no user specific stuff...
+
   - apt: name=python-minimal      # for ansible, creates python binary in correct path for ansible, has 2.7
   - apt: name=vim
   - apt: name=git

@@ -34,12 +34,14 @@ ansible-playbook plays/admin/hostname.yml -i $myhost, --extra-vars "hostname=$my
 ansible-playbook plays/personal/bootstrap.yml -i $myhost,
 
 # or bootstrap specific,
-ansible-playbook plays/admin/devenv-lite.yml -i $myhost,
 ansible-playbook plays/admin/timezone.yml -i $myhost,
 ansible-playbook plays/admin/locale.yml -i $myhost,
+ansible-playbook plays/admin/fail2ban.yml -i $myhost,
+ansible-playbook plays/admin/devenv-lite.yml -i $myhost,
+
 ansible-playbook plays/personal/dotfiles.yml -i $myhost,
 ansible-playbook plays/personal/meteo-sudo.yml -i $myhost,
-ansible-playbook plays/admin/fail2ban.yml -i $myhost,
+
 
 # flags
 ansible --list-hosts all
