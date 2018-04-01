@@ -188,10 +188,11 @@
         options {
           directory "/var/cache/bind";
           forwarders {
-            # must use openvpn for nameserver other than 192.168.43.1
-            208.67.222.222;
+            # for openvpn - must be opendns or google etc . 
+            # for non openvpn - must be local router - 192.168.43.1
+            # 208.67.222.222;
             # 8.8.8.8;
-            # 192.168.43.1;
+            192.168.43.1;
           };
 
           # https://stackoverflow.com/questions/13342003/ns-got-insecure-response-parent-indicates-it-should-be-secure
