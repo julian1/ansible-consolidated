@@ -1,5 +1,5 @@
 
-  # TODO - maybe be an issue with opendmarc not restarting after reboot?
+  # Also, ran timezone and locale plays, 
 
   # TODO move to node specific role
 
@@ -558,34 +558,6 @@
 
     tags: header_checks
 
-
-
-  ##############################################
-  # TODO maybe move to its own role, although config is specific not generic.
-
-  - apt: name=fail2ban
-    tags: fail2ban
-
-
-  # once only
-  - command: cp jail.conf jail.local
-    args:
-      chdir:  /etc/fail2ban/
-      creates: jail.local
-    tags: fail2ban
-
-  # change to work on [default] ?
-
-  - blockinfile:
-      dest: /etc/fail2ban/jail.local
-      insertafter: '^\[sshd\].*'
-      marker: "# {mark} ansible content"
-      content: |
-        bantime = 86400
-        findtime = 86400
-        maxretry = 3
-    notify: restart-fail2ban
-    tags: fail2ban
 
 
 

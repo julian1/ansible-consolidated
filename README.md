@@ -39,6 +39,7 @@ ansible-playbook plays/admin/timezone.yml -i $myhost,
 ansible-playbook plays/admin/locale.yml -i $myhost,
 ansible-playbook plays/personal/dotfiles.yml -i $myhost,
 ansible-playbook plays/personal/meteo-sudo.yml -i $myhost,
+ansible-playbook plays/admin/fail2ban.yml -i $myhost,
 
 # flags
 ansible --list-hosts all
