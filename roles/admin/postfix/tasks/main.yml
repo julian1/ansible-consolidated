@@ -1,5 +1,5 @@
 
-  # Also, ran timezone and locale plays, 
+  # Also, see play for other roles, - timezone, locale, sshd, fail2ban plays,
 
   # TODO move to node specific role
 
@@ -557,8 +557,5 @@
         # /^To: bob@here.com/ REDIRECT bob@there.com
 
     tags: header_checks
-
-
-
 
 

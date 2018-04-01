@@ -2,6 +2,13 @@
 - hosts: all
   vars:
   roles:
+    - admin/timezone
+    - admin/locale
+    - admin/sshd
+    - admin/fail2ban
+    # - admin/firewall
+
     - admin/postfix
+
   tasks:
 
