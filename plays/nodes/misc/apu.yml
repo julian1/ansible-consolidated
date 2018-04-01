@@ -68,7 +68,6 @@
             SAY Now booting the kernel from SYSLINUX...
             KERNEL /boot/vmlinuz-4.9.0-3-amd64
             APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-3-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
-      tags: whoot
 
   roles:
     - name: admin/stretch
