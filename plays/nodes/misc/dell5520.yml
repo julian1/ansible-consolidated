@@ -1,6 +1,7 @@
 #### xmonad dirs are created as root - when we provision as root. which is required for apt.
 
-- hosts: localhost
+- hosts: 
+    - localhost
 
   vars:
   pre_tasks:
@@ -10,8 +11,7 @@
         name=root
         shell=/bin/bash
 
-
-    # note staff group is equivalent to root, since can put binaries in /usr/local/bin and usurp root privileges
+    # note staff group has same security implications as root, since can put binaries in /usr/local/bin and usurp root privileges
     # so must be trusted
 
     # non-priv user (no ssh)
@@ -26,26 +26,11 @@
         owner=meteo group=meteo
         state=directory
 
-    - copy:
-        dest: /etc/apt/sources.list
-        content: |
-          # deployed by ansible!
-          # see, https://wiki.debian.org/SourcesList  on stretch/updates v stretch-updates
-
-          deb http://ftp.au.debian.org/debian/ stretch main contrib non-free
-          deb-src http://ftp.au.debian.org/debian/ stretch main contrib non-free
-
-          deb http://security.debian.org/debian-security stretch/updates main contrib non-free
-          deb-src http://security.debian.org/debian-security stretch/updates main contrib non-free
-
-          # stretch-updates, previously known as 'volatile'
-          deb http://ftp.au.debian.org/debian/ stretch-updates main contrib non-free
-          deb-src http://ftp.au.debian.org/debian/ stretch-updates main contrib non-free
-
 
   roles:
-    # don't manage apt sources.list
-    - admin/apt/update
+    - name: admin/stretch
+      mirror: http://ftp.au.debian.org/debian/
+
     - admin/devenv-lite   # vim/screen eg. required for anything
     - admin/timezone
     - admin/locale

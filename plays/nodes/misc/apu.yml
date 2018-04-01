@@ -37,7 +37,6 @@
 
   vars:
   pre_tasks:
-    # ok this works....
 
     # root user
     - user: name=root shell=/bin/bash
@@ -49,11 +48,8 @@
 
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
-    # TODO this needs to be factored... into a role...
-
-
     # must do explicit kernel upgrade. also must manually update syslinux.cfg with new boot label
-    # syslinux is conventional except net.ifnames to prevent nic renaming, and serial speed.
+    # syslinux is conventional, except net.ifnames to prevent nic renaming, and serial speed.
     - copy:
         dest: /boot/syslinux/syslinux.cfg
         content: |
@@ -74,9 +70,7 @@
             APPEND rw root=UUID=89c7d75c-67eb-41f4-83cb-e1fa8890e8d5 initrd=/boot/initrd.img-4.9.0-3-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
       tags: whoot
 
-
   roles:
-
     - name: admin/stretch
       mirror: http://ftp.au.debian.org/debian/
 
@@ -87,10 +81,9 @@
     - name: admin/hostname
       hostname: apu
 
+    # the main role
     - admin/apu
 
   tasks:
-
-
   handlers:
 

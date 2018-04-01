@@ -9,7 +9,7 @@ Ansible plays for use with dev, systemd-nspawn containers, kvm, cloud instances,
 ```
 # nodes
 ansible-playbook plays/nodes/misc/apu.yml --tags bind,dhcp,iptables
-ansible-playbook plays/nodes/misc/dell-home.yml -c local -i localhost,   # run as root
+ansible-playbook plays/nodes/misc/dell5520.yml -c local -i localhost,   # run as root
 ansible-playbook plays/nodes/misc/pglogical.yml -i pglogical.localnet,
 
 # plays
