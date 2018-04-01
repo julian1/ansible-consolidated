@@ -114,13 +114,7 @@
   ##############################################
   # Step 8: Adjust the Server Networking Configuration
 
-  # ip forwarding
-  - lineinfile: >
-      dest=/etc/sysctl.conf
-      state=present
-      regexp='.*net.ipv4.ip_forward.*'
-      line='net.ipv4.ip_forward = 1'
-    notify: reload-sysctl
+  # ip forwarding - done in play
 
 
   # Warning, be careful of playbook errors, before meaning that the handler won't get called
