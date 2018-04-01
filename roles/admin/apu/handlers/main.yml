@@ -1,0 +1,45 @@
+
+
+  - name: restart-eth0
+    command: sh -c "/sbin/ifdown eth0 && /sbin/ifup eth0"
+
+  # - name: restart-eth1
+  #  command: sh -c "/sbin/ifdown eth1 && /sbin/ifup eth1"
+
+
+  # - name: restart-wlan0
+  #  command: sh -c "/sbin/ifdown wlan0 && sleep 1 && /sbin/ifup wlan0"
+
+  # - name: restart-wlan1
+  #  command: sh -c "/sbin/ifdown wlan1 && sleep 1 && /sbin/ifup wlan1"
+
+
+  - name: restart-smcroute
+    service: name=smcroute state=restarted
+
+  # - name: restart-tftpd-hpa
+  #      service: name=tftpd-hpa state=restarted
+
+  - name: reconfigure-iptables
+    command: "{{item}}"
+    with_items:
+      - sh -c 'm4 /etc/iptables-rules.m4 > /etc/iptables-rules'
+      - sh /etc/iptables-rules
+      - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+  - name: restart-sshd
+    service: name=ssh state=restarted
+
+  # - name: reboot
+  #  command: /sbin/reboot
+
+  - name: restart-bind
+    service: name=bind9 state=restarted
+
+  - name: restart-dhcp
+    service: name=isc-dhcp-server state=restarted
+
+  - name: restart-rsyslog
+    service: name=rsyslog state=restarted
+
+

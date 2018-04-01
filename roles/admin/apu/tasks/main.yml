@@ -1,0 +1,906 @@
+
+
+  - apt: name=less
+  - apt: name=net-tools       # ifconfig
+
+  - apt: name=ntp             # network time
+  - apt: name=tcpdump
+  - apt: name=netstat-nat     # nat connections
+  - apt: name=dnsutils        # dig, whois
+  - apt: name=wireless-tools  # iwconfig - useful to check wlan0 state
+  - apt: name=iw
+
+  - apt: name=pciutils        # lspci
+  - apt: name=usbutils        # lsusb
+  - apt: name=ethtool
+
+  # will need to add contrib to apt sources for ralink firmware.
+  #    - apt: name=firmware-ralink # backup AP
+  - apt: name=haveged         # entropy for wifi crypto
+
+
+  # TODO factor into a role if use more than here...
+  # sensors
+  - apt: name=lm-sensors
+  - shell: creates=ansible-lm-sensors {{item}}
+    with_items:
+      - sensors-detect --auto
+      - touch ansible-lm-sensors
+
+  # WARNING: Nasty, after kernel upgrade, was
+  # missing wlan0. Have to apt-get purge and
+  # reinstall firmware-realtek as it
+  # modifies initrd.img
+
+  # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
+  # - apt: name=firmware-realtek
+
+  - apt: name=hostapd
+
+
+
+  # hostapd.conf goes first since referred to by /etc/network/interfaces
+  # AP primary
+  - copy:
+      dest: /etc/hostapd/hostapd-wlan0.conf
+      content: |
+        # deployed by ansible!
+        interface=wlan0
+        ssid=AP1
+        hw_mode=g
+        channel=9
+        auth_algs=1
+        wpa=2
+        wpa_passphrase={{wpa_passphrase}}
+        wpa_key_mgmt=WPA-PSK
+        wpa_pairwise=TKIP
+        rsn_pairwise=CCMP
+
+    # not sure this works, because it won't restart isc-dhcp also
+    # notify: restart-wlan0
+
+  # get wrong driver by default...
+  # https://superuser.com/questions/692229/install-driver-for-rt5370-on-ubuntu
+  # AP2
+  - copy:
+      dest: /etc/hostapd/hostapd-wlan1.conf
+      content: |
+        # deployed by ansible!
+        interface=wlan1
+        ssid=AP2
+        hw_mode=g
+        channel=8
+        # remove everything below for open AP
+        auth_algs=1
+        wpa=2
+        wpa_passphrase={{wpa_passphrase}}
+        wpa_key_mgmt=WPA-PSK
+        wpa_pairwise=TKIP
+        rsn_pairwise=CCMP
+    # notify: restart-wlan1
+
+
+
+  - copy:
+      dest: /etc/network/interfaces
+      content: |
+        # deployed by ansible!
+
+        # loopback
+        auto lo
+        iface lo inet loopback
+
+        # configuration
+        auto eth1
+        iface eth1 inet static
+          address 172.16.0.1
+          netmask 255.255.255.0
+
+        # http://www.cyberciti.biz/tips/howto-configure-linux-virtual-local-area-network-vlan.html
+        # just had to do /sbin/ifup eth0.100.100
+        # VLAN = Third octet of IPv4 subnets, network identifier in IPv6 addresses.
+
+        # vlan 100 switch management
+        auto eth0.100
+        iface eth0.100 inet static
+          address 192.168.100.1
+          netmask 255.255.255.0
+          vlan-raw-device eth0
+
+        # vlan 120 wan
+        auto eth0.120
+        iface eth0.120 inet dhcp
+          vlan-raw-device eth0
+
+        # vlan 200
+        auto eth0.200
+        iface eth0.200 inet static
+          address 192.168.200.1
+          netmask 255.255.255.0
+          vlan-raw-device eth0
+
+        # vlan 201
+        auto eth0.201
+        iface eth0.201 inet static
+          address 192.168.201.1
+          netmask 255.255.255.0
+          vlan-raw-device eth0
+
+        # router management
+        # TODO do we need allow-hotplug?
+
+        # AP primary
+        auto wlan0
+        allow-hotplug wlan0
+        iface wlan0 inet static
+          hostapd /etc/hostapd/hostapd-wlan0.conf
+          address 192.168.43.1
+          netmask 255.255.255.0
+          # gateway to 10.0.0.0 via dell-home
+          # TODO A cleaner way to persist routing entries?
+          post-up ip route add 10.0.0.0/8 via 192.168.43.14
+
+        # AP 2
+        # auto wlan1
+        # allow-hotplug wlan1
+        #  iface wlan1 inet static
+        #   hostapd /etc/hostapd/hostapd-wlan1.conf
+        #   address 192.168.44.1
+        #   netmask 255.255.255.0
+
+    notify:
+      # will these all be run together
+      # TODO - restart networking generally?
+      # - restart-eth1
+      # - restart-eth2
+
+      # - restart-eth0  disable because kills conns...
+      # - restart-wlan0
+
+
+  - copy:
+      backup: yes
+      dest: /etc/motd
+      content: |
+        # deployed by ansible!
+    tags: sshd
+
+
+  - copy:
+      backup: yes
+      dest: /etc/ssh/sshd_config
+      content: |
+        # deployed by ansible!
+        Port 22
+
+        # ListenAddress 0.0.0.0
+        # listens on both eth1 and lan 100
+        ListenAddress 192.168.100.1
+        ListenAddress 172.16.0.1
+
+        Protocol 2
+        HostKey /etc/ssh/ssh_host_rsa_key
+        UsePrivilegeSeparation yes
+
+        KeyRegenerationInterval 3600
+        ServerKeyBits 1024
+
+        SyslogFacility AUTH
+        LogLevel INFO
+
+        LoginGraceTime 30
+        # if yes, allows password login - eg. for initial provisioning without keys...
+        # PermitRootLogin yes
+
+        # If this option is set to “without-password”, password authentication is disabled for root, but ssh ok.
+        PermitRootLogin without-password
+        StrictModes yes
+
+        RSAAuthentication yes
+        PubkeyAuthentication yes
+
+        IgnoreRhosts yes
+        RhostsRSAAuthentication no
+        HostbasedAuthentication no
+
+        PermitEmptyPasswords no
+        ChallengeResponseAuthentication no
+
+        # JA the important bit - only allow keys
+        PasswordAuthentication no
+
+        # X11Forwarding yes
+        # X11DisplayOffset 10
+        PrintMotd no
+        PrintLastLog yes
+        TCPKeepAlive yes
+
+        # banner is before login, motd is after
+        # JA changed
+        PrintMotd yes
+        # Banner /etc/issue.net
+        AcceptEnv LANG LC_*
+
+        # ansible likes sftp
+        Subsystem sftp /usr/lib/openssh/sftp-server
+        UsePAM yes
+
+    notify: restart-sshd
+    tags: sshd
+
+
+    # may need to restart wlan0 here? at least when install dnsmasq
+  - apt: name=iptables-persistent
+  - apt: name=m4
+    tags: iptables
+
+  - copy:
+      dest: /etc/iptables-rules.m4
+      content: |
+        # deployed by ansible!
+
+        #####
+        # flush current chain rules
+        iptables -t filter --flush
+        iptables -t nat --flush
+        iptables -t mangle --flush
+
+        #####
+        # set policy to accept during configuration, to avoid being locked out on error
+        iptables -P INPUT ACCEPT
+        iptables -P OUTPUT ACCEPT
+        iptables -P FORWARD ACCEPT
+
+
+        define(`WAN_INTERFACE', `eth0.120')
+
+        # ingress or egress indicates which node inititated the connection
+        # WAN_INGRESS proto, port, address
+        define(`WAN_INGRESS',
+        `iptables -A INPUT  -i WAN_INTERFACE -p $1 --dport $2 --source $3      -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+        `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+        # WAN_EGRESS proto, port, address
+        define(`WAN_EGRESS',
+        `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+        `iptables -A INPUT  -i WAN_INTERFACE -p $1 --sport $2 --source $3      -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+        # LAN_INGRESS proto, port, address
+        define(`LAN_INGRESS',
+        `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --dport $2 --source $3      -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT'
+        `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+        # LAN_EGRESS proto, port, address
+        define(`LAN_EGRESS',
+        `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -m conntrack --ctstate NEW,ESTABLISHED --j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --sport $2 --source $3      -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+        # FORWARD_ proto, port, src(egress), dst
+        define(`FORWARD_',
+        `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+        `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+
+        ##### APU local #####
+        #
+        # lo / 127.0.0.1
+        # allow local processes to talk via lo. needed for rndc /port 953, needed for bind
+        iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
+        iptables -A INPUT  -i lo -p tcp  -j ACCEPT
+        iptables -A OUTPUT -o lo -p udp  -j ACCEPT
+        iptables -A INPUT  -i lo -p udp  -j ACCEPT
+        iptables -A OUTPUT -o lo -p icmp -j ACCEPT
+        iptables -A INPUT  -i lo -p icmp -j ACCEPT
+
+
+        ##### WAN_INGRESS #####
+        # test
+        # WAN_INGRESS(tcp, 5555, 0.0.0.0/0)
+
+
+        ##### WAN_EGRESS #####
+        #
+
+        # dhcp
+        WAN_EGRESS(udp, 67, 0.0.0.0/0)
+
+        # dns
+        WAN_EGRESS(tcp, 53, 0.0.0.0/0)
+        WAN_EGRESS(udp, 53, 0.0.0.0/0)
+
+        # http - needed for apt updates
+        WAN_EGRESS(tcp, 80, 0.0.0.0/0)
+        WAN_EGRESS(tcp, 443, 0.0.0.0/0)
+
+        # ntp
+        WAN_EGRESS(udp, 123, 0.0.0.0/0)
+
+        # ping, ie wan test connectivity ping 8.8.8.8
+        iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+        iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+
+        ##### LAN_EGRESS #####
+
+        # test
+        # LAN_EGRESS(tcp, 5556, 0.0.0.0/0)
+
+
+        ##### LAN_INGRESS, lan to apu #####
+        #
+        # TODO does every lan, need dns and dhcp?
+
+        # dns
+        LAN_INGRESS(tcp, 53, 0.0.0.0/0)
+        LAN_INGRESS(udp, 53, 0.0.0.0/0)
+
+        # dhcp
+        LAN_INGRESS(udp, 67, 0.0.0.0/0)
+
+        # ssh - limit hosts
+        LAN_INGRESS(tcp, 22, 192.168.43.14)
+        LAN_INGRESS(tcp, 22, 192.168.201.19)
+        LAN_INGRESS(tcp, 22, 192.168.43.6)
+        # eth1
+        LAN_INGRESS(tcp, 22, 172.16.0.0/12)
+
+        # LAN_EGRESS_OR_INGRESS
+
+        # ping ingress and outgress - eg. allow ping any lan node from any lan node
+        # isc-dhcp-server uses this
+        iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8 -j ACCEPT
+        iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0 -j ACCEPT
+
+
+        ##### FORWARD LAN to WAN and LAN to LAN #####
+        #
+        # either lan to lan, or lan to wan with nat'ing.
+        # source and dst are both other machines
+        # NOTE - we block external dns. instead, must use apu dns, or else local vpn.
+        # IMPORTANT can express port range without need for multiport, see second answer,
+        #   see, https://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables/594837
+
+        # COMMON/GENERIC
+
+        # ping everwhere across
+        iptables -A FORWARD -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
+        iptables -A FORWARD -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+        # http
+        FORWARD_(tcp, 80,  0.0.0.0/0, 0.0.0.0/0)
+        FORWARD_(tcp, 443, 0.0.0.0/0, 0.0.0.0/0)
+
+        # ntp
+        FORWARD_(udp, 123, 0.0.0.0/0, 0.0.0.0/0)
+
+        # whois
+        FORWARD_(tcp, 43, 192.168.43.0/24, 0.0.0.0/0)
+
+        # smtp - note, iinet blocks port 25
+        # FORWARD_(tcp, 25, 192.168.43.0/24)
+
+        # smtpd submission, tls, starttls
+        FORWARD_(tcp, 587, 192.168.43.0/24, 0.0.0.0/0)
+        # imap tls
+        FORWARD_(tcp, 993, 192.168.43.0/24, 0.0.0.0/0)
+
+        # irc - note, port 6667 preferred over 194, freenode uses 6697
+        FORWARD_(tcp, 6667, 192.168.43.0/24, 0.0.0.0/0)
+
+        # 5222 test port - ssh proxy and general open test port
+        FORWARD_(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
+        FORWARD_(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
+
+        # SPECIFIC NODES,
+
+        # ssh
+        # dell-home wifi
+        FORWARD_(tcp, 22, 192.168.43.14, 0.0.0.0/0)
+        FORWARD_(tcp, 22, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_(tcp, 22, 192.168.201.19, 0.0.0.0/0)
+        FORWARD_(tcp, 22, 192.168.201.27, 0.0.0.0/0)
+
+        # printer - brother.localnet 9100
+        FORWARD_(tcp, 9100, 192.168.43.0/24, 192.168.201.15)
+
+        #
+        # IMPORTANT
+        # - generally want to use ssh forwarding for rpc nodes
+        # - and port forwards do not require forward table iptables , they are pre-routinig
+        # eth/parity - use reverse ssh tunnel instead
+        FORWARD_(tcp, 8545, 192.168.43.6, 0.0.0.0/0)
+        # btc incoming - for piplus - might be port forwarded both...
+        # FORWARD_(tcp, 8333, 0.0.0.0/24, 192.168.201.3)
+        # monero rpc
+        FORWARD_(tcp, 18081, 192.168.43.6, 0.0.0.0/0)
+        # transmission http web rpc
+        FORWARD_(tcp, 9091, 192.168.43.0/24, 192.168.201.29)
+        # monero open node
+        FORWARD_(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
+
+
+        # voip - both ingress and egress
+        # but... probably only needs egress. because ingress is handled with pre-routing...
+        FORWARD_(tcp, 1:65535, 192.168.201.20, 203.55.231.192/26 )
+        FORWARD_(udp, 1:65535, 192.168.201.20, 203.55.231.192/26 )
+        # iptables -A FORWARD -s 192.168.201.20 -j LOG
+        # iptables -A FORWARD -d 192.168.201.20 -j LOG
+        # ....
+
+        # IMPORTANT - Logging doesn't see much traffic here, because most stuff has already been accepted - eg. dns,https
+        # bravia log everything
+        #          iptables -A FORWARD -s 192.168.201.16 -j LOG ACCEPT
+        #          iptables -A FORWARD -d 192.168.201.16 -j LOG
+
+        # bravia outgoing  - all outgoing tcp
+        # opera/RT
+        # iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
+        # iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
+        # leave ssh open etc.
+
+        # TODO - review this - STUN ? any ingress?
+        # bravia everything
+        FORWARD_(tcp, 1:65535, 192.168.201.16, 0.0.0.0/0)
+        FORWARD_(udp, 1:65535, 192.168.201.16, 0.0.0.0/0)
+
+
+        # TODO re-enable dlna multicast routing, and tftp
+        # tftp and dlna services - should be on other lan nodes, if at all.
+        # TFTp - disable port-range is inclusive
+        # iptables -A INPUT  ! -i WAN_INTERFACE -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
+        # iptables -A OUTPUT ! -o WAN_INTERFACE -p udp --match multiport --sport 69,1024:1034 -j ACCEPT
+
+        # dlna - disable - service removed from apu
+        # iptables -A INPUT  ! -i WAN_INTERFACE -p tcp --dport 8200 -j ACCEPT
+        # iptables -A OUTPUT ! -o WAN_INTERFACE -p tcp --sport 8200 -j ACCEPT
+        # iptables -A INPUT  ! -i WAN_INTERFACE -p udp --dport 1900 -j ACCEPT
+        # iptables -A OUTPUT ! -o WAN_INTERFACE -p udp --sport 1900 -j ACCEPT
+
+
+        ##### NAT #####
+        # pre-routing
+        # VOIP
+        # http://serverfault.com/questions/594835/what-is-the-correct-way-to-open-a-range-of-ports-in-iptables
+        # Good voip guide, note the comment to limit stp to smaller port range
+        # http://whirlpool.net.au/wiki/iiNetPhone_asterisk
+        #
+        iptables -t nat -A PREROUTING -p udp -s 203.55.231.192/26 -i WAN_INTERFACE -j DNAT --to 192.168.201.20
+        iptables -t nat -A PREROUTING -p tcp -s 203.55.231.192/26 -i WAN_INTERFACE -j DNAT --to 192.168.201.20
+
+        # No port forwarding for 201.29 due to vpn
+
+        # post-routing
+        # private subnet nat
+        iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o WAN_INTERFACE -j MASQUERADE
+        iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o WAN_INTERFACE -j MASQUERADE
+        iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o WAN_INTERFACE -j MASQUERADE
+
+        #####
+        # mangle
+        #  checksum issue for udp bootpc
+
+
+        # everything ok? change policies back to drop
+        iptables -P INPUT DROP
+        iptables -P OUTPUT DROP
+        iptables -P FORWARD DROP
+
+
+
+    # TODO - instead of running this later. should run reconfigure immediately after using a variable
+    notify: reconfigure-iptables
+    tags: iptables
+
+
+  # multicast subnet routing. for example minidlna udp on 1900
+  # Use, ip -s mroute to query status
+  - apt: name=smcroute
+  - copy:
+      dest: /etc/smcroute/startup.sh
+      mode: 0755
+      content: |
+        # deployed by ansible!
+        sleep 1
+        smcroute -a wlan0    0.0.0.0 239.255.255.250 eth0.201
+        smcroute -a eth0.201 0.0.0.0 239.255.255.250 wlan0
+    notify: restart-smcroute
+
+#    tftp should run anywhere except here...
+#
+#    - apt: name=tftp
+#    - copy:
+#        dest: /etc/default/tftpd-hpa
+#        mode: 0644
+#        content: |
+#          # deployed by ansible!
+#          TFTP_USERNAME="tftp"
+#          TFTP_DIRECTORY="/srv/tftp"
+#          TFTP_ADDRESS="0.0.0.0:69"
+#          TFTP_OPTIONS="--secure --port-range 1024:1034"
+#      notify: restart-tftpd-hpa
+#
+#      # /srv/tftp cannot just be owned by tftp. instead must have global read permissions
+#      # chown -R root:root /srv/tftp
+#      # chmod 755 $( find /srv/tftp -type d )
+#      # chmod 644 $( find /srv/tftp -type f )
+#
+#    # xmodem protocol support over serial for switch firmware
+#    - apt: name=lrzsz
+#
+
+  # bind
+  # note,  can reload config with 'rndc reload'
+  # NOTE problem with rndc.key  solved by purge bind9 and reinstall
+  - apt: name=bind9
+
+  - file: path=/etc/bind/zones state=directory owner=root group=bind
+
+  # named options and configuration
+  - copy:
+      dest: /etc/bind/named.conf.options
+      # backup: yes
+      content: |
+        # deployed by ansible!
+        options {
+          directory "/var/cache/bind";
+          forwarders {
+            8.8.8.8;
+          };
+          dnssec-validation auto;
+          auth-nxdomain no;    # conform to RFC1035
+
+          # listen-on-v6 { any; };
+          listen-on-v6 { none; };
+
+          # listen-on port 53 { 127.0.0.1; 223.1.2.1; };
+          response-policy { zone "rpz"; };
+
+          # notify other dns
+          notify no;
+        };
+
+    notify: restart-bind
+    tags: bind
+
+  # zones
+  - copy:
+      dest: /etc/bind/named.conf.local
+      # backup: yes
+      content: |
+        # deployed by ansible!
+
+        zone "localnet" {
+          type master;
+          file "/etc/bind/zones/localnet.db";
+        };
+
+        # see, https://www.redpill-linpro.com/sysadvent/2015/12/08/dns-rpz.html
+        zone "rpz" {
+          type master;
+          file "/etc/bind/zones/rpz.db";
+        };
+    notify: restart-bind
+    tags: bind
+
+  # rpz zone
+  - copy:
+      dest: /etc/bind/zones/rpz.db
+      owner: root
+      group: bind
+      content: |
+        ; deployed by ansible!
+        ;
+
+        $TTL 60
+        @            IN    SOA  localhost. root.localhost.  (
+                                  2015112501   ; serial
+                                  1h           ; refresh
+                                  30m          ; retry
+                                  1w           ; expiry
+                                  30m)         ; minimum
+                           IN     NS    ns1.
+                           IN     NS    ns2.
+
+        ; Enable/disable here...
+        ; netflix.com       A       127.0.0.1
+        ; www.netflix.com   A       127.0.0.1
+
+        ; this stuff doesn't work when using an external ns.
+        test.com  A     127.0.0.1
+
+    notify: restart-bind
+    tags: bind
+
+
+
+  # localnet zone
+  - copy:
+      dest: /etc/bind/zones/localnet.db
+      owner: root
+      group: bind
+      content: |
+        ; deployed by ansible!
+        ;
+        $TTL 60
+        $ORIGIN localnet.
+        @             IN SOA ns1 mail ( 2001062501 21600 3600 604800 86400 )
+        @             IN NS ns1
+        @             IN NS ns2
+        @             IN A 192.168.1.1
+        ; @           IN AAAA ::1
+        @             IN MX 10 192.168.1.1
+
+        ; vlan 100
+        apu           IN A 192.168.100.1
+        ; these have the wrong ordering
+        cisco1        IN A 192.168.100.12
+        cisco2        IN A 192.168.100.11
+
+        ; vlan 200 - not used
+
+        ; vlan 201
+        budii         IN A 192.168.201.10
+        chromebox     IN A 192.168.201.12
+        brother       IN A 192.168.201.15
+        bravia        IN A 192.168.201.16
+        nuc           IN A 192.168.201.17
+        dell-home-wired IN A 192.168.201.19
+        snom          IN A 192.168.201.20
+        pi1           IN A 192.168.201.27
+        cisco3        IN A 192.168.201.28
+        apu2          IN A 192.168.201.29
+
+        ; wireless  wlan0
+        dell-5520     IN A 192.168.43.6
+        omega         IN A 192.168.43.10
+        dell-home     IN A 192.168.43.14
+        imac          IN A 192.168.43.15
+        esp           IN A 192.168.43.16
+        asus          IN A 192.168.43.17    ; cat
+        chromebox-wifi IN A 192.168.43.18
+        esp12f        IN A 192.168.43.19
+        xperia        IN A 192.168.43.20
+
+        ; wireless  wlan1
+        dell-home     IN A 192.168.44.14
+        esp           IN A 192.168.44.16
+        chromebox-wifi IN A 192.168.44.18
+
+        mail          IN A 192.168.201.1
+        ns1           IN A 192.168.1.1
+        ns2           IN A 192.168.1.2
+    notify: restart-bind
+    tags: bind
+
+
+  # dhcp
+  - apt: name=isc-dhcp-server
+
+  - copy:
+      dest: /etc/default/isc-dhcp-server
+      owner: root
+      group: root
+      # backup: yes
+      content: |
+        # deployed by ansible!
+        #Separate multiple interfaces with spaces, e.g. “eth0 eth1".
+        INTERFACESv4="eth0.201 wlan0 wlan1"
+        INTERFACESv6=""
+    notify: restart-dhcp
+    tags: dhcp
+
+  - copy:
+      dest: /etc/dhcp/dhcpd.conf
+      owner: root
+      group: root
+      # backup: yes
+      content: |
+        # deployed by ansible!
+
+        # Show that we want to be the only DHCP server in this network:
+        authoritative;
+
+        option domain-name "localnet";
+        # option domain-name-servers 131.217.38.36, 8.8.4.4;
+        # TODO don't think we need this... because we are explicit
+        option domain-name-servers 10.1.1.1;
+
+        # default-lease-time 600; 10 mins
+        default-lease-time 3600;  # one hour
+        max-lease-time 7200;
+
+        # requires corresponding entry in /etc/rsyslog.conf
+        log-facility local7;
+
+        # https://gauvain.pocentek.net/docs/dhcpd-push-routes/
+        # https://ercpe.de/blog/pushing-static-routes-with-isc-dhcp-server
+        # defines the type of data used to send the routing informations
+        option classless-routes code 121 = array of unsigned integer 8;
+
+
+        # Set up our desired subnet:
+        # http://jodies.de/ipcalc?host=10.1.1.0&mask1=24&mask2=
+        subnet 192.168.201.0 netmask 255.255.255.0 {
+            interface "eth0.201";
+
+            range 192.168.201.30  192.168.201.40;
+
+            option subnet-mask 255.255.255.0;
+            option broadcast-address 192.168.201.255;
+            option routers 192.168.201.1;
+            option domain-name-servers 192.168.201.1;
+
+
+            # gateways for subnets when default route is openvpn
+            option classless-routes 16, 192,168,    192,168,201,1,
+                                    24, 10,4,0,     192,168,201,1;
+
+            host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 192.168.201.10; }
+            host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
+            host brother      { hardware ethernet 00:80:77:34:55:96; fixed-address 192.168.201.15; }
+            host bravia       { hardware ethernet ac:9b:0a:91:6c:37; fixed-address 192.168.201.16; }
+            host nuc          { hardware ethernet b8:ae:ed:7b:b5:b9; fixed-address 192.168.201.17; }
+            host dell-home-wired { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
+            host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.201.20; }
+            host pi1          { hardware ethernet 00:9e:9e:9a:39:6e; fixed-address 192.168.201.27; }
+            host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
+            host apu2         { hardware ethernet 00:0d:b9:46:3e:b0; fixed-address 192.168.201.29; }
+        }
+
+        subnet 192.168.43.0 netmask 255.255.255.0 {
+
+            interface "wlan0";
+
+            range 192.168.43.30  192.168.43.40;
+
+            option subnet-mask 255.255.255.0;
+            option broadcast-address 192.168.43.255;
+            option routers 192.168.43.1;
+            option domain-name-servers 192.168.43.1;
+
+            # gateways for subnets when default route is openvpn
+            option classless-routes 16, 192,168,    192,168,43,1,
+                                    24, 10,4,0,     192,168,43,1;
+
+
+            host dell-5520    { hardware ethernet 00:28:f8:bf:8f:29; fixed-address 192.168.43.6; }
+            host omega        { hardware ethernet 40:a3:6b:c1:18:dc; fixed-address 192.168.43.10; }
+            host dell-home    { hardware ethernet f8:16:54:1c:9e:90; fixed-address 192.168.43.14; }
+            host imac         { hardware ethernet 00:19:e3:10:53:89; fixed-address 192.168.43.15; }
+            host esp          { hardware ethernet 18:fe:34:d1:94:4d; fixed-address 192.168.43.16; }
+            host asus         { hardware ethernet 60:57:18:75:3b:cc; fixed-address 192.168.43.17; }
+            host chromebox-wifi { hardware ethernet ac:b5:7d:07:f7:d9; fixed-address 192.168.43.18; }
+            host esp12f       { hardware ethernet 18:fe:34:d2:3a:45; fixed-address 192.168.43.19; }
+            host xperia       { hardware ethernet 30:75:12:ab:7e:23; fixed-address 192.168.43.20; }
+
+        }
+
+        subnet 192.168.44.0 netmask 255.255.255.0 {
+            interface "wlan1";
+
+            range 192.168.44.30  192.168.44.40;
+
+            option subnet-mask 255.255.255.0;
+            option broadcast-address 192.168.44.255;
+            option routers 192.168.44.1;
+            option domain-name-servers 192.168.44.1;
+
+            host dell-home2   { hardware ethernet f8:16:54:1c:9e:90; fixed-address 192.168.44.14; }
+        }
+
+    notify: restart-dhcp
+    tags: dhcp
+
+
+  # configure rsyslog to move dhcp logging out of syslog
+  # See, http://shallowsky.com/blog/linux/rsyslog-conf-tutorial.html
+  - copy:
+      dest: /etc/rsyslog.conf
+      owner: root
+      group: root
+      backup: yes
+      content: |
+        # deployed by ansible!
+        # Don't edit this down in order to easily diff
+
+        #################
+        #### MODULES ####
+        #################
+
+        module(load="imuxsock") # provides support for local system logging
+        module(load="imklog")   # provides kernel logging support
+        #module(load="immark")  # provides --MARK-- message capability
+
+        # provides UDP syslog reception
+        #module(load="imudp")
+        #input(type="imudp" port="514")
+
+        # provides TCP syslog reception
+        #module(load="imtcp")
+        #input(type="imtcp" port="514")
+
+        ###########################
+        #### GLOBAL DIRECTIVES ####
+        ###########################
+
+        #
+        # Use traditional timestamp format.
+        # To enable high precision timestamps, comment out the following line.
+        #
+        $ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+
+        #
+        # Set the default permissions for all log files.
+        #
+        $FileOwner root
+        $FileGroup adm
+        $FileCreateMode 0640
+        $DirCreateMode 0755
+        $Umask 0022
+
+        #
+        # Where to place spool and state files
+        #
+        $WorkDirectory /var/spool/rsyslog
+
+        #
+        # Include all config files in /etc/rsyslog.d/
+        #
+        $IncludeConfig /etc/rsyslog.d/*.conf
+
+        ###############
+        #### RULES ####
+        ###############
+
+        #
+        # First some standard log files.  Log by facility.
+        #
+        auth,authpriv.*                 /var/log/auth.log
+        # JA
+        # *.*;auth,authpriv.none                -/var/log/syslog
+        *.*;auth,authpriv.none,local7.none      -/var/log/syslog
+
+        #cron.*                         /var/log/cron.log
+        daemon.*                        -/var/log/daemon.log
+        kern.*                          -/var/log/kern.log
+        lpr.*                           -/var/log/lpr.log
+        mail.*                          -/var/log/mail.log
+        user.*                          -/var/log/user.log
+
+        # JA
+        local7.*                        /var/log/dhcpd.log
+
+        #
+        # Logging for the mail system.  Split it up so that
+        # it is easy to write scripts to parse these files.
+        #
+        mail.info                       -/var/log/mail.info
+        mail.warn                       -/var/log/mail.warn
+        mail.err                        /var/log/mail.err
+
+        #
+        # Some "catch-all" log files.
+        #
+        # JA
+        *.=debug;\
+                auth,authpriv.none,local7.none;\
+                news.none;mail.none     -/var/log/debug
+        *.=info;*.=notice;*.=warn;\
+                auth,authpriv.none,local7.none;\
+                cron,daemon.none;\
+                mail,news.none          -/var/log/messages
+
+        #
+        # Emergencies are sent to everybody logged in.
+        #
+        *.emerg                         :omusrmsg:*
+
+        # JA ?
+        :msg, contains, "IPTABLES"       /var/log/iptables.log
+
+    notify: restart-rsyslog
+    tags: rsyslog
+
+
+
+
