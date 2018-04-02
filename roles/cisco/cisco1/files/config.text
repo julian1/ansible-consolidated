@@ -1,7 +1,6 @@
 
 !
-! Last configuration change at 18:09:55 aedt Mon Feb 8 2016 by meteo
-! NVRAM config last updated at 18:10:08 aedt Mon Feb 8 2016 by meteo
+! Last configuration change at 04:17:50 aedt Tue Jun 29 1993 by meteo
 !
 version 12.2
 no service pad
@@ -62,14 +61,17 @@ ip scp server enable
 !
 !
 interface GigabitEthernet0/1
- switchport trunk allowed vlan 100,120,200,201
+ switchport access vlan 203
+ switchport trunk allowed vlan 100,120,201-203
  switchport mode trunk
 !
 interface GigabitEthernet0/2
- switchport trunk allowed vlan 100,120,200,201
+ switchport trunk allowed vlan 100,120,201-203
  switchport mode trunk
 !
 interface GigabitEthernet0/3
+ switchport trunk allowed vlan 100,120,201-203
+ switchport mode trunk
 !
 interface GigabitEthernet0/4
  switchport access vlan 201
@@ -80,14 +82,16 @@ interface GigabitEthernet0/5
  switchport mode access
 !
 interface GigabitEthernet0/6
- switchport access vlan 201
+ switchport access vlan 203
  switchport mode access
 !
 interface GigabitEthernet0/7
- switchport access vlan 201
+ switchport access vlan 202
  switchport mode access
 !
 interface GigabitEthernet0/8
+ switchport access vlan 201
+ switchport mode access
 !
 interface Vlan1
  no ip address
@@ -107,5 +111,4 @@ logging esm config
 line con 0
 line vty 5 15
 !
-ntp server ntp.internode.on.net
 end
