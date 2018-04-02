@@ -128,19 +128,27 @@
         iface eth0.120 inet dhcp
           vlan-raw-device eth0
 
-        # vlan 200
-        auto eth0.200
-        iface eth0.200 inet static
-          address 192.168.200.1
-          netmask 255.255.255.0
-          vlan-raw-device eth0
-
-        # vlan 201
+        # vlan 201 - general wired
         auto eth0.201
         iface eth0.201 inet static
           address 192.168.201.1
           netmask 255.255.255.0
           vlan-raw-device eth0
+
+        # vlan 202 - untrusted - bravia.
+        auto eth0.202
+        iface eth0.202 inet static
+          address 192.168.202.1
+          netmask 255.255.255.0
+          vlan-raw-device eth0
+
+        # vlan 203 - voip
+        auto eth0.203
+        iface eth0.203 inet static
+          address 192.168.203.1
+          netmask 255.255.255.0
+          vlan-raw-device eth0
+
 
         # router management
         # TODO do we need allow-hotplug?
@@ -172,6 +180,8 @@
 
       # - restart-eth0  disable because kills conns...
       # - restart-wlan0
+    tags: interfaces
+
 
 
     # may need to restart wlan0 here? at least when install dnsmasq
@@ -281,7 +291,7 @@
         # iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
         # iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
-        # this is egress only, because of association between icmp request/response type and the input or output chain 
+        # this is egress only, because of association between icmp request/response type and the input or output chain
         iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 --source 0.0.0.0/0      -j ACCEPT
         iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 --destination 0.0.0.0/0 -j ACCEPT
 
@@ -304,9 +314,9 @@
         LAN_INGRESS(udp, 67, 192.168.0.0/16)
 
         # ssh - limit hosts
+        LAN_INGRESS(tcp, 22, 192.168.43.6)
         LAN_INGRESS(tcp, 22, 192.168.43.14)
         LAN_INGRESS(tcp, 22, 192.168.201.19)
-        LAN_INGRESS(tcp, 22, 192.168.43.6)
 
         # eth1
         LAN_INGRESS(tcp, 22, 172.16.0.0/12)
@@ -331,9 +341,9 @@
 
         # General form, order is important,
         # drop http destined to intranet, that originates from intranet, or internet
-        # DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)   
+        # DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
         # otherwise permit http egress
-        # FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)        
+        # FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
 
         # COMMON/GENERIC
 
@@ -346,33 +356,33 @@
 
 
         # http
-        DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)   
-        FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)        
-        DROP_(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)   
+        DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
+        DROP_(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
 
         # ntp
-        DROP_(   tcp, 123, 0.0.0.0/0, 192.168.0.0/16)   
+        DROP_(   tcp, 123, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
 
         # whois
-        DROP_(   tcp, 43, 0.0.0.0/0, 192.168.0.0/16)   
+        DROP_(   tcp, 43, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 43, 192.168.43.0/24, 0.0.0.0/0)
 
         # smtp - note, iinet blocks port 25
-        DROP_(   tcp, 25, 0.0.0.0/0, 192.168.0.0/16)   
+        DROP_(   tcp, 25, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 25, 192.168.43.0/24, 0.0.0.0/0)
 
         # smtpd submission, tls, starttls
-        DROP_(   tcp, 587, 0.0.0.0/0, 192.168.0.0/16)   
+        DROP_(   tcp, 587, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 587, 192.168.43.0/24, 0.0.0.0/0)
 
         # imap tls
-        DROP_(   tcp, 993, 0.0.0.0/0, 192.168.0.0/16)   
+        DROP_(   tcp, 993, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 993, 192.168.43.0/24, 0.0.0.0/0)
 
         # irc - note, port 6667 preferred over 194, freenode uses 6697
-        DROP_(   tcp, 6667, 0.0.0.0/0, 192.168.0.0/16)   
+        DROP_(   tcp, 6667, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 6667, 192.168.43.0/24, 0.0.0.0/0)
 
         # 5222 test port - ssh proxy and general open test port
@@ -405,13 +415,13 @@
         # monero open node
         FORWARD_(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
 
-
+        # snom
         # voip - both ingress and egress
         # but... probably only needs egress. because ingress is handled with pre-routing...
-        FORWARD_(tcp, 1:65535, 192.168.201.20, 203.55.231.192/26 )
-        FORWARD_(udp, 1:65535, 192.168.201.20, 203.55.231.192/26 )
-        # iptables -A FORWARD -s 192.168.201.20 -j LOG
-        # iptables -A FORWARD -d 192.168.201.20 -j LOG
+        FORWARD_(tcp, 1:65535, 192.168.203.20, 203.55.231.192/26)
+        FORWARD_(udp, 1:65535, 192.168.203.20, 203.55.231.192/26)
+        # iptables -A FORWARD -s 192.168.203.20 -j LOG
+        # iptables -A FORWARD -d 192.168.203.20 -j LOG
         # ....
 
         # IMPORTANT - Logging doesn't see much traffic here, because most stuff has already been accepted - eg. dns,https
@@ -425,10 +435,15 @@
         # iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
         # leave ssh open etc.
 
-        # TODO - review this - STUN ? any ingress?
-        # bravia everything
-        FORWARD_(tcp, 1:65535, 192.168.201.16, 0.0.0.0/0)
-        FORWARD_(udp, 1:65535, 192.168.201.16, 0.0.0.0/0)
+        # bravia
+
+        # drop any forwarding connection from bravia to intranet,. excludes apu
+        # - review if add dnla
+        DROP_(   tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+        DROP_(   udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+        # otherwise allow outbound connection to internet
+        FORWARD_(tcp, 1:65535, 192.168.202.16, 0.0.0.0/0)
+        FORWARD_(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
 
 
         # TODO re-enable dlna multicast routing, and tftp
@@ -623,16 +638,19 @@
         cisco1        IN A 192.168.100.12
         cisco2        IN A 192.168.100.11
 
-        ; vlan 200 - not used
+
+        ; vlan 202
+        bravia        IN A 192.168.202.16
+
+        ; vlan 203
+        snom          IN A 192.168.203.20
 
         ; vlan 201
         budii         IN A 192.168.201.10
         chromebox     IN A 192.168.201.12
         brother       IN A 192.168.201.15
-        bravia        IN A 192.168.201.16
         nuc           IN A 192.168.201.17
         dell-home-wired IN A 192.168.201.19
-        snom          IN A 192.168.201.20
         pi1           IN A 192.168.201.27
         cisco3        IN A 192.168.201.28
         apu2          IN A 192.168.201.29
@@ -671,7 +689,7 @@
       content: |
         # deployed by ansible!
         #Separate multiple interfaces with spaces, e.g. “eth0 eth1".
-        INTERFACESv4="eth0.201 wlan0 wlan1"
+        INTERFACESv4="eth0.201 eth0.202 eth0.203 wlan0 wlan1"
         INTERFACESv6=""
     notify: restart-dhcp
     tags: dhcp
@@ -721,18 +739,44 @@
             # gateways for subnets when default route is openvpn
             option classless-routes 16, 192,168,    192,168,201,1,
                                     24, 10,4,0,     192,168,201,1;
-
             host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 192.168.201.10; }
             host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
             host brother      { hardware ethernet 00:80:77:34:55:96; fixed-address 192.168.201.15; }
-            host bravia       { hardware ethernet ac:9b:0a:91:6c:37; fixed-address 192.168.201.16; }
             host nuc          { hardware ethernet b8:ae:ed:7b:b5:b9; fixed-address 192.168.201.17; }
             host dell-home-wired { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
-            host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.201.20; }
             host pi1          { hardware ethernet 00:9e:9e:9a:39:6e; fixed-address 192.168.201.27; }
             host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
             host apu2         { hardware ethernet 00:0d:b9:46:3e:b0; fixed-address 192.168.201.29; }
         }
+
+        subnet 192.168.202.0 netmask 255.255.255.0 {
+            interface "eth0.202";
+
+            range 192.168.202.30  192.168.202.40;
+
+            option subnet-mask 255.255.255.0;
+            option broadcast-address 192.168.202.255;
+            option routers 192.168.202.1;
+            option domain-name-servers 192.168.202.1;
+
+            host bravia       { hardware ethernet ac:9b:0a:91:6c:37; fixed-address 192.168.202.16; }
+        }
+
+        subnet 192.168.203.0 netmask 255.255.255.0 {
+            interface "eth0.203";
+
+            range 192.168.203.30  192.168.203.40;
+
+            option subnet-mask 255.255.255.0;
+            option broadcast-address 192.168.203.255;
+            option routers 192.168.203.1;
+            option domain-name-servers 192.168.203.1;
+
+            host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.203.20; }
+        }
+
+
+
 
         subnet 192.168.43.0 netmask 255.255.255.0 {
 
