@@ -1,0 +1,51 @@
+
+# https://unix.stackexchange.com/questions/1974/how-do-i-make-my-pc-speaker-beep
+# https://www.pcsuggest.com/show-notification-play-sound-low-battery-linux/
+
+  - copy:
+      dest: /home/meteo/low-battery-alert.sh 
+      owner: meteo
+      group: meteo
+      mode: 0755
+      content: |
+        # deployed by ansible!
+
+        threshold=90
+        cap=$(cat /sys/class/power_supply/BAT0/capacity) 
+
+        beep() {
+          # $1 duration in seconds, $2 freq 
+          timeout -k ${1}s ${1}s speaker-test --frequency ${2} --test sine 2> /dev/null 
+        }
+
+        # echo "$(date) $(whoami) threshold $threshold, cap $cap" >> /home/meteo/battery_low.log
+
+        if [[ $cap -le $threshold ]] ; then 
+          beep 0.1 500
+        fi
+
+
+  - copy:
+      dest: /etc/systemd/system/low-battery-alert.service
+      mode: 0644
+      content: |
+        # deployed by ansible!
+
+        [Unit]
+        Description=Send alerts on low battery
+
+        [Service]
+        Type=simple
+        # TODO change me!
+        User=root
+        ExecStart=/bin/bash /home/meteo/low-battery-alert.sh
+        # Environment="DISPLAY=:0" "XAUTHORITY=/home/b00m/.Xauthority"
+        Restart=always
+        RestartSec=60
+
+        [Install]
+        WantedBy=multi-user.target
+
+    notify: reconfigure-low-battery-alert
+
+
