@@ -3,6 +3,6 @@
   vars:
   roles:
     - admin/ip-forwarding
-    - admin/openvpn
+    - nodes/openvpn
   tasks:
 

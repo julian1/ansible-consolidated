@@ -3,6 +3,6 @@
   - hosts: all
     roles:
       - admin/ip-forwarding
-      - admin/bridge-tap
+      - nodes/bridge-tap
 
 
