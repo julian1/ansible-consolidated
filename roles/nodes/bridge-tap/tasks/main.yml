@@ -318,8 +318,11 @@
         iptables -t nat --flush
 
 
-        # nat
-        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
+        # for openvpn
+        # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
+
+        # non openvpn
+        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
 
         iptables -P FORWARD DROP
 
@@ -355,14 +358,6 @@
 
 
 
-
-
-###############
-# from host, give instance access out the vpn...
-# iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
-
-# or to the host 192.168.0.0/16 network as gateway
-# iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0  -j MASQUERADE
 
 # note both router and vpn do egress nat'ing.
 # we should be able to route from vpn node with a routing entry for 10.3.0.0/24 via 10.8.0.6 on vpn node

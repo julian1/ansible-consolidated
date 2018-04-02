@@ -65,7 +65,7 @@
       hostname: apu
 
     # the main node-specific role
-    - admin/apu
+    - nodes/apu
 
   tasks:
   handlers:
