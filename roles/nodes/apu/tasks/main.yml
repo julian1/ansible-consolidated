@@ -744,7 +744,6 @@
             host nuc          { hardware ethernet b8:ae:ed:7b:b5:b9; fixed-address 192.168.201.17; }
             host dell-home-w  { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
             host pi1          { hardware ethernet 00:9e:9e:9a:39:6e; fixed-address 192.168.201.27; }
-            #host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
 
             host dell-adapter { hardware ethernet d4:81:d7:41:c5:6c; fixed-address 192.168.201.18; }
         }
