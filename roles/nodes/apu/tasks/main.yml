@@ -149,6 +149,13 @@
           netmask 255.255.255.0
           vlan-raw-device eth0
 
+        # vlan 204 - servers
+        auto eth0.204
+        iface eth0.204 inet static
+          address 192.168.204.1
+          netmask 255.255.255.0
+          vlan-raw-device eth0
+
 
         # router management
         # TODO do we need allow-hotplug?
@@ -646,6 +653,9 @@
 
         ; vlan 203
         snom          IN A 192.168.203.20
+        
+        ; vlan 204
+        apu2          IN A 192.168.204.29
 
         ; vlan 201
         budii         IN A 192.168.201.10
@@ -655,7 +665,6 @@
         dell-home-wired IN A 192.168.201.19
         pi1           IN A 192.168.201.27
         cisco3        IN A 192.168.201.28
-        apu2          IN A 192.168.201.29
 
         ; wireless  wlan0
         dell-5520     IN A 192.168.43.6
@@ -691,10 +700,14 @@
       content: |
         # deployed by ansible!
         #Separate multiple interfaces with spaces, e.g. “eth0 eth1".
-        INTERFACESv4="eth0.201 eth0.202 eth0.203 wlan0 wlan1"
+        INTERFACESv4="eth0.201 eth0.202 eth0.203 eth0.204 wlan0 wlan1"
         INTERFACESv6=""
     notify: restart-dhcp
     tags: dhcp
+
+  # IMPORTANT - when migrating, client needs to clean out old leases, otherwise it will keep requesting them
+  # rm /var/lib/dhcp/dhclient.*
+  # https://askubuntu.com/questions/151958/how-to-make-dhclient-forget-its-last-dhcp-lease
 
   - copy:
       dest: /etc/dhcp/dhcpd.conf
@@ -737,18 +750,17 @@
             option routers 192.168.201.1;
             option domain-name-servers 192.168.201.1;
 
-            # gateways for subnets when default route is openvpn
+            # gateways for subnets when default route is via openvpn
             option classless-routes 16, 192,168,    192,168,201,1,
                                     24, 10,4,0,     192,168,201,1;
 
-            host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 192.168.201.10; }
+            # host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 192.168.201.10; }
             host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
             host brother      { hardware ethernet 00:80:77:34:55:96; fixed-address 192.168.201.15; }
             host nuc          { hardware ethernet b8:ae:ed:7b:b5:b9; fixed-address 192.168.201.17; }
-            host dell-home-wired { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
+            host dell-home-w  { hardware ethernet b8:2a:72:c9:fe:d2; fixed-address 192.168.201.19; }
             host pi1          { hardware ethernet 00:9e:9e:9a:39:6e; fixed-address 192.168.201.27; }
-            host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
-            host apu2         { hardware ethernet 00:0d:b9:46:3e:b0; fixed-address 192.168.201.29; }
+            #host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
 
             host dell-adapter { hardware ethernet d4:81:d7:41:c5:6c; fixed-address 192.168.201.18; }
         }
@@ -777,8 +789,26 @@
             option domain-name-servers 192.168.203.1;
 
             host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.203.20; }
-
         }
+
+        subnet 192.168.204.0 netmask 255.255.255.0 {
+            interface "eth0.204";
+
+            range 192.168.204.30  192.168.204.40;
+
+            option subnet-mask 255.255.255.0;
+            option broadcast-address 192.168.204.255;
+            option routers 192.168.204.1;
+            option domain-name-servers 192.168.204.1;
+
+            # gateways for subnets when default route is via openvpn
+            option classless-routes 16, 192,168,    192,168,204,1,
+                                    24, 10,4,0,     192,168,204,1;
+
+            host apu2         { hardware ethernet 00:0d:b9:46:3e:b0; fixed-address 192.168.204.29; }
+        }
+
+
 
 
         subnet 192.168.43.0 netmask 255.255.255.0 {
