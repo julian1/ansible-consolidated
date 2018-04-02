@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 04:17:50 aedt Tue Jun 29 1993 by meteo
+! Last configuration change at 08:50:54 aedt Tue Jun 29 1993 by meteo
 !
 version 12.2
 no service pad
@@ -62,15 +62,15 @@ ip scp server enable
 !
 interface GigabitEthernet0/1
  switchport access vlan 203
- switchport trunk allowed vlan 100,120,201-203
+ switchport trunk allowed vlan 100,120,201-210
  switchport mode trunk
 !
 interface GigabitEthernet0/2
- switchport trunk allowed vlan 100,120,201-203
+ switchport trunk allowed vlan 100,120,201-210
  switchport mode trunk
 !
 interface GigabitEthernet0/3
- switchport trunk allowed vlan 100,120,201-203
+ switchport trunk allowed vlan 100,120,201-210
  switchport mode trunk
 !
 interface GigabitEthernet0/4
@@ -78,7 +78,7 @@ interface GigabitEthernet0/4
  switchport mode access
 !
 interface GigabitEthernet0/5
- switchport access vlan 201
+ switchport access vlan 204
  switchport mode access
 !
 interface GigabitEthernet0/6
