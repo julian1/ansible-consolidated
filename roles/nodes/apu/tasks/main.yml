@@ -355,6 +355,9 @@
         iptables -A FORWARD -p icmp --icmp-type 0 --destination 192.168.0.0/16 -j ACCEPT
 
 
+        # allow anything outbound from 192.168.43.6
+        # FORWARD_(tcp, 1:65535, 192.168.43.6, 0.0.0.0/0)
+
         # http
         DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
@@ -614,7 +617,6 @@
     tags: bind
 
 
-
   # localnet zone
   - copy:
       dest: /etc/bind/zones/localnet.db
@@ -735,10 +737,10 @@
             option routers 192.168.201.1;
             option domain-name-servers 192.168.201.1;
 
-
             # gateways for subnets when default route is openvpn
             option classless-routes 16, 192,168,    192,168,201,1,
                                     24, 10,4,0,     192,168,201,1;
+
             host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 192.168.201.10; }
             host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
             host brother      { hardware ethernet 00:80:77:34:55:96; fixed-address 192.168.201.15; }
@@ -747,6 +749,8 @@
             host pi1          { hardware ethernet 00:9e:9e:9a:39:6e; fixed-address 192.168.201.27; }
             host cisco3       { hardware ethernet 00:24:f7:26:0a:c0; fixed-address 192.168.201.28; }
             host apu2         { hardware ethernet 00:0d:b9:46:3e:b0; fixed-address 192.168.201.29; }
+
+            host dell-adapter { hardware ethernet d4:81:d7:41:c5:6c; fixed-address 192.168.201.18; }
         }
 
         subnet 192.168.202.0 netmask 255.255.255.0 {
@@ -773,9 +777,8 @@
             option domain-name-servers 192.168.203.1;
 
             host snom         { hardware ethernet 00:04:13:37:1a:f1; fixed-address 192.168.203.20; }
+
         }
-
-
 
 
         subnet 192.168.43.0 netmask 255.255.255.0 {
