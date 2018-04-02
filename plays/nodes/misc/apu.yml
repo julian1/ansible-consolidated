@@ -52,6 +52,10 @@
     - name: admin/stretch
       mirror: http://ftp.au.debian.org/debian/
 
+    - name: admin/sshd
+      listen_address: 192.168.100.1 
+      tags: whoot
+      
     - admin/timezone
     - admin/locale
     - admin/ip-forwarding
