@@ -13,14 +13,20 @@
         # deployed by ansible!
         # defaults for stretch
 
+        ListenAddress {{listen_address}}
+
         ChallengeResponseAuthentication no
         UsePAM yes
         X11Forwarding yes
-        # JA If this option is set to “without-password”, password authentication is disabled for root, but key ssh ok.
+
+        # JA If this option is set to "without-password", password authentication is disabled for root, but key ssh ok.
         PermitRootLogin without-password
+
         # JA disable password authentication for all users
         PasswordAuthentication no
+
         PrintMotd no
+
         # no AcceptEnv which screws env, https://stackoverflow.com/questions/2499794/how-to-fix-a-locale-setting-warning-from-perl
         # AcceptEnv LANG LC_*
         # JA needed for rsync
