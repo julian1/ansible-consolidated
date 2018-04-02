@@ -54,7 +54,8 @@
 
     - name: admin/sshd
       listen_address: 192.168.100.1 
-      tags: whoot
+
+    - name: admin/sensors
       
     - admin/timezone
     - admin/locale

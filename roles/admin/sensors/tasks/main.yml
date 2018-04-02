@@ -1,0 +1,11 @@
+
+
+  # TODO factor into a role if use more than here...
+  # sensors
+  - apt: name=lm-sensors
+  - shell: creates=ansible-lm-sensors {{item}}
+    with_items:
+      - sensors-detect --auto
+      - touch ansible-lm-sensors
+
+

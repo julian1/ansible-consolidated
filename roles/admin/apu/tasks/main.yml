@@ -1,16 +1,13 @@
 
-# TODO
-# - split out the dhcp/bind/iptables stuff from the low-level os/boot/dev/user config stuff...
-# - and make it a node-specific role, with a simple play entry point.
+# dhcp, bind, iptables, smcroute rsyslog for apu
 
-# - also want to name  eth0 to eth0, wlan0 to wlan0 etc, need to check works with vlans.
-# - order should be dhcp, bind, iptables- actually no iptables should be first.
-# - need to split out the dhcpd log. it's too messy.
+# TODO
+
+# - split out the dhcpd log. it's too messy.
 
 # HAVE ERROR - this could be stopping it from starting
 # "Dynamic and static leases present for"
 #  https://serverfault.com/questions/750710/isc-dhcp-server-dynamic-and-static-leases-present
-
 
 # cisco/switches - should use dhcp to configure internal interface ip
 
@@ -45,14 +42,6 @@
   #    - apt: name=firmware-ralink # backup AP
   - apt: name=haveged         # entropy for wifi crypto
 
-
-  # TODO factor into a role if use more than here...
-  # sensors
-  - apt: name=lm-sensors
-  - shell: creates=ansible-lm-sensors {{item}}
-    with_items:
-      - sensors-detect --auto
-      - touch ansible-lm-sensors
 
   # WARNING: Nasty, after kernel upgrade, was
   # missing wlan0. Have to apt-get purge and
@@ -503,7 +492,7 @@
         smcroute -a eth0.201 0.0.0.0 239.255.255.250 wlan0
     notify: restart-smcroute
 
-#    tftp should run anywhere except here...
+#    tftp if we use it, should be defined anywhere except here...
 #
 #    - apt: name=tftp
 #    - copy:
@@ -898,7 +887,4 @@
 
     notify: restart-rsyslog
     tags: rsyslog
-
-
-
 
