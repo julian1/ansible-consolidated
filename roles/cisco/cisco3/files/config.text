@@ -1,0 +1,95 @@
+
+!
+! Last configuration change at 00:24:35 UTC Mon Mar 1 1993 by meteo
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Switch
+!
+boot-start-marker
+boot-end-marker
+!
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+system mtu routing 1500
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-4146465408
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-4146465408
+ revocation-check none
+ rsakeypair TP-self-signed-4146465408
+!
+!
+crypto pki certificate chain TP-self-signed-4146465408
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+ip ssh version 2
+ip ssh pubkey-chain
+  username meteo
+   key-hash ssh-rsa EE30E46C8C54A57016F0E1721E2C3926
+  quit
+!
+!
+!
+!
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface GigabitEthernet0/1
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan100
+ ip address 192.168.100.14 255.255.255.0
+!
+ip default-gateway 192.168.100.1
+ip http server
+ip http secure-server
+!
+!
+logging esm config
+!
+!
+!
+!
+line con 0
+line vty 5 15
+!
+end
