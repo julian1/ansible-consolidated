@@ -328,6 +328,11 @@
         # eth1
         LAN_INGRESS(tcp, 22, 172.16.0.0/12)
 
+        # tftp
+        LAN_INGRESS(udp, 69,        192.168.0.0/16)
+        LAN_INGRESS(udp, 1024:1034, 192.168.0.0/16)
+
+
         # LAN_EGRESS_OR_INGRESS
 
         # REVIEW
@@ -456,12 +461,8 @@
         FORWARD_(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
 
 
-        # TODO re-enable dlna multicast routing, and tftp
-        # tftp and dlna services - should be on other lan nodes, if at all.
-        # TFTp - disable port-range is inclusive
-        # iptables -A INPUT  ! -i WAN_INTERFACE -p udp --match multiport --dport 69,1024:1034 -j ACCEPT
-        # iptables -A OUTPUT ! -o WAN_INTERFACE -p udp --match multiport --sport 69,1024:1034 -j ACCEPT
-
+        # TODO re-enable dlna multicast routing,
+        # dlna services - should be on other lan nodes, if at all.
         # dlna - disable - service removed from apu
         # iptables -A INPUT  ! -i WAN_INTERFACE -p tcp --dport 8200 -j ACCEPT
         # iptables -A OUTPUT ! -o WAN_INTERFACE -p tcp --sport 8200 -j ACCEPT
@@ -517,25 +518,8 @@
         smcroute -a eth0.201 0.0.0.0 239.255.255.250 wlan0
     notify: restart-smcroute
 
-#    tftp if we use it, should be defined anywhere except here...
-#
-#    - apt: name=tftp
-#    - copy:
-#        dest: /etc/default/tftpd-hpa
-#        mode: 0644
-#        content: |
-#          # deployed by ansible!
-#          TFTP_USERNAME="tftp"
-#          TFTP_DIRECTORY="/srv/tftp"
-#          TFTP_ADDRESS="0.0.0.0:69"
-#          TFTP_OPTIONS="--secure --port-range 1024:1034"
-#      notify: restart-tftpd-hpa
-#
-#      # /srv/tftp cannot just be owned by tftp. instead must have global read permissions
-#      # chown -R root:root /srv/tftp
-#      # chmod 755 $( find /srv/tftp -type d )
-#      # chmod 644 $( find /srv/tftp -type f )
-#
+
+
 #    # xmodem protocol support over serial for switch firmware
 #    - apt: name=lrzsz
 #
@@ -646,6 +630,7 @@
         ; these have the wrong ordering
         cisco1        IN A 192.168.100.12
         cisco2        IN A 192.168.100.11
+        cisco3        IN A 192.168.100.14
 
 
         ; vlan 202
@@ -664,7 +649,6 @@
         nuc           IN A 192.168.201.17
         dell-home-wired IN A 192.168.201.19
         pi1           IN A 192.168.201.27
-        cisco3        IN A 192.168.201.28
 
         ; wireless  wlan0
         dell-5520     IN A 192.168.43.6

@@ -53,10 +53,10 @@
       mirror: http://ftp.au.debian.org/debian/
 
     - name: admin/sshd
-      listen_address: 192.168.100.1 
+      listen_address: 192.168.100.1
 
     - name: admin/sensors
-      
+
     - admin/timezone
     - admin/locale
     - admin/ip-forwarding
@@ -66,6 +66,11 @@
 
     # the main node-specific role
     - nodes/apu
+
+
+    - name: admin/tftpd
+      listen_address: 192.168.100.1
+
 
   tasks:
   handlers:

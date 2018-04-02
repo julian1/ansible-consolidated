@@ -1,0 +1,41 @@
+
+
+  # there is tftpd and tftpd-hpa, second is supposed to be more up-to-date
+
+  # log is in  /var/log/daemon.log
+  # must pass -vvvv to see
+
+  # client example,
+  # $ rlwrap tftp
+  # tftp> get 192.168.100.1:c3560-ipbasek9-mz.122-58.SE2.bin
+  # Received 15190897 bytes in 45.8 seconds
+
+
+  - apt: name=tftpd-hpa 
+    tags: tftpd
+
+  # note, default install sets correct permissions on /srv/tftp
+  - copy:
+      dest: /etc/default/tftpd-hpa
+      mode: 0644
+      content: |
+        # deployed by ansible!
+
+        TFTP_USERNAME="tftp"
+        TFTP_DIRECTORY="/srv/tftp"
+        TFTP_ADDRESS="{{listen_address}}:69"
+        TFTP_OPTIONS="--secure --port-range 1024:1034  -vvvv"
+
+    notify: restart-tftpd-hpa
+    tags: tftpd
+
+
+# TFTP_ADDRESS="0.0.0.0:69"
+
+# IMPORTANT, it's not enough that /srv/tftp is just be owned by tftp. 
+# it doesn't matter who owns files, but must have full permissions. eg. 644 on files..., 755 on dirs
+
+# chmod 755 $( find /srv/tftp -type d )
+# chmod 644 $( find /srv/tftp -type f )
+
+
