@@ -426,7 +426,7 @@
         # monero rpc
         FORWARD_(tcp, 18081, 192.168.43.6, 0.0.0.0/0)
         # transmission http web rpc
-        FORWARD_(tcp, 9091, 192.168.43.0/24, 192.168.201.29)
+        FORWARD_(tcp, 9091, 192.168.43.0/24, 192.168.204.29)
         # monero open node
         FORWARD_(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
 
