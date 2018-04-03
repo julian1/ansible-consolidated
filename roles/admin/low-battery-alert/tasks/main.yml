@@ -7,9 +7,9 @@
 
   - copy:
       dest: /home/meteo/low-battery-alert.sh
-      owner: meteo
-      group: meteo
-      mode: 0755
+      owner: root
+      group: root
+      mode: 0744
       content: |
         # deployed by ansible!
 
@@ -40,9 +40,12 @@
         Description=Send alerts on low battery
 
         [Service]
+        # Type=forked
         Type=simple
-        # TODO change me!
+        # TODO  change me!
         User=root
+        # User=meteo
+        # Group=meteo
         ExecStart=/bin/bash /home/meteo/low-battery-alert.sh
         # Environment="DISPLAY=:0" "XAUTHORITY=/home/b00m/.Xauthority"
         Restart=always
