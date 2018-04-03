@@ -2,7 +2,7 @@
   - hosts: all
     roles:
       # can pass args if needed
-      - name: admin/apt-update
+      - name: admin/apt-upgrade
 
 
 

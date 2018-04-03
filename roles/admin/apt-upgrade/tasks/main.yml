@@ -1,0 +1,10 @@
+
+# could pass args if wanted
+# super simple. saves sshing to the vm.
+# see, ./roles/admin/apt-old/update/tasks/main.yml  for more complete version with upgrade and reboot.
+
+  - shell: "{{item}}"
+    with_items:
+      - apt-get upgrade
+
+
