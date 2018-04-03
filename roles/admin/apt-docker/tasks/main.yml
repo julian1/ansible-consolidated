@@ -1,0 +1,31 @@
+
+# https://docs.docker.com/install/linux/docker-ce/debian/#install-docker-ce-1
+# copied from postgres
+
+
+  # TODO review better way?
+  - file: path=/ansible state=directory
+
+  - apt: name=wget
+  - apt: name=ca-certificates
+  - apt: name=apt-transport-https
+
+  - copy:
+      dest: /etc/apt/sources.list.d/docker.list
+      content: |
+        # deployed by ansible!
+        deb https://download.docker.com/linux/debian  stretch main 
+
+
+  - shell: creates=/ansible/docker-apt-done.txt chdir=/root {{item}}
+    with_items:
+      # $ curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+      - wget --quiet -O -  https://download.docker.com/linux/debian/gpg | apt-key add -
+      - touch /ansible/docker-apt-done.txt
+
+
+  - apt: state=latest update_cache=yes upgrade=safe
+
+
+  # install and configure docker in a separate role
+

@@ -9,6 +9,7 @@
 
   - apt: name=wget
   - apt: name=ca-certificates
+  - apt: name=apt-transport-https
 
   - copy:
       dest: /etc/apt/sources.list.d/pgdg.list
