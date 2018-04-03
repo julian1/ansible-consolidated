@@ -10,11 +10,13 @@
   - apt: name=ca-certificates
   - apt: name=apt-transport-https
 
+  
   - copy:
       dest: /etc/apt/sources.list.d/docker.list
       content: |
         # deployed by ansible!
-        deb https://download.docker.com/linux/debian  stretch main 
+        # note it's 'stable' not 'main'
+        deb https://download.docker.com/linux/debian stretch stable
 
 
   - shell: creates=/ansible/docker-apt-done.txt chdir=/root {{item}}
@@ -23,9 +25,8 @@
       - wget --quiet -O -  https://download.docker.com/linux/debian/gpg | apt-key add -
       - touch /ansible/docker-apt-done.txt
 
-
   - apt: state=latest update_cache=yes upgrade=safe
 
 
   # install and configure docker in a separate role
-
+  # apt-get install docker-ce
