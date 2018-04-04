@@ -1,12 +1,7 @@
 
-# it's physical hardware - so we want a root password. but that means we don't want ssh.
-# deploy to user/account monero
-
-  - user: name=monero shell=/bin/bash
-
-  - authorized_key: user=monero key="{{meteo_pubkey}}"
-
-  - file: path=/home/monero mode=0700 state=directory
+# TODO systemd rather than screen, and email on restart?
+# do not assume monero user
+# IMPORTANT binaries and scripts should be installed as root. so cannot be modified by unpriv account...
 
   - apt: name=sudo                  # for ansible for become_user
   - apt: name=ca-certificates       # for https to download binary
@@ -14,7 +9,8 @@
   - apt: name=screen
   - apt: name=net-tools             # netstat
   - apt: name=openvpn
-  - apt: name=name=dnsutils         # dig
+  - apt: name=dnsutils              # dig
+  # - apt: name=unzip                 # for binary
 
 
   # for arm...
@@ -22,40 +18,40 @@
 
   # Current Version: 0.11.1.0 Helium Hydra
   # verify hash at, https://github.com/monero-project/monero/releases
+
   - get_url:
       url: https://downloads.getmonero.org/cli/linux64
-      dest: "./linux64"
-      checksum: sha256:6581506f8a030d8d50b38744ba7144f2765c9028d18d990beb316e13655ab248
-    become: yes
-    become_user: monero
+      dest: "{{workdir}}/linux64"
+      # 0.11.1.0
+      # checksum: sha256:6581506f8a030d8d50b38744ba7144f2765c9028d18d990beb316e13655ab248
+      # Current Version: 0.12.0.0 Lithium Luna
+      checksum: sha256:928ad08ff0dea2790c7777a70e610b2d33c35a5df5900fbb050cc8c659237636
     tags: monero
 
-  - unarchive: src=./linux64 dest=/home/monero copy=no
-    become: yes
-    become_user: monero
+  - unarchive: src={{workdir}}/linux64 dest={{workdir}} copy=no
     tags: monero
 
-
+  # TODO probably should expand $HOME here.
   - copy:
-      dest: /home/monero/vars.inc
+      dest: "{{workdir}}/vars.inc"
       content: |
         # deployed by ansible!
 
-        PATH="$HOME/monero-v0.11.1.0:$PATH"
+        # PATH="$HOME/monero-v0.11.1.0:$PATH"
+        PATH="$HOME/monero-v0.12.0.0:$PATH"
         export PATH
     tags: path
 
-
+  # all these scripts should be root owned... with 755.
   - copy:
-      dest: /home/monero/start-monerod.sh
-      mode: 0700
-      owner: monero
-      group: monero
+      dest: "{{workdir}}/start-monerod.sh"
+      mode: 0755
       content: |
         #!/bin/bash -x
         # deployed by ansible!
 
-        PATH="$HOME/monero-v0.11.1.0:$PATH"
+        # PATH="$HOME/monero-v0.11.1.0:$PATH"
+        PATH="$HOME/monero-v0.12.0.0:$PATH"
 
         # 0.0.0.0 is only to allow remote client access...
         # monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind --restricted-rpc
@@ -67,8 +63,10 @@
         #  --limit-rate-up 10 \
         #  --rpc-bind-ip 192.168.201.29 --confirm-external-bind --restricted-rpc
 
+        # data dir should be fully spec
+
         monerod \
-          --data-dir data \
+          --data-dir {{workdir}}/data \
           --limit-rate-up 30 \
           --p2p-bind-ip 10.8.0.6 \
 
@@ -76,15 +74,14 @@
 
 
   - copy:
-      dest: /home/monero/start-monero-cli.sh
-      mode: 0700
-      owner: monero
-      group: monero
+      dest: "{{workdir}}/start-monero-cli.sh"
+      mode: 0755
       content: |
         #!/bin/bash -x
         # deployed by ansible!
 
-        PATH="$HOME/monero-v0.11.1.0:$PATH"
+        # PATH="$HOME/monero-v0.11.1.0:$PATH"
+        PATH="$HOME/monero-v0.12.0.0:$PATH"
 
         # rlwrap monero-wallet-cli --daemon-address m-test:18081
         rlwrap monero-wallet-cli
@@ -92,44 +89,13 @@
     tags: whoot
 
 
-# - hosts: all
-#   vars_files:
-#    - ../../vars/credentials.yml
-#  vars:
-#
-#  tasks:
 
-
-#  pre_tasks:
-#    # - user: name=meteo shell=/bin/bash groups=sudo
-#    # - file: path=/home/meteo mode=0700 owner=meteo group=meteo state=directory
-#
-#
-#  roles:
-#    - admin/devenv-lite
-
-
-#    # TODO blockinfile instead??? otherwise overwrites this
-#    - copy:
-#        owner: monero
-#        mode: 400
-#        dest: /home/monero/.bash_aliases
-#        content: |
-#          # deployed by ansible!
-#
-#          PATH="$HOME/monero-v0.11.0.0:$PATH"
-#          export PATH
-#      tags: path
-
-
-#    - file: path=/home/monero/scripts state=directory mode=777
+#    - file: path={{workdir}}/scripts state=directory mode=777
 #      tags: path
 
 #    - copy:
-#        dest: /home/monero/scripts/monero-tunnel.sh
-#        mode: 0700
-#        owner: monero
-#        group: monero
+#        dest: {{workdir}}/scripts/monero-tunnel.sh
+#        mode: 0755
 #        content: |
 #          #!/bin/bash -x
 #          # deployed by ansible!
