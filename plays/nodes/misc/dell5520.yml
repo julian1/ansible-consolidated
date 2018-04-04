@@ -28,7 +28,7 @@
 
 
   roles:
-    - name: admin/stretch
+    - name: admin/apt-stretch
       mirror: http://ftp.au.debian.org/debian/
 
     - admin/devenv-lite   # vim/screen eg. required for anything

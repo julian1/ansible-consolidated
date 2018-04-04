@@ -49,7 +49,7 @@
 
 
   roles:
-    - name: admin/stretch
+    - name: admin/apt-stretch
       mirror: http://ftp.au.debian.org/debian/
 
     - name: admin/sshd
