@@ -147,7 +147,9 @@ function restart()  { systemctl restart $@; }
 function status()   { systemctl status $@;  }
 function enable()   { systemctl enable $@;  }
 function disable()  { systemctl disable $@; }
+function daemon-reload() { systemctl daemon-reload $@; }
 fi
+
 
 # shell colors...
 RED="\[\033[1;31m\]"
