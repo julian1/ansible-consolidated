@@ -18,7 +18,7 @@
     - user: >
         name=meteo
         shell=/bin/bash
-        groups=staff,sudo,tty,cdrom,floppy,audio,dip,video,plugdev,netdev,bluetooth
+        groups=docker,staff,sudo,plugdev,tty,cdrom,floppy,audio,dip,video,netdev,bluetooth
 
     - file: >
         path=/home/meteo
