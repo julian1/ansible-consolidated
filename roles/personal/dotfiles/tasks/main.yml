@@ -1,4 +1,6 @@
 
+# not sure, if shouldn't be a sh scripted install in a separate github repo, since it's more code
+
 # vimrc gets deployed here.
 # but pathogen has it's own role
 
