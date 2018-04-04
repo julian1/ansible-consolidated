@@ -5,12 +5,9 @@
   vars:
 
   pre_tasks:
-    # monero user - TODO maybe move up to play, or separate role?
     - user: name=monero shell=/bin/bash
     - authorized_key: user=monero key="{{meteo_pubkey}}"
-
     - file: path=/home/monero mode=0700 state=directory
-
 
   roles:
     - name: admin/nodnsupdate
