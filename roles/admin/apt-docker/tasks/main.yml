@@ -27,6 +27,24 @@
 
   - apt: state=latest update_cache=yes upgrade=safe
 
-
+  #
   # install and configure docker in a separate role
   # apt-get install docker-ce
+  # docker run hello-world
+  #
+
+
+  # next add user to docker group
+  # and, move docker images to where we have storage, 
+
+# systemctl stop docker
+# vim /lib/systemd/system/docker.service 
+
+# lineinfile need, 
+# ExecStart=/usr/bin/dockerd -H fd:// -g /home/docker
+
+# systemctl daemon-reload
+# systemctl start docker
+# ps axf | grep docker
+
+
