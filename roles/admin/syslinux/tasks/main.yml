@@ -1,0 +1,44 @@
+
+# TODO add other syslinux stuff...
+
+# - apt: name=extlinux
+# ~$ ls /boot/syslinux/
+# ldlinux.c32  ldlinux.sys  syslinux.cfg
+# for kernel upgrade version - must manually update syslinux.cfg with new boot label
+# syslinux is conventional, except net.ifnames to prevent nic renaming, and serial speed.
+
+
+# apt-get -y install extlinux
+# mkdir -p /boot/syslinux
+# extlinux --install /boot/syslinux
+
+
+  - apt: name=extlinux
+
+  - file: path=/boot/syslinux state=directory
+
+  - command: "{{ item }} creates=/boot/syslinux/ldlinux.c32"
+    with_items:
+      - extlinux --install /boot/syslinux
+
+  - copy:
+      dest: /boot/syslinux/syslinux.cfg
+      content: |
+        # deployed by ansible!
+
+        CONSOLE 0
+        SERIAL 0 115200 0
+        DEFAULT linux-{{kernel}}
+        PROMPT 0
+        LABEL linux-{{kernel}}
+          SAY Now booting the kernel from SYSLINUX...
+          KERNEL /boot/vmlinuz-{{kernel}}-amd64
+          APPEND rw root=UUID={{uuid}} initrd=/boot/initrd.img-{{kernel}}-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
+
+        # old kernel
+        LABEL linux-4.9.0-3
+          SAY Now booting the kernel from SYSLINUX...
+          KERNEL /boot/vmlinuz-4.9.0-3-amd64
+          APPEND rw root=UUID={{uuid}} initrd=/boot/initrd.img-4.9.0-3-amd64 vga=normal fb=false console=ttyS0,115200n8 net.ifnames=0 biosdevname=0
+
+
