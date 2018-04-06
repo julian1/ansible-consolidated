@@ -187,13 +187,16 @@
         # deployed by ansible!
         options {
           directory "/var/cache/bind";
+
+          # catchall forwarder
           forwarders {
-            # for openvpn - must be opendns or google etc . 
+            # for openvpn - must be opendns or google etc .
             # for non openvpn - must be local router - 192.168.43.1
-            # 208.67.222.222;
+            208.67.222.222;
             # 8.8.8.8;
-            192.168.43.1;
+            # 192.168.43.1;
           };
+
 
           # https://stackoverflow.com/questions/13342003/ns-got-insecure-response-parent-indicates-it-should-be-secure
           dnssec-enable no;
@@ -226,11 +229,23 @@
       content: |
         # deployed by ansible!
 
+        # zone specific forwarding!!!
+
+        # forward localnet to router
+        zone "localnet" IN {
+            type forward;
+            forwarders {
+                192.168.43.1;
+            };
+        };
+
+        # serve localnet2
         zone "localnet2" {
           type master;
           file "/etc/bind/zones/localnet2.db";
         };
-
+  
+        # response policy zone
         # see, https://www.redpill-linpro.com/sysadvent/2015/12/08/dns-rpz.html
         zone "rpz" {
           type master;
