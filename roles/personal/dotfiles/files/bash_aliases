@@ -17,12 +17,14 @@ alias dmesg='dmesg -T --color=always'
 alias less='less -R'
 alias vim='vim -p'
 alias top='top -d 1'
+alias feh='feh -F -Z -d'
 
 # shortcuts
 alias g=git
 alias l=less
 alias s=sudo
-
+alias c=systemctl
+alias j=journalctl
 
 
 # just use  cd $(mktemp -d )
