@@ -156,14 +156,34 @@
 
 
   # enable
-  # NOTE, we handle the enable state, in the restart handler
-  # - service: name=isc-dhcp-server enabled=yes state=started
+
+  # NOTE, also requires, ./roles/admin/nodnsupdate/tasks/main.yml in rolelist
+
+  # named options and configuration
+  - copy:
+      dest: /etc/resolv.conf
+      # backup: yes
+      content: |
+        # deployed by ansible!
+
+        # search, try resolution for localnets
+        # https://superuser.com/questions/570082/in-etc-resolv-conf-what-exactly-does-the-search-configuration-option-do
+        #   - can have up to six entries...
+        search localnet localnet2
+
+        # WARNING do not change!
+        # Use /etc/bind/named.conf.options instead and restart bind9
+        nameserver 10.3.0.1
+
+    tags: bind
 
 
 
   #############################
   # dns
 
+  # NOTE, we handle the enable state, in the restart handler
+  # - service: name=isc-dhcp-server enabled=yes state=started
 
   # having a local dns, as well as router dns is a bit complicated.
   # we could just put an entry on the router
@@ -196,7 +216,6 @@
             # 8.8.8.8;
             # 192.168.43.1;
           };
-
 
           # https://stackoverflow.com/questions/13342003/ns-got-insecure-response-parent-indicates-it-should-be-secure
           dnssec-enable no;
@@ -334,10 +353,10 @@
 
 
         # for openvpn
-        # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
+        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
 
         # non openvpn
-        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
+        # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
 
         iptables -P FORWARD DROP
 
