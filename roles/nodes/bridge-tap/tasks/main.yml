@@ -1,8 +1,5 @@
 
-
-# hmmm. we are still going to need dhcp... and nat.  actually no.
-# dhcp - just use static. for nat. we might get away with the vpn, router
-
+# manage ethernet bridging, nat, dhcp, dns, and local resolv.conf
 
 # TODO ordinary permisson on creation of TUN dnevice.
 # https://unix.stackexchange.com/questions/243382/making-dev-net-tun-available-to-qemu/243405
