@@ -177,16 +177,12 @@
 
 
   #############################
-  # dns
+  # bind/dns
 
-  # NOTE, we handle the enable state, in the restart handler
-  # - service: name=isc-dhcp-server enabled=yes state=started
 
-  # having a local dns, as well as router dns is a bit complicated.
-  # we could just put an entry on the router
-  # issue is when using vpn, when want dns going through vpn, then we lose the router
+  # having a local dns, as well as router dns is handled by zone specific forwarding.
 
-  # need ntp time, or can get, 'broken trust chain resolving'
+  # ntp time, or else, 'broken trust chain resolving'
   # https://www.centos.org/forums/viewtopic.php?t=49614
   - apt: name=ntp             # network time
 
@@ -348,7 +344,7 @@
         iptables -t filter --flush
         iptables -t nat --flush
 
-
+        # NAT
         # for openvpn
         iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
 
