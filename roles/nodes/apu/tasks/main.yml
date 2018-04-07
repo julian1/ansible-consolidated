@@ -397,8 +397,8 @@
         FORWARD_(tcp, 993, 192.168.43.0/24, 0.0.0.0/0)
 
         # irc - note, port 6667 preferred over 194, freenode uses 6697
-        DROP_(   tcp, 6667, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 6667, 192.168.43.0/24, 0.0.0.0/0)
+        DROP_(   tcp, 6697, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(tcp, 6697, 192.168.43.0/24, 0.0.0.0/0)
 
         # 5222 test port - ssh proxy and general open test port
         FORWARD_(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
