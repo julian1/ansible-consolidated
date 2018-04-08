@@ -1,0 +1,8 @@
+
+  - name: reconfigure-locales
+    command: "{{item}}"
+    with_items:
+      - dpkg-reconfigure --frontend noninteractive  locales
+
+
+
