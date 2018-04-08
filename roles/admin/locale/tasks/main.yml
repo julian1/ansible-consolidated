@@ -11,6 +11,9 @@
 
 # i think /etc/locale.gen is locales want to have built...
 
+
+  - apt: name=locales
+
   - copy:
       dest: /etc/default/locale 
       mode: 0644
@@ -21,9 +24,8 @@
 
     notify: reconfigure-locales
 
-  - apt: name=locales
 
-  # may be needed...
-  # - locale_gen: name="{{locale}}" state=present
+# generation may also be needed...
+# - locale_gen: name="{{locale}}" state=present
 
 
