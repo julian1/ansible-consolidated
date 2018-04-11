@@ -370,6 +370,9 @@
         # allow anything outbound from 192.168.43.6
         # FORWARD_(tcp, 1:65535, 192.168.43.6, 0.0.0.0/0)
 
+        iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 80 -j LOG --log-prefix "IPTABLES: "
+        iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 443 -j LOG --log-prefix "IPTABLES: "
+
         # http
         DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
@@ -537,6 +540,65 @@
       # backup: yes
       content: |
         # deployed by ansible!
+
+        logging {
+
+          channel default_syslog {
+                  print-time yes;
+                  print-category yes;
+                  print-severity yes;
+                  syslog local6;
+                  severity info;
+          };
+
+          // is anything usinig this by default?
+          channel default_debug {
+                  print-time yes;
+                  print-category yes;
+                  print-severity yes;
+                  syslog local6;
+                  severity dynamic;
+          };
+
+          channel default_stderr {
+            null;
+          };
+
+          channel null {
+             // toss anything sent to this channel
+             null;
+          };
+
+          category client { default_syslog; };
+          category cname { default_syslog; };
+          category config { default_syslog; };
+          category database { default_syslog; };
+          category delegation-only { default_syslog; };
+          category dispatch { default_syslog; };
+          category dnssec { default_syslog; };
+          category edns-disabled { default_syslog; };
+          category general { default_syslog; };
+          category lame-servers { default_syslog; };
+          category network { default_syslog; };
+          category notify { default_syslog; };
+          category queries { default_syslog; };
+          category query-errors { default_syslog; };
+          category rate-limit { default_syslog; };
+          category resolver { default_syslog; };
+          category rpz { default_syslog; };
+          category security { default_syslog; };
+          category spill { default_syslog; };
+          category update { default_syslog; };
+          category update-security { default_syslog; };
+          category xfer-in { default_syslog; };
+          category xfer-out { default_syslog; };
+
+          // why doesn't this work - to redirect everything????
+          category unmatched { default_syslog; };
+          category default { default_syslog; };
+        };
+
+
         options {
           directory "/var/cache/bind";
           forwarders {
@@ -638,7 +700,7 @@
 
         ; vlan 203
         snom          IN A 192.168.203.20
-        
+
         ; vlan 204
         apu2          IN A 192.168.204.29
 
@@ -874,7 +936,17 @@
         # Use traditional timestamp format.
         # To enable high precision timestamps, comment out the following line.
         #
-        $ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+
+        # $ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+        # $ActionFileDefaultTemplate RSYSLOG_SyslogProtocol23Format
+
+        # https://www.rsyslog.com/doc/v8-stable/configuration/properties.html
+        # want to see the facility and severity
+        # $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME%  raw %rawmsg%   %syslogtag%%msg:::drop-last-lf%\n"
+        # $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME%   %syslogtag%%msg:::drop-last-lf%\n"
+        $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME% %syslogtag% %msg%\n"
+
+        $ActionFileDefaultTemplate TraditionalFormatWithPRI
 
         #
         # Set the default permissions for all log files.
@@ -899,13 +971,28 @@
         #### RULES ####
         ###############
 
+        # IMPORTANT - by using the & ~ discard approach we may not need to
+        # add the *.none entries
+
+        # JA ? filter iptables and discard the rest. prevent going to kern and
+        :msg, contains, "IPTABLES"       /var/log/iptables.log
+        & ~
+
+        # JA
+        local6.*                        /var/log/named.log
+        & ~
+
+        # JA
+        local7.*                        /var/log/dhcpd.log
+
+
         #
         # First some standard log files.  Log by facility.
         #
         auth,authpriv.*                 /var/log/auth.log
         # JA
         # *.*;auth,authpriv.none                -/var/log/syslog
-        *.*;auth,authpriv.none,local7.none      -/var/log/syslog
+        *.*;auth,authpriv.none,local7.none,local6.none     -/var/log/syslog
 
         #cron.*                         /var/log/cron.log
         daemon.*                        -/var/log/daemon.log
@@ -914,8 +1001,6 @@
         mail.*                          -/var/log/mail.log
         user.*                          -/var/log/user.log
 
-        # JA
-        local7.*                        /var/log/dhcpd.log
 
         #
         # Logging for the mail system.  Split it up so that
@@ -925,15 +1010,17 @@
         mail.warn                       -/var/log/mail.warn
         mail.err                        /var/log/mail.err
 
+        # JA - where are the defaults coming from. that we have to turn them off?
+
         #
-        # Some "catch-all" log files.
+        # Some "catch-all" log files, to turn off.
         #
         # JA
         *.=debug;\
-                auth,authpriv.none,local7.none;\
+                auth,authpriv.none,local7.none,local6.none;\
                 news.none;mail.none     -/var/log/debug
         *.=info;*.=notice;*.=warn;\
-                auth,authpriv.none,local7.none;\
+                auth,authpriv.none,local7.none,local6.none;\
                 cron,daemon.none;\
                 mail,news.none          -/var/log/messages
 
@@ -942,8 +1029,6 @@
         #
         *.emerg                         :omusrmsg:*
 
-        # JA ?
-        :msg, contains, "IPTABLES"       /var/log/iptables.log
 
     notify: restart-rsyslog
     tags: rsyslog
