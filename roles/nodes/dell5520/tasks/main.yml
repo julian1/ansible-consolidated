@@ -19,7 +19,7 @@
 
   # command: bash -c "/usr/sbin/alsactl"
   # not sure if this should be with store or init
-  # think when run as shell it runs 'init' 
+  # think when run as shell it runs 'init'
   # doc says reboot is needed, https://wiki.debian.org/ALSA
   - command: /usr/sbin/alsactl
     args:
@@ -35,8 +35,8 @@
         # deployed by ansible!
         # allow writing /dev/sdb device
 
-        # to reload, 
-        # udevadm control --reload-rules && udevadm trigger 
+        # to reload,
+        # udevadm control --reload-rules && udevadm trigger
         # KERNEL=="sdb", SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="meteo"
         SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="meteo"
 
@@ -69,8 +69,7 @@
         xrdb -merge <<- EOF
           XTerm*selectToClipboard: true
           XTerm*faceName: DejaVu Sans Mono
-          ! XTerm*faceSize: 10 ! desktop
-          XTerm*faceSize: 15   ! laptop
+          XTerm*faceSize: 11   ! laptop
           XTerm*Background: white
           XTerm*Foreground: black
         EOF
@@ -102,6 +101,11 @@
         # brightness
         # xrandr --output eDP1 --brightness .45
         xrandr --output eDP-1 --brightness .35
+
+        # start pulse audio
+        pulseaudio --kill
+        sleep 0.5
+        pulseaudio --start
 
         # MAY OR MAY NOT BE NEEDED with change to libinput replacing synaptics
         # to turn on trackpad tap to select/button
