@@ -9,6 +9,7 @@ export EDITOR=vim
 
 # ps except deselect kernel kthreadd
 # use ps2 f for tree listing without kernel processes
+# hmmm, 'ps xf' appears to do similar and better...
 alias ps2='ps --ppid 2 -p 2 --deselect'
 
 alias xclip='xclip -selection clipboard'
@@ -23,8 +24,10 @@ alias feh='feh -F -Z -d --keep-zoom-vp'
 alias g=git
 alias l=less
 alias s=sudo
-alias c=systemctl
-alias j=journalctl
+
+alias sc=systemctl
+alias jc=journalctl
+alias mc=machinectl
 
 
 # just use  cd $(mktemp -d )
