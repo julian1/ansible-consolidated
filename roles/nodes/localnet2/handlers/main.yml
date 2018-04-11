@@ -14,4 +14,7 @@
       - sh /etc/iptables-rules
       - dpkg-reconfigure --frontend noninteractive iptables-persistent
 
+  - name: restart-rsyslog
+    service: name=rsyslog state=restarted
+
 

@@ -113,7 +113,7 @@
         max-lease-time 7200;
 
         # requires corresponding entry in /etc/rsyslog.conf
-        # log-facility local7;
+        log-facility local7;
 
         # dhcp push routes.
         # https://gauvain.pocentek.net/docs/dhcpd-push-routes/
@@ -200,6 +200,45 @@
       # backup: yes
       content: |
         # deployed by ansible!
+
+        logging {
+
+          channel default_syslog {
+                  print-time yes;
+                  print-category yes;
+                  print-severity yes;
+                  syslog local6;
+                  severity info;
+          };
+
+          // is anything usinig this by default?
+          channel default_debug {
+                  print-time yes;
+                  print-category yes;
+                  print-severity yes;
+                  syslog local6;
+                  severity dynamic;
+          };
+
+          channel default_stderr {
+            null;
+          };
+
+          channel null {
+             // toss anything sent to this channel
+             null;
+          };
+
+          category queries { default_syslog; };
+          category query-errors { default_syslog; };
+ 
+          // why doesn't this work - to redirect everything????
+          category unmatched { default_syslog; };
+          category default { default_syslog; };
+        };
+
+
+
         options {
           directory "/var/cache/bind";
 
@@ -351,6 +390,15 @@
         # for openvpn
         iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
 
+        #  
+        iptables -A INPUT  -p udp --dport 67 -j LOG --log-prefix "IPTABLES: "
+        iptables -A OUTPUT -p udp --sport 67 -j LOG --log-prefix "IPTABLES: "
+        iptables -A INPUT  -p udp --dport 68 -j LOG --log-prefix "IPTABLES: "
+        iptables -A OUTPUT -p udp --sport 68 -j LOG --log-prefix "IPTABLES: "
+
+
+
+
         # non openvpn
         # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
 
@@ -386,6 +434,42 @@
     tags: iptables
 
 
+  # configure rsyslog to move dhcp logging out of syslog
+  # See, http://shallowsky.com/blog/linux/rsyslog-conf-tutorial.html
+  - copy:
+      dest: /etc/rsyslog.d/00-include.conf
+      owner: root
+      group: root
+      backup: yes
+      content: |
+        # deployed by ansible!
+
+        # JA overrideing like this works        
+        $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME% %syslogtag% %msg%\n"
+        $ActionFileDefaultTemplate TraditionalFormatWithPRI
+
+        # iptables
+        :msg, contains, "IPTABLES"      /var/log/iptables.log
+        & stop
+
+        # named/bind9
+        local6.*                        /var/log/named.log
+        & stop
+
+        # work around named which doesn't always route to configured locale6 facility
+        if $programname == 'named' then /var/log/named.log
+        & stop
+
+        # dhcp
+        local7.*                        /var/log/dhcpd.log
+        & stop
+
+        # cron
+        cron.*                          /var/log/cron.log
+        & stop
+
+    notify: restart-rsyslog
+    tags: rsyslog
 
 
 
