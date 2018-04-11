@@ -7,9 +7,10 @@
 
   - copy:
       dest: /home/meteo/low-battery-alert.sh
-      owner: root
-      group: root
-      mode: 0744
+      # must be meteo!!!
+      owner: meteo
+      group: meteo
+      mode: 0755
       content: |
         #!/bin/bash
         # deployed by ansible!
@@ -23,8 +24,6 @@
           timeout -k ${1}s ${1}s speaker-test --frequency ${2} --test sine 2> /dev/null
         }
 
-        echo "cron" >> /home/meteo/low-battery.log
-
         echo "$(date) whoami=$(whoami), status=$status, threshold=$threshold, capacity=$capacity" \
           >> /home/meteo/low-battery.log
 
@@ -32,33 +31,33 @@
           beep 0.1 500
         fi
 
+    tags: whoot
 
 
+  # use cron instead of systemd because for less noisy logs.
+  # oK. this works. But why doesn't it work when put in /etc/cron.d ?
 
-# /etc/cron.d/anacron
-# . meteo@laptop:~/ansible-consolidated$ less /etc/cron.d/anacron 
-# /etc/cron.d/anacron: crontab entries for the anacron package
+#  - copy:
+#      dest: /var/spool/cron/crontabs/meteo 
+#      owner: meteo
+#      group: crontab
+#      mode: 0600
+#      content: |
+#        * * * * * /home/meteo/low-battery-alert.sh
 
-# SHELL=/bin/sh
-# PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-#
-# 30 7    * * *   root    [ -x /etc/init.d/anacron ] && if [ ! -d /run/systemd/system ]; then /usr/sbin/invoke-rc.d anacron start >/dev/null; fi
-
-
+  # format in /etc/cron.d/ is different than # /var/spool/cron/crontabs/meteo 
+  # /etc/cron.d includes the user
   - copy:
       dest: /etc/cron.d/low-battery-alert
+      owner: root
+      group: root
       mode: 0644
       content: |
-        # deployed by ansible!
-
-        #SHELL=/bin/sh
-        #PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-
-        # every minute
-        * * * * *   /home/meteo/low-battery-alert.sh
+        * * * * * meteo /home/meteo/low-battery-alert.sh
 
 
 #
+#   systemd is noisy in syslog and difficult to filter
 #  - copy:
 #      dest: /etc/systemd/system/low-battery-alert.service
 #      mode: 0644
@@ -84,5 +83,4 @@
 #        WantedBy=multi-user.target
 #
 #    notify: reconfigure-low-battery-alert
-#
 #
