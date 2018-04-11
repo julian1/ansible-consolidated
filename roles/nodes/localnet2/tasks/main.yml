@@ -1,5 +1,6 @@
 
-# manage ethernet bridging, nat, dhcp, dns, and local resolv.conf
+# ethernet bridging, nat, dhcp, dns, iptables, logging server, local resolv.conf
+
 
 # TODO ordinary permisson on creation of TUN dnevice.
 # https://unix.stackexchange.com/questions/243382/making-dev-net-tun-available-to-qemu/243405
@@ -231,7 +232,7 @@
 
           category queries { default_syslog; };
           category query-errors { default_syslog; };
- 
+
           // why doesn't this work - to redirect everything????
           category unmatched { default_syslog; };
           category default { default_syslog; };
@@ -297,7 +298,7 @@
           type master;
           file "/etc/bind/zones/localnet2.db";
         };
-  
+
         # response policy zone
         # see, https://www.redpill-linpro.com/sysadvent/2015/12/08/dns-rpz.html
         zone "rpz" {
@@ -442,16 +443,17 @@
       content: |
         # deployed by ansible!
 
-        # this is in the modules section, because it should only be done once.
+        # this belongs to the modules section, because it should only be done once.
+        # but overriding here does work, 
         # this is sufficient to open the port
         module(load="imtcp")
         input(type="imtcp" port="514")
 
-        # very basic authorization, based on peer ip
+        # very basic logging authorization, based on peer ip
         $AllowedSender TCP, 10.3.0.0/24
 
 
-        # JA overrideing like this works        
+        # JA overriding in this include works correctly
         # $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME% %syslogtag% %msg%\n"
         $template TraditionalFormatWithPRI,"%timegenerated% %HOSTNAME% %pri-text%: %syslogtag% %msg%\n"
         $ActionFileDefaultTemplate TraditionalFormatWithPRI
