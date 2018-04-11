@@ -1,4 +1,3 @@
-#### xmonad dirs are created as root - when we provision as root. which is required for apt.
 
 - hosts: 
     - localhost
@@ -64,6 +63,8 @@
       pname: Brother
       url: socket://brother.localnet:9100
       ppd: BRHL16_2_GPL.ppd
+
+    - name: admin/low-battery-alert
 
     # specific configuration
     - name: nodes/dell5520
