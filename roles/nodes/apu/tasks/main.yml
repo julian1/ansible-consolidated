@@ -279,6 +279,7 @@
         ##### WAN_EGRESS #####
         #
 
+        # TODO port 68 also...
         # dhcp
         WAN_EGRESS(udp, 67, 0.0.0.0/0)
 
@@ -901,139 +902,45 @@
     tags: dhcp
 
 
+
+
   # configure rsyslog to move dhcp logging out of syslog
   # See, http://shallowsky.com/blog/linux/rsyslog-conf-tutorial.html
   - copy:
-      dest: /etc/rsyslog.conf
+      dest: /etc/rsyslog.d/00-include.conf
       owner: root
       group: root
       backup: yes
       content: |
         # deployed by ansible!
-        # Don't edit this down in order to easily diff
 
-        #################
-        #### MODULES ####
-        #################
-
-        module(load="imuxsock") # provides support for local system logging
-        module(load="imklog")   # provides kernel logging support
-        #module(load="immark")  # provides --MARK-- message capability
-
-        # provides UDP syslog reception
-        #module(load="imudp")
-        #input(type="imudp" port="514")
-
-        # provides TCP syslog reception
-        #module(load="imtcp")
-        #input(type="imtcp" port="514")
-
-        ###########################
-        #### GLOBAL DIRECTIVES ####
-        ###########################
-
-        #
-        # Use traditional timestamp format.
-        # To enable high precision timestamps, comment out the following line.
-        #
-
-        # $ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
-        # $ActionFileDefaultTemplate RSYSLOG_SyslogProtocol23Format
-        
-        # JA
-        # https://www.rsyslog.com/doc/v8-stable/configuration/properties.html
-        # want to see the facility and severity
-        # $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME%  raw %rawmsg%   %syslogtag%%msg:::drop-last-lf%\n"
-        # $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME%   %syslogtag%%msg:::drop-last-lf%\n"
+        # JA overrideing like this works        
         $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME% %syslogtag% %msg%\n"
-
         $ActionFileDefaultTemplate TraditionalFormatWithPRI
 
-        #
-        # Set the default permissions for all log files.
-        #
-        $FileOwner root
-        $FileGroup adm
-        $FileCreateMode 0640
-        $DirCreateMode 0755
-        $Umask 0022
-
-        #
-        # Where to place spool and state files
-        #
-        $WorkDirectory /var/spool/rsyslog
-
-        #
-        # Include all config files in /etc/rsyslog.d/
-        #
-        $IncludeConfig /etc/rsyslog.d/*.conf
-
-        ###############
-        #### RULES ####
-        ###############
-
-        # Priorities can be: emerg, alert, crit, err, warning, notice, info, debug
-
-        # JA iptables
+        # iptables
         :msg, contains, "IPTABLES"      /var/log/iptables.log
         & stop
 
-        # JA named/bind9
+        # named/bind9
         local6.*                        /var/log/named.log
         & stop
 
         # work around named which doesn't always route to configured locale6 facility
-        if $programname == 'named'      then /var/log/named.log
+        if $programname == 'named' then /var/log/named.log
         & stop
 
-        # JA dhcp
+        # dhcp
         local7.*                        /var/log/dhcpd.log
         & stop
 
-        #
-        # First some standard log files.  Log by facility.
-        #
-        auth,authpriv.*                 /var/log/auth.log
-        *.*;auth,authpriv.none          -/var/log/syslog
-
-        # JA
-        # *.*;auth,authpriv.none,local7.none,local6.none     -/var/log/syslog
-
-        # JA
+        # cron
         cron.*                          /var/log/cron.log
-        daemon.*                        -/var/log/daemon.log
-        kern.*                          -/var/log/kern.log
-        lpr.*                           -/var/log/lpr.log
-        mail.*                          -/var/log/mail.log
-        user.*                          -/var/log/user.log
-
-
-        #
-        # Logging for the mail system.  Split it up so that
-        # it is easy to write scripts to parse these files.
-        #
-        mail.info                       -/var/log/mail.info
-        mail.warn                       -/var/log/mail.warn
-        mail.err                        /var/log/mail.err
-
-        #
-        # Some "catch-all" log files.
-        #
-        *.=debug;\
-          auth,authpriv.none;\
-          news.none;mail.none -/var/log/debug
-        *.=info;*.=notice;*.=warn;\
-          auth,authpriv.none;\
-          cron,daemon.none;\
-          mail,news.none    -/var/log/messages
-
-
-        #
-        # Emergencies are sent to everybody logged in.
-        #
-        *.emerg                         :omusrmsg:*
-
+        & stop
 
     notify: restart-rsyslog
     tags: rsyslog
+
+
+
 
