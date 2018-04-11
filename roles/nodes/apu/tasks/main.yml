@@ -939,7 +939,8 @@
 
         # $ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
         # $ActionFileDefaultTemplate RSYSLOG_SyslogProtocol23Format
-
+        
+        # JA
         # https://www.rsyslog.com/doc/v8-stable/configuration/properties.html
         # want to see the facility and severity
         # $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME%  raw %rawmsg%   %syslogtag%%msg:::drop-last-lf%\n"
@@ -971,30 +972,35 @@
         #### RULES ####
         ###############
 
-        # IMPORTANT - by using the & ~ discard approach we may not need to
-        # add the *.none entries
+        # Priorities can be: emerg, alert, crit, err, warning, notice, info, debug
 
-        # JA ? filter iptables and discard the rest. prevent going to kern and
-        :msg, contains, "IPTABLES"       /var/log/iptables.log
-        & ~
+        # JA iptables
+        :msg, contains, "IPTABLES"      /var/log/iptables.log
+        & stop
 
-        # JA
+        # JA named/bind9
         local6.*                        /var/log/named.log
-        & ~
+        & stop
 
-        # JA
+        # work around named which doesn't always route to configured locale6 facility
+        if $programname == 'named'      then /var/log/named.log
+        & stop
+
+        # JA dhcp
         local7.*                        /var/log/dhcpd.log
-
+        & stop
 
         #
         # First some standard log files.  Log by facility.
         #
         auth,authpriv.*                 /var/log/auth.log
-        # JA
-        # *.*;auth,authpriv.none                -/var/log/syslog
-        *.*;auth,authpriv.none,local7.none,local6.none     -/var/log/syslog
+        *.*;auth,authpriv.none          -/var/log/syslog
 
-        #cron.*                         /var/log/cron.log
+        # JA
+        # *.*;auth,authpriv.none,local7.none,local6.none     -/var/log/syslog
+
+        # JA
+        cron.*                          /var/log/cron.log
         daemon.*                        -/var/log/daemon.log
         kern.*                          -/var/log/kern.log
         lpr.*                           -/var/log/lpr.log
@@ -1010,19 +1016,17 @@
         mail.warn                       -/var/log/mail.warn
         mail.err                        /var/log/mail.err
 
-        # JA - where are the defaults coming from. that we have to turn them off?
-
         #
-        # Some "catch-all" log files, to turn off.
+        # Some "catch-all" log files.
         #
-        # JA
         *.=debug;\
-                auth,authpriv.none,local7.none,local6.none;\
-                news.none;mail.none     -/var/log/debug
+          auth,authpriv.none;\
+          news.none;mail.none -/var/log/debug
         *.=info;*.=notice;*.=warn;\
-                auth,authpriv.none,local7.none,local6.none;\
-                cron,daemon.none;\
-                mail,news.none          -/var/log/messages
+          auth,authpriv.none;\
+          cron,daemon.none;\
+          mail,news.none    -/var/log/messages
+
 
         #
         # Emergencies are sent to everybody logged in.
