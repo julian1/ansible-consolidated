@@ -370,8 +370,8 @@
         # allow anything outbound from 192.168.43.6
         # FORWARD_(tcp, 1:65535, 192.168.43.6, 0.0.0.0/0)
 
-        iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 80 -j LOG --log-prefix "IPTABLES: "
-        iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 443 -j LOG --log-prefix "IPTABLES: "
+        # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 80 -j LOG --log-prefix "IPTABLES: "
+        # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 443 -j LOG --log-prefix "IPTABLES: "
 
         # http
         DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
