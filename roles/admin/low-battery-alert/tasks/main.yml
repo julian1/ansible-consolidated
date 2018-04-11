@@ -11,6 +11,7 @@
       group: root
       mode: 0744
       content: |
+        #!/bin/bash
         # deployed by ansible!
 
         threshold=90
@@ -22,6 +23,8 @@
           timeout -k ${1}s ${1}s speaker-test --frequency ${2} --test sine 2> /dev/null
         }
 
+        echo "cron" >> /home/meteo/low-battery.log
+
         echo "$(date) whoami=$(whoami), status=$status, threshold=$threshold, capacity=$capacity" \
           >> /home/meteo/low-battery.log
 
@@ -30,30 +33,56 @@
         fi
 
 
+
+
+# /etc/cron.d/anacron
+# . meteo@laptop:~/ansible-consolidated$ less /etc/cron.d/anacron 
+# /etc/cron.d/anacron: crontab entries for the anacron package
+
+# SHELL=/bin/sh
+# PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+#
+# 30 7    * * *   root    [ -x /etc/init.d/anacron ] && if [ ! -d /run/systemd/system ]; then /usr/sbin/invoke-rc.d anacron start >/dev/null; fi
+
+
   - copy:
-      dest: /etc/systemd/system/low-battery-alert.service
+      dest: /etc/cron.d/low-battery-alert
       mode: 0644
       content: |
         # deployed by ansible!
 
-        [Unit]
-        Description=Send alerts on low battery
+        #SHELL=/bin/sh
+        #PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-        [Service]
-        # Type=forked
-        Type=simple
-        # TODO  change me!
-        User=root
-        # User=meteo
-        # Group=meteo
-        ExecStart=/bin/bash /home/meteo/low-battery-alert.sh
-        # Environment="DISPLAY=:0" "XAUTHORITY=/home/b00m/.Xauthority"
-        Restart=always
-        RestartSec=60
-
-        [Install]
-        WantedBy=multi-user.target
-
-    notify: reconfigure-low-battery-alert
+        # every minute
+        * * * * *   /home/meteo/low-battery-alert.sh
 
 
+#
+#  - copy:
+#      dest: /etc/systemd/system/low-battery-alert.service
+#      mode: 0644
+#      content: |
+#        # deployed by ansible!
+#
+#        [Unit]
+#        Description=Send alerts on low battery
+#
+#        [Service]
+#        # Type=forked
+#        Type=simple
+#        # TODO  change me!
+#        User=root
+#        # User=meteo
+#        # Group=meteo
+#        ExecStart=/bin/bash /home/meteo/low-battery-alert.sh
+#        # Environment="DISPLAY=:0" "XAUTHORITY=/home/b00m/.Xauthority"
+#        Restart=always
+#        RestartSec=60
+#
+#        [Install]
+#        WantedBy=multi-user.target
+#
+#    notify: reconfigure-low-battery-alert
+#
+#

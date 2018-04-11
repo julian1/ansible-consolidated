@@ -101,7 +101,7 @@
 
         # brightness
         # xrandr --output eDP1 --brightness .45
-        xrandr --output eDP-1 --brightness .65
+        xrandr --output eDP-1 --brightness .35
 
         # MAY OR MAY NOT BE NEEDED with change to libinput replacing synaptics
         # to turn on trackpad tap to select/button

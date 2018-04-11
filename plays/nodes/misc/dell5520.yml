@@ -26,8 +26,11 @@
         owner=meteo group=meteo
         state=directory
 
-
   roles:
+
+    - name: admin/hostname
+      hostname: laptop
+
     - name: admin/apt-stretch
       mirror: http://ftp.au.debian.org/debian/
 
@@ -55,16 +58,17 @@
     - name: personal/scripts
       tags: scripts
 
-    # TODO - should go ini second level stuff...
+    # TODO - move out here? second level config...
     - name: admin/printer
       tags: printer
       pname: Brother
       url: socket://brother.localnet:9100
       ppd: BRHL16_2_GPL.ppd
 
-    # very specific configuration
+    # specific configuration
     - name: nodes/dell5520
  
   tasks:
+  handlers:
 
 

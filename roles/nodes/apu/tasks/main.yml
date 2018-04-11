@@ -918,6 +918,8 @@
         $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME% %syslogtag% %msg%\n"
         $ActionFileDefaultTemplate TraditionalFormatWithPRI
 
+
+
         # iptables
         :msg, contains, "IPTABLES"      /var/log/iptables.log
         & stop

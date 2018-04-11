@@ -16,7 +16,8 @@ myterminal :: String
 
 -- inherit font size from Xdefaults
 
-myterminal = "xterm "
+myterminal = "xterm -fg white -bg black -fs 12 "
+-- myterminal = "xterm "
 -- myterminal = "xterm -fa 'DejaVu Sans Mono'  -fg black -bg white "
 -- myterminal = "xterm -fa 'DejaVu Sans Mono' -fs 10 -fg black -bg white "
 

@@ -19,6 +19,8 @@
     - authorized_key: user=meteo key="{{meteo_pubkey}}"
 
   roles:
+    - name: admin/hostname
+      hostname: apu
 
     - name: admin/syslinux
       kernel: 4.9.0-5
@@ -36,10 +38,8 @@
     - admin/locale
     - admin/ip-forwarding
 
-    - name: admin/hostname
-      hostname: apu
 
-    # most of the networking stuff goes in the node-specific role
+    # most networking stuff is here
     - nodes/apu
 
     - name: admin/tftpd
