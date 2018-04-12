@@ -440,7 +440,6 @@
       dest: /etc/rsyslog.d/00-include.conf
       owner: root
       group: root
-      backup: yes
       content: |
         # deployed by ansible!
 
@@ -489,7 +488,6 @@
       dest: /etc/logrotate.d/00-include
       owner: root
       group: root
-      backup: yes
       content: |
         # deployed by ansible!
 

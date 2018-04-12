@@ -201,6 +201,7 @@
       content: |
         # deployed by ansible!
 
+
         #####
         # flush current chain rules
         iptables -t filter --flush
@@ -463,6 +464,17 @@
         # otherwise allow outbound connection to internet
         FORWARD_(tcp, 1:65535, 192.168.202.16, 0.0.0.0/0)
         FORWARD_(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
+
+        # nuc
+        # drop any forwarding connection from bravia to intranet,. excludes apu
+        # - review if add dnla
+        DROP_(   tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+        DROP_(   udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+        # otherwise allow outbound connection to internet
+        FORWARD_(tcp, 1:65535, 192.168.201.17, 0.0.0.0/0)
+        FORWARD_(udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
+
+
 
 
         # TODO re-enable dlna multicast routing,
@@ -792,14 +804,22 @@
 
             range 192.168.201.30  192.168.201.40;
 
+            # option subnet-mask 255.255.255.0;
             option subnet-mask 255.255.255.0;
             option broadcast-address 192.168.201.255;
-            option routers 192.168.201.1;
             option domain-name-servers 192.168.201.1;
 
             # gateways for subnets when default route is via openvpn
-            option classless-routes 16, 192,168,    192,168,201,1,
-                                    24, 10,4,0,     192,168,201,1;
+            # option classless-routes 16, 192,168,    192,168,201,1,
+            #                        24, 10,4,0,     192,168,201,1;
+
+            # classless routes are screwing up the default route...
+            # because, they point at the same router?
+            # VERY IMPORTANT - we don't even need classless if use 16 rather than 24.
+
+            # classless routes make no sense. it's the router that should route between subnets...
+
+            option routers 192.168.201.1;
 
             # host budii        { hardware ethernet 78:a0:51:5c:75:53; fixed-address 192.168.201.10; }
             host chromebox    { hardware ethernet 54:ab:3a:19:b6:d5; fixed-address 192.168.201.12; }
@@ -910,11 +930,10 @@
       dest: /etc/rsyslog.d/00-include.conf
       owner: root
       group: root
-      backup: yes
       content: |
         # deployed by ansible!
 
-        # JA overrideing like this works        
+        # JA overrideing like this works
         $template TraditionalFormatWithPRI,"%timegenerated% %pri-text%: %HOSTNAME% %syslogtag% %msg%\n"
         $ActionFileDefaultTemplate TraditionalFormatWithPRI
 
@@ -951,7 +970,6 @@
       dest: /etc/logrotate.d/00-include
       owner: root
       group: root
-      backup: yes
       content: |
         # deployed by ansible!
 
