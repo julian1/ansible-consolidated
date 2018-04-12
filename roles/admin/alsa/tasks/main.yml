@@ -1,0 +1,19 @@
+
+
+  #####
+  # alsa
+  - apt: name=alsa-oss
+  - apt: name=alsa-utils
+  - apt: name=alsa-tools
+
+
+  # command: bash -c "/usr/sbin/alsactl"
+  # not sure if this should be with store or init
+  # think when run as shell it runs 'init'
+  # doc says reboot is needed, https://wiki.debian.org/ALSA
+  - command: /usr/sbin/alsactl
+    args:
+      creates: /var/lib/alsa/asound.state
+    notify: reboot
+
+

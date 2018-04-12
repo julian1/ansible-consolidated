@@ -53,6 +53,10 @@
       tags: xmonad
       xmonad_user: meteo
 
+
+    - name: admin/alsa
+
+
     # need the user created before we do this...
     - name: personal/scripts
       tags: scripts

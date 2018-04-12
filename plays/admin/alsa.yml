@@ -1,0 +1,6 @@
+
+  - hosts:
+      - nuc
+    roles:
+      - admin/alsa
+
