@@ -945,4 +945,28 @@
 
 
 
+  # logrotate
+  # https://www.networkworld.com/article/3218728/linux/how-log-rotation-works-with-logrotate.html
+  - copy:
+      dest: /etc/logrotate.d/00-include
+      owner: root
+      group: root
+      backup: yes
+      content: |
+        # deployed by ansible!
+
+        /var/log/iptables.log
+        /var/log/named.log
+        /var/log/dhcpd.log
+        {
+          rotate 7
+          daily
+          missingok
+          notifempty
+          delaycompress
+          compress
+        }
+
+    tags: rsyslog
+
 

@@ -1,4 +1,5 @@
 
+# services for container hosting, and management
 # ethernet bridging, nat, dhcp, dns, iptables, logging server, local resolv.conf
 
 
@@ -482,6 +483,29 @@
     tags: rsyslog
 
 
+  # logrotate
+  # https://www.networkworld.com/article/3218728/linux/how-log-rotation-works-with-logrotate.html
+  - copy:
+      dest: /etc/logrotate.d/00-include
+      owner: root
+      group: root
+      backup: yes
+      content: |
+        # deployed by ansible!
+
+        /var/log/iptables.log
+        /var/log/named.log
+        /var/log/dhcpd.log
+        {
+          rotate 7
+          daily
+          missingok
+          notifempty
+          delaycompress
+          compress
+        }
+
+    tags: rsyslog
 
 # note both router and vpn do egress nat'ing.
 # we should be able to route from vpn node with a routing entry for 10.3.0.0/24 via 10.8.0.6 on vpn node
