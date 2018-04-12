@@ -60,7 +60,7 @@ ansible-playbook nodes/aodn/aatams.yml -v
 -s                  # force use of sudo for all plays even if not marked as such
 --private-key ~/.ssh/id_rsa
 --ask-sudo-pass
--k ask pass         # useful before keys installed
+-k ask pass         # useful before have keys deployed. needs apt-get install sshpass locally
 -u specify username
 -v verbose
 -c local            # no ssh, spawn local shell

@@ -4,6 +4,8 @@
 #   use meteo-sudo.yml to add sudo and passwd. cannot be made generic, since group membership may be different
 #   keep sshd separate - because that makes it a server which we don't always want
 
+# assumes have ssh keys in root. or else can ask password. install root keys should be a manual action anyway.
+
 - hosts: all
   vars_files:
     - ../../credentials.yml
