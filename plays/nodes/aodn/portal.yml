@@ -20,7 +20,7 @@
     - common
     - users
     - dotfiles
-    - tomcat-port-forward
+    - http-port-forward
     # keep configuration seperate from deployment
 #    - portal
 #    - { role: deploy-war, tags: [ 'whoot' ] }

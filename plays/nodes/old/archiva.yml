@@ -24,7 +24,7 @@
     - dotfiles
 
     # archiva specific
-    - tomcat-port-forward
+    - http-port-forward
     - devel/jdk-1.7
     - archiva/deploy
 

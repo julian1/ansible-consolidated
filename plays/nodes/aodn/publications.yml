@@ -24,7 +24,7 @@
     - users
     - common
     - dotfiles
-    - tomcat-port-forward
+    - http-port-forward
 
   tasks:
     - apt: name=libxml2-utils

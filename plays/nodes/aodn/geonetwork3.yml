@@ -20,7 +20,7 @@
     - locale
     - common
     - meteo-dotfiles
-    - tomcat-port-forward
+    - http-port-forward
     - postgres
 
 #    - geonetwork

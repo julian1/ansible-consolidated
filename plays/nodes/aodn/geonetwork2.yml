@@ -25,7 +25,7 @@
 
     # probably shold be a single 
     # GN specficif
-    - admin/tomcat-port-forward
+    - admin/http-port-forward
     - admin/postgres
     - aodn/gn-fresh-db
     - aodn/geonetwork

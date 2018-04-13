@@ -23,7 +23,7 @@
     - devel/root-bash-aliases
 
     # specific
-    - admin/tomcat-port-forward
+    - admin/http-port-forward
     - aodn/geoserver
 
   tasks:

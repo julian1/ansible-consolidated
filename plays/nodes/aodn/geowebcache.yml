@@ -33,7 +33,7 @@
     - devel/root-bash-aliases
 
     # keep deployment separate from the configuration,
-    - tomcat-port-forward
+    - http-port-forward
     # - deploy-war
 
 

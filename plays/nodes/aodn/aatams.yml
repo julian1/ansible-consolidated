@@ -29,7 +29,7 @@
     - vim
 
     - postgres
-    - tomcat-port-forward
+    - http-port-forward
 
   handlers:
     - name: restart-tomcat7
