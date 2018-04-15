@@ -1,4 +1,8 @@
 
+# vim /etc/dhcp/dhclient.conf
+# send dhcp-client-identifier 1:0:a0:24:ab:fb:9d;
+
+
 # dhcp, bind, iptables, smcroute rsyslog for apu
 
 # TODO
@@ -804,8 +808,8 @@
 
             range 192.168.201.30  192.168.201.40;
 
-            # option subnet-mask 255.255.255.0;
             option subnet-mask 255.255.255.0;
+            # option subnet-mask 255.255.0.0;
             option broadcast-address 192.168.201.255;
             option domain-name-servers 192.168.201.1;
 
@@ -813,11 +817,15 @@
             # option classless-routes 16, 192,168,    192,168,201,1,
             #                        24, 10,4,0,     192,168,201,1;
 
-            # classless routes are screwing up the default route...
-            # because, they point at the same router?
-            # VERY IMPORTANT - we don't even need classless if use 16 rather than 24.
+            # classless routes are screwing with the option routers and default route...
+            # perhaps because, they point at the same router/gateway?
 
-            # classless routes make no sense. it's the router that should route between subnets...
+            # and not sure if classless routes make sense here, since we just need more specific 
+            # local routing override entries when using openvpn. but thiis is a client side configuration, so 
+            # why push for the entire subnet? Instead, routes should be added to openvpn startup config.
+
+            # in addition, we would not need classless routes for vpn anyway, if 
+            # instead used subnet-mask # of 255.255.0.0 # eg. 16 instead of 24.
 
             option routers 192.168.201.1;
 

@@ -390,10 +390,10 @@
 
         # NAT
         # for openvpn
-        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
+        # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
 
         # non openvpn
-        # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
+        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
 
         # example ip tables logging,
         iptables -A INPUT  -p udp --dport 67 -j LOG --log-prefix "IPTABLES: "
@@ -446,6 +446,7 @@
         # this belongs to the modules section, because it should only be done once.
         # but overriding here does work, 
         # this is sufficient to open the port
+        # rsyslog is traditional udp 514. note that port 514 is also rsh when tcp. issue for tshark.
         module(load="imtcp")
         input(type="imtcp" port="514")
 
