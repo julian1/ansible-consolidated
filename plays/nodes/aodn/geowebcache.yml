@@ -33,7 +33,13 @@
     - devel/root-bash-aliases
 
     # keep deployment separate from the configuration,
-    - http-port-forward
+    - name: admin/local-port-forward
+        from_port:  80
+        to_port:    8080
+
+
+
+
     # - deploy-war
 
 

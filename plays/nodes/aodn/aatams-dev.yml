@@ -41,7 +41,11 @@
     - devel/jdk-1.7
     - devel/grails-1.3.7
     - postgres
-    - http-port-forward
+    - name: admin/local-port-forward
+        from_port:  80
+        to_port:    8080
+
+
     # should reinstate this
     # or move in under aatams
     # - aatams-old

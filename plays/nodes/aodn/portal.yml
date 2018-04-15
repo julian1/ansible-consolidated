@@ -20,7 +20,11 @@
     - common
     - users
     - dotfiles
-    - http-port-forward
+    - name: admin/local-port-forward
+        from_port:  80
+        to_port:    8080
+
+
     # keep configuration seperate from deployment
 #    - portal
 #    - { role: deploy-war, tags: [ 'whoot' ] }

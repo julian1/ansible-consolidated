@@ -25,7 +25,10 @@
 
     # probably shold be a single 
     # GN specficif
-    - admin/http-port-forward
+    - name: admin/local-port-forward
+        from_port:  80
+        to_port:    8080
+
     - admin/postgres
     - aodn/gn-fresh-db
     - aodn/geonetwork

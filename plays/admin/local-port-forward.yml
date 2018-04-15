@@ -1,0 +1,11 @@
+
+# change name, local-port-forward 
+#  this doesn't compose very well, because it assumes control of iptables chains,
+
+  - hosts: all
+    roles:
+      - name: admin/local-port-forward
+        from_port:  80
+        to_port:    8080
+
+

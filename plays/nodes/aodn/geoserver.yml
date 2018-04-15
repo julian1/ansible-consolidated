@@ -23,7 +23,11 @@
     - devel/root-bash-aliases
 
     # specific
-    - admin/http-port-forward
+    - name: admin/local-port-forward
+        from_port:  80
+        to_port:    8080
+
+
     - aodn/geoserver
 
   tasks:
