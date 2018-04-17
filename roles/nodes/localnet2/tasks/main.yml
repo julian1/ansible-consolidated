@@ -144,12 +144,13 @@
 
             host kvm-inst     { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
 
-            # nspawn
-            host stretch.chroot.orig { hardware ethernet 00:01:02:03:04:08; fixed-address 10.3.0.8; }
+            # nspawn, chroots
+            host stretch      { hardware ethernet 00:01:02:03:04:08; fixed-address 10.3.0.8; }
             host postgres     { hardware ethernet 00:01:02:03:04:12; fixed-address 10.3.0.12; }
             host devel01      { hardware ethernet 00:01:02:03:04:11; fixed-address 10.3.0.11; }
             host devel02      { hardware ethernet 00:01:02:03:04:14; fixed-address 10.3.0.14; }
             host devel03      { hardware ethernet 00:01:02:03:04:15; fixed-address 10.3.0.15; }
+            host devel04      { hardware ethernet 00:01:02:03:04:16; fixed-address 10.3.0.16; }
         }
 
     notify: restart-dhcp
@@ -247,10 +248,9 @@
           # catchall forwarder
           forwarders {
             # for openvpn - must be opendns or google etc .
+            # 208.67.222.222;
             # for non openvpn - must be local router - 192.168.43.1
-            208.67.222.222;
-            # 8.8.8.8;
-            # 192.168.43.1;
+            192.168.43.1;
           };
 
           # https://stackoverflow.com/questions/13342003/ns-got-insecure-response-parent-indicates-it-should-be-secure
@@ -358,10 +358,12 @@
         @             IN MX 10 10.3.0.1
 
         ; nspawn
+        stretch       IN A  10.3.0.8
         postgres      IN A  10.3.0.12
         devel01       IN A  10.3.0.11
         devel02       IN A  10.3.0.14
         devel03       IN A  10.3.0.15
+        devel04       IN A  10.3.0.16
 
         mail          IN A  10.3.0.1
         ns1           IN A  10.3.0.1
