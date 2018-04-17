@@ -16,6 +16,8 @@
           deb-src {{mirror}} stretch-updates main contrib non-free
 
       tags: whoot
-      # notify...
+
+
+      # no notify... because may want to do other apt-configuration . alternative just add apt-update playn
 
 

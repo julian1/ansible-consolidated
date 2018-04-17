@@ -1,0 +1,10 @@
+
+  - hosts: all
+    roles:
+      - name: admin/apt-stretch
+        mirror: http://mirror.internode.on.net/pub/debian
+        # mirror: mirror=http://ftp.au.debian.org/debian/
+
+
+      - admin/apt-update
+
