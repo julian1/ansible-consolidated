@@ -1,0 +1,12 @@
+
+- hosts:
+    - all
+#  vars_files:
+  vars:
+  pre_tasks:
+  roles:
+    - name: admin/haproxy
+      hostname: apu
+  tasks:
+  handlers:
+

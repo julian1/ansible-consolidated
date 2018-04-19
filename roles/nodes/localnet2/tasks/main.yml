@@ -1,6 +1,8 @@
 
+## maybe change name vpc or virutal-cloud etc...
+
 # services for container hosting, and management
-# ethernet bridging, nat, dhcp, dns, iptables, logging server, local resolv.conf
+# ethernet bridging, nat, dhcp, dns, iptables, centralized logging, local resolv.conf
 
 
 # TODO ordinary permisson on creation of TUN dnevice.
@@ -136,11 +138,9 @@
             # option domain-name-servers 208.67.222.222;  # opendns
             option domain-name-servers 10.3.0.1;          # locally hosted bind
 
-
             # push gateways for subnets when default route is openvpn
             # option classless-routes 16, 192,168,    192,168,201,1,
             #                        24, 10,4,0,     192,168,201,1;
-
 
             host kvm-inst     { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
 
@@ -151,6 +151,10 @@
             host devel02      { hardware ethernet 00:01:02:03:04:14; fixed-address 10.3.0.14; }
             host devel03      { hardware ethernet 00:01:02:03:04:15; fixed-address 10.3.0.15; }
             host devel04      { hardware ethernet 00:01:02:03:04:16; fixed-address 10.3.0.16; }
+            host haproxy      { hardware ethernet 00:01:02:03:04:17; fixed-address 10.3.0.17; }
+            host devel05      { hardware ethernet 00:01:02:03:04:18; fixed-address 10.3.0.18; }
+
+            # haproxy       IN A  10.3.0.17
         }
 
     notify: restart-dhcp
@@ -364,6 +368,8 @@
         devel02       IN A  10.3.0.14
         devel03       IN A  10.3.0.15
         devel04       IN A  10.3.0.16
+        haproxy       IN A  10.3.0.17
+        devel05       IN A  10.3.0.18
 
         mail          IN A  10.3.0.1
         ns1           IN A  10.3.0.1
@@ -390,23 +396,31 @@
         iptables -t filter --flush
         iptables -t nat --flush
 
+        #############
         # NAT
         # for openvpn
         # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
 
-        # non openvpn
+        # for non-openvpn - this nodes, main wan interface
         iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
 
-        # example ip tables logging,
+        #############
+        # input/output with this node.
+
+        # no restrictions
+        iptables -P INPUT  ACCEPT
+        iptables -P OUTPUT ACCEPT
+
+        # logging example, ip tables
         iptables -A INPUT  -p udp --dport 67 -j LOG --log-prefix "IPTABLES: "
         iptables -A OUTPUT -p udp --sport 67 -j LOG --log-prefix "IPTABLES: "
         iptables -A INPUT  -p udp --dport 68 -j LOG --log-prefix "IPTABLES: "
         iptables -A OUTPUT -p udp --sport 68 -j LOG --log-prefix "IPTABLES: "
 
+        #############
+        # forward
 
         iptables -P FORWARD DROP
-
-        # Note. This is complicated by apu iptables/routes, vpn tunnel routing, and exceptions to tunnel.
 
         # dhcp / dns - only with the node. input/output not a forward entry
         # anything here is also subject to apu rules for 5520
@@ -415,7 +429,12 @@
         iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
         iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
 
-        # http
+        # we don't need to ssh out...
+        # Note, won't work for nodes, using host routing exceptions to openvpn tunnel gateway
+        # iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
+        # iptables -A FORWARD -p tcp --sport 22 -j ACCEPT
+
+        # http - for apt-get etc....
         iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
         iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
 
@@ -426,9 +445,9 @@
         iptables -A FORWARD -p udp --dport 123 -j ACCEPT
         iptables -A FORWARD -p udp --sport 123 -j ACCEPT
 
-        # Note, won't work for nodes, using host routing exceptions to openvpn tunnel gateway
-        iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
-        iptables -A FORWARD -p tcp --sport 22 -j ACCEPT
+        # 3000 web-services
+        iptables -A FORWARD -p tcp --dport 3000 -j ACCEPT
+        iptables -A FORWARD -p tcp --sport 3000 -j ACCEPT
 
     notify: reconfigure-iptables
     tags: iptables
@@ -446,7 +465,7 @@
         # deployed by ansible!
 
         # this belongs to the modules section, because it should only be done once.
-        # but overriding here does work, 
+        # but overriding here does work,
         # this is sufficient to open the port
         # rsyslog is traditional udp 514. note that port 514 is also rsh when tcp. issue for tshark.
         module(load="imtcp")
