@@ -1,6 +1,15 @@
 
 # https://serversforhackers.com/c/load-balancing-with-haproxy
 
+# snakeoil certs - for self-signed testing.
+- apt: name=ssl-cert
+
+
+- command: "bash -c 'cat /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/private/ssl-cert-snakeoil.key > /etc/ssl/certs/haproxy.pem'"
+  args:
+    creates: /etc/ssl/certs/haproxy.pem
+
+
 - copy:
     dest: /etc/haproxy/haproxy.cfg
     owner: root
@@ -16,6 +25,9 @@
         user haproxy
         group haproxy
         daemon
+
+        # /etc/ssl/certs/ssl-cert-snakeoil.pem
+        # /etc/ssl/private/ssl-cert-snakeoil.key
 
         # Default SSL material locations
         ca-base /etc/ssl/certs
@@ -46,12 +58,18 @@
         errorfile 504 /etc/haproxy/errors/504.http
 
 
-      ### JA
+      ### JA 2
+      #
 
       frontend localnodes
           bind *:80
+          # bind *:443 ssl crt /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/private/ssl-cert-snakeoil.key
+          # bind *:443 ssl crt /etc/ssl/certs/ssl-cert-snakeoil.pem crt /etc/ssl/private/ssl-cert-snakeoil.key
+          #bind 0.0.0.0:443 ssl crt /etc/ssl/snakeoil.pem
+          bind *:443 ssl crt /etc/ssl/certs/haproxy.pem 
           mode http
           default_backend nodes
+
 
       backend nodes
           mode http
@@ -65,6 +83,7 @@
           # server web03 127.0.0.1:9002 check
           server devel03 10.3.0.15:3000 check 
           server devel05 10.3.0.18:3000 check 
+
 
 
   notify: restart-haproxy
