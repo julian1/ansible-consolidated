@@ -1,7 +1,9 @@
 
 # https://serversforhackers.com/c/load-balancing-with-haproxy
-
 # https://www.haproxy.org/download/1.7/doc/management.txt
+
+# debugging,
+# s tshark -O http -i br0 -Y 'http.request.method == "GET" ' 'tcp port 3000'
 
 # snakeoil certs - for self-signed testing.
 - apt: name=ssl-cert
@@ -67,31 +69,39 @@
           default_backend nodes
 
           # https://www.datadoghq.com/blog/how-to-collect-haproxy-metrics/
-          stats enable  # Enable stats page
-          stats realm Haproxy\ Statistics  # Title text for popup window
-          stats uri /haproxy_stats  # Stats URI
-          stats auth test:test  # Username:Password  # Authenticat
+          # stats enable  # Enable stats page
+          # stats realm Haproxy\ Statistics  # Title text for popup window
+          # stats uri /haproxy_stats  # Stats URI
+          # stats auth test:test  # Username:Password  # Authenticat
 
 
       backend nodes
           mode http
         
           # https://www.haproxy.com/blog/load-balancing-affinity-persistence-sticky-sessions-what-you-need-to-know/
-
           # balance roundrobin    # just roundrobbin requests
 
-          balance source          # ip affinity, won't distinguish nat, but will balance
-
+          # affinity within HAProxy, based on client IP information.  
+          # note. won't distinguish nat, but will balance. but probem if ip changes during session
+          # balance source
+          # hash-type consistent # optional
 
           option forwardfor
           http-request set-header X-Forwarded-Port %[dst_port]
           http-request add-header X-Forwarded-Proto https if { ssl_fc }
           option httpchk HEAD / HTTP/1.1\r\nHost:localhost
-          # server web01 127.0.0.1:9000 check
-          # server web02 127.0.0.1:9001 check
-          # server web03 127.0.0.1:9002 check
-          server devel03 10.3.0.15:3000 check 
-          server devel05 10.3.0.18:3000 check 
+
+          # server devel03 10.3.0.15:3000 check 
+          # server devel05 10.3.0.18:3000 check 
+
+          # cookie injection
+          # tells HAProxy to setup a cookie called SERVERID only if the user did not come with such cookie.
+          # NOTE. haproxy hides and will *not* forward the cookie to the node. so we won't see it in node http headers
+          balance roundrobin
+          cookie SERVERID insert indirect nocache
+          server s1 10.3.0.15:3000 check cookie s1 
+          server s2 10.3.0.18:3000 check cookie s2 
+
 
 
   # TODO change to reload...
