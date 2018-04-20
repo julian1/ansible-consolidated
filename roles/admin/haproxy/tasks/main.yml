@@ -1,6 +1,8 @@
 
 # https://serversforhackers.com/c/load-balancing-with-haproxy
 
+# https://www.haproxy.org/download/1.7/doc/management.txt
+
 # snakeoil certs - for self-signed testing.
 - apt: name=ssl-cert
 
@@ -56,7 +58,7 @@
         errorfile 504 /etc/haproxy/errors/504.http
 
 
-      ### JA 2
+      # need to figure out bouncing 80 -> 443
 
       frontend localnodes
           bind *:80
@@ -73,7 +75,14 @@
 
       backend nodes
           mode http
-          balance roundrobin
+        
+          # https://www.haproxy.com/blog/load-balancing-affinity-persistence-sticky-sessions-what-you-need-to-know/
+
+          # balance roundrobin    # just roundrobbin requests
+
+          balance source          # ip affinity, won't distinguish nat, but will balance
+
+
           option forwardfor
           http-request set-header X-Forwarded-Port %[dst_port]
           http-request add-header X-Forwarded-Proto https if { ssl_fc }
@@ -85,5 +94,7 @@
           server devel05 10.3.0.18:3000 check 
 
 
-
+  # TODO change to reload...
   notify: restart-haproxy
+
+
