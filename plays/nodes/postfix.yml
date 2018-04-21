@@ -8,7 +8,7 @@
     - admin/fail2ban
     # - admin/firewall
 
-    - admin/postfix
+    - nodes/postfix
 
   tasks:
 
