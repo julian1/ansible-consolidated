@@ -6,6 +6,7 @@
   # TODO review better way?
   - file: path=/ansible state=directory
 
+  - apt: name=aptitude
 
   - apt: name=wget
   - apt: name=ca-certificates
