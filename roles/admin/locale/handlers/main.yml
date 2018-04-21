@@ -1,8 +1,10 @@
 
+# TODO - there's no reason to delay running code, until handler time...
+
   - name: reconfigure-locales
     command: "{{item}}"
     with_items:
-      - dpkg-reconfigure --frontend noninteractive  locales
-
-
+      - locale-gen {{locale}} && update-locale
+      # - dpkg-reconfigure --frontend noninteractive locales
+      # - locale 
 
