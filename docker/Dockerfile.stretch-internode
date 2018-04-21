@@ -1,0 +1,19 @@
+
+FROM debian:stretch
+
+RUN apt-get update
+RUN apt-get -y install ansible
+
+# env
+ENV       w /root
+ENV       a $w/ansible-consolidated
+
+RUN mkdir $a
+COPY roles $a/roles
+COPY plays $a/plays
+COPY ansible.cfg $a/ansible.cfg
+
+RUN cd $a && ansible-playbook plays/admin/stretch-internode.yml -i localhost, -c local
+
+WORKDIR   $w
+

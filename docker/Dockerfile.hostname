@@ -1,0 +1,21 @@
+
+FROM debian:stretch
+
+RUN apt-get update
+RUN apt-get -y install ansible
+
+# env
+ENV       w /root
+ENV       a $w/ansible-consolidated
+
+RUN mkdir $a
+COPY roles $a/roles
+COPY plays $a/plays
+COPY ansible.cfg $a/ansible.cfg
+
+# this fails, because not root... weird
+# ansible-playbook plays/admin/hostname.yml -i $myhost, --extra-vars "hostname=$myhost"
+RUN cd $a && ansible-playbook plays/admin/hostname.yml -i localhost, -c local --extra-vars "hostname=testmyhostname"   
+
+WORKDIR   $w
+
