@@ -1,9 +1,14 @@
 
 # https://serversforhackers.com/c/load-balancing-with-haproxy
 # https://www.haproxy.org/download/1.7/doc/management.txt
+# https://cbonte.github.io/haproxy-dconv/1.7/configuration.html
+
+# routing multiple hosts,
+# https://seanmcgary.com/posts/haproxy---route-by-domain-name/ 
 
 # debugging,
-# s tshark -O http -i br0 -Y 'http.request.method == "GET" ' 'tcp port 3000'
+# s tshark -O http -i br0 -Y 'http.request.method == "GET"' 'tcp port 80'
+# s tshark -O http -i br0 -Y 'http.request.method == "GET"' 'tcp port 3000'
 
 # snakeoil certs - for self-signed testing.
 - apt: name=ssl-cert
@@ -30,10 +35,9 @@
         group haproxy
         daemon
 
-
         # Default SSL material locations
-        ca-base /etc/ssl/certs
-        crt-base /etc/ssl/private
+        # ca-base /etc/ssl/certs
+        # crt-base /etc/ssl/private
 
         # Default ciphers to use on SSL-enabled listening sockets.
         # For more information, see ciphers(1SSL). This list is from:
@@ -60,7 +64,7 @@
         errorfile 504 /etc/haproxy/errors/504.http
 
 
-      # need to figure out bouncing 80 -> 443
+      # need to bounce 80 -> 443
 
       frontend localnodes
           bind *:80
@@ -94,7 +98,7 @@
           # server devel03 10.3.0.15:3000 check 
           # server devel05 10.3.0.18:3000 check 
 
-          # cookie injection
+          # haproxy cookie injection
           # tells HAProxy to setup a cookie called SERVERID only if the user did not come with such cookie.
           # NOTE. haproxy hides and will *not* forward the cookie to the node. so we won't see it in node http headers
           balance roundrobin
