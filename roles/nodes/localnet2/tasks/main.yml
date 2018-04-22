@@ -153,6 +153,7 @@
             host devel04      { hardware ethernet 00:01:02:03:04:16; fixed-address 10.3.0.16; }
             host haproxy      { hardware ethernet 00:01:02:03:04:17; fixed-address 10.3.0.17; }
             host devel05      { hardware ethernet 00:01:02:03:04:18; fixed-address 10.3.0.18; }
+            host devel06      { hardware ethernet 00:01:02:03:04:19; fixed-address 10.3.0.19; }
 
             # haproxy       IN A  10.3.0.17
         }
@@ -370,6 +371,7 @@
         devel04       IN A  10.3.0.16
         haproxy       IN A  10.3.0.17
         devel05       IN A  10.3.0.18
+        devel06       IN A  10.3.0.19
 
         mail          IN A  10.3.0.1
         ns1           IN A  10.3.0.1
