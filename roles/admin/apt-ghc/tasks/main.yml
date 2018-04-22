@@ -1,0 +1,30 @@
+
+# add ghc repository
+
+# see, http://downloads.haskell.org/debian/
+
+  - file: path=/ansible state=directory
+
+  - apt: name=aptitude
+
+  - apt: name=wget
+  - apt: name=ca-certificates
+  - apt: name=apt-transport-https
+
+  - copy:
+      dest: /etc/apt/sources.list.d/pgdg.list
+      content: |
+        # deployed by ansible!
+        deb http://downloads.haskell.org/debian stretch main
+
+
+  - shell: creates=/ansible/ghc-apt-done.txt chdir=/root {{item}}
+    with_items:
+      # note. must force port 80, instead of usual port 11371 for hkp / OpenPGP HTTP Keyserver
+      - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80  --recv-keys BA3CBA3FFE22B574
+      - touch /ansible/ghc-apt-done.txt
+
+
+  - apt: state=latest update_cache=yes upgrade=safe
+
+

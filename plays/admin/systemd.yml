@@ -1,0 +1,9 @@
+
+  - hosts:
+      - all
+#    roles:
+#      - admin/apt-docker
+
+    tasks:
+      - apt: name=systemd
+
