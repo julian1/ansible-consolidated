@@ -74,6 +74,12 @@ ansible -m setup localhost
 
 #### Notes
 
+
+- advantage over docker - composible, reusable. and we squash unneeded layers.
+    https://alex.dzyoba.com/blog/packer-for-docker/
+
+- think about only doing service restarts - when have init or systemd. not for docker like containers  ... eg. when
+
 - is it possible to use -c local - directly on a chroot?
 
 - role paths
