@@ -53,7 +53,7 @@
         xrdb -merge <<- EOF
           XTerm*selectToClipboard: true
           XTerm*faceName: DejaVu Sans Mono
-          XTerm*faceSize: 11   ! laptop
+          XTerm*faceSize: 11
           XTerm*Background: white
           XTerm*Foreground: black
         EOF
