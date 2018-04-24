@@ -67,6 +67,7 @@ alias rec2="ffmpeg -f x11grab -s 1920x1080 -r 25 -i :0.0 output.mp4"
 alias cap="scrot -d 5"
 
 # eg. cat /usr/share/zoneinfo/America/Los_Angeles
+# tzselect
 alias frtime='TZ=Europe/Paris date'
 alias uktime='TZ=Europe/London date'
 alias nytime='TZ=America/New_York date'
