@@ -26,6 +26,9 @@
     - "/.vim/bundle"
 
 
+# make sure  .bashrc really exists
+- file: path="{{path}}/.bashrc" state=touch owner={{user}} group={{user}}
+
 # root instance of .bashrc doesn't include .bash_aliases
 # not sure about this..
 - lineinfile: >

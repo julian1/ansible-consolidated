@@ -23,9 +23,10 @@ ansible-playbook plays/admin/postgres.yml -i $myhost,
 
 ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 
-# overriding play vars
+# setting and overriding vars
 ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-vars "path=/root user=root"
 ansible-playbook ./plays/personal/dotfiles.yml -i apu2,  --extra-vars "path=/home/parity user=parity"
+ansible-playbook ./plays/personal/dotfiles.yml -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python" 
 
 # bootstrap
 apt-get install python-minimal
