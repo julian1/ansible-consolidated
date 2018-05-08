@@ -9,11 +9,11 @@
 
 ##############
 # network startup on boot is slow due to,
-# slow vlan switchport startup (spanning tree etc). this means initial dhcp requests will fail. retry interval
-# is 5 mins according # to, man dhclient.conf.
+# slow vlan switchport startup (spanning tree etc). this means initial dhcp requests will initially fail. 
+# retry is 5 minutes, because it is default according to, man dhclient.conf.
 #
-# The  retry  statement  determines  the  time that must pass after the client has determined that there is
-# no DHCP server present before it tries again to contact a DHCP server.  By default, this is five minutes.
+# "The  retry  statement  determines  the  time that must pass after the client has determined that there is
+# no DHCP server present before it tries again to contact a DHCP server.  By default, this is five minutes."
 
 
 ##############
@@ -388,6 +388,8 @@
         DROP_(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
 
+
+
         # ntp
         DROP_(   tcp, 123, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
@@ -418,9 +420,14 @@
 
         # SPECIFIC NODES,
 
+        # dns
+        FORWARD_(tcp, 53, 192.168.43.6/16, 0.0.0.0/0)
+        FORWARD_(udp, 53, 192.168.43.6/16, 0.0.0.0/0)
+
+
         # ssh permitted egress
-        FORWARD_(tcp, 22, 192.168.43.14, 0.0.0.0/0)
         FORWARD_(tcp, 22, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_(tcp, 22, 192.168.43.14, 0.0.0.0/0)
         FORWARD_(tcp, 22, 192.168.201.19, 0.0.0.0/0)
         FORWARD_(tcp, 22, 192.168.201.27, 0.0.0.0/0)
 
