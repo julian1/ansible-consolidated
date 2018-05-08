@@ -15,6 +15,8 @@
       postgis_version: 2.3
 
 
+  # configure a test db...
+
   # useful, general stuff
   tasks:
     # TODO review better way?
@@ -25,6 +27,7 @@
         src: "../../roles/admin/postgres/files/admin.sql"
         dest: /ansible/admin.sql
 
+    # needed
     - apt: name=sudo
 
 
@@ -40,9 +43,20 @@
         - touch /ansible/postgres-admin-user.txt 
 
 
+#    - copy:
+#        dest: /root/.pgpass
+#        mode: 0400
+#        content: |
+#          # deployed by ansible
+#          127.0.0.1:5432:postgres:admin:admin
+
+
+    # psql -h 127.0.0.1 postgres -U admin
     - copy:
-        dest: /root/.pgpass
+        dest: /home/meteo/.pgpass
         mode: 0400
+        owner: meteo
+        group: meteo
         content: |
           # deployed by ansible
           127.0.0.1:5432:postgres:admin:admin
