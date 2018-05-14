@@ -1,7 +1,11 @@
+ 
+# lts is v8.11.1
+
 
   - hosts: all
     vars:
-      - node_deploy_path: /home/meteo/
+      - deploy_path: /home/meteo/
+      - version: v8.11.1
     roles:
       - devel/node
 
