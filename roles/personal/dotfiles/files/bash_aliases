@@ -21,6 +21,9 @@ alias top='top -d 1'
 # alias feh='feh -F -Z -d --keep-zoom-vp'
 alias feh='feh -F -Z -d'
 
+alias iftop='iftop -B -P  -N'
+
+
 # shortcuts
 alias g=git
 alias l=less
