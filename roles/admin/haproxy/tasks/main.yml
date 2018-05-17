@@ -12,6 +12,7 @@
 
 # snakeoil certs - for self-signed testing.
 - apt: name=ssl-cert
+- apt: name=haproxy
 
 
 - command: "bash -c 'cat /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/private/ssl-cert-snakeoil.key > /etc/ssl/certs/haproxy.pem'"
