@@ -329,7 +329,7 @@
         # dhcp
         LAN_INGRESS(udp, 67, 192.168.0.0/16)
 
-        # ssh - limit hosts
+        # ssh - for admin - limited hosts
         LAN_INGRESS(tcp, 22, 192.168.43.6)
         LAN_INGRESS(tcp, 22, 192.168.43.14)
         LAN_INGRESS(tcp, 22, 192.168.201.19)
@@ -382,6 +382,12 @@
         # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 80 -j LOG --log-prefix "IPTABLES: "
         # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 443 -j LOG --log-prefix "IPTABLES: "
 
+        #########################
+        # IMPORTANT - do we need DROP, when it's the default... no...
+        # yes. because drop targets the dst address. we are making sure it's forwarding lan to wan.j 
+
+        # it means forward anywhere except to our loal subnet. 
+
         # http
         DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
@@ -389,40 +395,43 @@
         FORWARD_(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
 
 
-
         # ntp
         DROP_(   tcp, 123, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
 
-        # whois
-        DROP_(   tcp, 43, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 43, 192.168.43.0/24, 0.0.0.0/0)
-
-        # smtp - note, iinet blocks port 25
-        DROP_(   tcp, 25, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 25, 192.168.43.0/24, 0.0.0.0/0)
-
-        # smtpd submission, tls, starttls
-        DROP_(   tcp, 587, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 587, 192.168.43.0/24, 0.0.0.0/0)
-
-        # imap tls
-        DROP_(   tcp, 993, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 993, 192.168.43.0/24, 0.0.0.0/0)
-
-        # irc - note, port 6667 preferred over 194, freenode uses 6697
-        DROP_(   tcp, 6697, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 6697, 192.168.43.0/24, 0.0.0.0/0)
 
         # 5222 test port - ssh proxy and general open test port
         FORWARD_(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
         FORWARD_(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
 
-        # SPECIFIC NODES,
 
-        # dns
-        FORWARD_(tcp, 53, 192.168.43.6/16, 0.0.0.0/0)
-        FORWARD_(udp, 53, 192.168.43.6/16, 0.0.0.0/0)
+        # SPECIFIC NODES, mostly only dell
+
+        # dns eg. other than from apu bind
+        DROP_(   tcp, 53, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(tcp, 53, 192.168.43.6, 0.0.0.0/0)
+        DROP_(   udp, 53, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(udp, 53, 192.168.43.6, 0.0.0.0/0)
+
+        # whois
+        DROP_(   tcp, 43, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(tcp, 43, 192.168.43.6, 0.0.0.0/0)
+
+        # smtp - note, iinet blocks port 25
+        DROP_(   tcp, 25, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(tcp, 25, 192.168.43.6, 0.0.0.0/0)
+
+        # smtpd submission, tls, starttls
+        DROP_(   tcp, 587, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(tcp, 587, 192.168.43.6, 0.0.0.0/0)
+
+        # imap tls
+        DROP_(   tcp, 993, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(tcp, 993, 192.168.43.6, 0.0.0.0/0)
+
+        # irc - note, port 6667 preferred over 194, freenode uses 6697
+        DROP_(   tcp, 6697, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_(tcp, 6697, 192.168.43.6, 0.0.0.0/0)
 
 
         # ssh permitted egress
