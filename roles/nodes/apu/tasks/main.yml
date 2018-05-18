@@ -229,41 +229,55 @@
         # ingress or egress indicates which node inititated the connection
         # WAN_INGRESS proto, port, address
         define(`WAN_INGRESS',
-        `iptables -A INPUT  -i WAN_INTERFACE -p $1 --dport $2 --source $3      -j ACCEPT'
-        `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -j ACCEPT' )
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
 
         # WAN_EGRESS proto, port, address
         define(`WAN_EGRESS',
-        `iptables -A OUTPUT -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -j ACCEPT'
-        `iptables -A INPUT  -i WAN_INTERFACE -p $1 --sport $2 --source $3      -j ACCEPT' )
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
 
         # LAN_INGRESS proto, port, address
         define(`LAN_INGRESS',
-        `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --dport $2 --source $3      -j ACCEPT'
-        `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --sport $2 --destination $3 -j ACCEPT' )
+        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
 
         # LAN_EGRESS proto, port, address
         define(`LAN_EGRESS',
-        `iptables -A OUTPUT ! -o WAN_INTERFACE -p $1 --dport $2 --destination $3 -j ACCEPT'
-        `iptables -A INPUT  ! -i WAN_INTERFACE -p $1 --sport $2 --source $3      -j ACCEPT' )
+        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
 
         # FORWARD_ proto, port, src(egress), dst
         # define(`FORWARD_',
-        # `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
-        # `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+        # `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+        # `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
 
         # FORWARD_ proto, port, src(egress), dst
         define(`FORWARD_',
-        `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -j ACCEPT'
-        `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
+        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j ACCEPT'
+        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
 
 
         # DROP_ proto, port, src(egress), dst
         define(`DROP_',
-        `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -j DROP'
-        `iptables -A FORWARD -p $1 --sport $2 -d $3 -s $4 -j DROP')
+        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j DROP'
+        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j DROP')
 
-        # `iptables -A FORWARD -p $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW -j DROP')
+        # `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW -j DROP')
+
+        # allow everything over an interface - eg. for lo, admin
+        define(`INT_ALLOW_ALL',
+        `iptables -A OUTPUT -o $1 --protocol all -j ACCEPT'
+        `iptables -A INPUT  -i $1 --protocol all -j ACCEPT' )
+
+
+        # define(`INT_ALLOW_ALL',
+        # `iptables -A OUTPUT -o $1 --protocol tcp  -j ACCEPT'
+        # `iptables -A INPUT  -i $1 --protocol tcp  -j ACCEPT'
+        # `iptables -A OUTPUT -o $1 --protocol udp  -j ACCEPT'
+        # `iptables -A INPUT  -i $1 --protocol udp  -j ACCEPT'
+        # `iptables -A OUTPUT -o $1 --protocol icmp -j ACCEPT'
+        # `iptables -A INPUT  -i $1 --protocol icmp -j ACCEPT' )
 
 
 
@@ -271,12 +285,8 @@
         #
         # lo / 127.0.0.1
         # allow local processes to talk via lo. needed for rndc /port 953, needed for bind
-        iptables -A OUTPUT -o lo -p tcp  -j ACCEPT
-        iptables -A INPUT  -i lo -p tcp  -j ACCEPT
-        iptables -A OUTPUT -o lo -p udp  -j ACCEPT
-        iptables -A INPUT  -i lo -p udp  -j ACCEPT
-        iptables -A OUTPUT -o lo -p icmp -j ACCEPT
-        iptables -A INPUT  -i lo -p icmp -j ACCEPT
+        INT_ALLOW_ALL(lo)
+
 
 
         ##### WAN_INGRESS #####
