@@ -1,0 +1,86 @@
+
+# basic example, for standalone server
+
+    # may need to restart wlan0 here? at least when install dnsmasq
+  - apt: name=iptables-persistent
+  - apt: name=m4
+    tags: iptables
+
+  - copy:
+      dest: /etc/iptables-rules.m4
+      content: |
+        # deployed by ansible!
+
+        define(`WAN_INTERFACE', `eth0')
+
+        ####################
+
+        # ingress or egress indicates which node inititated the connection
+        # WAN_INGRESS proto, port, address
+        define(`WAN_INGRESS',
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
+
+        # WAN_EGRESS proto, port, address
+        define(`WAN_EGRESS',
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
+
+        # allow everything over an interface - eg. for lo, admin
+        define(`INT_ALLOW_ALL',
+        `iptables -A OUTPUT -o $1 --protocol tcp  -j ACCEPT'
+        `iptables -A INPUT  -i $1 --protocol tcp  -j ACCEPT'
+        `iptables -A OUTPUT -o $1 --protocol udp  -j ACCEPT'
+        `iptables -A INPUT  -i $1 --protocol udp  -j ACCEPT'
+        `iptables -A OUTPUT -o $1 --protocol icmp -j ACCEPT'
+        `iptables -A INPUT  -i $1 --protocol icmp -j ACCEPT' )
+
+        ####################
+
+        # flush current chain rules
+        iptables -t filter  --flush
+        iptables -t nat     --flush
+        iptables -t mangle  --flush
+
+        # set initial policy to accept
+        iptables -P INPUT   ACCEPT
+        iptables -P OUTPUT  ACCEPT
+        iptables -P FORWARD ACCEPT
+
+
+        # lo / 127.0.0.1
+        # allow local processes to talk via lo. needed for rndc /port 953, needed for bind
+        INT_ALLOW_ALL(lo)
+        INT_ALLOW_ALL(eth1)
+        INT_ALLOW_ALL(eth0:2)
+
+
+
+        # dhcp TODO port 68 also...
+        WAN_EGRESS(udp, 67, 0.0.0.0/0)
+        # dns
+        WAN_EGRESS(tcp, 53, 0.0.0.0/0)
+        WAN_EGRESS(udp, 53, 0.0.0.0/0)
+        # http - needed for apt updates
+        WAN_EGRESS(tcp, 80, 0.0.0.0/0)
+        WAN_EGRESS(tcp, 443, 0.0.0.0/0)
+        # ntp
+        WAN_EGRESS(udp, 123, 0.0.0.0/0)
+
+
+        WAN_INGRESS(tcp, 22, 0.0.0.0/0)
+        WAN_INGRESS(tcp, 80, 0.0.0.0/0)
+        WAN_INGRESS(tcp, 443, 0.0.0.0/0)
+
+
+        # everything ok? change policies back to drop
+        iptables -P INPUT   DROP
+        iptables -P OUTPUT  DROP
+        # iptables -P FORWARD DROP
+
+    
+    # TODO - instead of running this later. should run reconfigure immediately after using a variable
+    notify: reconfigure-iptables
+    tags: iptables
+
+
