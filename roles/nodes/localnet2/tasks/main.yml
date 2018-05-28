@@ -1,4 +1,14 @@
 
+# Really not sure why we do not do all Nat at the router - instead of locally here. 
+# we just need to push the route - eg. 10.7.0.0/24 and then can run servers or whatever? 
+# doesn't mean that dns is local here
+# router needs the route, and then locally. 
+
+# actually probably only need the router - with a 10.3.0.0/24  route to the laptop ... egress from laptop
+# should be fine... 
+# will we don't have to change the gateway
+
+
 ## maybe change name vpc or virutal-cloud etc...
 
 # services for container hosting, and management
@@ -416,7 +426,10 @@
         # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o tun0  -j MASQUERADE
 
         # for non-openvpn - this nodes, main wan interface
-        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
+        # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
+
+        # IMPORTANT
+        # rather than do natting, we should just push a route for the router - or vpn. 
 
         #############
         # input/output with this node.
@@ -445,8 +458,8 @@
 
         # we don't need to ssh out...
         # Note, won't work for nodes, using host routing exceptions to openvpn tunnel gateway
-        # iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
-        # iptables -A FORWARD -p tcp --sport 22 -j ACCEPT
+        iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
+        iptables -A FORWARD -p tcp --sport 22 -j ACCEPT
 
         # http - for apt-get etc....
         iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
