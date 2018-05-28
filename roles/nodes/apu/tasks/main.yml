@@ -203,6 +203,62 @@
   - apt: name=m4
     tags: iptables
 
+
+
+  # ok need to factor this ut....
+  - copy:
+      dest: /etc/includes.m4
+      content: |
+        # deployed by ansible!
+        # WAN_IN_ACCEPT(proto, port, address)
+        define(`WAN_IN_ACCEPT',
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
+
+        # WAN_OUT_ACCEPT( proto, port, address)
+        define(`WAN_OUT_ACCEPT',
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
+
+        # LAN_IN_ACCEPT( proto, port, address)
+        define(`LAN_IN_ACCEPT',
+        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
+
+        # LAN_OUT_ACCEPT(proto, port, address)
+        define(`LAN_OUT_ACCEPT',
+        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
+
+        # stateful contract...
+        # FORWARD_ proto, port, src(egress), dst
+        # define(`FORWARD_',
+        # `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+        # `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+        # FORWARD_ proto, port, src(egress), dst
+        define(`FORWARD_ACCEPT',
+        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j ACCEPT'
+        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
+
+        # FORWARD_DROP( proto, port, src(out), dst)
+        define(`FORWARD_DROP',
+        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j DROP'
+        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j DROP')
+
+
+        # INT_ACCEPT(ifce, protocol) allow all protocols over an interface - eg. for lo, admin
+        define(`INT_ACCEPT',
+        `iptables -A OUTPUT -o $1 --protocol $2 -j ACCEPT'
+        `iptables -A INPUT  -i $1 --protocol $2 -j ACCEPT' )
+
+
+    tags: iptables
+
+
+
+
+
   - copy:
       dest: /etc/iptables-rules.m4
       content: |
@@ -224,142 +280,85 @@
 
         define(`WAN_INTERFACE', `eth0.120')
 
-        # REVIEW, do we even need conntrack if have source and dest, address and port is explicit?
-
-        # ingress or egress indicates which node inititated the connection
-        # WAN_INGRESS proto, port, address
-        define(`WAN_INGRESS',
-        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
-        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
-
-        # WAN_EGRESS proto, port, address
-        define(`WAN_EGRESS',
-        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
-        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
-
-        # LAN_INGRESS proto, port, address
-        define(`LAN_INGRESS',
-        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
-        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
-
-        # LAN_EGRESS proto, port, address
-        define(`LAN_EGRESS',
-        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
-        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
-
-        # FORWARD_ proto, port, src(egress), dst
-        # define(`FORWARD_',
-        # `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
-        # `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
-
-        # FORWARD_ proto, port, src(egress), dst
-        define(`FORWARD_',
-        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j ACCEPT'
-        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
-
-
-        # DROP_ proto, port, src(egress), dst
-        define(`DROP_',
-        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j DROP'
-        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j DROP')
-
-        # `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW -j DROP')
-
-        # allow everything over an interface - eg. for lo, admin
-        define(`INT_ALLOW_ALL',
-        `iptables -A OUTPUT -o $1 --protocol all -j ACCEPT'
-        `iptables -A INPUT  -i $1 --protocol all -j ACCEPT' )
-
-
-        # define(`INT_ALLOW_ALL',
-        # `iptables -A OUTPUT -o $1 --protocol tcp  -j ACCEPT'
-        # `iptables -A INPUT  -i $1 --protocol tcp  -j ACCEPT'
-        # `iptables -A OUTPUT -o $1 --protocol udp  -j ACCEPT'
-        # `iptables -A INPUT  -i $1 --protocol udp  -j ACCEPT'
-        # `iptables -A OUTPUT -o $1 --protocol icmp -j ACCEPT'
-        # `iptables -A INPUT  -i $1 --protocol icmp -j ACCEPT' )
-
+        include(`/etc/includes.m4')
 
 
         ##### APU local #####
-        #
-        # lo / 127.0.0.1
-        # allow local processes to talk via lo. needed for rndc /port 953, needed for bind
-        INT_ALLOW_ALL(lo)
+        # let local processes to talk via lo. needed for rndc /port 953, needed for bind etc
+        INT_ACCEPT(lo, all)
 
 
-
-        ##### WAN_INGRESS #####
+        ##### WAN_IN_ACCEPT #####
         # test
-        # WAN_INGRESS(tcp, 5555, 0.0.0.0/0)
+        # WAN_IN_ACCEPT(tcp, 5555, 0.0.0.0/0)
 
 
-        ##### WAN_EGRESS #####
-        #
+        ##### WAN_OUT_ACCEPT #####
 
-        # TODO port 68 also...
         # dhcp
-        WAN_EGRESS(udp, 67, 0.0.0.0/0)
+        # TODO port 68 also...
+        WAN_OUT_ACCEPT(udp, 67, 0.0.0.0/0)
 
         # dns
-        WAN_EGRESS(tcp, 53, 0.0.0.0/0)
-        WAN_EGRESS(udp, 53, 0.0.0.0/0)
+        WAN_OUT_ACCEPT(tcp, 53, 0.0.0.0/0)
+        WAN_OUT_ACCEPT(udp, 53, 0.0.0.0/0)
 
         # http - needed for apt updates
-        WAN_EGRESS(tcp, 80, 0.0.0.0/0)
-        WAN_EGRESS(tcp, 443, 0.0.0.0/0)
+        WAN_OUT_ACCEPT(tcp, 80, 0.0.0.0/0)
+        WAN_OUT_ACCEPT(tcp, 443, 0.0.0.0/0)
 
         # ntp
-        WAN_EGRESS(udp, 123, 0.0.0.0/0)
+        WAN_OUT_ACCEPT(udp, 123, 0.0.0.0/0)
 
-        # ping, ie wan test connectivity ping 8.8.8.8
-        # should specify address...
-        # iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-        # iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-
-        # this is egress only, because of association between icmp request/response type and the input or output chain
-        iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 --source 0.0.0.0/0      -j ACCEPT
-        iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 --destination 0.0.0.0/0 -j ACCEPT
+        # eg. test ping 8.8.8.8
+        # egress only, because of association between icmp request/response type and the input or output chain
+        iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 -j ACCEPT
+        iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 -j ACCEPT
 
 
-        ##### LAN_EGRESS #####
+
+        ##### LAN_OUT_ACCEPT #####
 
         # test
-        # LAN_EGRESS(tcp, 5556, 0.0.0.0/0)
+        # LAN_OUT_ACCEPT(tcp, 5556, 0.0.0.0/0)
 
 
-        ##### LAN_INGRESS, lan to apu #####
+        ##### LAN_IN_ACCEPT, lan to apu #####
         #
         # TODO does every lan, need dns and dhcp?
 
         # dns
-        LAN_INGRESS(tcp, 53, 192.168.0.0/16)
-        LAN_INGRESS(udp, 53, 192.168.0.0/16)
+        LAN_IN_ACCEPT(tcp, 53, 192.168.0.0/16)
+        LAN_IN_ACCEPT(udp, 53, 192.168.0.0/16)
 
         # dhcp
-        LAN_INGRESS(udp, 67, 192.168.0.0/16)
+        LAN_IN_ACCEPT(udp, 67, 192.168.0.0/16)
 
         # ssh - for admin - limited hosts
-        LAN_INGRESS(tcp, 22, 192.168.43.6)
-        LAN_INGRESS(tcp, 22, 192.168.43.14)
-        LAN_INGRESS(tcp, 22, 192.168.201.19)
+        LAN_IN_ACCEPT(tcp, 22, 192.168.43.6)
+        LAN_IN_ACCEPT(tcp, 22, 192.168.43.14)
+        LAN_IN_ACCEPT(tcp, 22, 192.168.201.19)
 
         # eth1
-        LAN_INGRESS(tcp, 22, 172.16.0.0/12)
+        LAN_IN_ACCEPT(tcp, 22, 172.16.0.0/12)
 
         # tftp
-        LAN_INGRESS(udp, 69,        192.168.0.0/16)
-        LAN_INGRESS(udp, 1024:1034, 192.168.0.0/16)
+        LAN_IN_ACCEPT(udp, 69,        192.168.0.0/16)
+        LAN_IN_ACCEPT(udp, 1024:1034, 192.168.0.0/16)
 
 
-        # LAN_EGRESS_OR_INGRESS
+        # LAN_OUT_ACCEPT_OR_INGRESS
 
         # REVIEW
         # ping ingress and outgress - eg. allow any node to ping apu, or apu to ping any node
         # isc-dhcp-server uses this
-        # also allows ping from 172.16.0.0/12
-        iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8   -j ACCEPT
+        # allow us to ping the apu
         iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0   -j ACCEPT
+        iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8   -j ACCEPT
+
+        # allow us to ping out from apu to a node
+        iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 8   -j ACCEPT
+        iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 0   -j ACCEPT
 
 
         ##### FORWARD LAN to WAN and LAN to LAN #####
@@ -372,9 +371,9 @@
 
         # General form, order is important,
         # drop http destined to intranet, that originates from intranet, or internet
-        # DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
+        # FORWARD_DROP(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
         # otherwise permit http egress
-        # FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
 
         # COMMON/GENERIC
 
@@ -384,10 +383,13 @@
 
         iptables -A FORWARD -p icmp --icmp-type 8 --source      192.168.0.0/16 -j ACCEPT
         iptables -A FORWARD -p icmp --icmp-type 0 --destination 192.168.0.0/16 -j ACCEPT
+        iptables -A FORWARD -p icmp --source      10.0.0.0/8 -j ACCEPT
+        iptables -A FORWARD -p icmp --destination 10.0.0.0/8 -j ACCEPT
+
 
 
         # allow anything outbound from 192.168.43.6
-        # FORWARD_(tcp, 1:65535, 192.168.43.6, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 1:65535, 192.168.43.6, 0.0.0.0/0)
 
         # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 80 -j LOG --log-prefix "IPTABLES: "
         # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 443 -j LOG --log-prefix "IPTABLES: "
@@ -399,80 +401,80 @@
         # it means forward anywhere except to our loal subnet. 
 
         # http
-        DROP_(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
-        DROP_(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
 
 
         # ntp
-        DROP_(   tcp, 123, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 123, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
 
 
         # 5222 test port - ssh proxy and general open test port
-        FORWARD_(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
-        FORWARD_(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
 
 
         # SPECIFIC NODES, mostly only dell
 
         # dns eg. other than from apu bind
-        DROP_(   tcp, 53, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 53, 192.168.43.6, 0.0.0.0/0)
-        DROP_(   udp, 53, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(udp, 53, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 53, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(tcp, 53, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_DROP(   udp, 53, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(udp, 53, 192.168.43.6, 0.0.0.0/0)
 
         # whois
-        DROP_(   tcp, 43, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 43, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 43, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(tcp, 43, 192.168.43.6, 0.0.0.0/0)
 
         # smtp - note, iinet blocks port 25
-        DROP_(   tcp, 25, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 25, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 25, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(tcp, 25, 192.168.43.6, 0.0.0.0/0)
 
         # smtpd submission, tls, starttls
-        DROP_(   tcp, 587, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 587, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 587, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(tcp, 587, 192.168.43.6, 0.0.0.0/0)
 
         # imap tls
-        DROP_(   tcp, 993, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 993, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 993, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(tcp, 993, 192.168.43.6, 0.0.0.0/0)
 
         # irc - note, port 6667 preferred over 194, freenode uses 6697
-        DROP_(   tcp, 6697, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_(tcp, 6697, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_DROP(   tcp, 6697, 0.0.0.0/0, 192.168.0.0/16)
+        FORWARD_ACCEPT(tcp, 6697, 192.168.43.6, 0.0.0.0/0)
 
 
         # ssh permitted egress
-        FORWARD_(tcp, 22, 192.168.43.6, 0.0.0.0/0)
-        FORWARD_(tcp, 22, 192.168.43.14, 0.0.0.0/0)
-        FORWARD_(tcp, 22, 192.168.201.19, 0.0.0.0/0)
-        FORWARD_(tcp, 22, 192.168.201.27, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 22, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 22, 192.168.43.14, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 22, 192.168.201.19, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 22, 192.168.201.27, 0.0.0.0/0)
 
         # printer - brother.localnet 9100
-        FORWARD_(tcp, 9100, 192.168.43.0/24, 192.168.201.15)
+        FORWARD_ACCEPT(tcp, 9100, 192.168.43.0/24, 192.168.201.15)
 
         #
         # IMPORTANT
         # - generally want to use ssh forwarding for rpc nodes
         # - and port forwards do not require forward table iptables , they are pre-routinig
         # eth/parity - use reverse ssh tunnel instead
-        FORWARD_(tcp, 8545, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 8545, 192.168.43.6, 0.0.0.0/0)
         # btc incoming - for piplus - might be port forwarded both...
-        # FORWARD_(tcp, 8333, 0.0.0.0/24, 192.168.201.3)
+        # FORWARD_ACCEPT(tcp, 8333, 0.0.0.0/24, 192.168.201.3)
         # monero rpc
-        FORWARD_(tcp, 18081, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 18081, 192.168.43.6, 0.0.0.0/0)
         # transmission http web rpc
-        FORWARD_(tcp, 9091, 192.168.43.0/24, 192.168.204.29)
+        FORWARD_ACCEPT(tcp, 9091, 192.168.43.0/24, 192.168.204.29)
         # monero open node
-        FORWARD_(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
 
         # snom
         # voip - both ingress and egress
         # but... probably only needs egress. because ingress is handled with pre-routing...
-        FORWARD_(tcp, 1:65535, 192.168.203.20, 203.55.231.192/26)
-        FORWARD_(udp, 1:65535, 192.168.203.20, 203.55.231.192/26)
+        FORWARD_ACCEPT(tcp, 1:65535, 192.168.203.20, 203.55.231.192/26)
+        FORWARD_ACCEPT(udp, 1:65535, 192.168.203.20, 203.55.231.192/26)
         # iptables -A FORWARD -s 192.168.203.20 -j LOG
         # iptables -A FORWARD -d 192.168.203.20 -j LOG
         # ....
@@ -492,20 +494,20 @@
 
         # drop any forwarding connection from bravia to intranet,. excludes apu
         # - review if add dnla
-        DROP_(   tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
-        DROP_(   udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+        FORWARD_DROP(   tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+        FORWARD_DROP(   udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
         # otherwise allow outbound connection to internet
-        FORWARD_(tcp, 1:65535, 192.168.202.16, 0.0.0.0/0)
-        FORWARD_(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 1:65535, 192.168.202.16, 0.0.0.0/0)
+        FORWARD_ACCEPT(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
 
         # nuc
         # drop any forwarding connection from bravia to intranet,. excludes apu
         # - review if add dnla
-        DROP_(   tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
-        DROP_(   udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+        FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+        FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
         # otherwise allow outbound connection to internet
-        FORWARD_(tcp, 1:65535, 192.168.201.17, 0.0.0.0/0)
-        FORWARD_(udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 1:65535, 192.168.201.17, 0.0.0.0/0)
+        FORWARD_ACCEPT(udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
 
 
 
