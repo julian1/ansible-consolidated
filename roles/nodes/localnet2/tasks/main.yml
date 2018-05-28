@@ -456,6 +456,13 @@
         iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
         iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
 
+
+        # ping forward
+        iptables -A FORWARD -p icmp -j ACCEPT
+        iptables -A FORWARD -p icmp -j ACCEPT
+
+
+
         # we don't need to ssh out...
         # Note, won't work for nodes, using host routing exceptions to openvpn tunnel gateway
         iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
