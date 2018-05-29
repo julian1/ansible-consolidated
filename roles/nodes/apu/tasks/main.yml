@@ -253,6 +253,31 @@
         `iptables -A INPUT  -i $1 --protocol $2 -j ACCEPT' )
 
 
+        # ping 
+
+        define(`WAN_OUT_PING_ACCEPT',
+        `iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8  --destination $1 -j ACCEPT'
+        `iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0  --source $1      -j ACCEPT')
+
+
+        define(`LAN_IN_PING_ACCEPT',
+        `iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0 --destination $1 -j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8 --source $1      -j ACCEPT')
+
+
+        define(`LAN_OUT_PING_ACCEPT',
+        `iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 8  --destination $1 -j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 0  --source $1      -j ACCEPT')
+
+
+        # (src, dst)
+        define(`FORWARD_PING_ACCEPT',
+        `iptables -A FORWARD -p icmp --icmp-type 8 --source $1 --destination $2 -j ACCEPT'
+        `iptables -A FORWARD -p icmp --icmp-type 0 --source $2 --destination $1 -j ACCEPT')
+
+
+
+
     tags: iptables
 
 
@@ -282,6 +307,8 @@
 
         include(`/etc/includes.m4')
 
+        ###############################
+        # WAN
 
         ##### APU local #####
         # let local processes to talk via lo. needed for rndc /port 953, needed for bind etc
@@ -290,10 +317,8 @@
 
         ##### WAN_IN_ACCEPT #####
         # test
-        # WAN_IN_ACCEPT(tcp, 5555, 0.0.0.0/0)
+        # WAN_IN_ACCEPT(tcp, 5222, 0.0.0.0/0)
 
-
-        ##### WAN_OUT_ACCEPT #####
 
         # dhcp
         # TODO port 68 also...
@@ -311,21 +336,19 @@
         WAN_OUT_ACCEPT(udp, 123, 0.0.0.0/0)
 
         # eg. test ping 8.8.8.8
-        # egress only, because of association between icmp request/response type and the input or output chain
-        iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8 -j ACCEPT
-        iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0 -j ACCEPT
+        WAN_OUT_PING_ACCEPT(0.0.0.0/0)
 
 
-
-        ##### LAN_OUT_ACCEPT #####
+        ###############################
+        # LAN
 
         # test
-        # LAN_OUT_ACCEPT(tcp, 5556, 0.0.0.0/0)
+        LAN_OUT_ACCEPT(tcp, 5222, 0.0.0.0/0)
 
+        # ping
+        LAN_OUT_PING_ACCEPT(0.0.0.0/0)
 
-        ##### LAN_IN_ACCEPT, lan to apu #####
-        #
-        # TODO does every lan, need dns and dhcp?
+        #######
 
         # dns
         LAN_IN_ACCEPT(tcp, 53, 192.168.0.0/16)
@@ -347,18 +370,16 @@
         LAN_IN_ACCEPT(udp, 1024:1034, 192.168.0.0/16)
 
 
-        # LAN_OUT_ACCEPT_OR_INGRESS
+        # test
+        LAN_IN_ACCEPT(tcp, 5222, 0.0.0.0/0)
 
-        # REVIEW
-        # ping ingress and outgress - eg. allow any node to ping apu, or apu to ping any node
-        # isc-dhcp-server uses this
-        # allow us to ping the apu
-        iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0   -j ACCEPT
-        iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8   -j ACCEPT
+        # ping
+        LAN_IN_PING_ACCEPT(0.0.0.0/0)
 
-        # allow us to ping out from apu to a node
-        iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 8   -j ACCEPT
-        iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 0   -j ACCEPT
+
+        ###############################
+        # FORWARD
+
 
 
         ##### FORWARD LAN to WAN and LAN to LAN #####
@@ -377,15 +398,9 @@
 
         # COMMON/GENERIC
 
-        # TODO maybe tighten ping, with drop to prevent network discovery
-        # iptables -A FORWARD -p icmp --icmp-type 8 --source      192.168.0.0/16 -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
-        # iptables -A FORWARD -p icmp --icmp-type 0 --destination 192.168.0.0/16 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-
-        iptables -A FORWARD -p icmp --icmp-type 8 --source      192.168.0.0/16 -j ACCEPT
-        iptables -A FORWARD -p icmp --icmp-type 0 --destination 192.168.0.0/16 -j ACCEPT
-        iptables -A FORWARD -p icmp --source      10.0.0.0/8 -j ACCEPT
-        iptables -A FORWARD -p icmp --destination 10.0.0.0/8 -j ACCEPT
-
+        # need a drop...?
+        # FORWARD_PING_ACCEPT( 192.168.43.0/24, 0.0.0.0/0 )
+        FORWARD_PING_ACCEPT( 0.0.0.0/24, 0.0.0.0/0 )
 
 
         # allow anything outbound from 192.168.43.6
@@ -413,8 +428,9 @@
 
 
         # 5222 test port - ssh proxy and general open test port
-        FORWARD_ACCEPT(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
-        FORWARD_ACCEPT(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 5222, 0.0.0.0/0, 0.0.0.0/0)
 
 
         # SPECIFIC NODES, mostly only dell
