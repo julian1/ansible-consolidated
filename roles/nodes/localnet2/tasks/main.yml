@@ -447,7 +447,10 @@
         #############
         # forward
 
-        iptables -P FORWARD DROP
+        # iptables -P FORWARD DROP
+        iptables -P FORWARD ACCEPT
+
+        #ciptables -A FORWARD OUTPUT -p udp --sport 68 -j LOG --log-prefix "IPTABLES: "
 
         # dhcp / dns - only with the node. input/output not a forward entry
         # anything here is also subject to apu rules for 5520
@@ -569,4 +572,63 @@
 # also could consider source routing...
 
 # what's next? containers? bind. windows/osx.  gpu pass-through.
+
+# vim block comments,
+# :%s/^/# /
+# :%s/^# //
+
+# 
+# functions.sh
+# 
+# write_interfaces() { 
+#   file=$1
+#   mac=$2
+# 
+# cat > $file << EOF2
+# # injected
+# 
+# auto lo
+# iface lo inet loopback
+# 
+# auto host0
+# iface host0 inet dhcp
+# hwaddress ether $mac
+# EOF2
+# }
+# 
+# 
+# write_hostname() { 
+#   file=$1
+#   host=$2
+#   # could also write entry for, /etc/hosts,
+#   echo $host > $file
+# }
+# 
+# 
+# 
+# start-devel03.sh 
+# 
+# #!/bin/bash
+# 
+# # general haskell stuff
+# # should add a database... just to make it easier...
+# # think we should consolidate stuff under here... 
+# 
+# . ./functions.sh
+# 
+# g=$(mktemp)
+# trap "rm $g" EXIT
+# write_interfaces $g 00:01:02:03:04:03
+# 
+# 
+# # mac address 
+# systemd-nspawn \
+#   -D "./devel03.chroot" \
+#   --boot \
+#   --network-bridge=br0 -n \
+#   --bind-ro="$g:/etc/network/interfaces"  \
+#   --bind="/home/meteo/haskell:/home/meteo/haskell"  \
+#   --bind="/home/meteo/idris:/home/meteo/idris"  \
+# 
+
 
