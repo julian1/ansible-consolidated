@@ -2,6 +2,6 @@
   - hosts: all
     vars:
       - jdk_deploy_path: /home/meteo
-    tasks:
-      - include: "../roles/devel/tasks/jdk-1.8.yml"
+    roles:
+      - devel/jdk-1.8
 

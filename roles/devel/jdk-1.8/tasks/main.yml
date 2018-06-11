@@ -1,25 +1,61 @@
 
+# see https://gist.github.com/hgomez/9650687
+
+  #- apt: name=curl
+  - apt: name=wget
+
+  # http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.tar.gz
+  # http://download.oracle.com/otn-pub/java/jdk/8u172-b14/jdk-8u172-linux-x64.tar.gz
 
   - shell: "{{item}}"
     args:
       chdir: "{{jdk_deploy_path}}"
-      creates: jdk-8u111-linux-x64.tar.gz
+      creates: jdk-8u172-linux-x64.tar.gz
     with_items:
       - >
-        curl -L -H 'Cookie:oraclelicense=accept-securebackup-cookie'
-        http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz
-        -o jdk-8u111-linux-x64.tar.gz
+        wget
+        --no-cookies
+        --header "Cookie: oraclelicense=accept-securebackup-cookie"
+        http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.tar.gz
+        -O jdk-8u172-linux-x64.tar.gz
 
 
   - shell: "{{item}}"
     args:
       chdir: "{{jdk_deploy_path}}"
-      creates: jdk1.8.0_111
+      creates: jdk1.8.0_172
     with_items:
-      - tar xf jdk-8u111-linux-x64.tar.gz
+      - tar xf jdk-8u172-linux-x64.tar.gz
 
-# seems to be an issue - running unarchive, not working... 
+
+
+
+   # jdk and maven, for freeroute etc
+  - copy:
+      dest: "{{jdk_deploy_path}}/jdk-1.8.inc"
+      content: |
+        # deployed by ansible!
+        # see plays/misc/jdk-1.8.sh
+        export JAVA_HOME="{{jdk_deploy_path}}/jdk1.8.0_172/"
+        export PATH="$JAVA_HOME/bin:$PATH"
+
+
+
+
+# seems to be an issue - running unarchive, not working...
 #  - unarchive:
 #      src: "{{jdk_deploy_path}}/jdk-8u111-linux-x64.tar.gz"
 #      dest: "{{jdk_deploy_path}}"
+
+
+#curl -L -H --header 'Cookie: oraclelicense=accept-securebackup-cookie'
+#http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.tar.gz
+#-o jdk-8u172-linux-x64.tar.gz
+
+
+# this works....
+#  wget --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.tar.gz -O jdk-8u172-linux-x64.tar.gz
+# but cannot get curl to work...
+
+
 
