@@ -439,10 +439,10 @@
         iptables -P OUTPUT ACCEPT
 
         # logging example, ip tables
-        iptables -A INPUT  -p udp --dport 67 -j LOG --log-prefix "IPTABLES: "
-        iptables -A OUTPUT -p udp --sport 67 -j LOG --log-prefix "IPTABLES: "
-        iptables -A INPUT  -p udp --dport 68 -j LOG --log-prefix "IPTABLES: "
-        iptables -A OUTPUT -p udp --sport 68 -j LOG --log-prefix "IPTABLES: "
+        # iptables -A INPUT  -p udp --dport 67 -j LOG --log-prefix "IPTABLES: "
+        # iptables -A OUTPUT -p udp --sport 67 -j LOG --log-prefix "IPTABLES: "
+        # iptables -A INPUT  -p udp --dport 68 -j LOG --log-prefix "IPTABLES: "
+        # iptables -A OUTPUT -p udp --sport 68 -j LOG --log-prefix "IPTABLES: "
 
         #############
         # forward
