@@ -3,52 +3,57 @@
 
   # may need to restart wlan0 here? at least when install dnsmasq
 - apt: name=iptables-persistent
-- apt: name=m4
-  tags: iptables
 
 
-- copy:
-    dest: /etc/includes.m4
-    content: |
-      # deployed by ansible!
-
-      # ingress or egress indicates which node inititated the connection
-      # WAN_IN (proto, port, address)
-      define(`WAN_IN_ACCEPT',
-      `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
-      `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
-
-      define(`WAN_IN_DROP',
-      `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j DROP'
-      `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j DROP' )
 
 
-      # WAN_OUT_ACCEPT (proto, port, address)
-      define(`WAN_OUT_ACCEPT',
-      `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
-      `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
-
-      # INT_ACCEPT(ifce, tcp) allow all protocols over an interface - eg. for lo, admin
-      define(`INT_ACCEPT',
-      `iptables -A OUTPUT -o $1 --protocol $2 -j ACCEPT'
-      `iptables -A INPUT  -i $1 --protocol $2 -j ACCEPT' )
-
-      define(`LOCAL_PORT_FORWARD',
-      `iptables -t nat -A PREROUTING --protocol $1 --dport $2                  -j REDIRECT --to-ports $3'
-      `iptables -t nat -A OUTPUT     --protocol $1 --dport $2  -d 127.0.0.0/16 -j REDIRECT --to-ports $3' )
-
-      define(`FORWARD_ACCEPT',
-      `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j ACCEPT'
-      `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
-
-      # FORWARD_DROP(proto, port, src(egress), dst)
-      define(`FORWARD_DROP',
-      `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j DROP'
-      `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j DROP')
-
-  tags: iptables
-
-
+# OBSOLETE
+# see roles/admin/iptables-macros/tasks/main.yml
+# - apt: name=m4
+#   tags: iptables
+# 
+# - copy:
+#     dest: /etc/includes.m4
+#     content: |
+#       # deployed by ansible!
+# 
+#       # ingress or egress indicates which node inititated the connection
+#       # WAN_IN (proto, port, address)
+#       define(`WAN_IN_ACCEPT',
+#       `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
+#       `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
+# 
+#       define(`WAN_IN_DROP',
+#       `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j DROP'
+#       `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j DROP' )
+# 
+# 
+#       # WAN_OUT_ACCEPT (proto, port, address)
+#       define(`WAN_OUT_ACCEPT',
+#       `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
+#       `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
+# 
+#       # INT_ACCEPT(ifce, tcp) allow all protocols over an interface - eg. for lo, admin
+#       define(`INT_ACCEPT',
+#       `iptables -A OUTPUT -o $1 --protocol $2 -j ACCEPT'
+#       `iptables -A INPUT  -i $1 --protocol $2 -j ACCEPT' )
+# 
+#       define(`LOCAL_PORT_FORWARD',
+#       `iptables -t nat -A PREROUTING --protocol $1 --dport $2                  -j REDIRECT --to-ports $3'
+#       `iptables -t nat -A OUTPUT     --protocol $1 --dport $2  -d 127.0.0.0/16 -j REDIRECT --to-ports $3' )
+# 
+#       define(`FORWARD_ACCEPT',
+#       `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j ACCEPT'
+#       `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
+# 
+#       # FORWARD_DROP(proto, port, src(egress), dst)
+#       define(`FORWARD_DROP',
+#       `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j DROP'
+#       `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j DROP')
+# 
+#   tags: iptables
+# 
+# 
 
 
 - copy:

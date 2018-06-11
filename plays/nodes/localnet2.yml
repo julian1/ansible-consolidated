@@ -4,6 +4,7 @@
   roles:
     - admin/ip-forwarding
     - admin/nodnsupdate
+    - admin/iptables-macros
     - nodes/localnet2
 
 

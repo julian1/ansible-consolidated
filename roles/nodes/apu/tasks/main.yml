@@ -203,83 +203,6 @@
 
     # may need to restart wlan0 here? at least when install dnsmasq
   - apt: name=iptables-persistent
-  - apt: name=m4
-    tags: iptables
-
-
-
-  # ok need to factor this ut....
-  - copy:
-      dest: /etc/includes.m4
-      content: |
-        # deployed by ansible!
-        # WAN_IN_ACCEPT(proto, port, address)
-        define(`WAN_IN_ACCEPT',
-        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
-        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
-
-        # WAN_OUT_ACCEPT( proto, port, address)
-        define(`WAN_OUT_ACCEPT',
-        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
-        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
-
-        # LAN_IN_ACCEPT( proto, port, address)
-        define(`LAN_IN_ACCEPT',
-        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
-        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
-
-        # LAN_OUT_ACCEPT(proto, port, address)
-        define(`LAN_OUT_ACCEPT',
-        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
-        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
-
-        # stateful contract...
-        # FORWARD_ proto, port, src(egress), dst
-        # define(`FORWARD_',
-        # `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
-        # `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
-
-        # FORWARD_ proto, port, src(egress), dst
-        define(`FORWARD_ACCEPT',
-        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j ACCEPT'
-        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
-
-        # FORWARD_DROP( proto, port, src(out), dst)
-        define(`FORWARD_DROP',
-        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j DROP'
-        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j DROP')
-
-
-        # INT_ACCEPT(ifce, protocol) allow all protocols over an interface - eg. for lo, admin
-        define(`INT_ACCEPT',
-        `iptables -A OUTPUT -o $1 --protocol $2 -j ACCEPT'
-        `iptables -A INPUT  -i $1 --protocol $2 -j ACCEPT' )
-
-        # ping 
-        define(`WAN_OUT_PING_ACCEPT',
-        `iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8  --destination $1 -j ACCEPT'
-        `iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0  --source $1      -j ACCEPT')
-
-        define(`LAN_IN_PING_ACCEPT',
-        `iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0 --destination $1 -j ACCEPT'
-        `iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8 --source $1      -j ACCEPT')
-
-        define(`LAN_OUT_PING_ACCEPT',
-        `iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 8  --destination $1 -j ACCEPT'
-        `iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 0  --source $1      -j ACCEPT')
-
-        # (src, dst)
-        define(`FORWARD_PING_ACCEPT',
-        `iptables -A FORWARD -p icmp --icmp-type 8 --source $1 --destination $2 -j ACCEPT'
-        `iptables -A FORWARD -p icmp --icmp-type 0 --source $2 --destination $1 -j ACCEPT')
-
-
-
-
-    tags: iptables
-
-
-
 
 
   - copy:
@@ -303,7 +226,7 @@
 
         define(`WAN_INTERFACE', `eth0.120')
 
-        include(`/etc/includes.m4')
+        include(`/etc/iptables-macros.m4')
 
         ###############################
         # WAN
@@ -414,15 +337,21 @@
         # it means forward anywhere except to our loal subnet. 
 
         # http
-        FORWARD_DROP(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
-        FORWARD_DROP(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
+        # FORWARD_DROP(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
+        # FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
+        # FORWARD_DROP(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)
+        # FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
 
+        #. eg. need to route to 10.3.0.0/24 network...
+        # WHOOT 2
+
+        FORWARD_ACCEPT(tcp, 80,  0.0.0.0/0, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 443, 0.0.0.0/0, 0.0.0.0/0)
+
+        # we kind of need to forward ntp, not dns - because use local, not dhcp - because use local also....
 
         # ntp
-        FORWARD_DROP(   tcp, 123, 0.0.0.0/0, 192.168.0.0/16)
-        FORWARD_ACCEPT(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
+        FORWARD_ACCEPT(udp, 123, 0.0.0.0/0, 0.0.0.0/0)
 
 
         # 5222 test port - ssh proxy and general open test port

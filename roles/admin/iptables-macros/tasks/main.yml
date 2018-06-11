@@ -1,0 +1,81 @@
+
+
+  - apt: name=m4
+    tags: iptables
+
+
+  # ok need to factor this ut....
+  - copy:
+      dest: /etc/iptables-macros.m4
+      content: |
+        # the action ACCEPT or DROP can be passed as an argument. 
+        # the interface can be passed except we need the -i and -o to be explicit . or
+        # we can also 
+        # deployed by ansible!
+        # WAN_IN_ACCEPT(proto, port, address)
+        define(`WAN_IN_ACCEPT',
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
+
+        define(`WAN_IN_DROP',
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j DROP'
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j DROP' )
+
+
+        # WAN_OUT_ACCEPT( proto, port, address)
+        define(`WAN_OUT_ACCEPT',
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
+
+        # LAN_IN_ACCEPT( proto, port, address)
+        define(`LAN_IN_ACCEPT',
+        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j ACCEPT'
+        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j ACCEPT' )
+
+        # LAN_OUT_ACCEPT(proto, port, address)
+        define(`LAN_OUT_ACCEPT',
+        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j ACCEPT' )
+
+        # stateful contract...
+        # FORWARD_ proto, port, src(egress), dst
+        # define(`FORWARD_',
+        # `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+        # `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -m conntrack --ctstate ESTABLISHED -j ACCEPT' )
+
+        # FORWARD_ proto, port, src(egress), dst
+        define(`FORWARD_ACCEPT',
+        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j ACCEPT'
+        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j ACCEPT' )
+
+        # FORWARD_DROP( proto, port, src(out), dst)
+        define(`FORWARD_DROP',
+        `iptables -A FORWARD --protocol $1 --dport $2 -s $3 -d $4 -j DROP'
+        `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j DROP')
+
+
+        # INT_ACCEPT(ifce, protocol) allow all protocols over an interface - eg. for lo, admin
+        define(`INT_ACCEPT',
+        `iptables -A OUTPUT -o $1 --protocol $2 -j ACCEPT'
+        `iptables -A INPUT  -i $1 --protocol $2 -j ACCEPT' )
+
+        # ping 
+        define(`WAN_OUT_PING_ACCEPT',
+        `iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8  --destination $1 -j ACCEPT'
+        `iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0  --source $1      -j ACCEPT')
+
+        define(`LAN_IN_PING_ACCEPT',
+        `iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 0 --destination $1 -j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 8 --source $1      -j ACCEPT')
+
+        define(`LAN_OUT_PING_ACCEPT',
+        `iptables -A OUTPUT ! -o WAN_INTERFACE -p icmp --icmp-type 8  --destination $1 -j ACCEPT'
+        `iptables -A INPUT  ! -i WAN_INTERFACE -p icmp --icmp-type 0  --source $1      -j ACCEPT')
+
+        # (src, dst)
+        define(`FORWARD_PING_ACCEPT',
+        `iptables -A FORWARD -p icmp --icmp-type 8 --source $1 --destination $2 -j ACCEPT'
+        `iptables -A FORWARD -p icmp --icmp-type 0 --source $2 --destination $1 -j ACCEPT')
+
+
+

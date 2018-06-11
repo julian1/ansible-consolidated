@@ -41,6 +41,8 @@
 
     # most networking stuff is here
     - nodes/apu
+    
+    - admin/iptables-macros
 
     - name: admin/tftpd
       listen_address: 192.168.100.1

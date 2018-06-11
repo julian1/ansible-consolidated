@@ -412,7 +412,7 @@
 
 
   - copy:
-      dest: /etc/iptables-rules
+      dest: /etc/iptables-rules.m4
       content: |
         # deployed by ansible!
         #####
@@ -437,6 +437,12 @@
         # no restrictions
         iptables -P INPUT  ACCEPT
         iptables -P OUTPUT ACCEPT
+
+        define(`WAN_INTERFACE', `eth0')
+
+        include(`/etc/iptables-macros.m4')
+
+
 
         # logging example, ip tables
         # iptables -A INPUT  -p udp --dport 67 -j LOG --log-prefix "IPTABLES: "

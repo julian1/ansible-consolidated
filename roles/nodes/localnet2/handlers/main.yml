@@ -8,11 +8,22 @@
   - name: restart-bind
     service: name=bind9 enabled=yes state=restarted
 
+#  - name: reconfigure-iptables
+#    command: "{{item}}"
+#    with_items:
+#      - sh /etc/iptables-rules
+#      - dpkg-reconfigure --frontend noninteractive iptables-persistent
+#
+
+
   - name: reconfigure-iptables
     command: "{{item}}"
     with_items:
+      - sh -c 'm4 /etc/iptables-rules.m4 > /etc/iptables-rules'
       - sh /etc/iptables-rules
       - dpkg-reconfigure --frontend noninteractive iptables-persistent
+
+
 
   - name: restart-rsyslog
     service: name=rsyslog state=restarted
