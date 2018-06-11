@@ -9,7 +9,7 @@
 
 ##############
 # network startup on boot is slow due to,
-# slow vlan switchport startup (spanning tree etc). this means initial dhcp requests will initially fail. 
+# slow vlan switchport startup (spanning tree etc). this means initial dhcp requests will initially fail.
 # retry is 5 minutes, because it is default according to, man dhclient.conf.
 #
 # "The  retry  statement  determines  the  time that must pass after the client has determined that there is
@@ -19,7 +19,7 @@
 ##############
 ## old...
 # after poweroff poweroff
-# (on a restart with the switches up - this was ok) 
+# (on a restart with the switches up - this was ok)
 # 1)  dhclient on 120
 
 # 2) after powerdown system hostapd had to be restarted manually, by
@@ -176,9 +176,9 @@
           netmask 255.255.255.0
           # gateway to 10.0.0.0 via dell-home
           # TODO A cleaner way to persist routing entries?
-        
+
           # PUSH ROUTES
-          # gateway to 10.3.0.0/24 via 
+          # gateway to 10.3.0.0/24 via
           post-up ip route add 10.3.0.0/24  via 192.168.43.6
 
         # AP 2
@@ -228,18 +228,19 @@
 
         include(`/etc/iptables-macros.m4')
 
-        ###############################
-        # WAN
 
-        ##### APU local #####
+        ###############################
+        # local
+
         # let local processes to talk via lo. needed for rndc /port 953, needed for bind etc
         INT_ACCEPT(lo, all)
 
 
-        ##### WAN_IN_ACCEPT #####
+        ###############################
+        # wan
+
         # test
         # WAN_IN_ACCEPT(tcp, 5222, 0.0.0.0/0)
-
 
         # dhcp
         # TODO port 68 also...
@@ -261,7 +262,7 @@
 
 
         ###############################
-        # LAN
+        # lan
 
         # test
         LAN_OUT_ACCEPT(tcp, 5222, 0.0.0.0/0)
@@ -301,7 +302,7 @@
         ###############################
         # FORWARD
 
-
+        # forward includes to routes
 
         ##### FORWARD LAN to WAN and LAN to LAN #####
         #
@@ -332,9 +333,9 @@
 
         #########################
         # IMPORTANT - do we need DROP, when it's the default... no...
-        # yes. because drop targets the dst address. we are making sure it's forwarding lan to wan.j 
+        # yes. because drop targets the dst address. we are making sure it's forwarding lan to wan.j
 
-        # it means forward anywhere except to our loal subnet. 
+        # it means forward anywhere except to our loal subnet.
 
         # http
         # FORWARD_DROP(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
