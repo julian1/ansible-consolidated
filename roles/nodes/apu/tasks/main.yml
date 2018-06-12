@@ -414,6 +414,12 @@
         # monero open node
         FORWARD_ACCEPT(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
 
+        # bisq
+        FORWARD_ACCEPT(tcp, 9001, 0.0.0.0/0, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 9030, 0.0.0.0/0, 0.0.0.0/0)
+
+
+
         # snom
         # voip - both ingress and egress
         # but... probably only needs egress. because ingress is handled with pre-routing...

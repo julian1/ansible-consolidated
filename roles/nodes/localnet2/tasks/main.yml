@@ -1,11 +1,11 @@
 
-# Really not sure why we do not do all Nat at the router - instead of locally here. 
-# we just need to push the route - eg. 10.7.0.0/24 and then can run servers or whatever? 
+# Really not sure why we do not do all Nat at the router - instead of locally here.
+# we just need to push the route - eg. 10.7.0.0/24 and then can run servers or whatever?
 # doesn't mean that dns is local here
-# router needs the route, and then locally. 
+# router needs the route, and then locally.
 
 # actually probably only need the router - with a 10.3.0.0/24  route to the laptop ... egress from laptop
-# should be fine... 
+# should be fine...
 # will we don't have to change the gateway
 
 
@@ -429,19 +429,20 @@
         # iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
 
         # IMPORTANT
-        # rather than do natting, we should just push a route for the router - or vpn. 
+        # rather than do natting, we should just push a route for the router - or vpn.
 
         #############
         # input/output with this node.
 
         # no restrictions
+        # we should lock this down - so a container can only get dns, dhcp from host
         iptables -P INPUT  ACCEPT
         iptables -P OUTPUT ACCEPT
 
+        # don't need this...
         define(`WAN_INTERFACE', `eth0')
 
         include(`/etc/iptables-macros.m4')
-
 
 
         # logging example, ip tables
@@ -453,44 +454,34 @@
         #############
         # forward
 
-        # iptables -P FORWARD DROP
-        iptables -P FORWARD ACCEPT
+        iptables -P FORWARD DROP
+        # iptables -P FORWARD ACCEPT
 
         #ciptables -A FORWARD OUTPUT -p udp --sport 68 -j LOG --log-prefix "IPTABLES: "
 
         # dhcp / dns - only with the node. input/output not a forward entry
         # anything here is also subject to apu rules for 5520
 
-        # ping everwhere across
-        iptables -A FORWARD -p icmp --icmp-type 8 -j ACCEPT
-        iptables -A FORWARD -p icmp --icmp-type 0 -j ACCEPT
-
-
-        # ping forward
-        iptables -A FORWARD -p icmp -j ACCEPT
-        iptables -A FORWARD -p icmp -j ACCEPT
-
-
+        FORWARD_PING_ACCEPT( 0.0.0.0/0, 0.0.0.0/0 )
 
         # we don't need to ssh out...
         # Note, won't work for nodes, using host routing exceptions to openvpn tunnel gateway
-        iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
-        iptables -A FORWARD -p tcp --sport 22 -j ACCEPT
+        FORWARD_ACCEPT(tcp, 22, 0.0.0.0/0, 0.0.0.0/0)
 
         # http - for apt-get etc....
-        iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
-        iptables -A FORWARD -p tcp --sport 80 -j ACCEPT
-
-        iptables -A FORWARD -p tcp --dport 443 -j ACCEPT
-        iptables -A FORWARD -p tcp --sport 443 -j ACCEPT
+        FORWARD_ACCEPT(tcp, 80, 0.0.0.0/0, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 443, 0.0.0.0/0, 0.0.0.0/0)
 
         # ntp
-        iptables -A FORWARD -p udp --dport 123 -j ACCEPT
-        iptables -A FORWARD -p udp --sport 123 -j ACCEPT
+        FORWARD_ACCEPT(udp, 123, 0.0.0.0/0, 0.0.0.0/0)
 
-        # 3000 web-services
-        iptables -A FORWARD -p tcp --dport 3000 -j ACCEPT
-        iptables -A FORWARD -p tcp --sport 3000 -j ACCEPT
+        # 3000 wai web-services
+        FORWARD_ACCEPT(tcp, 3000, 0.0.0.0/0, 0.0.0.0/0)
+
+        # bisq
+        FORWARD_ACCEPT(tcp, 9001, 0.0.0.0/0, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 9030, 0.0.0.0/0, 0.0.0.0/0)
+
 
 
     notify: reconfigure-iptables
@@ -583,51 +574,51 @@
 # :%s/^/# /
 # :%s/^# //
 
-# 
+#
 # functions.sh
-# 
-# write_interfaces() { 
+#
+# write_interfaces() {
 #   file=$1
 #   mac=$2
-# 
+#
 # cat > $file << EOF2
 # # injected
-# 
+#
 # auto lo
 # iface lo inet loopback
-# 
+#
 # auto host0
 # iface host0 inet dhcp
 # hwaddress ether $mac
 # EOF2
 # }
-# 
-# 
-# write_hostname() { 
+#
+#
+# write_hostname() {
 #   file=$1
 #   host=$2
 #   # could also write entry for, /etc/hosts,
 #   echo $host > $file
 # }
-# 
-# 
-# 
-# start-devel03.sh 
-# 
+#
+#
+#
+# start-devel03.sh
+#
 # #!/bin/bash
-# 
+#
 # # general haskell stuff
 # # should add a database... just to make it easier...
-# # think we should consolidate stuff under here... 
-# 
+# # think we should consolidate stuff under here...
+#
 # . ./functions.sh
-# 
+#
 # g=$(mktemp)
 # trap "rm $g" EXIT
 # write_interfaces $g 00:01:02:03:04:03
-# 
-# 
-# # mac address 
+#
+#
+# # mac address
 # systemd-nspawn \
 #   -D "./devel03.chroot" \
 #   --boot \
@@ -635,6 +626,6 @@
 #   --bind-ro="$g:/etc/network/interfaces"  \
 #   --bind="/home/meteo/haskell:/home/meteo/haskell"  \
 #   --bind="/home/meteo/idris:/home/meteo/idris"  \
-# 
+#
 
 
