@@ -24,8 +24,13 @@
       dest: "{{workdir}}/linux64"
       # 0.11.1.0
       # checksum: sha256:6581506f8a030d8d50b38744ba7144f2765c9028d18d990beb316e13655ab248
-      # Current Version: 0.12.0.0 Lithium Luna
-      checksum: sha256:928ad08ff0dea2790c7777a70e610b2d33c35a5df5900fbb050cc8c659237636
+
+      # 0.12.0.0 Lithium Luna
+      # checksum: sha256:928ad08ff0dea2790c7777a70e610b2d33c35a5df5900fbb050cc8c659237636
+
+      # v 0.12.2.0
+      checksum: sha256:cb97e3f8b700a81e1b0f1a77509eefbfb415aa6013f23685f8933b559309c580
+
     tags: monero
 
   - unarchive: src={{workdir}}/linux64 dest={{workdir}} copy=no
@@ -38,7 +43,7 @@
         # deployed by ansible!
 
         # PATH="$HOME/monero-v0.11.1.0:$PATH"
-        PATH="$HOME/monero-v0.12.0.0:$PATH"
+        PATH="$HOME/monero-v0.12.2.0:$PATH"
         export PATH
     tags: path
 
@@ -50,8 +55,7 @@
         #!/bin/bash -x
         # deployed by ansible!
 
-        # PATH="$HOME/monero-v0.11.1.0:$PATH"
-        PATH="$HOME/monero-v0.12.0.0:$PATH"
+        . ./vars.inc
 
         # 0.0.0.0 is only to allow remote client access...
         # monerod --rpc-bind-ip 0.0.0.0 --confirm-external-bind --restricted-rpc
@@ -80,8 +84,7 @@
         #!/bin/bash -x
         # deployed by ansible!
 
-        # PATH="$HOME/monero-v0.11.1.0:$PATH"
-        PATH="$HOME/monero-v0.12.0.0:$PATH"
+        . ./vars.inc
 
         # rlwrap monero-wallet-cli --daemon-address m-test:18081
         rlwrap monero-wallet-cli
