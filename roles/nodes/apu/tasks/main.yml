@@ -264,6 +264,7 @@
         ###############################
         # lan
 
+
         # test
         LAN_OUT_ACCEPT(tcp, 5222, 0.0.0.0/0)
 
@@ -366,6 +367,7 @@
         # dns eg. other than from apu bind
         FORWARD_DROP(   tcp, 53, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(tcp, 53, 192.168.43.6, 0.0.0.0/0)
+
         FORWARD_DROP(   udp, 53, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(udp, 53, 192.168.43.6, 0.0.0.0/0)
 
@@ -857,8 +859,12 @@
             option domain-name-servers 192.168.204.1;
 
             # gateways for subnets when default route is via openvpn
+            # these are overriding the default gateway...
+            # default route eg. "0,              192,168,204,1;" works
+
             option classless-routes 16, 192,168,    192,168,204,1,
-                                    24, 10,4,0,     192,168,204,1;
+                                    24, 10,4,0,     192,168,204,1,
+                                    0,              192,168,204,1;
 
             host apu2         { hardware ethernet 00:0d:b9:46:3e:b0; fixed-address 192.168.204.29; }
         }
@@ -881,6 +887,8 @@
             option classless-routes 16, 192,168,    192,168,43,1,
                                     24, 10,4,0,     192,168,43,1;
 
+            # IMPORTANT - may need a default route as well if using classless routes,
+            # see eth0.204. and         0, 192,168,204,1;
 
             host dell-5520    { hardware ethernet 00:28:f8:bf:8f:29; fixed-address 192.168.43.6; }
             host omega        { hardware ethernet 40:a3:6b:c1:18:dc; fixed-address 192.168.43.10; }
