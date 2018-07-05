@@ -462,6 +462,8 @@
         # dhcp / dns - only with the node. input/output not a forward entry
         # anything here is also subject to apu rules for 5520
 
+        # IMPORTNAT forwarded here, is replicating forwarding rules on the router
+
         FORWARD_PING_ACCEPT( 0.0.0.0/0, 0.0.0.0/0 )
 
         # we don't need to ssh out...

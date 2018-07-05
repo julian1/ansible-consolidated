@@ -7,6 +7,12 @@
   vars_files:
     - ../../credentials.yml
 
+  vars:
+    - parity_version: v1.10.8
+    - parity_build_dir: /home/parity/parity-v1.10.8
+    - parity_user: parity
+
+
   roles:
 
     - name: admin/user
@@ -14,13 +20,13 @@
       path: /home/parity
       mode: 0700 
 
-    - name: personal/dotfiles
-      tags: dotfiles
-      path: /home/parity
-      user: parity
+    #- name: personal/dotfiles
+    #  tags: dotfiles
+    #  path: /home/parity
+    #  user: parity
 
 
-    # somehow 1.23 gets installed?
+    # somehow rust 1.23 gets installed?, parity build does it
     # /home/parity/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --version
     # rustc 1.23.0 (766bd11c8 2018-01-01)
 
@@ -29,101 +35,22 @@
       version: 1.21.0
 
     - name: crypto/parity
-      build_dir: /home/parity/parity
-      user: parity
-      version: v1.8.6
+      build_dir: "{{parity_build_dir}}"
+      version: "{{parity_version}}"
+      user: "{{parity_user}}"
+      # version: v1.8.6
       # avoid 1.7.12, which has db space leak.
+      # version: v1.10.8
+
+
+    - name: crypto/parity-config
+      build_dir: "{{parity_build_dir}}"
+ 
+
 
     # do not install web3 and all dependencies under same user/group
     # see web3 play
     # - devel/node
     # - crypto/web3
-
-  tasks:
-    - copy:
-        dest: /home/parity/vars.inc
-        content: |
-          # deployed by ansible!
-
-          PATH="$HOME/parity/target/release:$PATH"
-          PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
-          PATH="$HOME/solidity/build/solc:$PATH"
-          PATH="$HOME/solidity/build/lllc:$PATH"
-
-          export PATH
-      tags: config
-
-
-    - copy:
-        dest: /home/parity/start-parity-sync.sh
-        owner: parity
-        group: parity
-        mode: 0700
-        content: |
-          #!/bin/bash
-          # deployed by ansible!
-
-          export PATH="$HOME/parity/target/release:$PATH"
-          
-          # with --no-discovery option
-          parity \
-            -d data \
-            --no-ui --no-ws --no-dapps \
-            --allow-ips=public \
-            --no-discovery \
-
-      tags: config
- 
-
-    - copy:
-        dest: /home/parity/start-parity.sh
-        owner: parity
-        group: parity
-        mode: 0700
-        content: |
-          #!/bin/bash
-          # deployed by ansible!
-
-          export PATH="$HOME/parity/target/release:$PATH"
-
-          # pruning history normally 24
-          # --pruning-history 16
-          # prevent parity connecting to itself over 127.0.0.1
-          # --allow-ips=public
-          # don't scan for new peers
-          # --no-discovery \
-          # pruning fast is default
-          # --pruning fast \
-          # --min-peers 8 --max-peers 12 \
-          # --nat extip:n.n.n.n \
-          # --no-warp
-
-          trickle -s -u 50 -d 100 \
-          parity \
-            -d data \
-            --no-ui --no-ws --no-dapps \
-            --min-peers 8 --max-peers 12 \
-            --allow-ips=public \
-
-
-      tags: config
-
-    # may need port forward for port 30303
-
-    # useful to avoid installing, or when we don't have node
-    - copy:
-        dest: /home/parity/blocknumber.sh
-        owner: parity
-        group: parity
-        mode: 0700
-        content: |
-          #!/bin/bash
-          # deployed by ansible!
-
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[ ],"id":1}' \
-            http://127.0.0.1:8545
-      tags: config
 
 

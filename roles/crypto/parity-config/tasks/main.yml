@@ -1,0 +1,94 @@
+
+  # ALL THIS CONFIG SHOULD GO IN A SEPARATE ROLE - parity config.
+
+- copy:
+    dest: /home/parity/vars.inc
+    content: |
+      # deployed by ansible!
+
+      PATH="{{build_dir}}/target/release:$PATH"
+
+      # these should be set elsewhere...
+      # PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
+      # PATH="$HOME/solidity/build/solc:$PATH"
+      # PATH="$HOME/solidity/build/lllc:$PATH"
+
+      export PATH
+  tags: config
+
+
+- copy:
+    dest: /home/parity/start-parity-sync.sh
+    owner: parity
+    group: parity
+    mode: 0700
+    content: |
+      #!/bin/bash
+      # deployed by ansible!
+
+      # export PATH="$HOME/parity/target/release:$PATH"
+      . ./vars.inc
+      
+      # with --no-discovery option
+      parity \
+        -d data \
+        --no-ui --no-ws --no-dapps \
+        --allow-ips=public \
+        --no-discovery \
+
+  tags: config
+
+
+- copy:
+    dest: /home/parity/start-parity.sh
+    owner: parity
+    group: parity
+    mode: 0700
+    content: |
+      #!/bin/bash
+      # deployed by ansible!
+
+      # export PATH="$HOME/parity/target/release:$PATH"
+      . ./vars.inc
+
+      # pruning history normally 24
+      # --pruning-history 16
+      # prevent parity connecting to itself over 127.0.0.1
+      # --allow-ips=public
+      # don't scan for new peers
+      # --no-discovery \
+      # pruning fast is default
+      # --pruning fast \
+      # --min-peers 8 --max-peers 12 \
+      # --nat extip:n.n.n.n \
+      # --no-warp
+
+      trickle -s -u 50 -d 100 \
+      parity \
+        -d data \
+        --no-ui --no-ws --no-dapps \
+        --min-peers 8 --max-peers 12 \
+        --allow-ips=public \
+
+
+  tags: config
+
+# may need port forward for port 30303
+
+# useful to avoid installing, or when we don't have node
+- copy:
+    dest: /home/parity/blocknumber.sh
+    owner: parity
+    group: parity
+    mode: 0700
+    content: |
+      #!/bin/bash
+      # deployed by ansible!
+
+      curl -X POST \
+        -H "Content-Type: application/json" \
+        --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[ ],"id":1}' \
+        http://127.0.0.1:8545
+  tags: config
+
+
