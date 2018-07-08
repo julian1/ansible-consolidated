@@ -13,11 +13,15 @@
     # note staff group has same security implications as root, since can put binaries in /usr/local/bin and usurp root privileges
     # so must be trusted
 
+
+    - user: >
+        name=meteo-large
+
     # non-priv user (no ssh)
     - user: >
         name=meteo
         shell=/bin/bash
-        groups=docker,staff,sudo,plugdev,tty,cdrom,floppy,audio,dip,video,netdev,bluetooth
+        groups=meteo-large,docker,staff,sudo,plugdev,tty,cdrom,floppy,audio,dip,video,netdev,bluetooth
 
     - file: >
         path=/home/meteo
@@ -75,5 +79,4 @@
 
   tasks:
   handlers:
-
 

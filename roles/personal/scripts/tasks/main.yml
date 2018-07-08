@@ -14,6 +14,13 @@
       content: |
         #!/bin/bash -x
 
+        # should rename backup-upload.sh
+        # TODO - include md5sum in header
+        # https://aws.amazon.com/premiumsupport/knowledge-center/data-integrity-s3/
+        # issue is that need to install aws, easier to use web ui
+        review
+        exit
+
         target="$HOSTNAME-$(date '+%F-%H-%M').me.tgz.enc"
         bucket=""
         if [ -z $bucket ]; then
@@ -35,22 +42,24 @@
         #!/bin/bash -x
         # deployed by ansible!
 
-        pass=$( cat ~/.ssh/mebackup )
+        set -e
+
+        # $( cat ~/.ssh/meteobackup  )
+        pass=$(read -s -p "pass: " )
         cipher=-aes-256-cbc
+        outdir=./meteo-large
+
+        # can repeat the pass and compare for for typos and exit
 
         # we kind of want to keep the files around...
-        [ -f ./me.tgz.enc ] && echo "me.tgz.enc already exists!!" && exit
+        [ -f $outdir/meteo.tgz.enc ] && echo "meteo.tgz.enc already exists!!" && exit
 
-        tar -czf ./me.tgz ./me || exit
+        tar -czf $outdir/meteo.tgz ./
 
         openssl enc -e "$cipher" \
           -pass "pass:$pass" \
-          -in me.tgz \
-          -out me.tgz.enc \
-          || exit
-
-        ls -lh me.tgz.enc
-        rm me.tgz
+          -in $outdir/meteo.tgz \
+          -out $outdir/meteo.tgz.enc \
 
 
   - copy:
@@ -61,6 +70,10 @@
       content: |
         #!/bin/bash -x
         # deployed by ansible!
+
+        # TODO
+        review
+        exit
 
         pass=$( cat ~/.ssh/mebackup )
         cipher=-aes-256-cbc
