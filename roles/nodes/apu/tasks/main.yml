@@ -883,12 +883,12 @@
             option routers 192.168.43.1;
             option domain-name-servers 192.168.43.1;
 
-            # gateways for subnets when default route is openvpn
-            option classless-routes 16, 192,168,    192,168,43,1,
-                                    24, 10,4,0,     192,168,43,1;
+            # keep classless route 192.168.0.0/16, for when openvpn overrides default route
+            # also add explicit classless gateway route
 
-            # IMPORTANT - may need a default route as well if using classless routes,
-            # see eth0.204. and         0, 192,168,204,1;
+            option classless-routes 16, 192,168,    192,168,43,1,
+                                    24, 10,4,0,     192,168,43,1,
+                                    0,              192,168,43,1;
 
             host dell-5520    { hardware ethernet 00:28:f8:bf:8f:29; fixed-address 192.168.43.6; }
             host omega        { hardware ethernet 40:a3:6b:c1:18:dc; fixed-address 192.168.43.10; }
