@@ -16,20 +16,21 @@
   # for arm...
   # https://downloads.getmonero.org/cli/linuxarm7
 
-  # Current Version: 0.11.1.0 Helium Hydra
   # verify hash at, https://github.com/monero-project/monero/releases
 
   - get_url:
-      url: https://downloads.getmonero.org/cli/linux64
+      #url: https://downloads.getmonero.org/cli/linux64
+      url: https://downloads.getmonero.org/cli/monero-linux-x64-v0.12.3.0.tar.bz2
       dest: "{{workdir}}/linux64"
       # 0.11.1.0
       # checksum: sha256:6581506f8a030d8d50b38744ba7144f2765c9028d18d990beb316e13655ab248
-
       # 0.12.0.0 Lithium Luna
       # checksum: sha256:928ad08ff0dea2790c7777a70e610b2d33c35a5df5900fbb050cc8c659237636
-
       # v 0.12.2.0
-      checksum: sha256:cb97e3f8b700a81e1b0f1a77509eefbfb415aa6013f23685f8933b559309c580
+      # checksum: sha256:cb97e3f8b700a81e1b0f1a77509eefbfb415aa6013f23685f8933b559309c580
+
+      # v 0.12.3.0
+      checksum: sha256:72fe937aa2832a0079767914c27671436768ff3c486597c3353a8567d9547487
 
     tags: monero
 
@@ -41,9 +42,12 @@
       dest: "{{workdir}}/vars.inc"
       content: |
         # deployed by ansible!
+        # Note, we don't have a proper env var with versioned dir, so set manually
 
         # PATH="$HOME/monero-v0.11.1.0:$PATH"
-        PATH="$HOME/monero-v0.12.2.0:$PATH"
+        # PATH="$HOME/monero-v0.12.2.0:$PATH"
+        PATH="$HOME/monero-v0.12.3.0:$PATH"
+
         export PATH
     tags: path
 
