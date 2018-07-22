@@ -267,10 +267,10 @@
 
           # catchall forwarder
           forwarders {
-            # for openvpn - must be opendns or google etc .
-            # 208.67.222.222;
-            # for non openvpn - must be local router - 192.168.43.1
-            192.168.43.1;
+            # for openvpn or not openvpn - avoid use router
+            208.67.222.222;
+            # router
+            # 192.168.43.1;
           };
 
           # https://stackoverflow.com/questions/13342003/ns-got-insecure-response-parent-indicates-it-should-be-secure

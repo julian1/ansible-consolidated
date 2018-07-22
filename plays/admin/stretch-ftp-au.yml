@@ -1,0 +1,17 @@
+
+- hosts:
+    - all
+
+  vars:
+  pre_tasks:
+  roles:
+
+    - name: admin/apt-stretch
+      mirror: http://ftp.au.debian.org/debian/
+
+
+    - admin/apt-update
+
+  tasks:
+  handlers:
+
