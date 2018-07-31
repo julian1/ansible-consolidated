@@ -42,7 +42,8 @@ proto tcp
 
 # JA
 ;remote my-server-2 1194
-remote vpn 443 
+remote {{server_name}} 443 
+
 
 # Choose a random host from the remote
 # list for load-balancing.  Otherwise
@@ -88,8 +89,10 @@ persist-tun
 # for each client.  A single ca
 # file can be used for all clients.
 ca ca.crt
-cert client1.crt
-key client1.key
+cert client{{client_instance}}.crt
+key client{{client_instance}}.key
+
+
 
 # Verify server certificate by checking that the
 # certicate has the correct key usage set.

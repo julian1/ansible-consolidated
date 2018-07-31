@@ -129,13 +129,17 @@
         # do gateway nat for openvpn clients,
         iptables -t nat -A POSTROUTING -s '10.8.0.0/8' -o eth0 -j MASQUERADE
 
+        # this is a bit tricky, we need to know the client ip, to set up the forward
         # port forwards to a client
-        # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 5222  -j DNAT --to 192.168.43.6
 
         iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 10.8.0.6
         iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 30303 -j DNAT --to 10.8.0.6
 
         iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.6
+
+
+        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13415 -j DNAT --to 10.8.0.10
+
 
     notify: reconfigure-iptables
     tags: iptables
@@ -173,27 +177,63 @@
 
   # for client keys - eg. not password protected
   # see ./build-key
-  - command: "bash -c 'source vars && ./pkitool client1 ' "
+#  - command: "bash -c 'source vars && ./pkitool client1 ' "
+#    args:
+#      chdir:  /root/openvpn-ca
+#      creates: keys/client1.key
+#
+#
+#  - file: path=/etc/openvpn/clients  state=directory
+#
+#  - template: src=client.conf.j2 dest=/etc/openvpn/clients/client.conf
+#
+#  - command: "tar cJf /etc/openvpn/clients/client1.tgz -C /root/openvpn-ca/keys/  ca.crt client1.crt client1.key ta.key -C /etc/openvpn/clients/ client.conf"
+#    args:
+#      creates: /etc/openvpn/clients/client1.tgz
+#
+
+
+  #######################################################
+  # this thing really needs some loops...
+
+  # IMPORTANT - the client code does NOT need to be in /etc/openvpn/clients
+  # eg. server doesn't need to know anything about client keys - except through openvpn-ca/keys.
+
+
+  - file: path=/root/clients state=directory
+    tags: client02
+
+  ####
+
+  - command: "bash -c 'source vars && ./pkitool client02 ' "
     args:
       chdir:  /root/openvpn-ca
-      creates: keys/client1.key
+      creates: keys/client02.key
+    tags: client02
 
 
-  - file: path=/etc/openvpn/clients  state=directory
+  # important - the openvpn binary expects name of client file to be fixed client.conf - ie not client02.conf.
+  - template: src=client.conf.j2 dest=/root/clients/client.conf
+    vars:
+    - { client_instance: "02",  server_name: "vpn" }
+    tags: client02
 
-  - template: src=client.conf.j2 dest=/etc/openvpn/clients/client.conf
-
-  - command: "tar cJf /etc/openvpn/clients/client1.tgz -C /root/openvpn-ca/keys/  ca.crt client1.crt client1.key ta.key -C /etc/openvpn/clients/ client.conf"
+  - command: "tar cJf /root/clients/client02.tgz -C /root/openvpn-ca/keys/  ca.crt client02.crt client02.key ta.key -C /root/clients/ client.conf"
     args:
-      creates: /etc/openvpn/clients/client1.tgz
+      creates: /root/clients/client02.tgz
+    tags: client02
+
+
 
 
 
   #######
-  # CLIENT SETUP
+  # CLIENT SETUP/Start
 
   # COPY back to localhost with,
   # rsync root@vpn:/etc/openvpn/clients/client1.tgz .
+
+  # apt-get install openvpnclient
 
   # cd /etc/openvpn/
   # rm * -rf
