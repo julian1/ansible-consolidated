@@ -137,8 +137,10 @@
 
         iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.6
 
-
+        # p2p,
         iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13414 -j DNAT --to 10.8.0.10
+        # send/receive api
+        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13415 -j DNAT --to 10.8.0.10
 
 
     notify: reconfigure-iptables
