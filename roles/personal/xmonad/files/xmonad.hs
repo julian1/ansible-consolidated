@@ -12,8 +12,28 @@ import XMonad.Util.SpawnOnce
 -- intelij
 import XMonad.Hooks.SetWMName
 
-myterminal :: String
 
+import qualified XMonad.StackSet as W
+
+
+
+
+myExtraWorkspaces = [(xK_0, "0"),(xK_minus, "-"),(xK_equal, "+")]
+
+myWorkspaces = ["1","2","3","4","5","6","7","8","9"] ++ (map snd myExtraWorkspaces)
+
+
+      -- this ought to be able to be simplified
+mykeys = [
+          ((mod1Mask ,  xK_z), spawn "xtrlock -b"),
+          ((mod1Mask ,  xK_x), spawn "xtrlock -b")
+        ] ++ [
+         ((mod1Mask, key), (windows $ W.greedyView ws))
+         | (key,ws) <- myExtraWorkspaces
+       ] ++ [
+        ((mod1Mask .|. shiftMask, key), (windows $ W.shift ws))
+        | (key,ws) <- myExtraWorkspaces
+       ]
 
 
 -- myterminal = "xterm -fa 'DejaVu Sans Mono' -fs 10 -fg white -bg black"
@@ -31,8 +51,12 @@ myLogHook dest = dynamicLogWithPP defaultPP { ppOutput = hPutStrLn dest
 main = do
 xmproc <- spawnPipe "/usr/bin/xmobar /home/meteo/.xmobarrc"
 xmonad $ defaultConfig
-        { manageHook = manageDocks <+> manageHook defaultConfig
-        , layoutHook = avoidStruts $ layoutHook defaultConfig
+        {
+
+      manageHook = manageDocks <+> manageHook defaultConfig
+    , layoutHook = avoidStruts $ layoutHook defaultConfig
+
+    , workspaces = myWorkspaces
 
     , focusedBorderColor =  "#009900"
     , normalBorderColor  =  "#666666"
@@ -48,7 +72,6 @@ xmonad $ defaultConfig
 
         }
 		`additionalKeys`
-        [
-          ((mod1Mask ,  xK_z), spawn "xtrlock -b"),
-          ((mod1Mask ,  xK_x), spawn "xtrlock -b")
-        ]
+        mykeys
+
+
