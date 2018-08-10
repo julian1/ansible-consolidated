@@ -17,13 +17,13 @@ import qualified XMonad.StackSet as W
 
 
 
+-- https://stackoverflow.com/questions/27742421/how-can-i-have-more-than-9-workspaces-in-xmonad
 
 myExtraWorkspaces = [(xK_0, "0"),(xK_minus, "-"),(xK_equal, "+")]
 
 myWorkspaces = ["1","2","3","4","5","6","7","8","9"] ++ (map snd myExtraWorkspaces)
 
 
-      -- this ought to be able to be simplified
 mykeys = [
           ((mod1Mask ,  xK_z), spawn "xtrlock -b"),
           ((mod1Mask ,  xK_x), spawn "xtrlock -b")
