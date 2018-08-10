@@ -50,6 +50,8 @@
         xset s noblank     # don't blank the video device
         # xset -dpms; xset s off
 
+        xset r rate   150   # keyboard repeat rate 150ms, fixes firefox scrolling
+
         xrdb -merge <<- EOF
           XTerm*selectToClipboard: true
           XTerm*faceName: DejaVu Sans Mono
