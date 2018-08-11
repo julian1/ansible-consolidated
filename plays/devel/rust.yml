@@ -1,6 +1,12 @@
-# should be run as user meteo 
+
+### Looks like version argument is ignored. 
+## we got 1.28.0
 
   - hosts: all
     roles:
-      - devel/rust
+
+      - name: devel/rust
+        user: meteo
+        version: 1.27.1
+
 

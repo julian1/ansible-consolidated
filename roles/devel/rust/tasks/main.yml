@@ -1,4 +1,6 @@
 
+### Looks like version argument is ignored. 
+
 # simpler...
 # curl https://sh.rustup.rs -sSf | sh; source $HOME/.cargo/env
 

@@ -50,7 +50,8 @@
         xset s noblank     # don't blank the video device
         # xset -dpms; xset s off
 
-        xset r rate   150   # keyboard repeat rate 150ms, fixes firefox scrolling
+        xset r rate   200   # keyboard repeat rate fixes firefox scrolling
+                            # 150 is too short. causes issues in terminal.
 
         xrdb -merge <<- EOF
           XTerm*selectToClipboard: true
