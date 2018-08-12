@@ -51,7 +51,10 @@
         # xset -dpms; xset s off
 
         xset r rate   200   # keyboard repeat rate fixes firefox scrolling
-                            # 150 is too short. causes issues in terminal.
+                            # 150 is too short. causes repeat in xterm terminal.
+
+
+        setxkbmap -option compose:ralt   # accented compose key is right alt
 
         xrdb -merge <<- EOF
           XTerm*selectToClipboard: true
@@ -101,7 +104,7 @@
         # turn bell off
         xset b off
 
-        # start xcmonad
+        # start xmonad
         xmonad
     tags: xinitrc
 
