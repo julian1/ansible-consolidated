@@ -163,13 +163,13 @@
             host devel08      { hardware ethernet 00:01:02:03:04:08; fixed-address 10.3.0.8; }
             host devel09      { hardware ethernet 00:01:02:03:04:09; fixed-address 10.3.0.9; }
 
+            # kvm - nixos01
+            host nixos01      { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
+
             # nspawn, chroots
             host stretch      { hardware ethernet 00:01:02:03:04:18; fixed-address 10.3.0.18; }
             host postgres     { hardware ethernet 00:01:02:03:04:19; fixed-address 10.3.0.19; }
             host haproxy      { hardware ethernet 00:01:02:03:04:20; fixed-address 10.3.0.20; }
-
-            # kvm
-            host kvm-inst     { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
 
         }
 
@@ -390,10 +390,11 @@
         devel08       IN A  10.3.0.8
         devel09       IN A  10.3.0.9
 
+        nixos01       IN A  10.3.0.10
+
         stretch       IN A  10.3.0.18
         postgres      IN A  10.3.0.19
         haproxy       IN A  10.3.0.20
-
 
         mail          IN A  10.3.0.1
         ns1           IN A  10.3.0.1
