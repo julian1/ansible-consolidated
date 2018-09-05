@@ -21,13 +21,14 @@ alias top='top -d 1'
 # alias feh='feh -F -Z -d --keep-zoom-vp'
 alias feh='feh -F -Z -d'
 
-alias iftop='iftop -B -P  -N'
+alias iftop='iftop -B -P -N'
 
 
 # shortcuts
 alias g=git
 alias l=less
 alias s=sudo
+alias v='vim -p'
 
 alias sc=systemctl
 alias jc=journalctl
@@ -104,7 +105,6 @@ function ls2() {
 # TODO issue ss conflicts with sockets util, also
 # alias ss='sudo -s'
 # alias se='sudo -sE'
-# alias v='vim -p'
 # alias sc='systemctl'
 
 # format in columns really useful for output of 'ip route'
@@ -150,15 +150,15 @@ function logs() {
 
 # should we use sc instead? although conflict with screen
 # systemd specific
-if [ -f /bin/systemctl ]; then
-function start()    { systemctl start $@;   }
-function stop()     { systemctl stop $@;    }
-function restart()  { systemctl restart $@; }
-function status()   { systemctl status $@;  }
-function enable()   { systemctl enable $@;  }
-function disable()  { systemctl disable $@; }
-function daemon-reload() { systemctl daemon-reload $@; }
-fi
+#if [ -f /bin/systemctl ]; then
+#function start()    { systemctl start $@;   }
+#function stop()     { systemctl stop $@;    }
+#function restart()  { systemctl restart $@; }
+#function status()   { systemctl status $@;  }
+#function enable()   { systemctl enable $@;  }
+#function disable()  { systemctl disable $@; }
+#function daemon-reload() { systemctl daemon-reload $@; }
+#fi
 
 
 # shell colors...
