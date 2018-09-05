@@ -37,62 +37,6 @@
   - apt: name=usbutils        # lsusb
   - apt: name=ethtool
 
-  # will need to add contrib to apt sources for ralink firmware.
-  #    - apt: name=firmware-ralink # backup AP
-  - apt: name=haveged         # entropy for wifi crypto
-
-
-  # WARNING: Nasty, after kernel upgrade, was
-  # missing wlan0. Have to apt-get purge and
-  # reinstall firmware-realtek as it
-  # modifies initrd.img
-
-  # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
-  # - apt: name=firmware-realtek
-
-  - apt: name=hostapd
-
-
-
-  # hostapd.conf goes first since referred to by /etc/network/interfaces
-  # AP primary
-  - copy:
-      dest: /etc/hostapd/hostapd-wlan0.conf
-      content: |
-        # deployed by ansible!
-        interface=wlan0
-        ssid=AP1
-        hw_mode=g
-        channel=9
-        auth_algs=1
-        wpa=2
-        wpa_passphrase={{wpa_passphrase}}
-        wpa_key_mgmt=WPA-PSK
-        wpa_pairwise=TKIP
-        rsn_pairwise=CCMP
-
-    # not sure this works, because it won't restart isc-dhcp also
-    # notify: restart-wlan0
-
-  # get wrong driver by default...
-  # https://superuser.com/questions/692229/install-driver-for-rt5370-on-ubuntu
-  # AP2
-  - copy:
-      dest: /etc/hostapd/hostapd-wlan1.conf
-      content: |
-        # deployed by ansible!
-        interface=wlan1
-        ssid=AP2
-        hw_mode=g
-        channel=8
-        # remove everything below for open AP
-        auth_algs=1
-        wpa=2
-        wpa_passphrase={{wpa_passphrase}}
-        wpa_key_mgmt=WPA-PSK
-        wpa_pairwise=TKIP
-        rsn_pairwise=CCMP
-    # notify: restart-wlan1
 
 
 
@@ -215,6 +159,69 @@
 
   # 22 send dhcp-client-identifier 1:0:a0:24:ab:fb:9d;
   # 23 #send dhcp-client-identifier 1:0:a0:24:ab:fb:9e;
+
+
+
+
+
+
+
+  ################
+  # will need to add contrib to apt sources for ralink firmware.
+  #    - apt: name=firmware-ralink # backup AP
+  - apt: name=haveged         # entropy for wifi crypto
+
+
+  # WARNING: Nasty, after kernel upgrade, was
+  # missing wlan0. Have to apt-get purge and
+  # reinstall firmware-realtek as it
+  # modifies initrd.img
+
+  # Atheros AR9280 and wlan0 should be seen and can do iwlist scan
+  # - apt: name=firmware-realtek
+
+  - apt: name=hostapd
+
+
+  # hostapd.conf goes first since referred to by /etc/network/interfaces
+  # AP primary
+  - copy:
+      dest: /etc/hostapd/hostapd-wlan0.conf
+      content: |
+        # deployed by ansible!
+        interface=wlan0
+        ssid=AP1
+        hw_mode=g
+        channel=9
+        auth_algs=1
+        wpa=2
+        wpa_passphrase={{wpa_passphrase}}
+        wpa_key_mgmt=WPA-PSK
+        wpa_pairwise=TKIP
+        rsn_pairwise=CCMP
+
+    # not sure this works, because it won't restart isc-dhcp also
+    # notify: restart-wlan0
+
+  # get wrong driver by default...
+  # https://superuser.com/questions/692229/install-driver-for-rt5370-on-ubuntu
+  # AP2
+  - copy:
+      dest: /etc/hostapd/hostapd-wlan1.conf
+      content: |
+        # deployed by ansible!
+        interface=wlan1
+        ssid=AP2
+        hw_mode=g
+        channel=8
+        # remove everything below for open AP
+        auth_algs=1
+        wpa=2
+        wpa_passphrase={{wpa_passphrase}}
+        wpa_key_mgmt=WPA-PSK
+        wpa_pairwise=TKIP
+        rsn_pairwise=CCMP
+    # notify: restart-wlan1
 
 
 
