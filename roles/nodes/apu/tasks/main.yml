@@ -397,6 +397,10 @@
         FORWARD_ACCEPT(tcp, 22, 192.168.43.14, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 22, 192.168.201.19, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 22, 192.168.201.27, 0.0.0.0/0)
+        
+
+        # apu -> nuc
+        FORWARD_ACCEPT(tcp, 22, 192.168.204.29 , 192.168.201.17 )
 
         # printer - brother.localnet 9100
         FORWARD_ACCEPT(tcp, 9100, 192.168.43.0/24, 192.168.201.15)
