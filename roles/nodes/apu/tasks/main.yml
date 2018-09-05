@@ -7,14 +7,6 @@
 # send dhcp-client-identifier 1:0:a0:24:ab:fb:9d;
 
 
-##############
-# network startup on boot is slow due to,
-# slow vlan switchport startup (spanning tree etc). this means initial dhcp requests will initially fail.
-# retry is 5 minutes, because it is default according to, man dhclient.conf.
-#
-# "The  retry  statement  determines  the  time that must pass after the client has determined that there is
-# no DHCP server present before it tries again to contact a DHCP server.  By default, this is five minutes."
-
 
 ##############
 ## old...
@@ -201,9 +193,34 @@
 
 
 
+
+
+  ##############
+  # network startup on boot is slow due to,
+  # slow vlan switchport startup (spanning tree etc). this means initial dhcp requests will initially fail.
+  # retry is 5 minutes, because it is default according to, man dhclient.conf.
+  #
+  # "The  retry  statement  determines  the  time that must pass after the client has determined that there is
+  # no DHCP server present before it tries again to contact a DHCP server.  By default, this is five minutes."
+
+
+  # after determining no dhcp server - reduce recheck timeout from 5 minutes, to 60 seconds.
+  - lineinfile: >
+      dest=/etc/dhcp/dhclient.conf
+      state=present
+      regexp='.*retry.*'
+      line='retry 60;'
+
+    tags: whoot 
+
+  # 22 send dhcp-client-identifier 1:0:a0:24:ab:fb:9d;
+  # 23 #send dhcp-client-identifier 1:0:a0:24:ab:fb:9e;
+
+
+
+
     # may need to restart wlan0 here? at least when install dnsmasq
   - apt: name=iptables-persistent
-
 
   - copy:
       dest: /etc/iptables-rules.m4
@@ -397,7 +414,7 @@
         FORWARD_ACCEPT(tcp, 22, 192.168.43.14, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 22, 192.168.201.19, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 22, 192.168.201.27, 0.0.0.0/0)
-        
+
 
         # apu -> nuc
         FORWARD_ACCEPT(tcp, 22, 192.168.204.29 , 192.168.201.17 )
