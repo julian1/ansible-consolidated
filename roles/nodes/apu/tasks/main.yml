@@ -368,6 +368,22 @@
         # FORWARD_DROP(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)
         # FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
 
+
+
+        ##### HERE #####
+        # clean room, clean office, having a working computer.
+        # drop anything going to nuc or bravia
+        # note, should still be able to get connection because dhcp is not
+        # complains about me asking for her to go into room, when cannot go into your room.
+        # incoming connections are already dropped.
+        # take a video
+
+        #        FORWARD_DROP(   tcp, 1:65535, 192.168.202.16, 0.0.0.0/0) # bravia
+        #        FORWARD_DROP(   udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
+        #        FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 0.0.0.0/0) # nuc
+        #        FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
+
+
         #. eg. need to route to 10.3.0.0/24 network...
         # WHOOT 2
 
@@ -481,14 +497,13 @@
         FORWARD_ACCEPT(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
 
         # nuc
-        # drop any forwarding connection from bravia to intranet,. excludes apu
+        # drop any forwarding connection to intranet,. excludes apu
         # - review if add dnla
         FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
         FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
         # otherwise allow outbound connection to internet
         FORWARD_ACCEPT(tcp, 1:65535, 192.168.201.17, 0.0.0.0/0)
         FORWARD_ACCEPT(udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
-
 
 
 
