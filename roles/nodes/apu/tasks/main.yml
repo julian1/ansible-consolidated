@@ -155,7 +155,7 @@
       regexp='.*retry.*'
       line='retry 60;'
 
-    tags: whoot 
+    tags: whoot
 
   # 22 send dhcp-client-identifier 1:0:a0:24:ab:fb:9d;
   # 23 #send dhcp-client-identifier 1:0:a0:24:ab:fb:9e;
@@ -345,22 +345,14 @@
 
         # COMMON/GENERIC
 
-        # need a drop...?
-        # FORWARD_PING_ACCEPT( 192.168.43.0/24, 0.0.0.0/0 )
-        FORWARD_PING_ACCEPT( 0.0.0.0/0, 0.0.0.0/0 )
+        # Note - this means untrusted nodes like bravia can use ping to discover network
+        # probably wants a drop in front of it.
+        FORWARD_PING_ACCEPT( 192.168.0.0/16, 0.0.0.0/0 )
+        FORWARD_PING_ACCEPT( 10.0.0.0/8,     0.0.0.0/0 )
 
-
-        # allow anything outbound from 192.168.43.6
-        # FORWARD_ACCEPT(tcp, 1:65535, 192.168.43.6, 0.0.0.0/0)
-
+        # logging examples
         # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 80 -j LOG --log-prefix "IPTABLES: "
         # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 443 -j LOG --log-prefix "IPTABLES: "
-
-        #########################
-        # IMPORTANT - do we need DROP, when it's the default... no...
-        # yes. because drop targets the dst address. we are making sure it's forwarding lan to wan.j
-
-        # it means forward anywhere except to our loal subnet.
 
 
         ##### HERE #####
@@ -371,33 +363,35 @@
         # incoming connections are already dropped.
         # take a video
 
-        #        FORWARD_DROP(   tcp, 1:65535, 192.168.202.16, 0.0.0.0/0) # bravia
-        #        FORWARD_DROP(   udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
-        #        FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 0.0.0.0/0) # nuc
-        #        FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
+        # FORWARD_DROP(   tcp, 1:65535, 192.168.202.16, 0.0.0.0/0) # bravia
+        # FORWARD_DROP(   udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
+        # FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 0.0.0.0/0) # nuc
+        # FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
 
+        # Should never have lhs of 0.0.0.0 because this means incomming internet.
 
-        #. eg. need to route to 10.3.0.0/24 network...
-        # WHOOT 2
-
-        FORWARD_ACCEPT(tcp, 80,  0.0.0.0/0, 0.0.0.0/0)
-        FORWARD_ACCEPT(tcp, 443, 0.0.0.0/0, 0.0.0.0/0)
-
-        # we kind of need to forward ntp, not dns - because use local, not dhcp - because use local also....
+        FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 80,  10.0.0.0/8,     0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 443, 10.0.0.0/8,     0.0.0.0/0)
 
         # ntp
-        FORWARD_ACCEPT(udp, 123, 0.0.0.0/0, 0.0.0.0/0)
+        FORWARD_ACCEPT(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 123, 10.0.0.0/8,     0.0.0.0/0)
 
 
         # 5222 test port - ssh proxy and general open test port
         # FORWARD_ACCEPT(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
         # FORWARD_ACCEPT(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
-        FORWARD_ACCEPT(tcp, 5222, 0.0.0.0/0, 0.0.0.0/0)
+
+        # general test port.
+        FORWARD_ACCEPT(tcp, 5222, 192.168.0.0/16, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 5222, 10.0.0.0/8,     0.0.0.0/0)
 
 
         # SPECIFIC NODES, mostly only dell
 
-        # dns eg. other than from apu bind
+        # dns - eg. for nodes other than from apu bind
         FORWARD_ACCEPT(tcp, 53, 192.168.43.6, 0.0.0.0/0)
         FORWARD_ACCEPT(udp, 53, 192.168.43.6, 0.0.0.0/0)
 
@@ -423,20 +417,19 @@
         FORWARD_ACCEPT(tcp, 22, 192.168.201.19, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 22, 192.168.201.27, 0.0.0.0/0)
 
-        # container to anywhere
+        # ssh container to anywhere
         # FORWARD_ACCEPT(tcp, 22, 10.0.0.0/8, 0.0.0.0/0)
 
-        # container to local networks
+        # ssh container to local networks
         # FORWARD_ACCEPT(tcp, 22, 10.0.0.0/8, 192.168.0.0/16)
 
-        # container -> apu2
+        # ssh containers -> apu2
         FORWARD_ACCEPT(tcp, 22, 10.0.0.0/8, 192.168.204.29)
 
-
-        # apu -> nuc
+        # apu2 -> nuc - for sshfs mounting of nuc volume on apu2.
         FORWARD_ACCEPT(tcp, 22, 192.168.204.29 , 192.168.201.17 )
 
-        # printer - brother.localnet 9100
+        # localnet -> printer - brother.localnet 9100
         FORWARD_ACCEPT(tcp, 9100, 192.168.43.0/24, 192.168.201.15)
 
         #
@@ -454,10 +447,10 @@
         # monero open node
         FORWARD_ACCEPT(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
 
+        # TODO review/fix
         # bisq
-        FORWARD_ACCEPT(tcp, 9001, 0.0.0.0/0, 0.0.0.0/0)
-        FORWARD_ACCEPT(tcp, 9030, 0.0.0.0/0, 0.0.0.0/0)
-
+        FORWARD_ACCEPT(tcp, 9001, 10.0.0.0/8, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 9030, 10.0.0.0/8, 0.0.0.0/0)
 
 
         # snom
@@ -480,8 +473,9 @@
         # iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
         # leave ssh open etc.
 
-        # bravia
+        # these rules don't work - because we have already accepted http earlier.
 
+        # bravia
         # drop any forwarding connection from bravia to intranet,. excludes apu
         # - review if add dnla
         FORWARD_DROP(   tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
@@ -492,7 +486,7 @@
         FORWARD_ACCEPT(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
 
         # nuc
-        # drop forwarding connection to intranet,. excludes apu
+        # drop forwarding connection from nuc to intranet,. excludes apu
         # - review if add dnla
         FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
         FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
