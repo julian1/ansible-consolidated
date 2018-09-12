@@ -362,13 +362,6 @@
 
         # it means forward anywhere except to our loal subnet.
 
-        # http
-        # FORWARD_DROP(   tcp, 80,  0.0.0.0/0, 192.168.0.0/16)
-        # FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
-        # FORWARD_DROP(   tcp, 443, 0.0.0.0/0, 192.168.0.0/16)
-        # FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
-
-
 
         ##### HERE #####
         # clean room, clean office, having a working computer.
@@ -405,30 +398,22 @@
         # SPECIFIC NODES, mostly only dell
 
         # dns eg. other than from apu bind
-        FORWARD_DROP(   tcp, 53, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(tcp, 53, 192.168.43.6, 0.0.0.0/0)
-
-        FORWARD_DROP(   udp, 53, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(udp, 53, 192.168.43.6, 0.0.0.0/0)
 
         # whois
-        FORWARD_DROP(   tcp, 43, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(tcp, 43, 192.168.43.6, 0.0.0.0/0)
 
         # smtp - note, iinet blocks port 25
-        FORWARD_DROP(   tcp, 25, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(tcp, 25, 192.168.43.6, 0.0.0.0/0)
 
         # smtpd submission, tls, starttls
-        FORWARD_DROP(   tcp, 587, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(tcp, 587, 192.168.43.6, 0.0.0.0/0)
 
         # imap tls
-        FORWARD_DROP(   tcp, 993, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(tcp, 993, 192.168.43.6, 0.0.0.0/0)
 
         # irc - note, port 6667 preferred over 194, freenode uses 6697
-        FORWARD_DROP(   tcp, 6697, 0.0.0.0/0, 192.168.0.0/16)
         FORWARD_ACCEPT(tcp, 6697, 192.168.43.6, 0.0.0.0/0)
 
 
@@ -501,15 +486,17 @@
         # - review if add dnla
         FORWARD_DROP(   tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
         FORWARD_DROP(   udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+
         # otherwise allow outbound connection to internet
         FORWARD_ACCEPT(tcp, 1:65535, 192.168.202.16, 0.0.0.0/0)
         FORWARD_ACCEPT(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
 
         # nuc
-        # drop any forwarding connection to intranet,. excludes apu
+        # drop forwarding connection to intranet,. excludes apu
         # - review if add dnla
         FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
         FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+
         # otherwise allow outbound connection to internet
         FORWARD_ACCEPT(tcp, 1:65535, 192.168.201.17, 0.0.0.0/0)
         FORWARD_ACCEPT(udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
