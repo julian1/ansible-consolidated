@@ -266,7 +266,7 @@
         # test
         # WAN_IN_ACCEPT(tcp, 5222, 0.0.0.0/0)
 
-        # dhcp
+        # dhcp - is this really needed???
         # TODO port 68 also...
         WAN_OUT_ACCEPT(udp, 67, 0.0.0.0/0)
 
@@ -287,7 +287,6 @@
 
         ###############################
         # lan
-
 
         # test
         LAN_OUT_ACCEPT(tcp, 5222, 0.0.0.0/0)
@@ -368,8 +367,24 @@
         # FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 0.0.0.0/0) # nuc
         # FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
 
-        # Should never have lhs of 0.0.0.0 because this means incomming internet.
+        # IMPORTANT - Should never have lhs of 0.0.0.0 because this means incomming internet.
 
+        # node specific - bravia and nuc
+        # drop any egress from bravia to intranet (excludes apu2 and dns )...
+        # should do the same for ping
+        FORWARD_DROP( tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+        FORWARD_DROP( udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+        FORWARD_DROP( tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+        FORWARD_DROP( udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+        FORWARD_DROP( tcp, 1:65535, 192.168.202.16, 10.0.0.0/8)
+        FORWARD_DROP( udp, 1:65535, 192.168.202.16, 10.0.0.0/8)
+        FORWARD_DROP( tcp, 1:65535, 192.168.201.17, 10.0.0.0/8)
+        FORWARD_DROP( udp, 1:65535, 192.168.201.17, 10.0.0.0/8)
+
+
+        #########
+
+        # http
         FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 80,  10.0.0.0/8,     0.0.0.0/0)
@@ -475,23 +490,12 @@
 
         # these rules don't work - because we have already accepted http earlier.
 
-        # bravia
-        # drop any forwarding connection from bravia to intranet,. excludes apu
-        # - review if add dnla
-        FORWARD_DROP(   tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
-        FORWARD_DROP(   udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
 
-        # otherwise allow outbound connection to internet
+        # bravia - otherwise allow outbound connection to internet
         FORWARD_ACCEPT(tcp, 1:65535, 192.168.202.16, 0.0.0.0/0)
         FORWARD_ACCEPT(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
 
-        # nuc
-        # drop forwarding connection from nuc to intranet,. excludes apu
-        # - review if add dnla
-        FORWARD_DROP(   tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
-        FORWARD_DROP(   udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
-
-        # otherwise allow outbound connection to internet
+        # nuc - otherwise allow outbound connection to internet
         FORWARD_ACCEPT(tcp, 1:65535, 192.168.201.17, 0.0.0.0/0)
         FORWARD_ACCEPT(udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
 
