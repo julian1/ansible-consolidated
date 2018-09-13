@@ -26,12 +26,12 @@
       #!/bin/bash
       # deployed by ansible!
 
-      # export PATH="$HOME/parity/target/release:$PATH"
       . ./vars.inc
 
       # with --no-discovery option
       parity \
         -d data \
+        --rpccorsdomain "null" \
         --no-ui --no-ws --no-dapps \
         --allow-ips=public \
         --no-discovery \
@@ -48,7 +48,6 @@
       #!/bin/bash
       # deployed by ansible!
 
-      # export PATH="$HOME/parity/target/release:$PATH"
       . ./vars.inc
 
       # pruning history normally 24
@@ -66,9 +65,10 @@
       trickle -s -u 50 -d 100 \
       parity \
         -d data \
+        --rpccorsdomain "null" \
         --no-ui --no-ws --no-dapps \
-        --min-peers 8 --max-peers 12 \
         --allow-ips=public \
+        --no-discovery \
 
 
   tags: config
