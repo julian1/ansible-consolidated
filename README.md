@@ -27,7 +27,14 @@ ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars 
 # setting and overriding vars
 ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-vars "path=/root user=root"
 ansible-playbook ./plays/personal/dotfiles.yml -i apu2,  --extra-vars "path=/home/parity user=parity"
-ansible-playbook ./plays/personal/dotfiles.yml -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python" 
+ansible-playbook ./plays/personal/dotfiles.yml -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python"
+
+# nixos temporary
+ansible-playbook ./plays/personal/dotfiles.yml -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook ./plays/personal/pathogen.yml -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook ./plays/personal/dotfiles.yml -i nixos02, --extra-vars "path=/root user=root ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook ./plays/personal/pathogen.yml -i nixos02, --extra-vars "path=/root user=root ansible_python_interpreter=/root/.nix-profile/bin/python"
+
 
 # bootstrap
 apt-get install python-minimal

@@ -6,30 +6,30 @@
   # TODO factor out the hard-coded user directory
   # vimrc requires the appropriate assocation to be set eg, #  au BufNewFile,BufRead *.sol setf solidity
 
+  #- apt: name=git
 
   # .vimrc
   # TODO maybe templatize
-  # - copy: src=vimrc dest={{vim_path}}/.vimrc
+  # - copy: src=vimrc dest={{path}}/.vimrc
 
 
 
   # pathogen
   # https://github.com/tpope/vim-pathogen
-  - get_url: url='https://tpo.pe/pathogen.vim'                dest={{vim_path}}/.vim/autoload/pathogen.vim
+  - get_url: url='https://tpo.pe/pathogen.vim'                dest={{path}}/.vim/autoload/pathogen.vim
 
-  - apt: name=git
 
   # solidity, sol
-  - git: repo=https://github.com/tomlion/vim-solidity         dest={{vim_path}}/.vim/bundle/vim-solidity
+  - git: repo=https://github.com/tomlion/vim-solidity         dest={{path}}/.vim/bundle/vim-solidity
 
   # rust, rs
-  - git: repo=https://github.com/rust-lang/rust.vim           dest={{vim_path}}/.vim/bundle/rust
+  - git: repo=https://github.com/rust-lang/rust.vim           dest={{path}}/.vim/bundle/rust
 
   # coquille, v
-  - git: repo=https://github.com/the-lambda-church/coquille   dest={{vim_path}}/.vim/bundle/coquille
+  - git: repo=https://github.com/the-lambda-church/coquille   dest={{path}}/.vim/bundle/coquille
 
   # purescript
-  - git: repo=https://github.com/raichoo/purescript-vim.git   dest={{vim_path}}/.vim/bundle/purescript
+  - git: repo=https://github.com/raichoo/purescript-vim.git   dest={{path}}/.vim/bundle/purescript
 
   # haskell - just use the built in one,
 
@@ -37,9 +37,15 @@
   # git clone --recursive https://github.com/sdiehl/haskell-vim-proto.git
 
   # the dammn indirection is wrong...
-  # - git: repo=https://github.com/sdiehl/haskell-vim-proto.git  dest={{vim_path}}/.vim/bundle/haskell-vim-proto
+  # - git: repo=https://github.com/sdiehl/haskell-vim-proto.git  dest={{path}}/.vim/bundle/haskell-vim-proto
 
 
-  - git: repo=https://github.com/idris-hackers/idris-vim.git  dest={{vim_path}}/.vim/bundle/idris
+  - git: repo=https://github.com/idris-hackers/idris-vim.git  dest={{path}}/.vim/bundle/idris
+
+  # nix vim fix -> http://nicknovitski.com/vim-nix-syntax
+  # nix
+  # git clone https://github.com/LnL7/vim-nix.git ~/.vim/bundle/vim-nix
+
+  - git: repo=https://github.com/LnL7/vim-nix.git  dest={{path}}/.vim/bundle/vim-nix
 
 
