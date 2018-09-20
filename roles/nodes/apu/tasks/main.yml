@@ -451,16 +451,21 @@
         # IMPORTANT
         # - generally want to use ssh forwarding for rpc nodes
         # - and port forwards do not require forward table iptables , they are pre-routinig
+
         # eth/parity - use reverse ssh tunnel instead
         FORWARD_ACCEPT(tcp, 8545, 192.168.43.6, 0.0.0.0/0)
+
         # btc incoming - for piplus - might be port forwarded both...
         # FORWARD_ACCEPT(tcp, 8333, 0.0.0.0/24, 192.168.201.3)
+
         # monero rpc
         FORWARD_ACCEPT(tcp, 18081, 192.168.43.6, 0.0.0.0/0)
-        # transmission http web rpc
-        FORWARD_ACCEPT(tcp, 9091, 192.168.43.0/24, 192.168.204.29)
         # monero open node
         FORWARD_ACCEPT(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
+
+        # transmission http web rpc
+        FORWARD_ACCEPT(tcp, 9091, 192.168.43.0/24, 192.168.204.29)
+
 
         # TODO review/fix
         # bisq
