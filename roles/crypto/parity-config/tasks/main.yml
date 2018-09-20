@@ -28,13 +28,13 @@
 
       . ./vars.inc
 
-      # with --no-discovery option
+      # with --no-discovery option - may help on initial sync to avoid
+      # getting poisoned blocks. but otherwise will prevent finding new peers
       parity \
         -d data \
         --rpccorsdomain "null" \
         --no-ui --no-ws --no-dapps \
         --allow-ips=public \
-        --no-discovery \
 
   tags: config
 
