@@ -452,7 +452,7 @@
         # - generally want to use ssh forwarding for rpc nodes
         # - and port forwards do not require forward table iptables , they are pre-routinig
 
-        # eth/parity - use reverse ssh tunnel instead
+        # eth/parity rpc - use reverse ssh tunnel instead
         FORWARD_ACCEPT(tcp, 8545, 192.168.43.6, 0.0.0.0/0)
         # egress p2p to allow testing
         FORWARD_ACCEPT(tcp, 30303, 192.168.43.6, 0.0.0.0/0)
@@ -470,7 +470,6 @@
 
         # transmission http web rpc
         FORWARD_ACCEPT(tcp, 9091, 192.168.43.0/24, 192.168.204.29)
-
 
         # TODO review/fix
         # bisq
