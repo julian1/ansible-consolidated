@@ -117,7 +117,7 @@
   # ip forwarding - done in play
 
 
-  # Warning, be careful of playbook errors, before meaning that the handler won't get called
+  # Warning, be careful of earlier playbook errors, meaning the handler won't get called
   # and nothing works
 
   - copy:
@@ -201,30 +201,44 @@
   # IMPORTANT - the client code does NOT need to be in /etc/openvpn/clients
   # eg. server doesn't need to know anything about client keys - except through openvpn-ca/keys.
 
+  # ok, this could be simplified a bit by creating everything in the same keys dir. instad of using two dirs
+  # also we may not need to create separate numbered files everywhere.
+  # just create and tar. not clear if server needs to know all the client keys issued.
+  # one problem though - is that we can't fill in the template, in the middle of a single bash script.
+
 
   - file: path=/root/clients state=directory
-    tags: client02
 
-  ####
+  ##########
 
-  - command: "bash -c 'source vars && ./pkitool client02 ' "
+
+  - command: "bash -c 'source vars && ./pkitool client{{item}}'"
     args:
       chdir:  /root/openvpn-ca
-      creates: keys/client02.key
-    tags: client02
+      creates: "keys/client{{item}}.key"
+    with_items: [ '03', '04', '05', '06' ]
+    tags: client03
 
 
-  # important - the openvpn binary expects name of client file to be fixed client.conf - ie not client02.conf.
-  - template: src=client.conf.j2 dest=/root/clients/client.conf
+  # template should be idempotent
+  - template: src=client.conf.j2 dest=/root/clients/client{{item}}.conf
     vars:
-    - { client_instance: "02",  server_name: "vpn" }
-    tags: client02
+    - { client_instance: "{{item}}",  server_name: "my-vpn" }
+    with_items: [ '03', '04', '05', '06' ]
+    tags: client03
 
-  - command: "tar cJf /root/clients/client02.tgz -C /root/openvpn-ca/keys/  ca.crt client02.crt client02.key ta.key -C /root/clients/ client.conf"
+  # important - the openvpn client binary expects the client conf file name to be fixed at client.conf - ie not client02.conf.
+  # so rename before tarring.
+  - command: >
+      bash -c '
+      cp /root/clients/client{{item}}.conf /root/clients/client.conf
+      && tar cJf /root/clients/client{{item}}.tgz -C /root/openvpn-ca/keys/  ca.crt client{{item}}.crt client{{item}}.key ta.key \
+        -C /root/clients/ client.conf
+      '
     args:
-      creates: /root/clients/client02.tgz
-    tags: client02
-
+      creates: /root/clients/client{{item}}.tgz
+    with_items: [ '03', '04', '05', '06' ]
+    tags: client03
 
 
 
@@ -233,14 +247,14 @@
   # CLIENT SETUP/Start
 
   # COPY back to localhost with,
-  # rsync root@vpn:/etc/openvpn/clients/client1.tgz .
+  # sync root@vpn:/root/clients/client03.tgz .
 
   # apt-get install openvpnclient
 
   # cd /etc/openvpn/
   # rm * -rf
   # tar xf /home/meteo/client1.tgz
-  # maybe edit client.conf to set the remote server ip
+  # maybe edit client.conf to set the remote server ip, but should use /etc/hosts.
 
 
   # start is two-step
