@@ -249,7 +249,7 @@
   # COPY back to localhost with,
   # rsync root@vpn:/root/clients/client03.tgz .
 
-  # apt-get install openvpnclient    for???
+  # apt-get install openvpn  - maybe openvpnclient
 
   # cd /etc/openvpn/
   # rm * -rf
