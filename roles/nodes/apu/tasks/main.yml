@@ -932,6 +932,8 @@
             # keep classless route 192.168.0.0/16, for when openvpn overrides default route
             # also add explicit classless gateway route
 
+            # TODO - Think there's an issue where wicd ignores pushed routes. although dhclient is ok. 
+
             option classless-routes 16, 192,168,    192,168,43,1,
                                     24, 10,4,0,     192,168,43,1,
                                     0,              192,168,43,1;

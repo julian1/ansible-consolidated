@@ -247,13 +247,13 @@
   # CLIENT SETUP/Start
 
   # COPY back to localhost with,
-  # sync root@vpn:/root/clients/client03.tgz .
+  # rsync root@vpn:/root/clients/client03.tgz .
 
-  # apt-get install openvpnclient
+  # apt-get install openvpnclient    for???
 
   # cd /etc/openvpn/
   # rm * -rf
-  # tar xf /home/meteo/client1.tgz
+  # tar xf /home/meteo/client03.tgz
   # maybe edit client.conf to set the remote server ip, but should use /etc/hosts.
 
 
