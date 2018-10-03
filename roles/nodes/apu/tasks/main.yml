@@ -455,7 +455,7 @@
         # eth/parity rpc - use reverse ssh tunnel instead
         FORWARD_ACCEPT(tcp, 8545, 192.168.43.6, 0.0.0.0/0)
         # egress p2p to allow testing
-        FORWARD_ACCEPT(tcp, 30303, 192.168.43.6, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 30303, 192.168.43.6, 0.0.0.0/0)
 
         # btc incoming - for piplus - might be port forwarded both...
         # FORWARD_ACCEPT(tcp, 8333, 0.0.0.0/24, 192.168.201.3)
@@ -471,10 +471,16 @@
         # transmission http web rpc
         FORWARD_ACCEPT(tcp, 9091, 192.168.43.0/24, 192.168.204.29)
 
-        # TODO review/fix
-        # bisq
+        # TODO review/fixme
+        # bisq - this is not p2p
         FORWARD_ACCEPT(tcp, 9001, 10.0.0.0/8, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 9030, 10.0.0.0/8, 0.0.0.0/0)
+
+        # parity p2p - note. must also have the port forward
+        FORWARD_ACCEPT(tcp, 30303, 0.0.0.0/0, 10.3.0.9)
+        FORWARD_ACCEPT(udp, 30303, 0.0.0.0/0, 10.3.0.9)
+        FORWARD_ACCEPT(tcp, 30303, 10.3.0.9,  0.0.0.0/0)
+        FORWARD_ACCEPT(udp, 30303, 10.3.0.9,  0.0.0.0/0)
 
 
         # snom
@@ -530,6 +536,11 @@
         iptables -t nat -A PREROUTING -p tcp -s 203.55.231.192/26 -i WAN_INTERFACE -j DNAT --to 192.168.201.20
 
         # No port forwarding for 201.29 due to vpn
+
+        # parity port forward to container.... should use openvpn
+        iptables -t nat -A PREROUTING -p tcp -i WAN_INTERFACE --dport 30303 -j DNAT --to 10.3.0.9
+        iptables -t nat -A PREROUTING -p udp -i WAN_INTERFACE --dport 30303 -j DNAT --to 10.3.0.9
+
 
         # post-routing
         # private subnet nat
@@ -932,7 +943,7 @@
             # keep classless route 192.168.0.0/16, for when openvpn overrides default route
             # also add explicit classless gateway route
 
-            # TODO - Think there's an issue where wicd ignores pushed routes. although dhclient is ok. 
+            # TODO - Think there's an issue where wicd ignores pushed routes. although dhclient is ok.
 
             option classless-routes 16, 192,168,    192,168,43,1,
                                     24, 10,4,0,     192,168,43,1,

@@ -492,6 +492,9 @@
         FORWARD_ACCEPT(tcp, 9001, 0.0.0.0/0, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 9030, 0.0.0.0/0, 0.0.0.0/0)
 
+        # parity p2p and node discovery
+        FORWARD_ACCEPT(tcp, 30303, 0.0.0.0/0, 0.0.0.0/0)
+        FORWARD_ACCEPT(udp, 30303, 0.0.0.0/0, 0.0.0.0/0)
 
 
     notify: reconfigure-iptables
