@@ -41,6 +41,7 @@ apt-get install python-minimal
 export myhost=n.n.n.n
 ansible-playbook plays/admin/hostname.yml -i $myhost, --extra-vars "hostname=$myhost"
 ansible-playbook plays/personal/bootstrap.yml -i $myhost,
+ansible-playbook plays/admin/stretch-ftp-au.yml -i $myhost,
 
 # or bootstrap specific,
 ansible-playbook plays/admin/timezone.yml -i $myhost,
