@@ -1,17 +1,28 @@
 
   # ALL THIS CONFIG SHOULD GO IN A SEPARATE ROLE - parity config.
 
+# Option '--rpccorsdomain' is deprecated. Please use '--jsonrpc-cors' instead.
+# Option '--no-ui' has been removed and is no longer supported.
+# Option '--no-dapps' has been removed and is no longer supported.
+
+# these should be set elsewhere...
+# PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
+# PATH="$HOME/solidity/build/solc:$PATH"
+# PATH="$HOME/solidity/build/lllc:$PATH"
+
+# should *not* install web3 or other dependencies under same user/group
+# can be on entirely different node
+# see web3 play
+# - devel/node
+# - crypto/web3
+
+
 - copy:
     dest: /home/parity/vars.inc
     content: |
       # deployed by ansible!
 
       PATH="{{build_dir}}/target/release:$PATH"
-
-      # these should be set elsewhere...
-      # PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
-      # PATH="$HOME/solidity/build/solc:$PATH"
-      # PATH="$HOME/solidity/build/lllc:$PATH"
 
       export PATH
   tags: config
@@ -68,7 +79,8 @@
         --rpccorsdomain "null" \
         --no-ui --no-ws --no-dapps \
         --allow-ips=public \
-        --no-discovery \
+
+      #  --no-discovery \
 
 
   tags: config

@@ -1,17 +1,17 @@
 
-  # see parity play for rust and node etc.
-  # note, this differs from monero where everything is in the role, 
 
-  # rust and node and handle in other roles
+  # Parity Ethereum also requires gcc, g++, libudev-dev, pkg-config, file, make, and cmake packages to be installed.
 
-  # needs to be root for all this stuff,
-  # gcc, g++, libssl-dev/openssl, libudev-dev and pkg-config
   - apt: name=gcc
   - apt: name=g++
-  - apt: name=make
-  - apt: name=libssl-dev
   - apt: name=libudev-dev
   - apt: name=pkg-config
+  - apt: name=make
+  - apt: name=cmake
+  # - apt: name=yasm
+
+  # old
+  #- apt: name=libssl-dev  removal not tested...
 
   - apt: name=git
 
@@ -21,26 +21,28 @@
       accept_hostkey=yes
       force=yes
       recursive=no
-      version={{version}} 
+      version={{version}}
       # version=v1.7.12
       # version=v1.7.6
       # version=v1.6.10
       # version=v1.6.8
       # there is v1.7.0,but looks bloated
+      # v2.0.5
     become: yes
     become_user: "{{user}}"
     tags: checkout
 
 
-#  - file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
+  # - file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
 
-# export PATH="$HOME/.cargo/bin:$PATH" && cargo build --release 2>&1 | tee log.txt
+  # cargo build --release   <- builds just parity
+  # cargo build --release --features final
 
   - name: build parity
     become: yes
     become_user: "{{user}}"
     shell: >
-      export PATH="$HOME/.cargo/bin:$PATH" && cargo build --release 2>&1 | tee log.txt
+      export PATH="$HOME/.cargo/bin:$PATH" && cargo build --release --features final 2>&1 | tee log.txt
       chdir={{build_dir}}
       creates={{build_dir}}/target/release/parity
     tags: build

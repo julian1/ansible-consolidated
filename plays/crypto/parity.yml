@@ -2,55 +2,42 @@
 # solidity should be a different play.
 # as should node...
 
-
 - hosts: all
   vars_files:
     - ../../credentials.yml
 
   vars:
-    - parity_version: v1.10.8
-    - parity_build_dir: /home/parity/parity-v1.10.8
+    # v2.0.5
+    # - parity_version: v1.10.8
+    # - parity_build_dir: /home/parity/parity-v1.10.8
+    - parity_version: v2.0.5
+    - parity_build_dir: /home/parity/parity-v2.0.5
     - parity_user: parity
-
 
   roles:
 
     - name: admin/user
       username: parity
       path: /home/parity
-      mode: 0700 
+      mode: 0700
 
-    #- name: personal/dotfiles
-    #  tags: dotfiles
-    #  path: /home/parity
-    #  user: parity
-
-
-    # somehow rust 1.23 gets installed?, parity build does it
-    # /home/parity/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --version
-    # rustc 1.23.0 (766bd11c8 2018-01-01)
-
+    # Parity Ethereum requires Rust version 1.29.x to build.
+    # version: 1.21.0
+    # Version 1.29.1 (2018-09-25)
     - name: devel/rust
       user: parity
-      version: 1.21.0
+      version: 1.29.1
+
 
     - name: crypto/parity
       build_dir: "{{parity_build_dir}}"
       version: "{{parity_version}}"
       user: "{{parity_user}}"
-      # version: v1.8.6
-      # avoid 1.7.12, which has db space leak.
-      # version: v1.10.8
 
 
     - name: crypto/parity-config
       build_dir: "{{parity_build_dir}}"
- 
 
 
-    # do not install web3 and all dependencies under same user/group
-    # see web3 play
-    # - devel/node
-    # - crypto/web3
 
 
