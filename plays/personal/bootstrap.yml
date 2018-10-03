@@ -35,6 +35,6 @@
 
     - name: personal/pathogen
       tags: pathogen
-      vim_path: /home/meteo
-      vim_user: meteo
+      path: /home/meteo
+      user: meteo
 
