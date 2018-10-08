@@ -6,6 +6,73 @@
 
   ####
 
+
+  # TODO - change to use -pass file:~/.ssh/file
+  # also passes in ./mozila, .ssh, `aws
+
+  - copy:
+      dest: /home/meteo/backup.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        set -e
+
+        read -s -p "pass: "   pass ; echo
+        read -s -p "again: "  pass2 ; echo
+
+        if [ "$pass" != "$pass2" ]; then
+          echo "not the same!"
+          exit 123
+        fi
+
+        cipher=-aes-256-cbc
+        outdir=/home/meteo-large
+        target=$outdir/meteo-$(date --rfc-3339=date).tgz
+
+        # exit
+
+        set -x
+
+        # assume run from /home/meteo
+        time tar -czf $target  ./
+
+        time openssl enc -e "$cipher" \
+          -pass "pass:$pass" \
+          -in $target  \
+          -out $target.enc \
+
+        time md5sum $target.enc
+
+
+
+#  #!/bin/bash -x
+#  # deployed by ansible!
+#
+#  set -e
+#
+#  # $( cat ~/.ssh/meteobackup  )
+#  pass=$(read -s -p "pass: " )
+#  cipher=-aes-256-cbc
+#  outdir=./meteo-large
+#
+#  # can repeat the pass and compare for for typos and exit
+#
+#  # we kind of want to keep the files around...
+#  [ -f $outdir/meteo.tgz.enc ] && echo "meteo.tgz.enc already exists!!" && exit
+#
+#  tar -czf $outdir/meteo.tgz ./
+#
+#  openssl enc -e "$cipher" \
+#    -pass "pass:$pass" \
+#    -in $outdir/meteo.tgz \
+#    -out $outdir/meteo.tgz.enc \
+#
+
+
   - copy:
       dest: /home/meteo/upload.sh
       mode: 0700
@@ -29,37 +96,6 @@
         else
           aws s3 cp ./me.tgz.enc "s3://$bucket/$target"
         fi
-
-  # TODO - change to use -pass file:~/.ssh/file
-  # also passes in ./mozila, .ssh, `aws
-
-  - copy:
-      dest: /home/meteo/backup.sh
-      mode: 0700
-      owner: meteo
-      group: meteo
-      content: |
-        #!/bin/bash -x
-        # deployed by ansible!
-
-        set -e
-
-        # $( cat ~/.ssh/meteobackup  )
-        pass=$(read -s -p "pass: " )
-        cipher=-aes-256-cbc
-        outdir=./meteo-large
-
-        # can repeat the pass and compare for for typos and exit
-
-        # we kind of want to keep the files around...
-        [ -f $outdir/meteo.tgz.enc ] && echo "meteo.tgz.enc already exists!!" && exit
-
-        tar -czf $outdir/meteo.tgz ./
-
-        openssl enc -e "$cipher" \
-          -pass "pass:$pass" \
-          -in $outdir/meteo.tgz \
-          -out $outdir/meteo.tgz.enc \
 
 
   - copy:

@@ -33,7 +33,7 @@ ansible-playbook ./plays/personal/dotfiles.yml -i 10.3.0.10, --extra-vars "path=
 ansible-playbook ./plays/personal/dotfiles.yml -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
 ansible-playbook ./plays/personal/pathogen.yml -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
 ansible-playbook ./plays/personal/dotfiles.yml -i nixos02, --extra-vars "path=/root user=root ansible_python_interpreter=/root/.nix-profile/bin/python"
-ansible-playbook ./plays/personal/pathogen.yml -i nixos02, --extra-vars "path=/root user=root ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook ./plays/personal/pathogen.yml -i nixos02, --extra-vars "path=/root user=root"
 
 
 # bootstrap
