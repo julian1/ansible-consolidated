@@ -26,8 +26,9 @@
 
         if [ "$pass" != "$pass2" ]; then
           echo "not the same!"
-          exit 123
+          exit 123 
         fi
+
 
         cipher=-aes-256-cbc
         outdir=/home/meteo-large
@@ -38,14 +39,15 @@
         set -x
 
         # assume run from /home/meteo
-        time tar -czf $target  ./
+        time tar -czf $target  ./  
 
         time openssl enc -e "$cipher" \
           -pass "pass:$pass" \
           -in $target  \
           -out $target.enc \
 
-        time md5sum $target.enc
+        # x-amz-meta-md5chksum
+        md5sum $target.enc | base64
 
 
 
