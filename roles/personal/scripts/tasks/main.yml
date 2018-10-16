@@ -21,35 +21,100 @@
 
         set -e
 
+        if [ -z $1 ]; then
+          echo "usage: $0 <directory>"
+          exit 123
+        fi
+
+        parentdir=$(dirname $1)
+        dir=$(basename $1)
+
+        if ! [ -d "$parentdir/$dir" ]; then
+          echo "dir does not exist!"
+          exit 123 ;
+        fi
+
+        target=$dir-$(date --rfc-3339=date).tgz.enc
+
+        if [ -f $target ]; then
+          echo "backup target '$target' already exists!"
+          exit 123
+        fi
+
         read -s -p "pass: "   pass ; echo
         read -s -p "again: "  pass2 ; echo
 
         if [ "$pass" != "$pass2" ]; then
           echo "not the same!"
-          exit 123 
+          exit 123
         fi
 
-
         cipher=-aes-256-cbc
-        outdir=/home/meteo-large
-        target=$outdir/meteo-$(date --rfc-3339=date).tgz
 
-        # exit
+        # do NOT use -x which will echo the pass 
 
-        set -x
-
-        # assume run from /home/meteo
-        time tar -czf $target  ./  
-
-        time openssl enc -e "$cipher" \
+        tar -cz \
+          -C $parentdir $dir \
+        | openssl enc \
+          -e "$cipher" \
           -pass "pass:$pass" \
-          -in $target  \
-          -out $target.enc \
+          -out $target \
+
+        #-in stdin   \
 
         # x-amz-meta-md5chksum
-        md5sum $target.enc | base64
+        # note md5 -binary is different to md5sum output
+        hash=$( openssl md5 -binary $target | base64 )
+        echo $hash
 
 
+  - copy:
+      dest: /home/meteo/restore.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        set -e
+
+        input=$1
+        restoredir=$2
+        stripcomponents=$3
+
+        if [ -z $input ]; then
+          echo "usage: $0 <input.tgz.enc> <restoredir> <stripcomponents arg>"
+          exit 123
+        fi
+
+        if ! [ -f $input ]; then
+          echo "input file '$input' does not exist!"
+          exit 123
+        fi
+
+        if [ -z $restoredir ]; then
+          restoredir=./
+        fi
+
+        if [ -z $stripcomponents ]; then
+          stripcomponents=0
+        fi
+
+        read -s -p "pass: "   pass ; echo
+
+        cipher=-aes-256-cbc
+
+        openssl enc \
+          -d "$cipher" \
+          -pass "pass:$pass" \
+          -in $input \
+        | tar -xz \
+          -C $restoredir \
+          --strip-components $stripcomponents \
+
+
+#-out restore/me.tar \
 
 #  #!/bin/bash -x
 #  # deployed by ansible!
@@ -61,19 +126,6 @@
 #  cipher=-aes-256-cbc
 #  outdir=./meteo-large
 #
-#  # can repeat the pass and compare for for typos and exit
-#
-#  # we kind of want to keep the files around...
-#  [ -f $outdir/meteo.tgz.enc ] && echo "meteo.tgz.enc already exists!!" && exit
-#
-#  tar -czf $outdir/meteo.tgz ./
-#
-#  openssl enc -e "$cipher" \
-#    -pass "pass:$pass" \
-#    -in $outdir/meteo.tgz \
-#    -out $outdir/meteo.tgz.enc \
-#
-
 
   - copy:
       dest: /home/meteo/upload.sh
@@ -99,35 +151,6 @@
           aws s3 cp ./me.tgz.enc "s3://$bucket/$target"
         fi
 
-
-  - copy:
-      dest: /home/meteo/restore.sh
-      mode: 0700
-      owner: meteo
-      group: meteo
-      content: |
-        #!/bin/bash -x
-        # deployed by ansible!
-
-        # TODO
-        review
-        exit
-
-        pass=$( cat ~/.ssh/mebackup )
-        cipher=-aes-256-cbc
-
-        [ -d restore ] && echo "restore dir already exists!!" && exit
-
-        mkdir restore
-
-        openssl enc -d "$cipher" \
-          -pass "pass:$pass" \
-          -in me.tgz.enc \
-          -out restore/me.tar \
-          || exit
-
-        # untar to different dir
-        tar -xf restore/me.tar -C restore --strip-components 1 || exit
 
 
   - copy:
