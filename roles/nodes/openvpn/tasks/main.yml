@@ -132,17 +132,18 @@
         # this is a bit tricky, we need to know the client ip, to set up the forward
         # port forwards to a client
         # monero p2p
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 10.8.0.6
+        #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 10.8.0.6
         # parity p2p
         # and parity node discovery
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 30303 -j DNAT --to 10.8.0.6
-        iptables -t nat -A PREROUTING -p udp -i eth0 --dport 30303 -j DNAT --to 10.8.0.6
+        #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 30303 -j DNAT --to 10.8.0.6
+        #iptables -t nat -A PREROUTING -p udp -i eth0 --dport 30303 -j DNAT --to 10.8.0.6
         # transmission/bittorrent
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.6
+        # iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.6
+        #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.18
         # grin p2p,
         # and send/receive api
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13414 -j DNAT --to 10.8.0.10
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13415 -j DNAT --to 10.8.0.10
+        #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13414 -j DNAT --to 10.8.0.10
+        #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13415 -j DNAT --to 10.8.0.10
 
 
     notify: reconfigure-iptables
