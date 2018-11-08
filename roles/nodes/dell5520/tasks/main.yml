@@ -56,6 +56,9 @@
 
         setxkbmap -option compose:ralt   # accented compose key is right alt
 
+        # setxkbmap -option caps:swapescape   # make caps-lock the escape key, and escape caps-lock. for vim etc.
+        setxkbmap -option caps:escape         # to make caps-lock an additional escape
+
         xrdb -merge <<- EOF
           XTerm*selectToClipboard: true
           XTerm*faceName: DejaVu Sans Mono

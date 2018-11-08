@@ -372,14 +372,19 @@
         # node specific - bravia and nuc
         # drop any egress from bravia to intranet (excludes apu2 and dns )...
         # should do the same for ping
-        FORWARD_DROP( tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
-        FORWARD_DROP( udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
-        FORWARD_DROP( tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
-        FORWARD_DROP( udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
-        FORWARD_DROP( tcp, 1:65535, 192.168.202.16, 10.0.0.0/8)
-        FORWARD_DROP( udp, 1:65535, 192.168.202.16, 10.0.0.0/8)
-        FORWARD_DROP( tcp, 1:65535, 192.168.201.17, 10.0.0.0/8)
-        FORWARD_DROP( udp, 1:65535, 192.168.201.17, 10.0.0.0/8)
+      
+        # OK - this prevents ssh access to nuc - which is not what we want...
+
+        # there's an issue with drop - in that it will drop both ways... not sure...
+
+        #FORWARD_DROP( tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+        #FORWARD_DROP( udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
+        #FORWARD_DROP( tcp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+        #FORWARD_DROP( udp, 1:65535, 192.168.201.17, 192.168.0.0/16)
+        #FORWARD_DROP( tcp, 1:65535, 192.168.202.16, 10.0.0.0/8)
+        #FORWARD_DROP( udp, 1:65535, 192.168.202.16, 10.0.0.0/8)
+        #FORWARD_DROP( tcp, 1:65535, 192.168.201.17, 10.0.0.0/8)
+        #FORWARD_DROP( udp, 1:65535, 192.168.201.17, 10.0.0.0/8)
 
 
         #########
