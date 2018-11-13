@@ -10,63 +10,17 @@
   # TODO - change to use -pass file:~/.ssh/file
   # also passes in ./mozila, .ssh, `aws
 
+
+
+
+TODO fixme!!! 
+  see ./roles/personal/scripts/files/
+
   - copy:
       dest: /home/meteo/backup.sh
       mode: 0700
       owner: meteo
       group: meteo
-      content: |
-        #!/bin/bash
-        # deployed by ansible!
-
-        set -e
-
-        if [ -z $1 ]; then
-          echo "usage: $0 <directory>"
-          exit 123
-        fi
-
-        parentdir=$(dirname $1)
-        dir=$(basename $1)
-
-        if ! [ -d "$parentdir/$dir" ]; then
-          echo "dir does not exist!"
-          exit 123 ;
-        fi
-
-        target=$dir-$(date --rfc-3339=date).tgz.enc
-
-        if [ -f $target ]; then
-          echo "backup target '$target' already exists!"
-          exit 123
-        fi
-
-        read -s -p "pass: "   pass ; echo
-        read -s -p "again: "  pass2 ; echo
-
-        if [ "$pass" != "$pass2" ]; then
-          echo "not the same!"
-          exit 123
-        fi
-
-        cipher=-aes-256-cbc
-
-        # do NOT use -x which will echo the pass 
-
-        tar -cz \
-          -C $parentdir $dir \
-        | openssl enc \
-          -e "$cipher" \
-          -pass "pass:$pass" \
-          -out $target \
-
-        #-in stdin   \
-
-        # x-amz-meta-md5chksum
-        # note md5 -binary is different to md5sum output
-        hash=$( openssl md5 -binary $target | base64 )
-        echo $hash
-
 
   - copy:
       dest: /home/meteo/restore.sh
@@ -77,41 +31,6 @@
         #!/bin/bash
         # deployed by ansible!
 
-        set -e
-
-        input=$1
-        restoredir=$2
-        stripcomponents=$3
-
-        if [ -z $input ]; then
-          echo "usage: $0 <input.tgz.enc> <restoredir> <stripcomponents arg>"
-          exit 123
-        fi
-
-        if ! [ -f $input ]; then
-          echo "input file '$input' does not exist!"
-          exit 123
-        fi
-
-        if [ -z $restoredir ]; then
-          restoredir=./
-        fi
-
-        if [ -z $stripcomponents ]; then
-          stripcomponents=0
-        fi
-
-        read -s -p "pass: "   pass ; echo
-
-        cipher=-aes-256-cbc
-
-        openssl enc \
-          -d "$cipher" \
-          -pass "pass:$pass" \
-          -in $input \
-        | tar -xz \
-          -C $restoredir \
-          --strip-components $stripcomponents \
 
 
 #-out restore/me.tar \

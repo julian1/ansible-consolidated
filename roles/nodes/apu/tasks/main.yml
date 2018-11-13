@@ -182,7 +182,7 @@
 
   - apt: name=hostapd
 
-
+  # ifdown wlan0 && sleep 1 && ifup wlan0
   # hostapd.conf goes first since referred to by /etc/network/interfaces
   # AP primary
   - copy:
@@ -192,7 +192,8 @@
         interface=wlan0
         ssid=AP1
         hw_mode=g
-        channel=9
+        # channel=9 Nov 12
+        channel=7
         auth_algs=1
         wpa=2
         wpa_passphrase={{wpa_passphrase}}
