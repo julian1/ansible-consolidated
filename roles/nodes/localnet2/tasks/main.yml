@@ -196,7 +196,8 @@
         # search, try resolution for localnets
         # https://superuser.com/questions/570082/in-etc-resolv-conf-what-exactly-does-the-search-configuration-option-do
         #   - can have up to six entries...
-        search localnet localnet2
+        search localnet 
+        search localnet2
 
         # WARNING do not change!
         # Use /etc/bind/named.conf.options instead and restart bind9
