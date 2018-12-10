@@ -1,6 +1,4 @@
 
-  # ALL THIS CONFIG SHOULD GO IN A SEPARATE ROLE - parity config.
-
 # Option '--rpccorsdomain' is deprecated. Please use '--jsonrpc-cors' instead.
 # Option '--no-ui' has been removed and is no longer supported.
 # Option '--no-dapps' has been removed and is no longer supported.
@@ -72,6 +70,7 @@
       # --min-peers 8 --max-peers 12 \
       # --nat extip:n.n.n.n \
       # --no-warp
+      # --no-discovery \
 
       trickle -s -u 50 -d 100 \
       parity \
@@ -80,14 +79,12 @@
         --no-ui --no-ws --no-dapps \
         --allow-ips=public \
 
-      #  --no-discovery \
-
 
   tags: config
 
 # may need port forward for port 30303
 
-# useful to avoid installing, or when we don't have node
+# useful - and can avoid installing npm/node
 - copy:
     dest: /home/parity/blocknumber.sh
     owner: parity
