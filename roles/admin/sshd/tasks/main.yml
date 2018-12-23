@@ -35,7 +35,7 @@
         # this is an encrypted/non-spoofable keepalive - versus TCPKeepAlive
         # may need the same thing on the client side also - so the client sends something?.
         ClientAliveInterval 60   # 60 secs, normally 300
-        ClientAliveCountMax 2
+        ClientAliveCountMax 5   # normally 2. no reason to give up early, if vpn has reroute.
 
 
     notify: restart-sshd
