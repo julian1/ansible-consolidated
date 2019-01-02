@@ -391,14 +391,19 @@
         #########
 
         # http
+    
+        # want something like this... any traffic directed at local network
+        FORWARD_DROP( tcp,  80,  0.0.0.0,        192.168.0.0/16) 
+        FORWARD_DROP( tcp,  443, 0.0.0.0,        192.168.0.0/16) 
+
         FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
-        FORWARD_ACCEPT(tcp, 80,  10.0.0.0/8,     0.0.0.0/0)
-        FORWARD_ACCEPT(tcp, 443, 10.0.0.0/8,     0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 80,  10.0.0.0/8,     0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 443, 10.0.0.0/8,     0.0.0.0/0)
 
         # ntp
         FORWARD_ACCEPT(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
-        FORWARD_ACCEPT(tcp, 123, 10.0.0.0/8,     0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 123, 10.0.0.0/8,     0.0.0.0/0)
 
 
         # 5222 test port - ssh proxy and general open test port
@@ -433,8 +438,8 @@
 
 
         # ssh permitted egress
-        FORWARD_ACCEPT(tcp, 22, 192.168.43.6, 0.0.0.0/0)
-        FORWARD_ACCEPT(tcp, 22, 192.168.43.14, 0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 22, 192.168.43.6,   0.0.0.0/0)
+        FORWARD_ACCEPT(tcp, 22, 192.168.43.14,  0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 22, 192.168.201.19, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 22, 192.168.201.27, 0.0.0.0/0)
 
@@ -543,13 +548,13 @@
         # No port forwarding for 201.29 due to vpn
 
         # parity port forward to container.... should use openvpn
-        iptables -t nat -A PREROUTING -p tcp -i WAN_INTERFACE --dport 30303 -j DNAT --to 10.3.0.9
-        iptables -t nat -A PREROUTING -p udp -i WAN_INTERFACE --dport 30303 -j DNAT --to 10.3.0.9
+        # iptables -t nat -A PREROUTING -p tcp -i WAN_INTERFACE --dport 30303 -j DNAT --to 10.3.0.9
+        # iptables -t nat -A PREROUTING -p udp -i WAN_INTERFACE --dport 30303 -j DNAT --to 10.3.0.9
 
 
         # post-routing
         # private subnet nat
-        iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o WAN_INTERFACE -j MASQUERADE
+        # iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o WAN_INTERFACE -j MASQUERADE
         iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o WAN_INTERFACE -j MASQUERADE
         iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o WAN_INTERFACE -j MASQUERADE
 
