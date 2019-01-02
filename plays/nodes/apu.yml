@@ -40,7 +40,7 @@
 
 
     # most networking stuff is here
-    - nodes/apu
+    - nodes/localnet
     
     - admin/iptables-macros
 
