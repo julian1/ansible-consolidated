@@ -348,6 +348,7 @@
         # Note - this means untrusted nodes like bravia can use ping to discover network
         # probably wants a drop in front of it.
         FORWARD_PING_ACCEPT( 192.168.0.0/16, 0.0.0.0/0 )
+        # FORWARD_PING_ACCEPT( 10.0.0.0/8,     0.0.0.0/0 )
 
         # logging examples
         # iptables -A FORWARD -p tcp -s 192.168.43.6 --dport 80 -j LOG --log-prefix "IPTABLES: "
@@ -358,19 +359,31 @@
         #########
 
         # http
-
+    
         # don't permit subnet make connections out to subnet.
         # this may need to be relaxed per device. eg. talking to a local webserver
         # note global 0.0.0.0 -> locanet is dropped by default
-        FORWARD_DROP( tcp,  80,  192.168.0.0/16, 192.168.0.0/16)
-        FORWARD_DROP( tcp,  443, 192.168.0.0/16, 192.168.0.0/16)
+        FORWARD_DROP( tcp,  80,  192.168.0.0/16, 192.168.0.0/16) 
+        FORWARD_DROP( tcp,  443, 192.168.0.0/16, 192.168.0.0/16) 
 
         FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 80,  10.0.0.0/8,     0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 443, 10.0.0.0/8,     0.0.0.0/0)
 
         # ntp
         FORWARD_DROP(  udp, 123, 192.168.0.0/16, 192.168.0.0/16)
         FORWARD_ACCEPT(udp, 123, 192.168.0.0/16, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 123, 10.0.0.0/8,     0.0.0.0/0)
+
+
+        # 5222 test port - ssh proxy and general open test port
+        # FORWARD_ACCEPT(tcp, 5222, 192.168.43.0/24, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 5222, 192.168.201.0/24, 0.0.0.0/0)
+
+        # general test port.
+        # FORWARD_ACCEPT(tcp, 5222, 192.168.0.0/16, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 5222, 10.0.0.0/8,     0.0.0.0/0)
 
 
         # laptop
@@ -383,19 +396,67 @@
         FORWARD_ACCEPT(tcp, 25, 192.168.43.6, 0.0.0.0/0)
         # laptop smtpd submission, tls, starttls
         FORWARD_ACCEPT(tcp, 587, 192.168.43.6, 0.0.0.0/0)
-        # laptop imap tls
+        # imap tls
         FORWARD_ACCEPT(tcp, 993, 192.168.43.6, 0.0.0.0/0)
-        # laptop irc - note, port 6667 preferred over 194, freenode uses 6697
+        # irc - note, port 6667 preferred over 194, freenode uses 6697
         FORWARD_ACCEPT(tcp, 6697, 192.168.43.6, 0.0.0.0/0)
 
 
         # ssh permitted egress
         FORWARD_ACCEPT(tcp, 22, 192.168.43.6,   0.0.0.0/0)
         FORWARD_ACCEPT(tcp, 22, 192.168.43.14,  0.0.0.0/0)
+        #FORWARD_ACCEPT(tcp, 22, 192.168.201.19, 0.0.0.0/0)
+        #FORWARD_ACCEPT(tcp, 22, 192.168.201.27, 0.0.0.0/0)
 
+        # ssh container to anywhere
+        # FORWARD_ACCEPT(tcp, 22, 10.0.0.0/8, 0.0.0.0/0)
+
+        # ssh container to local networks
+        # FORWARD_ACCEPT(tcp, 22, 10.0.0.0/8, 192.168.0.0/16)
+
+        # ssh containers -> apu2
+        # FORWARD_ACCEPT(tcp, 22, 10.0.0.0/8, 192.168.204.29)
+
+        # apu2 -> nuc - for sshfs mounting of nuc volume on apu2.
+        # FORWARD_ACCEPT(tcp, 22, 192.168.204.29 , 192.168.201.17 )
 
         # localnet -> printer - brother.localnet 9100
         FORWARD_ACCEPT(tcp, 9100, 192.168.43.0/24, 192.168.201.15)
+
+        #
+        # IMPORTANT
+        # - generally want to use ssh forwarding for rpc nodes
+        # - and port forwards do not require forward table iptables , they are pre-routinig
+
+        # eth/parity rpc - use reverse ssh tunnel instead
+        # FORWARD_ACCEPT(tcp, 8545, 192.168.43.6, 0.0.0.0/0)
+        # egress p2p to allow testing
+        # FORWARD_ACCEPT(tcp, 30303, 192.168.43.6, 0.0.0.0/0)
+
+        # btc incoming - for piplus - might be port forwarded both...
+        # FORWARD_ACCEPT(tcp, 8333, 0.0.0.0/24, 192.168.201.3)
+
+        # monero rpc
+        # FORWARD_ACCEPT(tcp, 18081, 192.168.43.6, 0.0.0.0/0)
+        # monero open node
+        # FORWARD_ACCEPT(tcp, 18089, 192.168.43.6, 0.0.0.0/0)
+        # egress p2p to allow testing
+        # FORWARD_ACCEPT(tcp, 18080, 192.168.43.6, 0.0.0.0/0)
+
+
+        # transmission http web rpc
+        # FORWARD_ACCEPT(tcp, 9091, 192.168.43.0/24, 192.168.204.29)
+
+        # TODO review/fixme
+        # bisq - this is not p2p
+        # FORWARD_ACCEPT(tcp, 9001, 10.0.0.0/8, 0.0.0.0/0)
+        # FORWARD_ACCEPT(tcp, 9030, 10.0.0.0/8, 0.0.0.0/0)
+
+        # parity p2p - note. must also have the port forward
+        # FORWARD_ACCEPT(tcp, 30303, 0.0.0.0/0, 10.3.0.9)
+        # FORWARD_ACCEPT(udp, 30303, 0.0.0.0/0, 10.3.0.9)
+        # FORWARD_ACCEPT(tcp, 30303, 10.3.0.9,  0.0.0.0/0)
+        # FORWARD_ACCEPT(udp, 30303, 10.3.0.9,  0.0.0.0/0)
 
 
         # snom
@@ -407,14 +468,30 @@
         # iptables -A FORWARD -d 192.168.203.20 -j LOG
         # ....
 
+        # IMPORTANT - Logging doesn't see much traffic here, because most stuff has already been accepted - eg. dns,https
+        # bravia log everything
+        #          iptables -A FORWARD -s 192.168.201.16 -j LOG ACCEPT
+        #          iptables -A FORWARD -d 192.168.201.16 -j LOG
 
-        # bravia
-        # drop anything directed to localnetwork...
+        # bravia outgoing  - all outgoing tcp
+        # opera/RT
+        # iptables -A FORWARD -p tcp --dport 84 -s 192.168.201.16 -j ACCEPT
+        # iptables -A FORWARD -p tcp --sport 84 -d 192.168.201.16 -j ACCEPT
+        # leave ssh open etc.
+
+        # these rules don't work - because we have already accepted http earlier.
+
+        # bravia drop anything directed to localnetwork...
         FORWARD_DROP(  tcp, 1:65535, 192.168.202.16, 192.168.0.0/16)
         FORWARD_DROP(  udp, 1:65535, 192.168.202.16, 192.168.0.0/16)
-        # else allow outbound connection to internet
+
+        # bravia - otherwise allow outbound connection to internet
         FORWARD_ACCEPT(tcp, 1:65535, 192.168.202.16, 0.0.0.0/0)
         FORWARD_ACCEPT(udp, 1:65535, 192.168.202.16, 0.0.0.0/0)
+
+        # nuc - otherwise allow outbound connection to internet
+        # FORWARD_ACCEPT(tcp, 1:65535, 192.168.201.17, 0.0.0.0/0)
+        # FORWARD_ACCEPT(udp, 1:65535, 192.168.201.17, 0.0.0.0/0)
 
 
         # TODO re-enable dlna multicast routing,
@@ -438,15 +515,20 @@
 
         # No port forwarding for 201.29 due to vpn
 
+        # parity port forward to container.... should use openvpn
+        # iptables -t nat -A PREROUTING -p tcp -i WAN_INTERFACE --dport 30303 -j DNAT --to 10.3.0.9
+        # iptables -t nat -A PREROUTING -p udp -i WAN_INTERFACE --dport 30303 -j DNAT --to 10.3.0.9
+
 
         # post-routing
         # private subnet nat
+        # iptables -t nat -A POSTROUTING -s 10.0.0.0/8     -o WAN_INTERFACE -j MASQUERADE
         iptables -t nat -A POSTROUTING -s 172.16.0.0/12  -o WAN_INTERFACE -j MASQUERADE
         iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o WAN_INTERFACE -j MASQUERADE
 
         #####
         # mangle
-        #  checksum issue for udp bootpc with systemd containers
+        #  checksum issue for udp bootpc
 
 
         # everything ok? change policies back to drop
