@@ -264,10 +264,8 @@
         ###############################
         # wan
 
-        # test
-        # WAN_IN_ACCEPT(tcp, 5222, 0.0.0.0/0)
 
-        # dhcp - is this really needed???
+        # dhcp - is this really needed???. for isp dhcp
         # TODO port 68 also...
         WAN_OUT_ACCEPT(udp, 67, 0.0.0.0/0)
 
@@ -288,9 +286,6 @@
 
         ###############################
         # lan
-
-        # test
-        LAN_OUT_ACCEPT(tcp, 5222, 0.0.0.0/0)
 
         # ping
         LAN_OUT_PING_ACCEPT(0.0.0.0/0)
@@ -316,9 +311,6 @@
         LAN_IN_ACCEPT(udp, 69,        192.168.0.0/16)
         LAN_IN_ACCEPT(udp, 1024:1034, 192.168.0.0/16)
 
-
-        # test
-        LAN_IN_ACCEPT(tcp, 5222, 0.0.0.0/0)
 
         # ping
         LAN_IN_PING_ACCEPT(0.0.0.0/0)
@@ -358,14 +350,13 @@
         #########
 
         # http
-
         # don't permit subnet make connections out to subnet.
         # this may need to be relaxed per device. eg. talking to a local webserver
         # note global 0.0.0.0 -> locanet is dropped by default
         FORWARD_DROP( tcp,  80,  192.168.0.0/16, 192.168.0.0/16)
-        FORWARD_DROP( tcp,  443, 192.168.0.0/16, 192.168.0.0/16)
-
         FORWARD_ACCEPT(tcp, 80,  192.168.0.0/16, 0.0.0.0/0)
+
+        FORWARD_DROP( tcp,  443, 192.168.0.0/16, 192.168.0.0/16)
         FORWARD_ACCEPT(tcp, 443, 192.168.0.0/16, 0.0.0.0/0)
 
         # ntp
