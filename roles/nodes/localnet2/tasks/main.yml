@@ -196,7 +196,8 @@
         # search, try resolution for localnets
         # https://superuser.com/questions/570082/in-etc-resolv-conf-what-exactly-does-the-search-configuration-option-do
         #   - can have up to six entries...
-        search localnet localnet2
+        # refer to our own localnet2 first, because localnet may hang, if working remotely
+        search localnet2 localnet
 
         # WARNING do not change! Unless using hotel/restaurant etc... and must use dhclient .
         # Use /etc/bind/named.conf.options instead and restart bind9
@@ -433,6 +434,7 @@
         # on the interface.
 
         iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
+        iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o usb0  -j MASQUERADE
 
         # polyc - no restrictions
         iptables -P INPUT  ACCEPT
