@@ -19,8 +19,10 @@
     dest: /home/parity/vars.inc
     content: |
       # deployed by ansible!
+      # jan 2019
 
-      PATH="{{build_dir}}/target/release:$PATH"
+      # copy binary out of the build path
+      PATH="/home/parity/:$PATH"
 
       export PATH
   tags: config
@@ -34,16 +36,21 @@
     content: |
       #!/bin/bash
       # deployed by ansible!
+      # jan 2019
 
       . ./vars.inc
 
-      # with --no-discovery option - may help on initial sync to avoid
-      # getting poisoned blocks. but otherwise will prevent finding new peers
       parity \
         -d data \
-        --rpccorsdomain "null" \
-        --no-ui --no-ws --no-dapps \
+        --jsonrpc-cors "all" \
+        --jsonrpc-hosts "all" \
+        --jsonrpc-interface 127.0.0.1 \
+        --interface n.n.n.n \
         --allow-ips=public \
+        --no-ancient-blocks \
+
+      #  --min-peers 8 --max-peers 12 \
+
 
   tags: config
 
@@ -56,6 +63,7 @@
     content: |
       #!/bin/bash
       # deployed by ansible!
+      # old
 
       . ./vars.inc
 
