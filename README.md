@@ -8,49 +8,49 @@ Ansible plays for use with dev, systemd-nspawn containers, kvm, cloud instances,
 
 ```
 # nodes
-ansible-playbook plays/nodes/apu.yml --tags bind,dhcp,iptables
-ansible-playbook plays/nodes/dell5520.yml -c local
-ansible-playbook plays/nodes/localnet2.yml -c local
+ansible-playbook plays/nodes/apu.yml            --tags bind,dhcp,iptables
+ansible-playbook plays/nodes/dell5520.yml       -i localhost, -c local
+ansible-playbook plays/nodes/localnet2.yml      -i localhost, -c local
 
 # plays
-ansible-playbook plays/admin/stretch-ftp-au.yml -i devel08,
-ansible-playbook plays/personal/dotfiles.yml -i localhost, -c local
-ansible-playbook plays/admin/devenv-lite.yml -i localhost, -c local
-ansible-playbook plays/admin/bridge-tap.yml -i localhost, -c local
-ansible-playbook plays/personal/scripts.yml -i localhost, -c local
-ansible-playbook plays/admin/openvpn.yml -i $myhost,
-ansible-playbook plays/admin/postgres.yml -i $myhost,
-ansible-playbook plays/admin/postfix.yml -i $myhost,
+ansible-playbook plays/admin/timezone.yml       -i localhost, -c local
+ansible-playbook plays/personal/dotfiles.yml    -i localhost, -c local
+ansible-playbook plays/personal/scripts.yml     -i localhost, -c local
+ansible-playbook plays/admin/devenv-lite.yml    -i localhost, -c local
+ansible-playbook plays/admin/stretch-ftp-au.yml -i $host,
+ansible-playbook plays/admin/openvpn.yml        -i $host,
+ansible-playbook plays/admin/postgres.yml       -i $host,
+ansible-playbook plays/admin/postfix.yml        -i $host,
 
-ansible-playbook plays/admin/deploy-war.yml -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
+ansible-playbook plays/admin/deploy-war.yml     -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 
 # setting and overriding vars
-ansible-playbook ./plays/personal/dotfiles.yml -i localhost, -c local --extra-vars "path=/root user=root"
-ansible-playbook ./plays/personal/dotfiles.yml -i $myhost,  --extra-vars "path=/home/parity user=parity"
-ansible-playbook ./plays/personal/dotfiles.yml -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python"
+ansible-playbook ./plays/personal/dotfiles.yml  -i localhost, -c local --extra-vars "path=/root user=root"
+ansible-playbook ./plays/personal/dotfiles.yml  -i $host,  --extra-vars "path=/home/parity user=parity"
+ansible-playbook ./plays/personal/dotfiles.yml  -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python"
 
-# nixos temporary
-ansible-playbook ./plays/personal/dotfiles.yml -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
-ansible-playbook ./plays/personal/pathogen.yml -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
-ansible-playbook ./plays/personal/dotfiles.yml -i nixos02, --extra-vars "path=/root user=root ansible_python_interpreter=/root/.nix-profile/bin/python"
-ansible-playbook ./plays/personal/pathogen.yml -i nixos02, --extra-vars "path=/root user=root"
+# nixos temporary examples,
+ansible-playbook ./plays/personal/dotfiles.yml  -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook ./plays/personal/pathogen.yml  -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook ./plays/personal/dotfiles.yml  -i nixos02, --extra-vars "path=/root user=root ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook ./plays/personal/pathogen.yml  -i nixos02, --extra-vars "path=/root user=root"
 
 
 # bootstrap
 apt-get install python-minimal
-export myhost=n.n.n.n
-ansible-playbook plays/admin/hostname.yml -i $myhost, --extra-vars "hostname=$myhost"
-ansible-playbook plays/personal/bootstrap.yml -i $myhost,
-ansible-playbook plays/admin/stretch-ftp-au.yml -i $myhost,
+export host=n.n.n.n
+ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
+ansible-playbook plays/personal/bootstrap.yml   -i $host,
+ansible-playbook plays/admin/stretch-ftp-au.yml -i $host,
 
 # or bootstrap specific,
-ansible-playbook plays/admin/timezone.yml -i $myhost,
-ansible-playbook plays/admin/locale.yml -i $myhost,
-ansible-playbook plays/admin/fail2ban.yml -i $myhost,
-ansible-playbook plays/admin/devenv-lite.yml -i $myhost,
+ansible-playbook plays/admin/timezone.yml       -i $host,
+ansible-playbook plays/admin/locale.yml         -i $host,
+ansible-playbook plays/admin/fail2ban.yml       -i $host,
+ansible-playbook plays/admin/devenv-lite.yml    -i $host,
 
-ansible-playbook plays/personal/dotfiles.yml -i $myhost,
-ansible-playbook plays/personal/meteo-sudo.yml -i $myhost,
+ansible-playbook plays/personal/dotfiles.yml    -i $host,
+ansible-playbook plays/personal/meteo-sudo.yml  -i $host,
 
 
 # flags
