@@ -36,18 +36,23 @@
     content: |
       #!/bin/bash
       # deployed by ansible!
-      # jan 2019
+      # feb 2019
 
       . ./vars.inc
+
+      # warp sync, with no validation after. reduces ./data by 100G
 
       parity \
         -d data \
         --jsonrpc-cors "all" \
         --jsonrpc-hosts "all" \
-        --jsonrpc-interface 127.0.0.1 \
-        --interface n.n.n.n \
+        --jsonrpc-interface 10.3.0.9 \
+        --ws-interface 10.3.0.9 \
+        --interface 10.8.0.22 \
         --allow-ips=public \
         --no-ancient-blocks \
+        --min-peers 8 --max-peers 12 \
+
 
       #  --min-peers 8 --max-peers 12 \
 
