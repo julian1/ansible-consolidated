@@ -20,17 +20,15 @@ alias vim='vim -p'
 alias top='top -d 1'
 # alias feh='feh -F -Z -d --keep-zoom-vp'
 alias feh='feh -F -Z -d'
-
 alias iftop='iftop -B -P -N'
-
 
 # shortcuts
 alias g=git
-alias l=less
-alias s=sudo
-alias v='vim -p'
+#alias l=less
+#alias s=sudo
+#alias v='vim -p'
 
-alias sc=systemctl
+alias sc=systemctl    # shadows /usr/bin/sc
 alias jc=journalctl
 alias mc=machinectl
 
