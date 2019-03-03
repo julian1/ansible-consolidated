@@ -24,9 +24,11 @@ alias iftop='iftop -B -P -N'
 
 # shortcuts
 alias g=git
-#alias l=less
-#alias s=sudo
-#alias v='vim -p'
+alias s=sudo
+alias l=less
+alias v='vim -p'
+alias p=ping
+alias wp='watch ping -c 1 8.8.8.8'
 
 alias sc=systemctl    # shadows /usr/bin/sc
 alias jc=journalctl
@@ -43,7 +45,7 @@ alias myip3='curl https://ident.me'
 alias myip4="curl -s http://www.ip-adress.eu/ | grep My | sed 's/.*\">//' "
 
 # ping
-alias p=ping
+
 # ping gateway
 function p6() {
   gateway=$( ip route | grep '^default' | cut -d ' ' -f 3  )
