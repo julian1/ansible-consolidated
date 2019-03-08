@@ -1,29 +1,44 @@
 
-  # Also, see play for other roles, - timezone, locale, sshd, fail2ban plays,
+# Also, see play for other roles, - timezone, locale, sshd, fail2ban plays,
 
-  # TODO move to node specific role
+# TODO move to node specific role
 
-  # needs the following DNS records - MX, A, SPF, PTR (via host), TXT (same as SPF)
-  # julian1.io
-  #   MX 10 mail.julian1.io - - 60
-  #   SPF "v=spf1 mx -all" - - 60
-  #   TXT "v=spf1 mx -all" - - 60
+# needs the following DNS records - MX, A, SPF, PTR (via host), TXT (same as SPF)
+# julian1.io
+#   MX 10 mail.julian1.io - - 60
+#   SPF "v=spf1 mx -all" - - 60
+#   TXT "v=spf1 mx -all" - - 60
 
-  # _dmarc.julian1.io
-  #   TXT  "v=DMARC1; p=quarantine; rua=mailto:dmarc@julian1.io; ruf=mailto:dmarc@julian1.io; fo=0; adkim=r; aspf=r; pct=100; rf=afrf; ri=86400"
-  #
-  # mail._domainkey.julian1.io
-  #   TXT  "v=DKIM1; h=sha256; k=rsa; " "p=... " "..."
-  #
-  # mail
-  #   A n.n.n.n  - - 60
-  #
-  # (host provider)
-  #   PTR
+# _dmarc.julian1.io
+#   TXT  "v=DMARC1; p=quarantine; rua=mailto:dmarc@julian1.io; ruf=mailto:dmarc@julian1.io; fo=0; adkim=r; aspf=r; pct=100; rf=afrf; ri=86400"
+#
+# mail._domainkey.julian1.io
+#   TXT  "v=DKIM1; h=sha256; k=rsa; " "p=... " "..."
+#
+# mail
+#   A n.n.n.n  - - 60
+#
+# (host provider)
+#   PTR
 
-  # check with, https://www.mail-tester.com/
+# check with, https://www.mail-tester.com/
 
-  # TODO maybe move logging out of /var/log/syslog.
+# TODO maybe move logging out of /var/log/syslog.
+
+
+# $ netstat -tnlp
+# Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+# tcp        0      0 0.0.0.0:587             0.0.0.0:*               LISTEN      -                   
+# tcp        0      0 127.0.0.1:12301         0.0.0.0:*               LISTEN      -                   
+# tcp        0      0 127.0.0.1:54321         0.0.0.0:*               LISTEN      -                   
+# tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+# tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN      -                   
+# tcp        0      0 127.0.0.1:12345         0.0.0.0:*               LISTEN      -                   
+# tcp        0      0 0.0.0.0:993             0.0.0.0:*               LISTEN      -                   
+# tcp6       0      0 :::587                  :::*                    LISTEN      -                   
+# tcp6       0      0 :::25                   :::*                    LISTEN      -                   
+# tcp6       0      0 :::993                  :::*                    LISTEN      -     
+
 
   ##############################################
   # postfix
