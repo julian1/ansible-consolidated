@@ -27,17 +27,18 @@
 
 
 # $ netstat -tnlp
-# Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
-# tcp        0      0 0.0.0.0:587             0.0.0.0:*               LISTEN      -                   
-# tcp        0      0 127.0.0.1:12301         0.0.0.0:*               LISTEN      -                   
-# tcp        0      0 127.0.0.1:54321         0.0.0.0:*               LISTEN      -                   
-# tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
-# tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN      -                   
-# tcp        0      0 127.0.0.1:12345         0.0.0.0:*               LISTEN      -                   
-# tcp        0      0 0.0.0.0:993             0.0.0.0:*               LISTEN      -                   
-# tcp6       0      0 :::587                  :::*                    LISTEN      -                   
-# tcp6       0      0 :::25                   :::*                    LISTEN      -                   
-# tcp6       0      0 :::993                  :::*                    LISTEN      -     
+# Active Internet connections (only servers)
+# Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+# tcp        0      0 0.0.0.0:587             0.0.0.0:*               LISTEN      13433/master
+# tcp        0      0 127.0.0.1:12301         0.0.0.0:*               LISTEN      728/opendkim
+# tcp        0      0 127.0.0.1:54321         0.0.0.0:*               LISTEN      691/opendmarc
+# tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      13228/sshd
+# tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN      13433/master
+# tcp        0      0 127.0.0.1:12345         0.0.0.0:*               LISTEN      716/dovecot
+# tcp        0      0 0.0.0.0:993             0.0.0.0:*               LISTEN      716/dovecot
+# tcp6       0      0 :::587                  :::*                    LISTEN      13433/master
+# tcp6       0      0 :::25                   :::*                    LISTEN      13433/master
+# tcp6       0      0 :::993                  :::*                    LISTEN      716/dovecot
 
 
   ##############################################
