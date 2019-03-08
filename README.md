@@ -20,7 +20,7 @@ ansible-playbook plays/admin/devenv-lite.yml    -i localhost, -c local
 ansible-playbook plays/admin/stretch-ftp-au.yml -i $host,
 ansible-playbook plays/admin/openvpn.yml        -i $host,
 ansible-playbook plays/admin/postgres.yml       -i $host,
-ansible-playbook plays/admin/postfix.yml        -i $host,
+ansible-playbook plays/nodes/postfix.yml        -i $host,
 
 ansible-playbook plays/admin/deploy-war.yml     -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 

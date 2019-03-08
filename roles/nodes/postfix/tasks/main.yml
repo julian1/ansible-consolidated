@@ -68,6 +68,12 @@
         inet_protocols = all
 
 
+        # JA catchall
+        # https://serverfault.com/questions/23717/postfix-how-do-you-redirect-all-emails-to-one-user-eg-example-com-%E2%86%92-userex
+        luser_relay = meteo@julian1.io
+        local_recipient_maps =
+
+
         # Debian specific:  Specifying a file name will cause the first
         # line of that file to be used as the name.  The Debian default
         # is /etc/mailname.
@@ -508,6 +514,9 @@
 
   # this is a simple way to create service specific users, while redirecting to a 'generic' user, so no pam entry is needed
   # also avoids a generic catchall, which will fail against script attacks
+
+  # not sure this this works or is needed with generic catchall, or empty, local_recipient_maps =
+  # but leave in case of catchall revert,
 
   - copy:
       dest: /etc/aliases
