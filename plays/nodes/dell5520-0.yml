@@ -1,0 +1,49 @@
+
+# low level stuff
+# its a real mistake to be mixing low level stuff - like udev, fstab, kernel modules with scripts, xconfig and timezones.
+
+
+- hosts:
+    - localhost
+
+  vars:
+  pre_tasks:
+
+  roles:
+
+    # root user (no ssh)
+    - name: 
+      user:
+        name: root
+        shell: bin/bash
+
+    # note staff group has same security implications as root, since can put binaries in /usr/local/bin and usurp root privileges
+    # so must be trusted
+    - name: 
+      user:
+        name=meteo-large
+
+    # non-priv user (no ssh)
+    - name: user >
+        name=meteo
+        shell=/bin/bash
+        groups=meteo-large,docker,staff,sudo,plugdev,tty,cdrom,floppy,audio,dip,video,netdev,bluetooth
+
+    # change meteo permissions and group
+    - name: user > 
+        path=/home/meteo
+        mode=0700
+        owner=meteo group=meteo
+        state=directory
+
+
+    - name: admin/hostname
+      hostname: laptop
+
+    - name: admin/apt-stretch
+      mirror: http://ftp.au.debian.org/debian/
+
+
+  tasks:
+  handlers:
+
