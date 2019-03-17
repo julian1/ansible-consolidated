@@ -13,25 +13,6 @@
 
 
 
-TODO fixme!!! 
-  see ./roles/personal/scripts/files/
-
-  - copy:
-      dest: /home/meteo/backup.sh
-      mode: 0700
-      owner: meteo
-      group: meteo
-
-  - copy:
-      dest: /home/meteo/restore.sh
-      mode: 0700
-      owner: meteo
-      group: meteo
-      content: |
-        #!/bin/bash
-        # deployed by ansible!
-
-
 
 #-out restore/me.tar \
 

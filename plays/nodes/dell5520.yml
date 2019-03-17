@@ -1,38 +1,14 @@
 
+
+# everything that's not super low level
+# its a real mistake to be mixing low level stuff - like udev, fstab with scripts and timezoes.
+
+
 - hosts:
     - localhost
 
-  vars:
-  pre_tasks:
-
-    # root user (no ssh)
-    - user: >
-        name=root
-        shell=/bin/bash
-
-    # note staff group has same security implications as root, since can put binaries in /usr/local/bin and usurp root privileges
-    # so must be trusted
-
-
-    - user: >
-        name=meteo-large
-
-    # non-priv user (no ssh)
-    - user: >
-        name=meteo
-        shell=/bin/bash
-        groups=meteo-large,docker,staff,sudo,plugdev,tty,cdrom,floppy,audio,dip,video,netdev,bluetooth
-
-    - file: >
-        path=/home/meteo
-        mode=0700
-        owner=meteo group=meteo
-        state=directory
 
   roles:
-
-    - name: admin/hostname
-      hostname: laptop
 
     - name: admin/apt-stretch
       mirror: http://ftp.au.debian.org/debian/
@@ -45,13 +21,13 @@
     # https://serverfault.com/questions/758376/local-ansible-playbook-run-playbook-with-vars-for-role
     - name: personal/dotfiles
       tags: dotfiles
-      path: /home/meteo
       user: meteo
+      path: /home/meteo
 
     - name: personal/pathogen
       tags: pathogen
-      pathogen_path: /home/meteo
-      pathogen_user: meteo
+      user: meteo
+      path: /home/meteo
 
     - name: personal/xmonad
       tags: xmonad
@@ -60,8 +36,8 @@
     - name: admin/alsa
 
     # need the user created before we do this...
-    - name: personal/scripts
-      tags: scripts
+    #- name: personal/scripts
+    #  tags: scripts
 
     # TODO - move out here? second level config...
     - name: admin/printer
@@ -73,7 +49,7 @@
     - name: admin/low-battery-alert
 
     # specific configuration
-    - name: nodes/dell5520
+    # - name: nodes/dell5520   see instead -> plays/nodes/dell5520-0.yml
 
     - name: nodes/localnet2
 
