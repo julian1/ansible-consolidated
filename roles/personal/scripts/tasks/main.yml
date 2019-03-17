@@ -1,4 +1,10 @@
 
+# should probably be using files for all this stuff. and put them in one location.
+# and probbaly not usr/local/bin
+# makes it easier to diff...
+
+# eg. backup.sh restore.sh upload.sh
+
 # meteo must be part of group staff for /usr/local/bin
 
 # TODO - perhaps organize by content - and split out of main.yml
