@@ -1,4 +1,5 @@
 
+# low level stuff
 # its a real mistake to be mixing low level stuff - like udev, fstab, kernel modules with scripts, xconfig and timezones.
 
 
@@ -15,6 +16,8 @@
   - apt: name=wicd-curses
 
 
+# low level configuration
+# we should not be mixing low level stuff - like udev, fstab, mirrors,  with scripts and timezoes.
 
   # root user (no ssh)
   - user:
@@ -95,115 +98,5 @@
 
   # should be moved to xmonad  maybe as a file
 
-  #####
-  # X
-  - copy:
-      dest: /home/meteo/.xinitrc
-      content: |
-        # deployed by ansible!
-
-        # https://raspberrypi.stackexchange.com/questions/752/how-do-i-prevent-the-screen-from-going-blank
-        xset s off         # don't activate screensaver
-        xset -dpms         # disable DPMS (Energy Star) features.
-        xset s noblank     # don't blank the video device
-        # xset -dpms; xset s off
-
-        xset r rate   200   # keyboard repeat rate fixes firefox scrolling
-                            # 150 is too short. causes repeat in xterm terminal.
-
-
-        setxkbmap -option compose:ralt   # accented compose key is right alt
-
-        # setxkbmap -option caps:swapescape   # make caps-lock the escape key, and escape caps-lock. for vim etc.
-        setxkbmap -option caps:escape         # to make caps-lock an additional escape
-
-        xrdb -merge <<- EOF
-          XTerm*selectToClipboard: true
-          XTerm*faceName: DejaVu Sans Mono
-          XTerm*faceSize: 11
-          XTerm*Background: white
-          XTerm*Foreground: black
-        EOF
-
-        # keymap
-        xmodmap - <<- EOF
-          ! numpad insert
-
-          keycode 90 = Insert NoSymbol Insert
-
-          # TODO - no longer used
-          ! next and prev
-          !  = Prior NoSymbol Prior
-          !  = Next NoSymbol Next
-
-          ! page up
-          keycode 91 =  Up NoSymbol Up
-
-          ! page down
-          keycode 104 = Down NoSymbol Down
-
-          ! numpad 2
-          keycode 88 =  Home NoSymbol Home
-
-          ! numpad 3
-          keycode 89  = End  NoSymbol End
-        EOF
-
-        # brightness
-        # xrandr --output eDP1 --brightness .45
-        xrandr --output eDP-1 --brightness .35
-
-        # start pulse audio
-        pulseaudio --kill
-        sleep 0.5
-        pulseaudio --start
-
-        # MAY OR MAY NOT BE NEEDED with change to libinput replacing synaptics
-        # to turn on trackpad tap to select/button
-        synclient TapButton1=1
-
-        # turn bell off
-        xset b off
-
-        # start xmonad
-        xmonad
-    tags: xinitrc
-
-
-  #####
-  # trackpad tapping
-  # https://askubuntu.com/questions/838061/touchpad-tap-stopped-working
-  #
-  # make sure synaptics is not installed
-  - apt: name=xserver-xorg-input-synaptics state=absent
-
-  - copy:
-      dest: /usr/share/X11/xorg.conf.d/40-libinput.conf
-      content: |
-        # deployed by ansible!
-
-        # Match on all types of devices but tablet devices and joysticks
-        Section "InputClass"
-                Identifier "libinput pointer catchall"
-                MatchIsPointer "on"
-                MatchDevicePath "/dev/input/event*"
-                Driver "libinput"
-        EndSection
-
-        Section "InputClass"
-                Identifier "libinput keyboard catchall"
-                MatchIsKeyboard "on"
-                MatchDevicePath "/dev/input/event*"
-                Driver "libinput"
-        EndSection
-
-        Section "InputClass"
-                Identifier "libinput touchpad catchall"
-                MatchIsTouchpad "on"
-                MatchDevicePath "/dev/input/event*"
-                # The important bit
-                Option "Tapping" "true"
-                Driver "libinput"
-        EndSection
 
 

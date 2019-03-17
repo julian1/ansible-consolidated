@@ -1,17 +1,13 @@
 
 
 # everything that's not super low level
-# its a real mistake to be mixing low level stuff - like udev, fstab with scripts and timezoes.
+# we should not be mixing low level stuff - like udev, fstab, mirrors,  with scripts and timezoes.
 
 
 - hosts:
     - localhost
 
-
   roles:
-
-    - name: admin/apt-stretch
-      mirror: http://ftp.au.debian.org/debian/
 
     - admin/devenv-lite   # vim/screen eg. required for anything
     - admin/timezone
@@ -31,7 +27,7 @@
 
     - name: personal/xmonad
       tags: xmonad
-      xmonad_user: meteo
+      user: meteo
 
     - name: admin/alsa
 
