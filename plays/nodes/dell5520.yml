@@ -1,54 +1,28 @@
 
-
-# everything that's not super low level
-# we should not be mixing low level stuff - like udev, fstab, mirrors,  with scripts and timezoes.
+# low level stuff
+# its a real mistake to be mixing low level stuff - like udev, fstab, kernel modules with scripts, xconfig and timezones.
 
 
 - hosts:
     - localhost
 
+  vars:
+  pre_tasks:
+     # IMPORTANT creating users needs to be in role - or pre task
+      # users are now created in dell5520-0.yml
+
   roles:
 
-    - admin/devenv-lite   # vim/screen eg. required for anything
-    - admin/timezone
-    - admin/locale
-    # call role twice for different users?
+    - name: admin/hostname
+      hostname: laptop
 
-    # https://serverfault.com/questions/758376/local-ansible-playbook-run-playbook-with-vars-for-role
-    - name: personal/dotfiles
-      tags: dotfiles
-      user: meteo
-      path: /home/meteo
+    - name: admin/apt-stretch
+      mirror: http://ftp.au.debian.org/debian/
 
-    - name: personal/pathogen
-      tags: pathogen
-      user: meteo
-      path: /home/meteo
 
-    - name: personal/xmonad
-      tags: xmonad
-      user: meteo
+    - name: nodes/dell5520
 
-    - name: admin/alsa
 
-    # need the user created before we do this...
-    #- name: personal/scripts
-    #  tags: scripts
-
-    # TODO - move out here? second level config...
-    - name: admin/printer
-      tags: printer
-      pname: Brother
-      url: socket://brother.localnet:9100
-      ppd: BRHL16_2_GPL.ppd
-
-    - name: admin/low-battery-alert
-
-    # specific configuration
-    # - name: nodes/dell5520   see instead -> plays/nodes/dell5520-0.yml
-
-    # THIS NEEDS TO ABSOLUTELY NOT A SEPARATE THING....
-    # - name: nodes/localnet2
 
   tasks:
   handlers:
