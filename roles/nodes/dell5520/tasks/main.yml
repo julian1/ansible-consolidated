@@ -74,16 +74,21 @@
 
         # JA all of this is default
         # <file system> <mount point>   <type>  <options>       <dump>  <pass>
-        /dev/mapper/nvme0n1p4_crypt /               ext4    errors=remount-ro 0       1
+        /dev/mapper/nvme0n1p4_crypt /               ext4    errors=remount-ro       0       1
         # /boot was on /dev/nvme0n1p2 during installation
-        UUID=695d2c88-d939-4789-853f-3fb9668fb08b /boot           ext4    defaults        0       2
+        UUID=695d2c88-d939-4789-853f-3fb9668fb08b /boot           ext4    defaults  0       2
         # /boot/efi was on /dev/nvme0n1p1 during installation
-        UUID=2518-1278  /boot/efi       vfat    umask=0077      0       1
-        #/dev/mapper/nvme0n1p3_crypt /home           ext4    defaults        0       2
+        UUID=2518-1278  /boot/efi       vfat    umask=0077                          0       1
+        #/dev/mapper/nvme0n1p3_crypt /home           ext4    defaults               0       2
 
         # JA
         # 2.5" ssd
         UUID=2357e387-a4e0-49cb-9409-278d41c2975d     /home/meteo/mnt/drive ext4  errors=remount-ro 0       2
+
+        # JA
+        #tmpfs   /root   tmpfs   rw,nodev,nosuid,size=2G                            0       0
+
+
 
 
   ####
