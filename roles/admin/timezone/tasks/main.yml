@@ -11,6 +11,10 @@
     register: identical
     changed_when: identical.stdout != '0'
 
+
+  # TODO should copy the whole file, not just the extension ...  eg.
+  # /usr/share/zoneinfo/right/Asia/Ho_Chi_Minh
+
   - command: cp -f /usr/share/zoneinfo/{{timezone}} /etc/localtime
     when:  identical.stdout != '0'
     notify: reconfigure-tzdata
