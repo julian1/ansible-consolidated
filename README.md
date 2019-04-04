@@ -14,6 +14,7 @@ ansible-playbook plays/nodes/localnet2.yml      -i localhost, -c local
 
 # plays
 ansible-playbook plays/admin/timezone.yml       -i localhost, -c local
+ansible-playbook plays/personal/dotfiles.yml    -i localhost, -c local --extra-vars "timezone=Australia/Hobart"  # <- not tested!
 ansible-playbook plays/personal/dotfiles.yml    -i localhost, -c local
 ansible-playbook plays/personal/scripts.yml     -i localhost, -c local
 ansible-playbook plays/admin/devenv-lite.yml    -i localhost, -c local
