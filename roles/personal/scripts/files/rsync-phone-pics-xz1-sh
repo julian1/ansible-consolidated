@@ -6,14 +6,15 @@
 #jmtpfs mnt/phone/
 
 #dir="/home/meteo/mnt/drive/Pictures/phone/$( date --rfc-3339=date )"
-dir="/home/meteo/mnt/drive/Pictures/phone/xz1"
+dst="/mnt/drive/Pictures/phone/xz1"
+src='mnt/phone/Internal shared storage/DCIM'
 
 
-[ -d $dir ] || mkdir $dir 
+[ -d $dst ] || mkdst $dst 
 
 
 # xz1 android 9
-rsync -avP "mnt/phone/Internal shared storage/DCIM"  "$dir"
+rsync -avP "$src"  "$dst"
 
 
 

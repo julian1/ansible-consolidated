@@ -6,14 +6,14 @@
 #jmtpfs mnt/phone/
 
 # dir="/home/meteo/mnt/drive/Pictures/phone/$( date --rfc-3339=date )"
-dir="/home/meteo/mnt/drive/Pictures/phone/z3"
+dst="/mnt/drive/Pictures/phone/z3"
+src='/home/meteo/mnt/phone/Internal storage/DCIM'
+
+echo $dst
+[ -d $dst ] || mkdst $dst 
 
 
-echo $dir
-[ -d $dir ] || mkdir $dir 
-
-
-rsync -avP '/home/meteo//mnt/phone/Internal storage/DCIM'  "$dir"
+rsync -avP "$src"  "$dst"
 
 
 
