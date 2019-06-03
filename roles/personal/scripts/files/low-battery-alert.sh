@@ -1,7 +1,7 @@
 #!/bin/bash
 # deployed by ansible!
 
-threshold=50
+threshold=90
 capacity=$(cat /sys/class/power_supply/BAT0/capacity)
 status=$(cat /sys/class/power_supply/BAT0/status)
 
