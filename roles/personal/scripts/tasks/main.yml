@@ -3,32 +3,37 @@
 
   - copy:
       dest: /usr/local/bin/smaller.sh
-      mode: 0777
+      mode: 0755
       src: smaller.sh
 
   - copy:
       dest: /usr/local/bin/backup.sh
-      mode: 0777
+      mode: 0755
       src: backup.sh
 
   - copy:
       dest: /usr/local/bin/restore.sh
-      mode: 0777
+      mode: 0755
       src: restore.sh
 
   - copy:
       dest: /usr/local/bin/brightness.sh
-      mode: 0777
+      mode: 0755
       src: brightness.sh
 
   - copy:
       dest: /usr/local/bin/volume.sh
-      mode: 0777
+      mode: 0755
       src: volume.sh
 
   - copy:
       dest: /usr/local/bin/rsync-phone-pics-a20.sh
-      mode: 0777
+      mode: 0755
       src: rsync-phone-pics-a20.sh
+
+  - copy:
+      dest: /usr/local/bin/find-cabal-sandbox.sh
+      mode: 0755
+      src: find-cabal-sandbox.sh
 
 
