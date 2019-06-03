@@ -1,0 +1,237 @@
+
+# should probably be using files for all this stuff. and put them in one location.
+# and probbaly not usr/local/bin
+# makes it easier to diff...
+
+# eg. backup.sh restore.sh upload.sh
+
+# meteo must be part of group staff for /usr/local/bin
+
+# TODO - perhaps organize by content - and split out of main.yml
+# eg. separate out backup...
+
+  ####
+
+
+  # TODO - change to use -pass file:~/.ssh/file
+  # also passes in ./mozila, .ssh, `aws
+
+
+
+
+
+#-out restore/me.tar \
+
+#  #!/bin/bash -x
+#  # deployed by ansible!
+#
+#  set -e
+#
+#  # $( cat ~/.ssh/meteobackup  )
+#  pass=$(read -s -p "pass: " )
+#  cipher=-aes-256-cbc
+#  outdir=./meteo-large
+#
+
+  - copy:
+      dest: /home/meteo/upload.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash -x
+
+        # should rename backup-upload.sh
+        # TODO - include md5sum in header
+        # https://aws.amazon.com/premiumsupport/knowledge-center/data-integrity-s3/
+        # issue is that need to install aws, easier to use web ui
+        review
+        exit
+
+        target="$HOSTNAME-$(date '+%F-%H-%M').me.tgz.enc"
+        bucket=""
+        if [ -z $bucket ]; then
+          echo "set the bucket!"
+          exit
+        else
+          aws s3 cp ./me.tgz.enc "s3://$bucket/$target"
+        fi
+
+
+
+  - copy:
+      dest: /usr/local/bin/restart-wifi.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+        # not used for a long time... now using wicd-curses
+        echo 'deprecated?'
+        exit
+        ifconfig wlan0 down
+        iwconfig wlan0 essid AP1
+        iwconfig wlan0 ap any
+        iwconfig wlan0 enc off
+        ifconfig wlan0 up
+        iwconfig wlan0
+
+
+  - copy:
+      dest: /usr/local/bin/tunnel-parity.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        ssh -N -L :8545:localhost:8545  p-test
+
+  # monero rpc client tunnel
+  - copy:
+      dest: /usr/local/bin/tunnel-monero.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash -x
+        # deployed by ansible!
+
+        ssh -N -L :18081:localhost:18081 m-test
+
+
+  - copy:
+      dest: /usr/local/bin/sshfs-nuc.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+
+        target="$HOME/mnt/nuc"
+        [ -d $target ] || mkdir -p $target
+
+        sshfs root@nuc.localnet:/storage $target
+
+
+  - copy:
+      dest: /usr/local/bin/sshfs-apu2.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+
+        target="$HOME/mnt/apu2"
+        [ -d $target ] || mkdir -p $target
+
+        sshfs root@apu2:/home/transmission/downloads $target
+
+
+  - copy:
+      dest: /usr/local/bin/sshfs-dell-home.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+        target="$HOME/mnt/dell-home"
+        [ -d $target ] || mkdir -p $target
+
+        sshfs meteo@dell-home.localnet:/home/meteo $target
+
+
+  - copy:
+      dest: /usr/local/bin/volume.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+        # could just use alias
+        amixer set Master $1
+        amixer set PCM 100%
+
+  - copy:
+      dest: /usr/local/bin/brightness.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+        # xset -dpms; xset s off
+        xrandr --output eDP-1 --brightness $1
+
+  - copy:
+      dest: /usr/local/bin/start-proxy.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        # deployed by ansible!
+        ssh -N -v -D 5222 admin@proxy
+
+  - copy:
+      dest: /usr/local/bin/tunnel-chromium.sh
+      mode: 0700
+      owner: meteo
+      group: meteo
+      content: |
+        #!/bin/bash
+        # deployed by ansible!
+
+        chromium \
+          --proxy-server='socks5://127.0.0.1:5222'  \
+          --proxy-bypass-list='localback.net'  \
+          --host-resolver-rules="MAP * ~NOTFOUND , EXCLUDE 127.0.0.1, EXCLUDE localback.net"
+
+
+
+
+  #############################
+  ## devel environments
+
+  # jdk and maven, for freeroute etc
+  - copy:
+      dest: /usr/local/include/jdk.inc
+      content: |
+        # deployed by ansible!
+        # see plays/misc/jdk-1.8.sh
+        export JAVA_HOME="$HOME/jdk1.8.0_111/"
+        export PATH="$JAVA_HOME/bin:$PATH"
+
+        # see, plays/misc/maven.yml
+        export PATH="$PATH:$HOME/apache-maven-3.3.9/bin/"
+
+  - copy:
+      dest: /usr/local/include/node.inc
+      content: |
+        # deployed by ansible!
+
+        export PATH="$HOME/node-v6.11.0-linux-x64/bin:$PATH"
+
+  - copy:
+      dest: /usr/local/include/cabal.inc
+      content: |
+        # deployed by ansible!
+
+        export CABAL_BIN="$HOME/.cabal/bin"
+        export PATH="$CABAL_BIN:$PATH"
+
+
+  - copy:
+      dest: /usr/local/include/opam.inc
+      content: |
+        # deployed by ansible!
+        . $HOME/.opam/opam-init/init.sh
+        #   /home/meteo/.opam/4.02.3/bin
+        # . $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+  - copy:
+      dest: /usr/local/include/nix.inc
+      content: |
+        # deployed by ansible!
+        . $HOME/.nix-profile/etc/profile.d/nix.sh
+
+
