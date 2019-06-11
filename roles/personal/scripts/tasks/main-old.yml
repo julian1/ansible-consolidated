@@ -202,7 +202,7 @@
         export PATH="$JAVA_HOME/bin:$PATH"
 
         # see, plays/misc/maven.yml
-        export PATH="$PATH:$HOME/apache-maven-3.3.9/bin/"
+        export PATH="$HOME/apache-maven-3.3.9/bin/:$PATH:"
 
   - copy:
       dest: /usr/local/include/node.inc
@@ -233,5 +233,15 @@
       content: |
         # deployed by ansible!
         . $HOME/.nix-profile/etc/profile.d/nix.sh
+
+
+
+  - copy:
+      dest: /usr/local/include/aws.inc
+      content: |
+        # deployed by ansible!
+
+        export PATH="$HOME/.local/bin:$PATH"
+        
 
 
