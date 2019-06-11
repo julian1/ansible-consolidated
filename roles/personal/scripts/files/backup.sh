@@ -53,10 +53,18 @@ tar \
 #-in stdin   \
 
 # aws checksum doesn't work for large files...
-# use s3md5  instead.
+# use s3md5 and verify locally instead.
 
 # x-amz-meta-md5chksum
 # note md5 -binary is different from md5sum
 # hash=$( openssl md5 -binary $target | base64 )
 # echo $hash > "$target.md5"
+
+#hash=$( md5sum $target )
+#echo $hash > "$target.md5"
+
+
+
+
+
 
