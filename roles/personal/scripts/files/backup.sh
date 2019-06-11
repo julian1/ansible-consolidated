@@ -9,9 +9,10 @@ if [ -z $1 ] || [ -z $2 ] ; then
 fi
 
 # get remaining args - which we feed through to tar. useful for exclude
-# eg. backup.sh src dst --exclude '/proc' --exclude '/sys' --exclude '/run' --exclude '/mnt'
-args=${@:3:999}
+# eg. backup.sh src dst --exclude '/proc' --exclude '/sys' --exclude '/run' --exclude '/dev' --exclude '/tmp' --exclude '/mnt'
+# or just use s mount --bind / /mnt/test/  which remounts and will exclude this stuff.
 
+args=${@:3:999}
 
 
 parentsrc=$(dirname $1)
@@ -25,7 +26,7 @@ fi
 date="$(date --rfc-3339=date)"
 
 # https://stackoverflow.com/questions/4638983/remove-unnecessary-slashes-from-a-given-path-with-bash
-# fully qualify path and remove duplicate // which will confuse tar --exclude $target 
+# fully qualify path and remove duplicate // which confuses tar --exclude $target
 target=$(readlink -m "$2/$src-$date.tgz.enc" )
 
 
