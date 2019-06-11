@@ -40,7 +40,9 @@ fi
 
 cipher=-aes-256-cbc
 
-tar -cz \
+tar \
+  --exclude $target \
+  -cz \
   -C $parentdir \
   $dir \
 | openssl enc \
