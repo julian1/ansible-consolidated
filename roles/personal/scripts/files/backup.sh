@@ -11,6 +11,7 @@ fi
 # get remaining args - which we feed through to tar. useful for exclude
 # eg. backup.sh src dst --exclude '/proc' --exclude '/sys' --exclude '/run' --exclude '/dev' --exclude '/tmp' --exclude '/mnt'
 # or just use s mount --bind / /mnt/test/  which remounts and will exclude this stuff.
+# IMPORTANT can also pass --exclude /backups to exclude entire dir.
 
 args=${@:3:999}
 
