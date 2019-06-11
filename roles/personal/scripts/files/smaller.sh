@@ -3,7 +3,7 @@
 # apt-get install imagemagick
 
 # just place a smaller file alongside original...
-# this does require a selective find - to just see smaller, but makes other file handling a lot simpler...
+# this requires a careful selective find to match, but makes lots other file handling simpler... backup/s3 etc easier
 # can easily add a thumb as well... 
 
 
@@ -17,8 +17,10 @@ dir=$1
 
 find "$dir" -type f | egrep '.*JPG$|.*jpg' | sort -n | while read i; do
 
+  size=1024
+
   # echo "$i"
-  target="${i%.*}.smaller.jpg"
+  target="${i%.*}.smaller-$size.jpg"
   # echo "target $target"
 
   if [ -f $target ]; then
@@ -30,7 +32,8 @@ find "$dir" -type f | egrep '.*JPG$|.*jpg' | sort -n | while read i; do
     echo "converting $i -> $target"
     # convert $i -resize 2048 $target;
     # convert $i -resize 2048  -level 0%,100%,1.2  -colorspace srgb  $target;
-    convert $i -resize 1024  -level 0%,100%,1.2  -colorspace srgb $target;
+    # convert $i -resize $size -level 0%,100%,1.2  -colorspace srgb $target;
+    convert $i -resize $size  $target;
   fi
 done
 
