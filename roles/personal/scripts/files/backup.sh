@@ -4,20 +4,30 @@
 set -e
 
 if [ -z $1 ] || [ -z $2 ] ; then
-  echo "usage: $0 <src dir> <dst dir>"
+  echo "usage: $0 <src dir> <dst dir> <extra tar args>"
   exit 123
 fi
 
-parentdir=$(dirname $1)
-dir=$(basename $1)
+# get remaining args - which we feed through to tar. useful for exclude
+# eg. backup.sh src dst --exclude '/proc' --exclude '/sys' --exclude '/run' --exclude '/mnt'
+args=${@:3:999}
 
-if ! [ -d "$parentdir/$dir" ]; then
+
+
+parentsrc=$(dirname $1)
+src=$(basename $1)
+
+if ! [ -d "$parentsrc/$src" ]; then
   echo "src dir does not exist!"
   exit 123 ;
 fi
 
 date="$(date --rfc-3339=date)"
-target="$2/$dir-$date.tgz.enc"
+
+# https://stackoverflow.com/questions/4638983/remove-unnecessary-slashes-from-a-given-path-with-bash
+# fully qualify path and remove duplicate // which will confuse tar --exclude $target 
+target=$(readlink -m "$2/$src-$date.tgz.enc" )
+
 
 echo "target: $target"
 
@@ -40,11 +50,15 @@ fi
 
 cipher=-aes-256-cbc
 
+# we don't want to exclude /mnt if we're backing up something in /mnt/drive etc.
+
+
 tar \
   --exclude $target \
-  -cz \
-  -C $parentdir \
-  $dir \
+  $args \
+  -czp \
+  -C $parentsrc \
+  $src \
 | openssl enc \
   -e "$cipher" \
   -pass "pass:$pass" \
@@ -62,9 +76,5 @@ tar \
 
 #hash=$( md5sum $target )
 #echo $hash > "$target.md5"
-
-
-
-
 
 
