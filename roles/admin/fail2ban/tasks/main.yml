@@ -1,4 +1,9 @@
 
+#  "Every .conf file can be overridden with a file named .local. The .conf file
+#  is read first, then .local, with later settings overriding earlier ones.
+#  Thus, a .local file doesn't have to include everything in the corresponding
+#  .conf file, only those settings that you wish to override. Modifications
+#  should take place in the .local and not in the .conf.
 
   # cleans up logging of /var/log/auth.log least ...
 
