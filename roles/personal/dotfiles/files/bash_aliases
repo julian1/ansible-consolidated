@@ -19,7 +19,8 @@ alias less='less -R'
 alias vim='vim -p'
 alias top='top -d 1'
 # alias feh='feh -F -Z -d --keep-zoom-vp'
-alias feh='feh -F -Z -d'
+# alias feh='feh -F -Z -d'
+alias feh='feh -F -d --draw-exif'
 alias iftop='iftop -B -P -N'
 
 # shortcuts

@@ -1,7 +1,7 @@
 # deployed by ansible!
 [user]
   name = julian1
-  email = julian.atkinson71@gmail.com
+  email = git@julian1.io
 [push]
   default = simple
 
