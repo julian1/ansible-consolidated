@@ -114,8 +114,7 @@ ct() {
     column -t $1
 }
 
-# sc conflicts with
-# alias sc=screen
+# sc conflicts with systemctl and /usr/bin/sc
 # https://serverfault.com/questions/116775/sudo-as-different-user-and-running-screen
 # alias screen2='script -q -c screen /dev/null'
 
@@ -123,16 +122,23 @@ function screen2() {
   /usr/bin/script -q -c "/usr/bin/screen ${*}" /dev/null
 }
 
+# tail files in a directory. note, this won't catch newly created files
+# https://unix.stackexchange.com/questions/39729/monitor-files-%c3%a0-la-tail-f-in-an-entire-directory-even-new-ones
+function taildir() {
+  tail -f -n 0  $( find "${*}" -type f )
+}
+
 
 
 # mkdir and cd into it
-mcd() {
+mkcd() {
     mkdir $1
     cd $1
 }
 
-# cd up n directories with numerical argument
-cdu() {
+# cd up n directory levels using numerical argument
+# change name from cdu to up?
+up() {
     if [ -z "$1" ]; then
       cd ..
     else
