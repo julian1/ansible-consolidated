@@ -2,9 +2,15 @@
 # Notes,
 # Use the following to check iptables monitoring and blocked
 # iptables -L -n
+# log files,
+# less /var/log/fail2ban.log
+# less /var/log/mail.warn
+# to check jails,
+#   fail2ban-client status
+# check specific jail,
+#   fail2ban-client status postfix-sasl
 
-
-# this is now fairly postfix specific. should probably be moved.
+# this task is now postfix specific. and should be moved.
 
 #  "Every .conf file can be overridden with a file named .local. The .conf file
 #  is read first, then .local, with later settings overriding earlier ones.
@@ -81,10 +87,6 @@
 
 
   # only the sshd jail is enabled by default in debian
-  # eg. to check jails,
-  #   fail2ban-client status
-  # eg. to check specific jail,
-  #   fail2ban-client status postfix-sasl
   - copy:
       dest: /etc/fail2ban/jail.d/defaults-debian.conf
       backup: yes
