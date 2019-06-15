@@ -1,4 +1,11 @@
 
+# Notes,
+# Use the following to check iptables monitoring and blocked
+# iptables -L -n
+
+
+# this is now fairly postfix specific. should probably be moved.
+
 #  "Every .conf file can be overridden with a file named .local. The .conf file
 #  is read first, then .local, with later settings overriding earlier ones.
 #  Thus, a .local file doesn't have to include everything in the corresponding
@@ -11,25 +18,96 @@
     tags: fail2ban
 
 
-  # once only
-  - command: cp jail.conf jail.local
-    args:
-      chdir:  /etc/fail2ban/
-      creates: jail.local
-    tags: fail2ban
+#  # once only
+#  - command: cp jail.conf jail.local
+#    args:
+#      chdir:  /etc/fail2ban/
+#      creates: jail.local
+#    tags: fail2ban
+#
+#  # note we could just modify the [default] values...?
+#  # although a bit dangerous
+#  - blockinfile:
+#      dest: /etc/fail2ban/jail.local
+#      insertafter: '^\[sshd\].*'
+#      marker: "# {mark} ansible content"
+#      content: |
+#        bantime = 86400
+#        findtime = 86400
+#        maxretry = 3
+#    notify: restart-fail2ban
+#    tags: fail2ban
 
-  # change to work on [default] ?
 
+
+  # NOTE workaround bug in debian current fail2ban Version: 0.9.6-2 and postfix-sasl
+  # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=881449
+  # less /var/log/fail2ban.log
   - blockinfile:
+      dest: /etc/services
+      backup: yes
+      insertafter: EOF
+      block: |
+        # deployed by ansible!
+        imap3   143/tcp
+
+
+  - copy:
       dest: /etc/fail2ban/jail.local
-      insertafter: '^\[sshd\].*'
-      marker: "# {mark} ansible content"
+      backup: yes
       content: |
+        # deployed by ansible!
+        # jail.local values should override jail.conf defaults
+
+        [sshd]
         bantime = 86400
         findtime = 86400
         maxretry = 3
+
+        [dovecot]
+        bantime = 86400
+        findtime = 86400
+        maxretry = 3
+
+        [postfix]
+        bantime = 86400
+        findtime = 86400
+        maxretry = 3
+
+        [postfix-sasl]
+        bantime = 86400
+        findtime = 86400
+        maxretry = 3
+
+
+  # only the sshd jail is enabled by default in debian
+  # eg. to check jails,
+  #   fail2ban-client status
+  # eg. to check specific jail,
+  #   fail2ban-client status postfix-sasl
+  - copy:
+      dest: /etc/fail2ban/jail.d/defaults-debian.conf
+      backup: yes
+      content: |
+        # deployed by ansible!
+
+        [sshd]
+        enabled = true
+
+        [dovecot]
+        enabled = true
+
+        # not sure if this is used. maybe for mail originating from localhost
+        [postfix]
+        enabled = true
+
+        [postfix-sasl]
+        enabled = true
+
+
     notify: restart-fail2ban
     tags: fail2ban
+
 
 
 
