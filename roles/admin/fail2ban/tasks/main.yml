@@ -5,6 +5,7 @@
 # log files,
 # less /var/log/fail2ban.log
 # less /var/log/mail.warn
+# less /var/log/auth.log
 # to check jails,
 #   fail2ban-client status
 # check specific jail,

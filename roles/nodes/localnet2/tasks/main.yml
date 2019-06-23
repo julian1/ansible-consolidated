@@ -199,7 +199,7 @@
         # refer to our own localnet2 first, because localnet may hang, if working remotely
         search localnet2 localnet
 
-        # WARNING do not change! Unless using hotel/restaurant etc... and must use dhclient .
+        # WARNING do not change! Unless using hotel/restaurant etc... and where must use dhclient .
         # Use /etc/bind/named.conf.options instead and restart bind9
         nameserver 10.3.0.1
 
