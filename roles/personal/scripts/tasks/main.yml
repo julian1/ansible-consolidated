@@ -32,6 +32,12 @@
       src: rsync-phone-pics-a20.sh
 
   - copy:
+      dest: /usr/local/bin/rsync-phone-travel.sh
+      mode: 0755
+      src: rsync-phone-travel.sh
+
+
+  - copy:
       dest: /usr/local/bin/find-cabal-sandbox.sh
       mode: 0755
       src: find-cabal-sandbox.sh
