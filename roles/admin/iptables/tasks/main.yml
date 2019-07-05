@@ -1,0 +1,35 @@
+
+# dhcp, bind, iptables, smcroute rsyslog for apu
+
+
+    # may need to restart wlan0 here? at least when install dnsmasq
+  - apt: name=iptables-persistent
+
+  - copy:
+      dest: /etc/iptables-rules.m4
+      content: |
+        # deployed by ansible!
+
+
+        #####
+        # flush current chain rules
+        iptables -t filter --flush
+
+        define(`WAN_INTERFACE', `eth0')
+
+        include(`/etc/iptables-macros2.m4')
+
+
+        WAN_INGRESS(tcp, 443, 0.0.0.0/0, ACCEPT)
+        WAN_INGRESS(tcp, 443, 0.0.0.0/0, DROP)
+
+        WAN_PING_INGRESS(0.0.0.0/0, ACCEPT)
+        WAN_PING_INGRESS(0.0.0.0/0, DROP)
+
+
+
+    # TODO - instead of running this later. should run reconfigure immediately after using a variable
+    notify: reconfigure-iptables
+    tags: iptables
+
+

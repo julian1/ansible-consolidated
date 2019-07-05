@@ -8,8 +8,12 @@
   - copy:
       dest: /etc/iptables-macros.m4
       content: |
-        # the action ACCEPT or DROP can be passed as an argument. 
-        # the interface can be passed except we need the -i and -o to be explicit . or
+        # the action ACCEPT or DROP can be passed as argument $4. 
+        # the interface should probably also be passed as argument. we need the -i and -o to be explicit . or
+        # no - because we have to define the LAN as ! of WAN to account for all other interraces
+        # WAN_INGRESS 
+        # WAN_OUTGRESS
+        # then we don't have to define it.
         # we can also 
         # deployed by ansible!
         # WAN_IN_ACCEPT(proto, port, address)
@@ -54,7 +58,8 @@
         `iptables -A FORWARD --protocol $1 --sport $2 -d $3 -s $4 -j DROP')
 
 
-        # INT_ACCEPT(ifce, protocol) allow all protocols over an interface - eg. for lo, admin
+        # INT_ACCEPT(ifce, protocol) allow easily specifying all protocols over an interface - eg. for lo, admin
+        # should probably still specify ACCEPT
         define(`INT_ACCEPT',
         `iptables -A OUTPUT -o $1 --protocol $2 -j ACCEPT'
         `iptables -A INPUT  -i $1 --protocol $2 -j ACCEPT' )
@@ -76,6 +81,53 @@
         define(`FORWARD_PING_ACCEPT',
         `iptables -A FORWARD -p icmp --icmp-type 8 --source $1 --destination $2 -j ACCEPT'
         `iptables -A FORWARD -p icmp --icmp-type 0 --source $2 --destination $1 -j ACCEPT')
+
+
+
+
+  - copy:
+      dest: /etc/iptables-macros2.m4
+      content: |
+        # deployed by ansible!
+
+        # the interface should probably also be passed as argument. we need the -i and -o to be explicit . or
+        # we cannot pass interface by argument - because we have to define the LAN as ! of WAN to account for all other interraces
+        # we can also 
+        
+        # actually no. 
+        # wan andd lan are exactually the same - except lan has !.
+        
+
+        # WAN_INGRESS(proto, port, address, action)
+        define(`WAN_INGRESS',
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j $4'
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j $4' )
+
+        define(`WAN_EGRESS',
+        `iptables -A OUTPUT -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j $4'
+        `iptables -A INPUT  -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j $4' )
+
+
+        define(`LAN_INGRESS',
+        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --dport $2 --source $3      -j $4'
+        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --sport $2 --destination $3 -j $4' )
+
+        define(`LAN_EGRESS',
+        `iptables -A OUTPUT ! -o WAN_INTERFACE --protocol $1 --dport $2 --destination $3 -j $4'
+        `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j $4' )
+
+
+        # not tested
+        # WAN_PING_INGRESS(address, action)
+        define(`WAN_PING_INGRESS',
+        `iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 8  --source $1      -j $2'
+        `iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 0  --destination $1 -j $2')
+
+
+        define(`WAN_PING_EGRESS',
+        `iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 8  --destination $1 -j $2'
+        `iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 0  --source $1      -j $2')
+
 
 
 
