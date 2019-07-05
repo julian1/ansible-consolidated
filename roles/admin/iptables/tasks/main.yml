@@ -28,10 +28,10 @@
         # since it won't affect egress services - eg. dns, ntp, http for apt etc.
         WAN_INGRESS(tcp, 0:65535, 0.0.0.0/0,  DROP)
 
-
+        # should not blanket block icmp, http://shouldiblockicmp.com/
         WAN_PING_INGRESS(0.0.0.0/0, ACCEPT)
         WAN_PING_EGRESS( 0.0.0.0/0, ACCEPT)
-        WAN_ICMP(        0.0.0.0/0, DROP)
+        #WAN_ICMP(        0.0.0.0/0, DROP)
 
 
 
