@@ -65,8 +65,9 @@ user nobody
 group nogroup
 
 # Try to preserve some state across restarts.
-persist-key
-persist-tun
+# JA problematic for client reconnects
+#persist-key
+#persist-tun
 
 # If you are connecting through an
 # HTTP proxy to reach the actual OpenVPN
