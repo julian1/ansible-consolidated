@@ -1,8 +1,10 @@
 
-# dhcp, bind, iptables, smcroute rsyslog for apu
+# generic iptables starting point
+# useful
+# iptables -t filter -L -v -n
+# netstat -tnp | grep 443
 
 
-    # may need to restart wlan0 here? at least when install dnsmasq
   - apt: name=iptables-persistent
 
   - copy:
@@ -19,12 +21,17 @@
 
         include(`/etc/iptables-macros2.m4')
 
+        WAN_INGRESS(tcp, 22,  0.0.0.0/0,      ACCEPT)
 
-        #WAN_INGRESS(tcp, 443, 0.0.0.0/0, ACCEPT)
-        WAN_INGRESS(tcp, 443, 0.0.0.0/0, DROP)
 
-        #WAN_PING_INGRESS(0.0.0.0/0, ACCEPT)
-        WAN_PING_INGRESS(0.0.0.0/0, DROP)
+        # handy alternative to using a policy rule
+        # since it won't affect egress services - eg. dns, ntp, http for apt etc.
+        WAN_INGRESS(tcp, 0:65535, 0.0.0.0/0,  DROP)
+
+
+        WAN_PING_INGRESS(0.0.0.0/0, ACCEPT)
+        WAN_PING_EGRESS( 0.0.0.0/0, ACCEPT)
+        WAN_ICMP(        0.0.0.0/0, DROP)
 
 
 

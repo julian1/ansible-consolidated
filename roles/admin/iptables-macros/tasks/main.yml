@@ -90,8 +90,7 @@
       content: |
         # deployed by ansible!
 
-        # there's no advantage passing interface by argument - because we have to define the LAN as ! of WAN as a catchall interface
-
+        # there's no advantage passing interface as an argument - because we define the LAN as ! of WAN as a catchall interface
         # wan andd lan are exactually the same - except lan has !.
 
 
@@ -114,8 +113,19 @@
         `iptables -A INPUT  ! -i WAN_INTERFACE --protocol $1 --sport $2 --source $3      -j $4' )
 
 
-        # both these work
-        # WAN_PING_INGRESS(address, action)
+        # icmp does not support a range type so we can't overload with --icmp-type 1:255 to drop everything
+        # instead need a separate rule
+        #define(`WAN_ICMP_INGRESS',
+        #`iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type $1 --source $2      -j $3'
+        #`iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type $2 --destination $2 -j $3')
+
+
+        # this applies to either ingress or egress icmp... because it's not selective for ports like ip
+        # WAN_ICMP(address, action)
+        define(`WAN_ICMP',
+        `iptables -A INPUT  -i WAN_INTERFACE -p icmp  --source $1      -j $2'
+        `iptables -A OUTPUT -o WAN_INTERFACE -p icmp  --destination $1 -j $2')
+
         define(`WAN_PING_INGRESS',
         `iptables -A INPUT  -i WAN_INTERFACE -p icmp --icmp-type 8  --source $1      -j $2'
         `iptables -A OUTPUT -o WAN_INTERFACE -p icmp --icmp-type 0  --destination $1 -j $2')
