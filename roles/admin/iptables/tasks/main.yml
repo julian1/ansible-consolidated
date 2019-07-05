@@ -20,10 +20,10 @@
         include(`/etc/iptables-macros2.m4')
 
 
-        WAN_INGRESS(tcp, 443, 0.0.0.0/0, ACCEPT)
+        #WAN_INGRESS(tcp, 443, 0.0.0.0/0, ACCEPT)
         WAN_INGRESS(tcp, 443, 0.0.0.0/0, DROP)
 
-        WAN_PING_INGRESS(0.0.0.0/0, ACCEPT)
+        #WAN_PING_INGRESS(0.0.0.0/0, ACCEPT)
         WAN_PING_INGRESS(0.0.0.0/0, DROP)
 
 
