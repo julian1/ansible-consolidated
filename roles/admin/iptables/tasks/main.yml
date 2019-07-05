@@ -21,16 +21,27 @@
 
         include(`/etc/iptables-macros2.m4')
 
-        WAN_INGRESS(tcp, 22,  0.0.0.0/0,      ACCEPT)
+        WAN_INGRESS(tcp, 22,    0.0.0.0/0,  ACCEPT)
 
 
-        # handy alternative to using a policy rule
-        # since it won't affect egress services - eg. dns, ntp, http for apt etc.
+        WAN_EGRESS(tcp,  53,    0.0.0.0/0,  ACCEPT)
+        WAN_EGRESS(udp,  53,    0.0.0.0/0,  ACCEPT)
+        WAN_EGRESS(tcp,  80,    0.0.0.0/0,  ACCEPT)
+        WAN_EGRESS(tcp,  443,   0.0.0.0/0,  ACCEPT)
+        WAN_EGRESS(udp,  123,   0.0.0.0/0,  ACCEPT)
+        # cloud instances have static ips and do not need dhcp udp 67 and 68
+
+
+        # an alternativeto specifying a chain policy
+        # we still need to carve out required egress services - eg. dns, ntp, http for apt etc. because of src address
+        # but it should leave icmp alone
         WAN_INGRESS(tcp, 0:65535, 0.0.0.0/0,  DROP)
+        WAN_INGRESS(udp, 0:65535, 0.0.0.0/0,  DROP)
+
 
         # should not blanket block icmp, http://shouldiblockicmp.com/
-        WAN_PING_INGRESS(0.0.0.0/0, ACCEPT)
-        WAN_PING_EGRESS( 0.0.0.0/0, ACCEPT)
+        #WAN_PING_INGRESS(0.0.0.0/0, ACCEPT)
+        #WAN_PING_EGRESS( 0.0.0.0/0, ACCEPT)
         #WAN_ICMP(        0.0.0.0/0, DROP)
 
 

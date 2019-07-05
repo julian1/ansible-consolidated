@@ -90,7 +90,7 @@
       content: |
         # deployed by ansible!
 
-        # there's no advantage passing interface as an argument - because we define the LAN as ! of WAN as a catchall interface
+        # there's no advantage passing interface as an argument - because we must define the LAN as ! of WAN as a catchall interface
         # wan andd lan are exactually the same - except lan has !.
 
 
