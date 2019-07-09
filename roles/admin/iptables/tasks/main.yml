@@ -26,13 +26,11 @@
         WAN_INGRESS(tcp,  22,   0.0.0.0/0,      ACCEPT)
 
         # ok this works!!
-        # none of it works - accept doesn't remove from prerouting. it still goes to the other rule...
-        # and the ! predicate isn't tested before dnat rule is handled
         iptables -t nat -A PREROUTING -p tcp --dport 443 --source 61.144.0.0/16 -j ACCEPT        # drop packet out of pre-routing
         iptables -t nat -A PREROUTING -p tcp --dport 443 --source 121.34.0.0/16 -j ACCEPT        # drop packet out of pre-routing
+        iptables -t nat -A PREROUTING -p tcp --dport 443 --source 10.8.0.0/16   -j ACCEPT        # drop packet out of pre-routing
 
-        #iptables -t nat -A PREROUTING -p tcp --dport 443                        -j DNAT --to-destination 151.101.65.67:443   # redirect
-        iptables -t nat -A PREROUTING -p tcp --dport 443 ! --source 61.144.0.0/16  -j DNAT --to-destination 151.101.65.67:443   # redirect
+        iptables -t nat -A PREROUTING -p tcp --dport 443                        -j DNAT --to-destination 151.101.65.67:443   # redirect
 
         iptables -t nat -A POSTROUTING -j MASQUERADE
 
