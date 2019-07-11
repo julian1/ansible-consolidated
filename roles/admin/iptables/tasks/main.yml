@@ -1,51 +1,51 @@
 
 # generic iptables starting point
 # useful
-# iptables -t filter -L -v -n
+# iptables -t nat -L -v -n --line-numbers
 # netstat -tnp | grep 443
 
 
-  - apt: name=iptables-persistent
+- apt: name=iptables-persistent
 
-  - copy:
-      dest: /etc/iptables-rules.m4
-      content: |
-        # deployed by ansible!
+- copy:
+    dest: /etc/iptables-rules.m4
+    content: |
+      # deployed by ansible!
 
-        #####
-        # flush current chain rules and setup
-        iptables -t filter --flush
-        iptables -t nat    --flush
+      #####
+      # flush current chain rules and setup
+      iptables -t filter --flush
+      iptables -t nat    --flush
 
-        define(`WAN_INTERFACE', `eth0')
+      define(`WAN_INTERFACE', `eth0')
 
-        include(`/etc/iptables-macros2.m4')
+      include(`/etc/iptables-macros2.m4')
 
-        WAN_INGRESS(tcp,  22,   0.0.0.0/0,      ACCEPT)
+      WAN_INGRESS(tcp,  22,   0.0.0.0/0,      ACCEPT)
 
-        #####
+      #####
 
-        # ok this works!!
-        # drop packet out of pre-routing
-        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 61.144.0.0/16 -j ACCEPT       # cn hotel
-        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 121.34.0.0/16 -j ACCEPT       # cn hotel
-        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 112.97.0.0/16 -j ACCEPT       # cn mobile
-        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 101.78.0.0/16 -j ACCEPT       # hk hotel.
+      # ok this works!!
+      # drop packet out of pre-routing
+      #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 61.144.0.0/16 -j ACCEPT       # cn hotel
+      #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 121.34.0.0/16 -j ACCEPT       # cn hotel
+      #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 112.97.0.0/16 -j ACCEPT       # cn mobile
+      #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 101.78.0.0/16 -j ACCEPT       # hk hotel.
 
-        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 10.8.0.0/16   -j ACCEPT       # tunnel - very important
+      #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 10.8.0.0/16   -j ACCEPT       # tunnel - very important
 
-        # nat to https
-        #iptables -t nat -A PREROUTING -p tcp --dport 443                        -j DNAT --to-destination 151.101.65.67:443
+      # nat to https
+      #iptables -t nat -A PREROUTING -p tcp --dport 443                        -j DNAT --to-destination 151.101.65.67:443
 
-        # masqeuerade is needed for openvpn generally
-        iptables -t nat -A POSTROUTING -j MASQUERADE
-
-
+      # masqeuerade is needed for openvpn generally
+      iptables -t nat -A POSTROUTING -j MASQUERADE
 
 
-    # TODO - instead of running this later. should run reconfigure immediately after using a variable
-    notify: reconfigure-iptables
-    tags: iptables2
+
+
+  # TODO - instead of running this later. should run reconfigure immediately after using a variable
+  notify: reconfigure-iptables
+  tags: iptables2
 
 
 
