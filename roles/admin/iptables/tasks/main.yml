@@ -21,29 +21,25 @@
 
         include(`/etc/iptables-macros2.m4')
 
-        #####
-
         WAN_INGRESS(tcp,  22,   0.0.0.0/0,      ACCEPT)
 
+        #####
+
         # ok this works!!
-        iptables -t nat -A PREROUTING -p tcp --dport 443 --source 61.144.0.0/16 -j ACCEPT        # drop packet out of pre-routing
-        iptables -t nat -A PREROUTING -p tcp --dport 443 --source 121.34.0.0/16 -j ACCEPT        # drop packet out of pre-routing
-        iptables -t nat -A PREROUTING -p tcp --dport 443 --source 10.8.0.0/16   -j ACCEPT        # drop packet out of pre-routing
+        # drop packet out of pre-routing
+        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 61.144.0.0/16 -j ACCEPT       # cn hotel
+        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 121.34.0.0/16 -j ACCEPT       # cn hotel
+        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 112.97.0.0/16 -j ACCEPT       # cn mobile
+        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 101.78.0.0/16 -j ACCEPT       # hk hotel.
 
-        iptables -t nat -A PREROUTING -p tcp --dport 443                        -j DNAT --to-destination 151.101.65.67:443   # redirect
+        #iptables -t nat -A PREROUTING -p tcp --dport 443 --source 10.8.0.0/16   -j ACCEPT       # tunnel - very important
 
+        # nat to https
+        #iptables -t nat -A PREROUTING -p tcp --dport 443                        -j DNAT --to-destination 151.101.65.67:443
+
+        # masqeuerade is needed for openvpn generally
         iptables -t nat -A POSTROUTING -j MASQUERADE
 
-
-        WAN_INGRESS(tcp,  443,  0.0.0.0/0,  ACCEPT)   # hotel wifi  61.144.184.147
-
-
-        WAN_EGRESS(tcp,  53,    0.0.0.0/0,      ACCEPT)
-        WAN_EGRESS(udp,  53,    0.0.0.0/0,      ACCEPT)
-        WAN_EGRESS(tcp,  80,    0.0.0.0/0,      ACCEPT)
-        WAN_EGRESS(tcp,  443,   0.0.0.0/0,      ACCEPT)
-        WAN_EGRESS(udp,  123,   0.0.0.0/0,      ACCEPT)
-        # cloud instances have static ips and do not need dhcp udp 67 and 68
 
 
 
@@ -52,6 +48,21 @@
     tags: iptables2
 
 
+
+
+
+
+#########
+# none of this should be needed as we don't have any drop policies.
+
+#WAN_INGRESS(tcp,  443,  0.0.0.0/0,  ACCEPT)
+
+#WAN_EGRESS(tcp,  53,    0.0.0.0/0,      ACCEPT)
+#WAN_EGRESS(udp,  53,    0.0.0.0/0,      ACCEPT)
+#WAN_EGRESS(tcp,  80,    0.0.0.0/0,      ACCEPT)
+#WAN_EGRESS(tcp,  443,   0.0.0.0/0,      ACCEPT)
+#WAN_EGRESS(udp,  123,   0.0.0.0/0,      ACCEPT)
+# cloud instances have static ips and do not need dhcp udp 67 and 68
 
 
 
