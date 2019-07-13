@@ -5,10 +5,11 @@
     - admin/timezone
     - admin/locale
     - admin/sshd
-    - admin/fail2ban
+    # - admin/fail2ban
     # - admin/firewall
 
     - nodes/postfix
+    - nodes/postfix-fail2ban
 
   tasks:
 
