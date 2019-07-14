@@ -12,7 +12,7 @@ ansible-playbook plays/nodes/apu.yml            --tags bind,dhcp,iptables
 ansible-playbook plays/nodes/dell5520.yml       -i localhost, -c local
 ansible-playbook plays/nodes/localnet2.yml      -i localhost, -c local
 
-# plays
+# playsn
 ansible-playbook plays/admin/timezone.yml       -i localhost, -c local
 ansible-playbook plays/personal/dotfiles.yml    -i localhost, -c local --extra-vars "timezone=Australia/Hobart"  # <- not tested!
 ansible-playbook plays/personal/dotfiles.yml    -i localhost, -c local
@@ -26,8 +26,9 @@ ansible-playbook plays/nodes/postfix.yml        -i $host,
 ansible-playbook plays/admin/deploy-war.yml     -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 
 # setting and overriding vars
+ansible-playbook ./plays/personal/dotfiles.yml  -i $host,   --extra-vars "path=/home/parity user=parity"
+ansible-playbook ./plays/personal/dotfiles.yml  -i $host,   --extra-vars "path=/root user=root"
 ansible-playbook ./plays/personal/dotfiles.yml  -i localhost, -c local --extra-vars "path=/root user=root"
-ansible-playbook ./plays/personal/dotfiles.yml  -i $host,  --extra-vars "path=/home/parity user=parity"
 ansible-playbook ./plays/personal/dotfiles.yml  -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python"
 
 # nixos temporary examples,
