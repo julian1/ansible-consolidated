@@ -2,6 +2,6 @@
   
   - hosts: all
     roles:
-      - admin/fail2ban
+      - admin/fail2ban-ssh
 
 
