@@ -15,7 +15,6 @@
 
         ListenAddress {{listen_address}}
 
-        UsePAM yes
         X11Forwarding yes
 
         # JA If this option is set to "without-password", password authentication is disabled for root, but key ssh ok.
@@ -23,9 +22,13 @@
 
         # you want to fully disable password-based authentication, set BOTH PasswordAuthentication and ChallengeResponseAuthentication to 'no'
         # https://blog.tankywoo.com/linux/2013/09/14/ssh-passwordauthentication-vs-challengeresponseauthentication.html
+        # https://superuser.com/questions/161609/can-someone-explain-the-passwordauthentication-in-the-etc-ssh-sshd-config-fil
         ChallengeResponseAuthentication no
         # JA disable password authentication for all users
         PasswordAuthentication no
+
+        # JA careful, disabling pam previously caused issues with key based only authentication
+        UsePAM no
 
         PrintMotd no
 
