@@ -15,13 +15,15 @@
 
         ListenAddress {{listen_address}}
 
-        ChallengeResponseAuthentication no
         UsePAM yes
         X11Forwarding yes
 
         # JA If this option is set to "without-password", password authentication is disabled for root, but key ssh ok.
         PermitRootLogin without-password
 
+        # you want to fully disable password-based authentication, set BOTH PasswordAuthentication and ChallengeResponseAuthentication to 'no'
+        # https://blog.tankywoo.com/linux/2013/09/14/ssh-passwordauthentication-vs-challengeresponseauthentication.html
+        ChallengeResponseAuthentication no
         # JA disable password authentication for all users
         PasswordAuthentication no
 
@@ -29,6 +31,7 @@
 
         # no AcceptEnv which screws env, https://stackoverflow.com/questions/2499794/how-to-fix-a-locale-setting-warning-from-perl
         # AcceptEnv LANG LC_*
+
         # JA needed for rsync
         Subsystem       sftp    /usr/lib/openssh/sftp-server
 
