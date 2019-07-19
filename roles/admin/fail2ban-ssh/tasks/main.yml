@@ -1,0 +1,54 @@
+
+# Notes,
+# Use the following to check iptables monitoring and blocked
+# iptables -L -n
+# log files,
+# less /var/log/fail2ban.log
+# less /var/log/mail.warn
+# less /var/log/auth.log
+#
+# to check jails,
+#   fail2ban-client status
+# check specific jail,
+#   fail2ban-client status postfix-sasl
+
+#  "Every .conf file can be overridden with a file named .local. The .conf file
+#  is read first, then .local, with later settings overriding earlier ones.
+#  Thus, a .local file doesn't have to include everything in the corresponding
+#  .conf file, only those settings that you wish to override. Modifications
+#  should take place in the .local and not in the .conf.
+
+
+  - apt: name=fail2ban
+    tags: fail2ban
+
+  - copy:
+      dest: /etc/fail2ban/jail.local
+      backup: yes
+      content: |
+        # deployed by ansible!
+        # jail.local values should override jail.conf defaults
+
+        [sshd]
+        bantime = 86400
+        findtime = 86400
+        maxretry = 3
+
+  
+  # only the sshd jail is enabled by default in debian
+  - copy:
+      dest: /etc/fail2ban/jail.d/defaults-debian.conf
+      backup: yes
+      content: |
+        # deployed by ansible!
+
+        [sshd]
+        enabled = true
+
+ 
+    notify: restart-fail2ban
+    tags: fail2ban
+
+
+
+
