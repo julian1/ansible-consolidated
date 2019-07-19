@@ -27,8 +27,8 @@
         # JA disable password authentication for all users
         PasswordAuthentication no
 
-        # JA careful, disabling pam previously caused issues with key based only authentication
-        UsePAM no
+        # JA careful, if disable pam then keybased login for root is ok. but keybased for other accounts fails
+        UsePAM yes
 
         PrintMotd no
 
