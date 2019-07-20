@@ -29,7 +29,6 @@ alias s=sudo
 alias l=less
 alias v='vim -p'
 alias p=ping
-alias wp='watch ping -c 1 8.8.8.8'
 
 alias sc=systemctl    # shadows /usr/bin/sc
 alias jc=journalctl
@@ -62,10 +61,16 @@ alias p8="ping 8.8.8.8"
 # ping opendns
 alias p9="ping 208.67.222.222"
 
+# watch ping google
+alias pw='watch ping -c 1 8.8.8.8'
 
-alias pw="cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 18 | head -n 1"
+# generate a password
+alias pass="cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 18 | head -n 1"
+
+# print doc
 alias pr='a2ps -1 -R -f 9'
 
+# record screen video
 alias rec="ffmpeg  -f x11grab -s 1920x1200 -r 25 -i :0.0 output.mp4"
 alias rec2="ffmpeg -f x11grab -s 1920x1080 -r 25 -i :0.0 output.mp4"
 
