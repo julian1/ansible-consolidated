@@ -51,7 +51,7 @@ set report=0
 
 " *********** TABS ****************
 " tab navigation like firefox
-" works very well - use ctrl-n and ctrl-p since pg-up/down doesnt
+" works very well - use ctrl-n and ctrl-p correspond to :bn and :bp - for next and previous buffervim 
 " just use ctrl-t to create new tab then :e file to open file
 " likewise ctrl-w to close the tab
 " but note
@@ -61,19 +61,25 @@ set report=0
 "" not sure if shouldnt use defaults instead
 " note that tabf is best way to open tab
 :nmap <C-p>     :tabprevious<cr>
-:nmap <C-n>     :tabnext<cr>
 :map <C-p>      :tabprevious<cr>
-:map <C-n>      :tabnext<cr>
 :imap <C-p>     <ESC>:tabprevious<cr>i
+
+:nmap <C-n>     :tabnext<cr>
+:map <C-n>      :tabnext<cr>
 :imap <C-n>     <ESC>:tabnext<cr>i
 
 "If you are working with tags/cscope, <Ctrl-T> is used for popping the stack.
 " note there is tabf <filename>
 :nmap <C-t>     :tabnew<cr>
 :imap <C-t>     <ESC>:tabnew<cr>
+:imap <C-t>     <ESC>:tabnew<cr>
+
 " C-W interferes with split navigation
-":nmap <C-w> :tabclose<cr>
-":imap <C-w> <ESC>:tabclose<cr>
+" might be better with tab close
+:nmap <C-w>     :q<cr>
+:map <C-w>      :q<cr>
+:imap <C-w>     <ESC>:q<cr>i
+
 
 
 " ********** FOLDING **************
