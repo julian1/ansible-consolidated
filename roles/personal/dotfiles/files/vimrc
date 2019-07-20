@@ -81,6 +81,11 @@ set report=0
 :imap <C-w>     <ESC>:q<cr>i
 
 
+" cycle buffe r s
+nnoremap  <silent>   <tab>  :bnext<CR>
+nnoremap  <silent> <s-tab>  :bprevious<CR>
+
+
 
 " ********** FOLDING **************
 
