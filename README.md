@@ -15,6 +15,7 @@ ansible-playbook plays/nodes/localnet2.yml      -i localhost, -c local
 # playsn
 ansible-playbook plays/admin/timezone.yml       -i localhost, -c local
 ansible-playbook plays/admin/timezone.yml       -i localhost, -c local --extra-vars "timezone=Australia/Hobart"
+ansible-playbook plays/admin/timezone.yml       -i devel07,  --extra-vars "timezone=Asia/Ho_Chi_Minh"
 ansible-playbook plays/personal/dotfiles.yml    -i localhost, -c local
 ansible-playbook plays/personal/scripts.yml     -i localhost, -c local
 ansible-playbook plays/admin/devenv-lite.yml    -i localhost, -c local
@@ -49,12 +50,12 @@ ansible-playbook plays/admin/stretch-ftp-au.yml -i $host,
 ansible-playbook plays/admin/sshd.yml           -i $host,
 ansible-playbook plays/admin/timezone.yml       -i $host,
 ansible-playbook plays/admin/locale.yml         -i $host,
-ansible-playbook plays/admin/fail2ban.yml       -i $host,
 ansible-playbook plays/admin/devenv-lite.yml    -i $host,
 
 ansible-playbook plays/personal/dotfiles.yml    -i $host,
-ansible-playbook plays/personal/meteo-sudo.yml  -i $host,
+#ansible-playbook plays/personal/meteo-sudo.yml  -i $host,
 
+ansible-playbook plays/admin/fail2ban-sshd.yml   -i $host,
 
 # flags
 ansible --list-hosts all

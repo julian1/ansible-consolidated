@@ -13,9 +13,11 @@
 
   roles:
     - name: admin/timezone
+
     - name: admin/locale
+
     - name: admin/devenv-lite
-    # needed to disable env passing
+
     - name: admin/sshd
 
     - name: admin/user
