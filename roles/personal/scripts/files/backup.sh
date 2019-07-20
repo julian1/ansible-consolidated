@@ -13,6 +13,8 @@ fi
 # or just use s mount --bind / /mnt/test/  which remounts and will exclude this stuff.
 # IMPORTANT can also pass --exclude /backups to exclude entire dir.
 
+# IMPORTANT or --listed-incremental=/var/log/usr.snar
+
 args=${@:3:999}
 
 

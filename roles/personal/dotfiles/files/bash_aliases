@@ -47,13 +47,13 @@ alias myip4="curl -s http://www.ip-adress.eu/ | grep My | sed 's/.*\">//' "
 
 # ping
 
-# ping gateway
-function p6() {
+# ping gateway - shadowns /usr/bin/pg
+function pg() {
   gateway=$( ip route | grep '^default' | cut -d ' ' -f 3  )
   ping $gateway
 }
 # ping dns server
-function p7() {
+function pd() {
   dns=$( grep '^nameserver' /etc/resolv.conf | cut -d ' ' -f 2 )
   ping $dns
 }
