@@ -168,7 +168,8 @@
             host nixos01      { hardware ethernet 00:01:04:1b:2C:1B; fixed-address 10.3.0.10; }
 
             # chroot my-nixos
-            host nixos02      { hardware ethernet 66:c9:5c:01:4d:7b; fixed-address 10.3.0.11; }
+            #host nixos02      { hardware ethernet 66:c9:5c:01:4d:7b; fixed-address 10.3.0.11; }
+            host nixos02      { hardware ethernet 0e:9f:d8:56:7e:05; fixed-address 10.3.0.11; }
 
 
             # nspawn, chroots

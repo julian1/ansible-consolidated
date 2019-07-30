@@ -35,8 +35,7 @@
 
 
   # can edit vars file here, for proper CA
-
-  # SHOULD edit, ~/openvpn-ca/vars
+  # ./openvpn-ca/vars
 
   # export KEY_NAME="server"
 
