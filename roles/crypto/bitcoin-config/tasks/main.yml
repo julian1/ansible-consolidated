@@ -1,15 +1,16 @@
 
-# run this unpriviledged. only requires path and user
-  # testnet by default
+# warning rpc client password is easily guessible, and exposed to 127.0.0.1
 
-  # eg. usage,
-  # ./cli.sh getinfo
-  # ./cli.sh listreceivedbyaddress 0 true
-  # ./cli.sh getrawtransaction 'xxx' 1
-  # ./cli.sh estimatefee 2
-  # ./cli.sh settxfee 0.0001
-  # ./cli.sh sendtoaddress aaaa 0.5
-  # /cli.sh  listtransactions
+# run play unpriviledged. only requires path and user
+
+# eg. usage,
+# ./cli.sh getinfo
+# ./cli.sh listreceivedbyaddress 0 true
+# ./cli.sh getrawtransaction 'xxx' 1
+# ./cli.sh estimatefee 2
+# ./cli.sh settxfee 0.0001
+# ./cli.sh sendtoaddress aaaa 0.5
+# ./cli.sh  listtransactions
 
 - debug: msg="user={{user}}, path={{path}}"
 
