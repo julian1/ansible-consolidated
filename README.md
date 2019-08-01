@@ -16,6 +16,7 @@ ansible-playbook plays/nodes/localnet2.yml      -i localhost, -c local
 ansible-playbook plays/admin/timezone.yml       -i localhost, -c local
 ansible-playbook plays/admin/timezone.yml       -i localhost, -c local --extra-vars "timezone=Australia/Hobart"
 ansible-playbook plays/admin/timezone.yml       -i devel07,  --extra-vars "timezone=Asia/Ho_Chi_Minh"
+
 ansible-playbook plays/personal/dotfiles.yml    -i localhost, -c local
 ansible-playbook plays/personal/scripts.yml     -i localhost, -c local
 ansible-playbook plays/admin/devenv-lite.yml    -i localhost, -c local
@@ -44,18 +45,15 @@ apt-get install python-minimal
 export host=n.n.n.n
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
 ansible-playbook plays/admin/timezone.yml       -i $host, --extra-vars "timezone=Asia/Ho_Chi_Minh"
+ansible-playbook plays/admin/locale.yml         -i $host, --extra-vars "locale=en_AU.UTF-8"
 ansible-playbook plays/personal/bootstrap.yml   -i $host,
+ansible-playbook plays/personal/default-users   -i $host,
 
 # or bootstrap specific,
 ansible-playbook plays/admin/sshd.yml           -i $host,
-ansible-playbook plays/admin/timezone.yml       -i $host,
-ansible-playbook plays/admin/locale.yml         -i $host,
 ansible-playbook plays/admin/devenv-lite.yml    -i $host,
+ansible-playbook plays/admin/fail2ban-sshd.yml  -i $host,
 
-ansible-playbook plays/personal/dotfiles.yml    -i $host,
-#ansible-playbook plays/personal/meteo-sudo.yml  -i $host,
-
-ansible-playbook plays/admin/fail2ban-sshd.yml   -i $host,
 
 # flags
 ansible --list-hosts all
