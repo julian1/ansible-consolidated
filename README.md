@@ -43,6 +43,7 @@ ansible-playbook ./plays/personal/pathogen.yml  -i nixos02, --extra-vars "path=/
 apt-get install python-minimal
 export host=n.n.n.n
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
+ansible-playbook plays/admin/timezone.yml       -i $host, --extra-vars "timezone=Asia/Ho_Chi_Minh"
 ansible-playbook plays/personal/bootstrap.yml   -i $host,
 ansible-playbook plays/admin/stretch-ftp-au.yml -i $host,
 

@@ -13,9 +13,6 @@
       username: "{{user}}"
       mode: 0700
 
-    - name: personal/dotfiles
-      tags: dotfiles
-
     - name: crypto/bitcoin-config
       path: /home/bitcoin
       user: bitcoin

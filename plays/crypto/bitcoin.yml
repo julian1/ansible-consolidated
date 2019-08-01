@@ -1,0 +1,14 @@
+
+
+- hosts: all
+  vars:
+    user: me
+    build_dir: /home/me/bitcoin
+    version: "v0.18.0"
+
+  # v0.14.1
+
+  roles:
+    - name: crypto/bitcoin
+
+

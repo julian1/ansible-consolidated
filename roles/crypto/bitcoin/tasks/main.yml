@@ -1,21 +1,30 @@
 
-  just use nix pkg
+
+# should just use the nix pkg?
+
+# v0.14.1
+
+  - debug: msg="user={{user}}, build_dir={{build_dir}}  version={{version}} " #"
+
 
   # key_file=/home/user/.ssh/id_rsa.github-{{ item.repo }}
 
-  - copy:
-      dest: /home/{{bitcoin.user}}/cli.sh
-      mode: 0755
-      content: |
-        #!/bin/bash
-        ./bitcoin/src/bitcoin-cli -datadir=./data "$@"
+# not good... should be just using home...
+#
+#  - copy:
+#      dest: /home/{{user}}/cli.sh
+#      mode: 0755
+#      content: |
+#        #!/bin/bash
+#        ./bitcoin/src/bitcoin-cli -datadir=./data "$@"
+#
+#  - copy:
+#      dest: /home/{{user}}/start.sh
+#      mode: 0755
+#      content: |
+#        #!/bin/bash
+#        ./bitcoin/src/bitcoind -datadir=./data  -txindex
 
-  - copy:
-      dest: /home/{{bitcoin.user}}/start.sh
-      mode: 0755
-      content: |
-        #!/bin/bash
-        ./bitcoin/src/bitcoind -datadir=./data  -txindex
 
 
   # https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md
@@ -28,6 +37,10 @@
   - apt: name=libevent-dev
   - apt: name=bsdmainutils
 
+  # needed for become
+  - apt: name=sudo
+
+
   # boost
   - apt: name=libboost-system-dev
   - apt: name=libboost-filesystem-dev
@@ -37,28 +50,40 @@
   - apt: name=libboost-thread-dev
 
 
-  - git: repo=http://github.com/bitcoin/bitcoin
-      dest="{{bitcoin.build_dir}}"
-      accept_hostkey=yes
-      force=yes
-      recursive=no
-      version=v0.14.1
+  # do checkout as unpriviledged user
+  - git: 
+      repo: "http://github.com/bitcoin/bitcoin"
+      dest: "{{build_dir}}"
+      accept_hostkey: yes
+      force: yes
+      recursive: no
+      version: "{{version}}"
+    become: yes
+    become_user: "{{user}}"
+    tags: whoot
+ 
 
-  - file: path="{{bitcoin.build_dir}}" state=directory owner="{{bitcoin.user}}" group="{{bitcoin.user}}" recurse=yes
+
+
+  # changing all the permissions like this is horrible
+  # might be nicer to not have this
+  #- file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
 
 # git doesn't support become and become_user
 #      become=yes
-#      become_user="{{bitcoin.user}}"
+#      become_user="{{user}}"
 
-  # needed for become
-  - apt: name=sudo
 
   # bdb
   - copy:
-      dest: "{{bitcoin.build_dir}}/build-bd.sh"
+      dest: "{{build_dir}}/build-bd.sh"
       mode: 0755
       content: |
         # deployed by ansible!
+
+        # not tested
+        set -e
+
         BITCOIN_ROOT=$(pwd)
 
         # Pick some path to install BDB to, here we create a directory within the bitcoin directory
@@ -77,19 +102,22 @@
         ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX
         make install
 
+    tags: whoot
+
 
   - name: build bdb
-    shell: creates=db4/lib/libdb.a chdir={{bitcoin.build_dir}} {{item}}
+    shell: creates=db4/lib/libdb.a chdir={{build_dir}} {{item}}
     become: yes
-    become_user: "{{bitcoin.user}}"
+    become_user: "{{user}}"
     with_items:
       - ./build-bd.sh
+    tags: whoot
 
 
   - name: autogen and configure
-    shell: creates=Makefile chdir={{bitcoin.build_dir}} {{item}}
+    shell: creates=Makefile chdir={{build_dir}} {{item}}
     become: yes
-    become_user: "{{bitcoin.user}}"
+    become_user: "{{user}}"
     with_items:
       - echo doing autogen
       - ./autogen.sh
@@ -98,9 +126,9 @@
 
 
   - name: make bitcoin
-    shell: creates=src/bitcoind chdir={{bitcoin.build_dir}} {{item}}
+    shell: creates=src/bitcoind chdir={{build_dir}} {{item}}
     become: yes
-    become_user: "{{bitcoin.user}}"
+    become_user: "{{user}}"
     with_items:
       - make
     tags: whoot

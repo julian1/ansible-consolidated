@@ -12,17 +12,20 @@
   vars:
 
   roles:
-    - name: admin/timezone
+    # - name: admin/hostname
+    # - name: admin/timezone
 
     - name: admin/locale
 
     - name: admin/devenv-lite
 
     - name: admin/sshd
+    # - name: admin/fail2ban-sshd   not generic enough for servers
+
 
     - name: admin/user
-      username: meteo
-      path: /home/meteo
+      username: me
+      path: /home/me
       mode: 0700
 
     - name: personal/dotfiles
@@ -32,11 +35,11 @@
 
     - name: personal/dotfiles
       tags: dotfiles
-      path: /home/meteo
-      user: meteo
+      path: /home/me
+      user: me
 
     - name: personal/pathogen
       tags: pathogen
-      path: /home/meteo
-      user: meteo
+      path: /home/me
+      user: me
 
