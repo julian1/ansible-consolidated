@@ -5,7 +5,7 @@
 # but pathogen has it's own role
 
 
-- debug: msg="user={{user}}, path={{path}}" #"
+- debug: msg="user={{user}}, path={{path}}"
 
 
 - copy: src=bash_aliases    dest={{path}}/.bash_aliases

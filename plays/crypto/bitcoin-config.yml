@@ -1,20 +1,11 @@
 
-# SO WE DO WANT IT RUNNING IN A SEPERATE ACCOUNT
+# SO WE DO WANT IT RUNNING IN A SEPERATE ACCOUNT?
 
 - hosts: all
-  vars_files:
-    - ../../credentials.yml
   vars:
-    user: bitcoin
-    path: /home/bitcoin
-
   roles:
-    - name: admin/user
-      username: "{{user}}"
-      mode: 0700
 
     - name: crypto/bitcoin-config
-      path: /home/bitcoin
-      user: bitcoin
-
+      path: /home/me
+      user: me
 

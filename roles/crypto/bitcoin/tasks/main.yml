@@ -4,7 +4,7 @@
 
 # v0.14.1
 
-  - debug: msg="user={{user}}, build_dir={{build_dir}}  version={{version}} " #"
+  - debug: msg="user={{user}}, build_dir={{build_dir}}  version={{version}}"
 
 
   # key_file=/home/user/.ssh/id_rsa.github-{{ item.repo }}
@@ -51,7 +51,7 @@
 
 
   # do checkout as unpriviledged user
-  - git: 
+  - git:
       repo: "http://github.com/bitcoin/bitcoin"
       dest: "{{build_dir}}"
       accept_hostkey: yes
@@ -61,7 +61,7 @@
     become: yes
     become_user: "{{user}}"
     tags: whoot
- 
+
 
 
 

@@ -15,23 +15,28 @@
 # - crypto/web3
 
 
+- debug: msg="user={{user}}, path={{path}}"
+
+
 - copy:
-    dest: /home/parity/vars.inc
+    dest: "{{path}}/vars.inc"
+    owner: "{{user}}"
+    group: "{{user}}"
     content: |
       # deployed by ansible!
       # jan 2019
 
-      # copy binary out of the build path
-      PATH="/home/parity/:$PATH"
+      # assume copy binary out of the build path?
+      PATH="{{path}}/parity/bin:$PATH"
 
       export PATH
   tags: config
 
 
 - copy:
-    dest: /home/parity/start-parity-sync.sh
-    owner: parity
-    group: parity
+    dest: "{{path}}/start-parity-sync.sh"
+    owner: "{{user}}"
+    group: "{{user}}"
     mode: 0700
     content: |
       #!/bin/bash
@@ -61,9 +66,9 @@
 
 
 - copy:
-    dest: /home/parity/start-parity.sh
-    owner: parity
-    group: parity
+    dest: "{{path}}/start-parity.sh"
+    owner: "{{user}}"
+    group: "{{user}}"
     mode: 0700
     content: |
       #!/bin/bash
@@ -99,9 +104,9 @@
 
 # useful - and can avoid installing npm/node
 - copy:
-    dest: /home/parity/blocknumber.sh
-    owner: parity
-    group: parity
+    dest: "{{path}}/blocknumber.sh"
+    owner: "{{user}}"
+    group: "{{user}}"
     mode: 0700
     content: |
       #!/bin/bash
