@@ -44,15 +44,17 @@ ansible-playbook ./plays/personal/pathogen.yml  -i nixos02, --extra-vars "path=/
 apt-get install python-minimal
 export host=n.n.n.n
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
-ansible-playbook plays/admin/timezone.yml       -i $host, --extra-vars "timezone=Asia/Ho_Chi_Minh"
-ansible-playbook plays/admin/locale.yml         -i $host, --extra-vars "locale=en_AU.UTF-8"
 ansible-playbook plays/personal/bootstrap.yml   -i $host,
-ansible-playbook plays/personal/default-users   -i $host,
+ansible-playbook plays/personal/default-users.yml -i $host,
 
 # or bootstrap specific,
+ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
+ansible-playbook plays/admin/timezone.yml       -i $host, --extra-vars "timezone=Asia/Ho_Chi_Minh"
+ansible-playbook plays/admin/locale.yml         -i $host, --extra-vars "locale=en_AU.UTF-8"
 ansible-playbook plays/admin/sshd.yml           -i $host,
-ansible-playbook plays/admin/devenv-lite.yml    -i $host,
 ansible-playbook plays/admin/fail2ban-sshd.yml  -i $host,
+ansible-playbook plays/admin/devenv-lite.yml    -i $host,
+ansible-playbook plays/personal/default-users.yml-i $host,
 
 
 # flags

@@ -13,12 +13,12 @@
     # - name: admin/apt-stretch
     # - name: admin/apt-update
 
-    # - name: admin/hostname
-    # - name: admin/timezone
-    # - name: admin/locale
+    #- name: admin/hostname
+    - name: admin/timezone
+    - name: admin/locale
     - name: admin/devenv-lite
     - name: admin/sshd
-    # - name: admin/fail2ban-sshd   too generic for servers
+    - name: admin/fail2ban-sshd   # too generic for servers?
 
 
 
