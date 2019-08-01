@@ -6,12 +6,20 @@
 # eg. usage,
 # ./cli.sh help
 # ./cli.sh getinfo
+#
+# wallet stuff
 # ./cli.sh listreceivedbyaddress 0 true
 # ./cli.sh getrawtransaction 'xxx' 1
 # ./cli.sh estimatefee 2
 # ./cli.sh settxfee 0.0001
 # ./cli.sh sendtoaddress aaaa 0.5
 # ./cli.sh listtransactions
+#
+# non-wallet, -txindex
+# a=$( ./cli.sh getrawtransaction 8e43e27eeafe4ca95e6fa712638cf607fc28d01c82493fcf706fc0915733819b )
+# ./cli.sh decoderawtransaction $a
+# or just,
+#  ./cli.sh getrawtransaction 8e43e27eeafe4ca95e6fa712638cf607fc28d01c82493fcf706fc0915733819b 1
 
 - debug: msg="user={{user}}, path={{path}}"
 
