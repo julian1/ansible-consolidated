@@ -45,7 +45,6 @@ export host=n.n.n.n
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
 ansible-playbook plays/admin/timezone.yml       -i $host, --extra-vars "timezone=Asia/Ho_Chi_Minh"
 ansible-playbook plays/personal/bootstrap.yml   -i $host,
-ansible-playbook plays/admin/stretch-ftp-au.yml -i $host,
 
 # or bootstrap specific,
 ansible-playbook plays/admin/sshd.yml           -i $host,

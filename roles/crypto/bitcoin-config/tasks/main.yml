@@ -4,13 +4,14 @@
 # run play unpriviledged. only requires path and user
 
 # eg. usage,
+# ./cli.sh help
 # ./cli.sh getinfo
 # ./cli.sh listreceivedbyaddress 0 true
 # ./cli.sh getrawtransaction 'xxx' 1
 # ./cli.sh estimatefee 2
 # ./cli.sh settxfee 0.0001
 # ./cli.sh sendtoaddress aaaa 0.5
-# ./cli.sh  listtransactions
+# ./cli.sh listtransactions
 
 - debug: msg="user={{user}}, path={{path}}"
 
@@ -25,7 +26,6 @@
       export PATH
 
   tags: config
-
 
 
 - copy:
