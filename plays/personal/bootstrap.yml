@@ -12,7 +12,6 @@
   roles:
     # - name: admin/apt-stretch
     # - name: admin/apt-update
-
     #- name: admin/hostname
     - name: admin/timezone
     - name: admin/locale

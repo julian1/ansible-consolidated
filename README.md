@@ -54,7 +54,7 @@ ansible-playbook plays/admin/locale.yml         -i $host, --extra-vars "locale=e
 ansible-playbook plays/admin/sshd.yml           -i $host,
 ansible-playbook plays/admin/fail2ban-sshd.yml  -i $host,
 ansible-playbook plays/admin/devenv-lite.yml    -i $host,
-ansible-playbook plays/personal/default-users.yml-i $host,
+ansible-playbook plays/personal/default-users.yml -i $host,
 
 
 # flags
