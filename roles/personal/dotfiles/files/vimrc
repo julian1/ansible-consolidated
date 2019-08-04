@@ -48,8 +48,6 @@ set report=0
 " to reload vimrc - vimrc needs to be open
 " :so %
 
-" ctrl i to escape edit mode - actually pretty nice
-:imap <C-i>  <C-c>
 
 " *********** TABS ****************
 " tab navigation like firefox
@@ -76,14 +74,14 @@ set report=0
 :imap <C-t>     <ESC>:tabnew<cr>
 :imap <C-t>     <ESC>:tabnew<cr>
 
-" C-W interferes with split navigation, but we never use it
+" C-W interferes with split navigation
 " might be better with tab close
 :nmap <C-w>     :q<cr>
 :map <C-w>      :q<cr>
 :imap <C-w>     <ESC>:q<cr>i
 
 
-" cycle buffe r s
+" tab key cycles buffers. eg. useful to cycle buffers in a tab
 nnoremap  <silent>   <tab>  :bnext<CR>
 nnoremap  <silent> <s-tab>  :bprevious<CR>
 
