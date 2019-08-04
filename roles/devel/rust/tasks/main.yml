@@ -4,32 +4,40 @@
 # curl https://sh.rustup.rs -sSf | sh; source $HOME/.cargo/env
 
 
-  # we need to pass the url, so may as well just install locally here...
-  - get_url: >
-      url='https://sh.rustup.rs'
-      dest=/home/{{user}}/rustup-init
-      mode=755
-
-  - apt: name=curl
-  - apt: name=sudo
+- debug: msg="user={{user}}, version={{version}}"
 
 
-  # Note, this will update bash_profile, /home/rust/.cargo/bin/rustc
-  - name: rustup
-    become: yes
-    become_user: "{{user}}"
-    command: >
-      /home/{{user}}/rustup-init -y
-      creates=/home/{{user}}/.rustup/settings.toml
+# we need to pass the url, so may as well just install locally here...
+- get_url: >
+    url='https://sh.rustup.rs'
+    dest=/home/{{user}}/rustup-init
+    mode=755
 
-  # this does install requested version...
-  # TODO not idempotent, needs a guard.
-  # NOTE needs shell, because command handle env vars
-  - name: install rust
-    become: yes
-    become_user: "{{user}}"
-    shell: >
-      # TODO review me!
-      export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install {{version}}  && rustup default {{version}}
+- apt: name=curl
+- apt: name=sudo
+
+
+# Note, this will update bash_profile, /home/rust/.cargo/bin/rustc
+# horrible
+
+- name: rustup
+  become: yes
+  become_user: "{{user}}"
+  command: >
+    /home/{{user}}/rustup-init -y
+    creates=/home/{{user}}/.rustup/settings.toml
+
+# this does install requested version...
+# TODO not idempotent, needs a guard.
+# NOTE needs shell, because command handle env vars
+- name: install rust
+  become: yes
+  become_user: "{{user}}"
+  shell: >
+    # TODO review me!
+    export PATH=/home/{{user}}/.cargo/bin:$PATH && rustup install {{version}}  && rustup default {{version}}
+
+
+# need two versions - install latest - if version not defined...
 
 
