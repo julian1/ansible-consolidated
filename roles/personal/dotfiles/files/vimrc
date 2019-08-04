@@ -42,11 +42,20 @@ set report=0
 " toggle display of formatting characters
 :nmap K :set list!<CR>
 
+" ctrl i to escape edit mode - actually pretty nice
+" screws up tab expansion
+" :inoremap <C-i>  <C-c>
 
-" bash script formatting
 
 " to reload vimrc - vimrc needs to be open
 " :so %
+
+" save session,
+":mksession ~/mysession.vim
+
+" open with same session
+" vim -S ~/mysession.vim
+
 
 
 " *********** TABS ****************
@@ -82,8 +91,8 @@ set report=0
 
 
 " tab key cycles buffers. eg. useful to cycle buffers in a tab
-nnoremap  <silent>   <tab>  :bnext<CR>
-nnoremap  <silent> <s-tab>  :bprevious<CR>
+" nnoremap  <silent>   <tab>  :bnext<CR>
+" nnoremap  <silent> <s-tab>  :bprevious<CR>
 
 
 
