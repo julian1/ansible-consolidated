@@ -17,6 +17,8 @@ alias xclip='xclip -selection clipboard'
 alias dmesg='dmesg -T --color=always'
 alias less='less -R'
 alias vim='vim -p'
+alias vims='vim -p -S ./mysession.vim'
+
 alias top='top -d 1'
 # alias feh='feh -F -Z -d --keep-zoom-vp'
 # alias feh='feh -F -Z -d'
