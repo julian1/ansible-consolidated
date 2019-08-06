@@ -1,187 +1,321 @@
 
-  # https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-ubuntu-16-04
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-ubuntu-16-04
 
-  # stretch
-  # https://linuxconfig.org/how-to-setup-a-vpn-with-openvpn-on-debian-9-stretch-linux
+# stretch
+# https://linuxconfig.org/how-to-setup-a-vpn-with-openvpn-on-debian-9-stretch-linux
 
-  # TODO - service file - probabaly have an issue - forking from root to changing permissions.
-  # when user does't exist.
 
-  - apt: name=openvpn
-  - apt: name=easy-rsa
 
-  # allow client to rsync client config
-  - apt: name=rsync
-  # to monitor connections
-  - apt: name=netstat-nat
+- debug: msg="hostname {{ ansible_hostname }}," #"
 
-  - apt: name=iptables-persistent
-  - apt: name=netcat-traditional
+# TODO - service file - probabaly have an issue - forking from root to changing permissions.
+# when user does't exist.
 
+- apt: name=openvpn
+- apt: name=easy-rsa
 
-  ##############################################
-  # Step 4: Build the Certificate Authority
+# allow client to rsync client config
+- apt: name=rsync
+# to monitor connections
+- apt: name=netstat-nat
 
-  # initialize
-  - command: make-cadir openvpn-ca
-    args:
-      chdir:  /root
-      creates: openvpn-ca/vars
+- apt: name=iptables-persistent
+- apt: name=netcat-traditional
 
 
-  # https://unix.stackexchange.com/questions/92005/key-config-pointing-to-the-wrong-version-of-openssl-cnf
-  # ln -s openssl-1.0.0.cnf openssl.cnf
-  - file: src=/root/openvpn-ca/openssl-1.0.0.cnf dest=/root/openvpn-ca/openssl.cnf  state=link
+##############################################
+# Step 4: Build the Certificate Authority
 
+# initialize
+- command: make-cadir openvpn-ca
+  args:
+    chdir:  /root
+    creates: openvpn-ca/vars
 
-  # can edit vars file here, for proper CA
-  # ./openvpn-ca/vars
 
-  # export KEY_NAME="server"
+# https://unix.stackexchange.com/questions/92005/key-config-pointing-to-the-wrong-version-of-openssl-cnf
+# ln -s openssl-1.0.0.cnf openssl.cnf
+- file: src=/root/openvpn-ca/openssl-1.0.0.cnf dest=/root/openvpn-ca/openssl.cnf  state=link
 
 
-  # generate the keys
-  # look at build-ca to see what it's doiing, and remove interactive prompting
-  - command: "bash -c 'source vars && ./clean-all && ./pkitool --initca' "
-    args:
-      chdir:  /root/openvpn-ca
-      creates: keys/ca.key
+# can edit vars file here, for proper CA
+# ./openvpn-ca/vars
 
+# export KEY_NAME="server"
 
-  ##############################################
-  # Step 5: Create the Server Certificate, Key, and Encryption Files
 
-  # missing 'index.txt.attr' is 'harmless',
-  # https://github.com/OpenVPN/easy-rsa/issues/138
-  - command: "bash -c 'source vars && ./pkitool  --server server' "
-    args:
-      chdir:  /root/openvpn-ca
-      creates: keys/server.key
+# generate the keys
+# look at build-ca to see what it's doiing, and remove interactive prompting
+- command: "bash -c 'source vars && ./clean-all && ./pkitool --initca' "
+  args:
+    chdir:  /root/openvpn-ca
+    creates: keys/ca.key
 
-  # diffie hellman for key exchange
-  # NOte, takes a couple of minutes
-  # build-dh is not interactive
-  - command: "bash -c 'source vars  && ./build-dh' "
-    args:
-      chdir:  /root/openvpn-ca
-      creates: keys/dh2048.pem
 
-  # HMAC signature to strengthen the server's TLS integrity verification capabilities:
-  - command: "openvpn --genkey --secret keys/ta.key"
-    args:
-      chdir:  /root/openvpn-ca
-      creates:  keys/ta.key
 
+- copy:
+    dest: "/root/create-server.sh"
+    mode: 0755
+    content: |
+      # deployed by ansible!
+      set -e
 
+      pushd /root/openvpn-ca
 
+      # clean
+      rm -rf keys && mkdir keys
 
+      # initialize
+      source vars && ./clean-all && ./pkitool --initca
 
-  ##############################################
-  # Step 7: Configure the OpenVPN Service
+      # missing 'index.txt.attr' is 'harmless',
+      # https://github.com/OpenVPN/easy-rsa/issues/138
+      # creates: keys/server.key
+      source vars && ./pkitool --server server
+      
+      # diffie hellman for key exchange
+      # NOte, may take a couple of minutes
+      # build-dh is not interactive
+      # creates: keys/dh2048.pem
+      source vars  && ./build-dh
+      
+      # HMAC signature to strengthen the server's TLS integrity verification capabilities:
+      # creates:  keys/ta.key
+      openvpn --genkey --secret keys/ta.key
 
-  - command: "cp ca.crt server.crt server.key ta.key dh2048.pem /etc/openvpn "
-    args:
-      chdir:  /root/openvpn-ca/keys
-      creates: /etc/openvpn/ta.key
+      # now copy keys out to create a clean working dir
+      rm -rf keys.cpy
+      mv keys keys.cpy 
 
+      popd
 
+  tags: whoot
 
-  # server.conf modified from example,
-  # gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz   > server.conf
 
-  # To filter active config, use
-  # grep '^[^;#]' ./roles/admin/openvpn/templates/server.conf.j2
 
-  - template: src=server.conf.j2 dest=/etc/openvpn/server.conf
+- command: 'bash -c /root/create-server.sh'
 
 
-  # CCD client configuration directory
-  - file: path=/etc/openvpn/ccd state=directory
 
-  # allow network 192.168.0.0/16 to be visible
-  - copy:
-      dest: /etc/openvpn/ccd/client1
-      content: |
-        # deployed by ansible
+##############################################
+# Step 7: Configure the OpenVPN Service
 
-        iroute 192.168.0.0 255.255.0.0
+- command: "cp ca.crt server.crt server.key ta.key dh2048.pem /etc/openvpn "
+  args:
+    chdir:  /root/openvpn-ca/keys.cpy
+    creates: /etc/openvpn/ta.key
 
 
 
+# server.conf modified from example,
+# gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz   > server.conf
 
+# To filter active config, use
+# grep '^[^;#]' ./roles/admin/openvpn/templates/server.conf.j2
 
-  ##############################################
-  # Step 8: Adjust the Server Networking Configuration
+- template: src=server.conf.j2 dest=/etc/openvpn/server.conf
 
-  # ip forwarding - done in play
 
+# CCD client configuration directory
+- file: path=/etc/openvpn/ccd state=directory
 
-  # Warning, be careful of earlier playbook errors, meaning the handler won't get called
-  # and nothing works
+# allow network 192.168.0.0/16 to be visible
+- copy:
+    dest: /etc/openvpn/ccd/client1
+    content: |
+      # deployed by ansible
 
-  - copy:
-      dest: /etc/iptables-rules
-      content: |
-        # deployed by ansible
-        iptables -t nat --flush
+      iroute 192.168.0.0 255.255.0.0
 
-        # do gateway nat for openvpn clients,
-        iptables -t nat -A POSTROUTING -s '10.8.0.0/8' -o eth0 -j MASQUERADE
 
-        # this is a bit tricky, we need to know the client ip, to set up the forward
-        # port forwards to a client
 
-        # monero p2p
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 10.8.0.6
+##############################################
+# Step 8: Adjust the Server Networking Configuration
 
-        # parity p2p and udp node discovery
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 30303 -j DNAT --to 10.8.0.22
-        iptables -t nat -A PREROUTING -p udp -i eth0 --dport 30303 -j DNAT --to 10.8.0.22
+# ip forwarding - done in play
 
-        # transmission/bittorrent p2p
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.18
 
-        # grin p2p, and send/receive api
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13414 -j DNAT --to 10.8.0.10
-        iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13415 -j DNAT --to 10.8.0.10
+# Warning, be careful of earlier playbook errors, meaning the handler won't get called
+# and nothing works
 
+- copy:
+    dest: /etc/iptables-rules
+    content: |
+      # deployed by ansible
+      iptables -t nat --flush
 
-    notify: reconfigure-iptables
-    tags: iptables
+      # do gateway nat for openvpn clients,
+      iptables -t nat -A POSTROUTING -s '10.8.0.0/8' -o eth0 -j MASQUERADE
+      # iptables -t nat -A POSTROUTING -j MASQUERADE
 
 
-  # STARTING SERVER
-  # Notes,
-  # start manually
-  # /usr/sbin/openvpn --cd /etc/openvpn --config /etc/openvpn/server.conf
-  # check
-  # ip addr show tun0
+      # this is a bit tricky, we need to know the client ip, to set up the forward
+      # port forwards to a client
+      # monero p2p
+      #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 18080 -j DNAT --to 10.8.0.6
 
+      # parity p2p and udp node discovery
+      #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 30303 -j DNAT --to 10.8.0.22
+      #iptables -t nat -A PREROUTING -p udp -i eth0 --dport 30303 -j DNAT --to 10.8.0.22
 
-  # start and enable
+      # transmission/bittorrent p2p
+      #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.18
 
-  - service: name=openvpn state=restarted enabled=yes
-    tags: whooter
+      # grin p2p, and send/receive api
+      #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13414 -j DNAT --to 10.8.0.10
+      #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13415 -j DNAT --to 10.8.0.10
 
-  - service: name=openvpn@server state=restarted enabled=yes
-    tags: whooter
+  notify: reconfigure-iptables
+  tags: iptables
 
 
+# STARTING SERVER
+# Notes,
+# start manually
+# /usr/sbin/openvpn --cd /etc/openvpn --config /etc/openvpn/server.conf
+# check
+# ip addr show tun0
 
-  ##############################################
-  # CLIENT
 
+# start and enable
 
-  # SO we need to assemble a bundle with the keys for the client to use.
-  # we'll do it in /etc/openvpn/clients
+- service: name=openvpn state=restarted enabled=yes
+  tags: restart
 
-  # TODO the client1 key generation might be moved here,
+- service: name=openvpn@server state=restarted enabled=yes
+  tags: restart
 
-  ##############################################
-  # Step 6: Generate a Client Certificate and Key Pair
 
-  # for client keys - eg. not password protected
-  # see ./build-key
+
+##############################################
+# CLIENT
+
+# important - the openvpn client binary expects the client conf file name to be fixed at client.conf - ie not client02.conf.  # so rename before tarring.
+
+
+
+# write client template
+- template: src=client.conf.j2 dest=/root/client.conf
+  vars:
+  - {   server_name: "{{ ansible_hostname }}" }
+  tags: whoot
+
+
+
+- copy:
+    dest: "/root/create-clients.sh"
+    mode: 0755
+    content: |
+      #!/bin/bash -e
+      # deployed by ansible!
+
+      # note that we expect to have keys in keys.cpy 
+      k=/root/openvpn-ca/keys
+      kcpy=/root//openvpn-ca/keys.cpy
+
+      rm -rf /root/clients && mkdir /root/clients
+
+      make_client() {
+              # clear working dir
+              rm -rf $k 
+              # copy original generated files into working dir
+              cp -rp $kcpy $k 
+
+              # run script to generate client
+              # NOTE. pkitool expects openvpn-ca/keys which is why we do all the shuffling
+              pushd   /root/openvpn-ca
+              source  ./vars && ./pkitool client
+              popd
+
+              # copy files essential for config out
+              rm -rf /root/client && mkdir client
+              cp $k/ca.crt $k/client.crt $k/client.key /root/client.conf  $kcpy/ta.key client
+
+              # generate .tgz
+              rm -f /root/client.tgz
+              tar czf /root/client.tgz  -C /root client 
+
+              # rename
+              mv /root/client.tgz  /root/clients/client${1}.tgz
+      }
+
+      make_client 01
+      make_client 02
+      make_client 03
+
+  tags: whoot
+
+
+- command: 'bash -c /root/create-clients.sh'
+
+
+#######
+# CLIENT SETUP/Start
+
+# COPY back to localhost with,
+# rsync root@vpn:/root/clients/client03.tgz .
+
+# apt-get install openvpn  - maybe openvpnclient
+
+# cd /etc/openvpn/
+# rm * -rf
+# tar xf /home/meteo/client03.tgz
+# maybe edit client.conf to set the remote server ip, but should use /etc/hosts.
+
+
+# start is two-step
+# systemctl start openvpn
+# systemctl start openvpn@client
+
+
+# edit /etc/resolv.conf to prevent dns leaking
+
+# openvpn pushes specific default route 10.0.0.0/1 and 128.0.0.0/1 to take precedence
+# must still have ordinary default root, which is used to work out conn to openvpn server
+
+# we need ordinary dhcp to push a default route for localnet
+# ip route add 192.168.0.0/16 via 192.168.201.1
+
+
+
+# TROUBLE SHOOTING
+
+# check client
+# wget http://www.google.com
+
+# check server logs, then client
+# less /var/log/syslog
+
+# check server connectivity and open ports
+# nc -v -v vpn 443
+
+# check server foreward
+# sysctl net.ipv4.ip_forward
+
+# check server nat
+# eg. iptables -L -t nat
+
+# from client, check can ping the vpn node.
+# ping 10.8.0.1
+
+# check can ssh to server,
+# ssh 10.8.0.1
+
+
+
+############################
+# old
+
+# SO we need to assemble a bundle with the keys for the client to use.
+# we'll do it in /etc/openvpn/clients
+
+# TODO the client1 key generation might be moved here,
+
+##############################################
+# Step 6: Generate a Client Certificate and Key Pair
+
+# for client keys - eg. not password protected
+# see ./build-key
 #  - command: "bash -c 'source vars && ./pkitool client1 ' "
 #    args:
 #      chdir:  /root/openvpn-ca
@@ -198,104 +332,7 @@
 #
 
 
-  #######################################################
-  # this thing really needs some loops...
-
-  # IMPORTANT - the client code does NOT need to be in /etc/openvpn/clients
-  # eg. server doesn't need to know anything about client keys - except through openvpn-ca/keys.
-
-  # ok, this could be simplified a bit by creating everything in the same keys dir. instad of using two dirs
-  # also we may not need to create separate numbered files everywhere.
-  # just create and tar. not clear if server needs to know all the client keys issued.
-  # one problem though - is that we can't fill in the template, in the middle of a single bash script.
 
 
-  - file: path=/root/clients state=directory
-
-  ##########
-
-
-  - command: "bash -c 'source vars && ./pkitool client{{item}}'"
-    args:
-      chdir:  /root/openvpn-ca
-      creates: "keys/client{{item}}.key"
-    with_items: [ '03', '04', '05', '06' ]
-    tags: client03
-
-
-  # template should be idempotent
-  - template: src=client.conf.j2 dest=/root/clients/client{{item}}.conf
-    vars:
-    - { client_instance: "{{item}}",  server_name: "my-vpn" }
-    with_items: [ '03', '04', '05', '06' ]
-    tags: client03
-
-  # important - the openvpn client binary expects the client conf file name to be fixed at client.conf - ie not client02.conf.
-  # so rename before tarring.
-  - command: >
-      bash -c '
-      cp /root/clients/client{{item}}.conf /root/clients/client.conf
-      && tar cJf /root/clients/client{{item}}.tgz -C /root/openvpn-ca/keys/  ca.crt client{{item}}.crt client{{item}}.key ta.key \
-        -C /root/clients/ client.conf
-      '
-    args:
-      creates: /root/clients/client{{item}}.tgz
-    with_items: [ '03', '04', '05', '06' ]
-    tags: client03
-
-
-
-
-  #######
-  # CLIENT SETUP/Start
-
-  # COPY back to localhost with,
-  # rsync root@vpn:/root/clients/client03.tgz .
-
-  # apt-get install openvpn  - maybe openvpnclient
-
-  # cd /etc/openvpn/
-  # rm * -rf
-  # tar xf /home/meteo/client03.tgz
-  # maybe edit client.conf to set the remote server ip, but should use /etc/hosts.
-
-
-  # start is two-step
-  # systemctl start openvpn
-  # systemctl start openvpn@client
-
-
-  # edit /etc/resolv.conf to prevent dns leaking
-
-  # openvpn pushes specific default route 10.0.0.0/1 and 128.0.0.0/1 to take precedence
-  # must still have ordinary default root, which is used to work out conn to openvpn server
-
-  # we need ordinary dhcp to push a default route for localnet
-  # ip route add 192.168.0.0/16 via 192.168.201.1
-
-
-
-  # TROUBLE SHOOTING
-
-  # check client
-  # wget http://www.google.com
-
-  # check server logs, then client
-  # less /var/log/syslog
-
-  # check server connectivity and open ports
-  # nc -v -v vpn 443
-
-  # check server foreward
-  # sysctl net.ipv4.ip_forward
-
-  # check server nat
-  # eg. iptables -L -t nat
-
-  # from client, check can ping the vpn node.
-  # ping 10.8.0.1
-
-  # check can ssh to server,
-  # ssh 10.8.0.1
 
 
