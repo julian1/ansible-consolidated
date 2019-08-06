@@ -14,7 +14,7 @@
 - apt: name=openvpn
 - apt: name=easy-rsa
 
-# allow client to rsync client config
+# allow a client to rsync it's client config
 - apt: name=rsync
 # to monitor connections
 - apt: name=netstat-nat
@@ -32,25 +32,15 @@
     chdir:  /root
     creates: openvpn-ca/vars
 
+# can edit vars file here, for proper CA
+# ./openvpn-ca/vars
+
 
 # https://unix.stackexchange.com/questions/92005/key-config-pointing-to-the-wrong-version-of-openssl-cnf
 # ln -s openssl-1.0.0.cnf openssl.cnf
 - file: src=/root/openvpn-ca/openssl-1.0.0.cnf dest=/root/openvpn-ca/openssl.cnf  state=link
 
-
-# can edit vars file here, for proper CA
-# ./openvpn-ca/vars
-
 # export KEY_NAME="server"
-
-
-# generate the keys
-# look at build-ca to see what it's doiing, and remove interactive prompting
-- command: "bash -c 'source vars && ./clean-all && ./pkitool --initca' "
-  args:
-    chdir:  /root/openvpn-ca
-    creates: keys/ca.key
-
 
 
 - copy:
@@ -194,7 +184,8 @@
 ##############################################
 # CLIENT
 
-# important - the openvpn client binary expects the client conf file name to be fixed at client.conf - ie not client02.conf.  # so rename before tarring.
+# important - for bundling tgz, the openvpn client binary expects the client conf file name
+# to be client.conf - not eg. client02.conf.
 
 
 
