@@ -47,8 +47,8 @@
     dest: "/root/create-server.sh"
     mode: 0755
     content: |
+      #!/bin/bash -e
       # deployed by ansible!
-      set -e
 
       pushd /root/openvpn-ca
 
