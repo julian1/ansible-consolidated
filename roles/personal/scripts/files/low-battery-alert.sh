@@ -16,7 +16,7 @@ beep() {
 # ok. output redirection will be handled by cron. service / systemd
 echo "$(date) whoami=$(whoami), status=$status, threshold=$threshold, capacity=$capacity"
 
-
+# beep if below threshold and not charging
 if [ $capacity -le $threshold ] && [ $status != "Charging" ] ; then
   beep 0.1 500
 fi
