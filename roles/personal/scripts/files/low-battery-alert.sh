@@ -10,13 +10,12 @@ beep() {
   timeout -k ${1}s ${1}s speaker-test --frequency ${2} --test sine 2> /dev/null
 }
 
+# test
 # beep 0.1 500
 
-# ok. we really should not be specifyinng the log directory here.
-# should be in cron. service
+# ok. output redirection will be handled by cron. service / systemd
 echo "$(date) whoami=$(whoami), status=$status, threshold=$threshold, capacity=$capacity"
 
-#\ >> /home/meteo/low-battery.log
 
 if [ $capacity -le $threshold ] && [ $status != "Charging" ] ; then
   beep 0.1 500
