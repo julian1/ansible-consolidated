@@ -49,7 +49,9 @@ myLogHook dest = dynamicLogWithPP defaultPP { ppOutput = hPutStrLn dest
 }
 
 main = do
-xmproc <- spawnPipe "/usr/bin/xmobar /home/meteo/.xmobarrc"
+-- xmproc <- spawnPipe "/usr/bin/xmobar /home/meteo/.xmobarrc"
+-- xmonad should read ~/.xmobarrc by default, to avoid specify ~/
+xmproc <- spawnPipe "xmobar"
 xmonad $ defaultConfig
         {
 
