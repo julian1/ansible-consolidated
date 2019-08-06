@@ -5,55 +5,48 @@
 # /sys/class/power_supply/BAT0/status
 # Charging
 
-  - copy:
-      dest: /home/meteo/low-battery-alert.sh
-      # must be meteo!!!
-      owner: meteo
-      group: meteo
-      mode: 0755
-      content: |
-        #!/bin/bash
-        # deployed by ansible!
 
-        threshold=90
-        capacity=$(cat /sys/class/power_supply/BAT0/capacity)
-        status=$(cat /sys/class/power_supply/BAT0/status)
-
-        beep() {
-          # $1 duration in seconds, $2 freq
-          timeout -k ${1}s ${1}s speaker-test --frequency ${2} --test sine 2> /dev/null
-        }
-
-        echo "$(date) whoami=$(whoami), status=$status, threshold=$threshold, capacity=$capacity" \
-          >> /home/meteo/low-battery.log
-
-        if [ $capacity -le $threshold ] && [ $status != "Charging" ] ; then
-          beep 0.1 500
-        fi
-
-    tags: whoot
+- copy:
+    dest: /usr/local/bin/low-battery-alert.sh
+    mode: 0777
+    owner: me
+    group: me
+    src: ../../roles/personal/scripts/files/low-battery-alert.sh
 
 
-  # use cron instead of systemd because for less noisy logs.
-  # oK. this works. But why doesn't it work when put in /etc/cron.d ?
+# use cron instead of systemd because for less noisy logs.
+# format in /etc/cron.d/ is different than # /var/spool/cron/crontabs/meteo
+# /etc/cron.d includes the user
+# run once every minute
+
+# note. there is no need to restart cron, at least when changing file content.
+
+# "To keep the output, put the command in a script, and pipe stdout and stderr
+# to logger. For example, yourCommand >/dev/null 2>&1 | logger -t mycmd. This
+# will put the output in syslog for safe keeping, and stop the MTA complaints"
+
+# TODO would be better to run as another user. ie not me
+- copy:
+    dest: /etc/cron.d/low-battery-alert
+    owner: root
+    group: root
+    mode: 0644
+    content: |
+      * * * * * me /usr/local/bin/low-battery-alert.sh 2>&1 | logger -t low-battery-alert
+
+
+
+
+
+
 
 #  - copy:
-#      dest: /var/spool/cron/crontabs/meteo 
+#      dest: /var/spool/cron/crontabs/meteo
 #      owner: meteo
 #      group: crontab
 #      mode: 0600
 #      content: |
-#        * * * * * /home/meteo/low-battery-alert.sh
-
-  # format in /etc/cron.d/ is different than # /var/spool/cron/crontabs/meteo 
-  # /etc/cron.d includes the user
-  - copy:
-      dest: /etc/cron.d/low-battery-alert
-      owner: root
-      group: root
-      mode: 0644
-      content: |
-        * * * * * meteo /home/meteo/low-battery-alert.sh
+# 
 
 
 #
