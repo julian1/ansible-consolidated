@@ -72,43 +72,47 @@
       # https://github.com/OpenVPN/easy-rsa/issues/138
       # creates: keys/server.key
       source vars && ./pkitool --server server
-      
+
       # diffie hellman for key exchange
       # NOte, may take a couple of minutes
       # build-dh is not interactive
       # creates: keys/dh2048.pem
       source vars  && ./build-dh
-      
+
       # HMAC signature to strengthen the server's TLS integrity verification capabilities:
       # creates:  keys/ta.key
       openvpn --genkey --secret keys/ta.key
 
       # now copy keys out to create a clean working dir
       rm -rf keys.cpy
-      mv keys keys.cpy 
+      mv keys keys.cpy
 
       popd
 
   tags: whoot
 
 
-
 - command: 'bash -c /root/create-server.sh'
+  args:
+    creates: /root/openvpn-ca/keys.cpy/ca.crt
 
 
 
 ##############################################
 # Step 7: Configure the OpenVPN Service
 
-- command: "cp ca.crt server.crt server.key ta.key dh2048.pem /etc/openvpn "
+- command: "cp ca.crt server.crt server.key ta.key dh2048.pem /etc/openvpn"
   args:
     chdir:  /root/openvpn-ca/keys.cpy
-    creates: /etc/openvpn/ta.key
+
+# TODO needs a notify if create-server.sh ran
+# ok this is problematic fo- we have to run it... if the script ran
+#    creates: /etc/openvpn/ta.key
+
+# and then need to restart openvpn server?
 
 
 
-# server.conf modified from example,
-# gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz   > server.conf
 
 # To filter active config, use
 # grep '^[^;#]' ./roles/admin/openvpn/templates/server.conf.j2
@@ -209,7 +213,7 @@
       #!/bin/bash -e
       # deployed by ansible!
 
-      # note that we expect to have keys in keys.cpy 
+      # note that we expect to have keys in keys.cpy
       k=/root/openvpn-ca/keys
       kcpy=/root//openvpn-ca/keys.cpy
 
@@ -217,9 +221,9 @@
 
       make_client() {
               # clear working dir
-              rm -rf $k 
+              rm -rf $k
               # copy original generated files into working dir
-              cp -rp $kcpy $k 
+              cp -rp $kcpy $k
 
               # run script to generate client
               # NOTE. pkitool expects openvpn-ca/keys which is why we do all the shuffling
@@ -229,11 +233,11 @@
 
               # copy files essential for config out
               rm -rf /root/client && mkdir client
-              cp $k/ca.crt $k/client.crt $k/client.key /root/client.conf  $kcpy/ta.key client
+              cp $k/ca.crt $k/client.crt $k/client.key /root/client.conf $kcpy/ta.key client
 
               # generate .tgz
               rm -f /root/client.tgz
-              tar czf /root/client.tgz  -C /root client 
+              tar czf /root/client.tgz -C /root client
 
               # rename
               mv /root/client.tgz  /root/clients/client${1}.tgz
@@ -247,6 +251,10 @@
 
 
 - command: 'bash -c /root/create-clients.sh'
+  args:
+    creates: /root/clients/client01.tgz
+
+
 
 
 #######
