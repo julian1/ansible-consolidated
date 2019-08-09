@@ -26,24 +26,21 @@
 
   # note staff group has same security implications as root, since can put binaries in /usr/local/bin and usurp root privileges
   # so must be trusted
-  #- user:
-  #    name: meteo-large
 
   # non-priv user (no ssh)
   - user: >
-      name=meteo
+      name=me
       shell=/bin/bash
-      groups=meteo-large,docker,staff,sudo,plugdev,tty,cdrom,floppy,audio,dip,video,netdev,bluetooth
+      groups=docker,staff,sudo,plugdev,tty,cdrom,floppy,audio,dip,video,netdev,bluetooth
 
 
   # set more restrictive permissions
   - file: > 
-      path=/home/meteo
+      path=/home/me
       mode=0700
-      owner=meteo 
-      group=meteo
+      owner=me
+      group=me
       state=directory
-
 
 
 
@@ -57,8 +54,8 @@
 
         # to reload,
         # udevadm control --reload-rules && udevadm trigger
-        # KERNEL=="sdb", SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="meteo"
-        SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="meteo"
+        # KERNEL=="sdb", SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="me"
+        SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="me"
 
 
   - copy:

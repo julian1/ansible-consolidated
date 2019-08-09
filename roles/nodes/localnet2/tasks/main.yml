@@ -583,8 +583,8 @@
 #   --boot \
 #   --network-bridge=br0 -n \
 #   --bind-ro="$g:/etc/network/interfaces"  \
-#   --bind="/home/meteo/haskell:/home/meteo/haskell"  \
-#   --bind="/home/meteo/idris:/home/meteo/idris"  \
+#   --bind="/home/me/haskell:/home/me/haskell"  \
+#   --bind="/home/me/idris:/home/me/idris"  \
 #
 
 
