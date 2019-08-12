@@ -3,3 +3,4 @@ plays/*.retry
 vars/credentials.yml
 credentials.yml
 tmp
+*.vim

@@ -22,13 +22,22 @@
       mode: 0755
       src: volume.sh
 
-  # see low-battery-alert role for cron configuration.
+  # see low-battery-alert role for actual cron configuration.
   - copy:
       dest: /usr/local/bin/low-battery-alert.sh
       mode: 0777
       owner: me
       group: me
       src: low-battery-alert.sh
+
+################
+
+  - copy:
+      dest: /usr/local/bin/sshfs-phone.sh
+      mode: 0755
+      owner: me
+      group: me
+      src: sshfs-phone.sh
 
 
 
