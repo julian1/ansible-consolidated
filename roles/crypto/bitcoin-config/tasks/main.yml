@@ -15,7 +15,7 @@
 # ./cli.sh sendtoaddress aaaa 0.5
 # ./cli.sh listtransactions
 #
-# non-wallet, -txindex
+# non-wallet, -txindex - doesn't work.
 # a=$( ./cli.sh getrawtransaction 8e43e27eeafe4ca95e6fa712638cf607fc28d01c82493fcf706fc0915733819b )
 # ./cli.sh decoderawtransaction $a
 # or just,
@@ -27,13 +27,24 @@
     dest: "{{path}}/vars.inc"
     content: |
       # deployed by ansible!
-      # jan 2019
-
       #
       PATH="{{path}}/bitcoin/src:$PATH"
       export PATH
 
   tags: config
+
+
+- file: path={{path}}/data mode=0700 owner={{user}} group={{user}} state=directory
+
+- copy:
+    dest: "{{path}}/data/bitcoin.conf"
+    content: |
+      # deployed by ansible!
+      #
+      server=1
+      rpcuser=test
+      rpcpassword=test
+      txindex=1
 
 
 - copy:
@@ -45,12 +56,11 @@
 
       . ./vars.inc
 
-      # bitcoin-cli -datadir=./data -testnet $@ | less
-      # -testnet \
-      # we don't need the datadir
-      bitcoin-cli  \
-        --rpcuser=test  \
-        --rpcpassword=test \
+      #  --rpcuser=test --rpcpassword=test \
+
+      # for local client, specify data dir to read user/password from bitcoin.conf
+      bitcoin-cli \
+        --datadir=./data \
         $@ | less
 
 
@@ -63,18 +73,8 @@
 
       . ./vars.inc
 
-      #bitcoind -datadir=./data -testnet -txindex
-      bitcoind -datadir=./data  -txindex
-
-
-- file: path={{path}}/data mode=0700 owner={{user}} group={{user}} state=directory
-
-- copy:
-    dest: "{{path}}/data/bitcoin.conf"
-    content: |
-      # deployed by ansible!
-      server=1
-      rpcuser=test
-      rpcpassword=test
+      # passing -txindex doesn't seem to work. maybe needs to be -txindex=1
+      # but better to just place in bitcoin.conf
+      bitcoind -datadir=./data
 
 

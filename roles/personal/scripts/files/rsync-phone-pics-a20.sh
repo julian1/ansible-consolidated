@@ -1,6 +1,10 @@
 #!/bin/bash -e
 
 
+# actually seems like jmtpfs hangs trying to homescreenPreview.png from andoroid . 
+# so maybe better to do rsync with ssh. 
+# even if slower because not using usb3
+
 echo 'should just rsync the entire phone sdcard instead as backup'  
 echo 'eg for anki, zalo, etc'
 echo 'eg. just mount the thing then rsync it to large/Phone'
