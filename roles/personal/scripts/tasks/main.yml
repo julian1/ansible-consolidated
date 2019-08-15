@@ -30,14 +30,26 @@
       group: me
       src: low-battery-alert.sh
 
-################
 
   - copy:
-      dest: /usr/local/bin/sshfs-phone.sh
+      dest: /usr/local/bin/rsync-phone.sh
       mode: 0755
       owner: me
       group: me
-      src: sshfs-phone.sh
+      src: rsync-phone.sh
+
+
+
+
+################
+
+# doesn't work so well
+#  - copy:
+#      dest: /usr/local/bin/sshfs-phone.sh
+#      mode: 0755
+#      owner: me
+#      group: me
+#      src: sshfs-phone.sh
 
 
 
@@ -48,21 +60,21 @@
       mode: 0755
       src: smaller.sh
 
-
-  - copy:
-      dest: /usr/local/bin/rsync-phone-pics-a20.sh
-      mode: 0755
-      src: rsync-phone-pics-a20.sh
-
-  - copy:
-      dest: /usr/local/bin/rsync-phone-travel.sh
-      mode: 0755
-      src: rsync-phone-travel.sh
-
-
-  - copy:
-      dest: /usr/local/bin/find-cabal-sandbox.sh
-      mode: 0755
-      src: find-cabal-sandbox.sh
-
+#
+#  - copy:
+#      dest: /usr/local/bin/rsync-phone-pics-a20.sh
+#      mode: 0755
+#      src: rsync-phone-pics-a20.sh
+#
+#  - copy:
+#      dest: /usr/local/bin/rsync-phone-travel.sh
+#      mode: 0755
+#      src: rsync-phone-travel.sh
+#
+#
+#  - copy:
+#      dest: /usr/local/bin/find-cabal-sandbox.sh
+#      mode: 0755
+#      src: find-cabal-sandbox.sh
+#
 
