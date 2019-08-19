@@ -6,6 +6,8 @@
 # trying to copy files stalls as it looks like there are locking issues
 # presumably because of fuse 
 
+avoid. use rsync over ssh instead. otherwise have problems with file locking.
+
 sshfs 172.16.2.202:/sdcard/ -p 2222 ./mnt/phone/
 ls ./mnt/phone/
 
