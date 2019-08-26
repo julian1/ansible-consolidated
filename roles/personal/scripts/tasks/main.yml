@@ -1,7 +1,5 @@
 
 
-
-
   - copy:
       dest: /usr/local/bin/backup.sh
       mode: 0755
@@ -29,7 +27,7 @@
 
 
 
-  # see low-battery-alert role for actual cron configuration.
+  # see low-battery-alert role for actual cron configuration and deploy.
   - copy:
       dest: /usr/local/bin/low-battery-alert.sh
       mode: 0777
@@ -37,13 +35,21 @@
       group: me
       src: low-battery-alert.sh
 
-
+  # a20 phone
   - copy:
       dest: /usr/local/bin/rsync-phone.sh
       mode: 0755
       owner: me
       group: me
       src: rsync-phone.sh
+
+  # no good for full backup, but easier for simple copying/exploring than jmtpfs
+  - copy:
+      dest: /usr/local/bin/sshfs-phone.sh
+      mode: 0755
+      owner: me
+      group: me
+      src: sshfs-phone.sh
 
 
 
