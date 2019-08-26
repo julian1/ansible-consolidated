@@ -43,7 +43,7 @@
       group: me
       src: rsync-phone.sh
 
-  # no good for full backup, but easier for simple copying/exploring than jmtpfs
+  # a20  not good for full backup due to fuse file locking, but easier than jmtpfs for simple copying/dir exploring
   - copy:
       dest: /usr/local/bin/sshfs-phone.sh
       mode: 0755
