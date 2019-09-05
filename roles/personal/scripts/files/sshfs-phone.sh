@@ -7,6 +7,8 @@
 set -x
 
 #ip=172.16.2.202
-sshfs  172.16.2.202:/sdcard/ -p 2222 ./mnt/phone/
+ip=192.168.4.101
+
+sshfs  "$ip:/sdcard/"  -p 2222 ./mnt/phone/
 
 
