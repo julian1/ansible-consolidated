@@ -19,7 +19,21 @@
 
 - apt: name=unattended-upgrades
 - apt: name=apt-listchanges
- 
+
+
+- copy:
+    dest:  /etc/apt/apt.conf.d/20auto-upgrades
+    backup: yes
+    content: |
+      // deployed by ansible!
+      //
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      // JA
+      APT::Periodic::Verbose "2";
+
+  notify: reconfigure-unattended-upgrades
+
 
 - copy:
     dest: //etc/apt/apt.conf.d/50unattended-upgrades
