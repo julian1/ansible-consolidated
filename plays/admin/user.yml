@@ -1,0 +1,15 @@
+
+# override like so,
+# ansible-playbook plays/admin/user.yml -i $host, --extra-vars "username=parity"
+
+- hosts: all
+  vars_files:
+    - ../../credentials.yml
+  vars:
+  roles:
+    - name: admin/user
+      username: me
+      path: /home/me
+      mode: 0700
+
+

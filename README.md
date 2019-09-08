@@ -28,16 +28,17 @@ ansible-playbook plays/nodes/postfix.yml        -i $host,
 ansible-playbook plays/admin/deploy-war.yml     -i geoserver.localnet, --extra-vars "warpath=~/imos/may-18-geoserver/geoserver-1.0.0-imos.war warname=geoserver.war"
 
 # setting and overriding vars
-ansible-playbook ./plays/personal/dotfiles.yml  -i $host,   --extra-vars "path=/home/parity user=parity"
-ansible-playbook ./plays/personal/dotfiles.yml  -i $host,   --extra-vars "path=/root user=root"
-ansible-playbook ./plays/personal/dotfiles.yml  -i localhost, -c local --extra-vars "path=/root user=root"
-ansible-playbook ./plays/personal/dotfiles.yml  -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python"
+ansible-playbook plays/admin/user.yml         -i $host,   --extra-vars "username=parity"
+ansible-playbook plays/personal/dotfiles.yml  -i $host,   --extra-vars "path=/home/parity user=parity"
+ansible-playbook plays/personal/dotfiles.yml  -i $host,   --extra-vars "path=/root user=root"
+ansible-playbook plays/personal/dotfiles.yml  -i localhost, -c local --extra-vars "path=/root user=root"
+ansible-playbook plays/personal/dotfiles.yml  -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python"
 
 # nixos temporary examples,
-ansible-playbook ./plays/personal/dotfiles.yml  -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
-ansible-playbook ./plays/personal/pathogen.yml  -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
-ansible-playbook ./plays/personal/dotfiles.yml  -i nixos02, --extra-vars "path=/root user=root ansible_python_interpreter=/root/.nix-profile/bin/python"
-ansible-playbook ./plays/personal/pathogen.yml  -i nixos02, --extra-vars "path=/root user=root"
+ansible-playbook plays/personal/dotfiles.yml  -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook plays/personal/pathogen.yml  -i nixos02, --extra-vars "ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook plays/personal/dotfiles.yml  -i nixos02, --extra-vars "path=/root user=root ansible_python_interpreter=/root/.nix-profile/bin/python"
+ansible-playbook plays/personal/pathogen.yml  -i nixos02, --extra-vars "path=/root user=root"
 
 
 # bootstrap
