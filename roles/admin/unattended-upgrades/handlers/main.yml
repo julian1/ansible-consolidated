@@ -1,0 +1,7 @@
+
+  - name: reconfigure-unattended-upgrades
+    command: "{{item}}"
+    with_items:
+      - dpkg-reconfigure --frontend noninteractive unattended-upgrades
+
+
