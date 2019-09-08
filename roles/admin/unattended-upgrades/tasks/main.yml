@@ -7,12 +7,8 @@
 # logs location,
 # ls /var/log/unattended-upgrades/
 
-# configuration defaults
-# /etc/apt/apt.conf.d/50unattended-upgrades
 
-# upgrade policy - default looks correct
-# /etc/apt/apt.conf.d/20auto-upgrades
-
+# TODO add mail address to vars file credentials.yml
 
 
 - debug: msg="unattended-upgrades, hostname {{ ansible_hostname }}," #"
@@ -21,6 +17,7 @@
 - apt: name=apt-listchanges
 
 
+# policy
 - copy:
     dest:  /etc/apt/apt.conf.d/20auto-upgrades
     backup: yes
@@ -35,6 +32,7 @@
   notify: reconfigure-unattended-upgrades
 
 
+# configuration
 - copy:
     dest: //etc/apt/apt.conf.d/50unattended-upgrades
     backup: yes
