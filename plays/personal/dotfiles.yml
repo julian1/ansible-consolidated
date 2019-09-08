@@ -5,7 +5,7 @@
 - hosts: all
   roles:
     - name: personal/dotfiles
-      path: /home/meteo
-      user: meteo
+      path: /home/me
+      user: me
       tags: dotfiles
 

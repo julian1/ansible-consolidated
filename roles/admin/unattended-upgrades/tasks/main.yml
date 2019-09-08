@@ -1,5 +1,5 @@
 
-# see, 
+# see,
 # https://wiki.debian.org/UnattendedUpgrades
 # https://www.2daygeek.com/automatic-security-update-unattended-upgrades-ubuntu-debian/
 # https://www.tecmint.com/auto-install-security-updates-on-debian-and-ubuntu/
@@ -7,6 +7,11 @@
 # logs location,
 # ls /var/log/unattended-upgrades/
 
+# *very-useful*, use this to test/debug
+# unattended-upgrade -d
+
+# mail would require both mailx/bsd-mailx and postfix to be installed.
+# see, https://www.binarytides.com/linux-mailx-command/
 
 # TODO add mail address to vars file credentials.yml
 
@@ -68,7 +73,7 @@
       };
 
       // This option allows you to control if on a unclean dpkg exit
-      // unattended-upgrades will automatically run 
+      // unattended-upgrades will automatically run
       //   dpkg --force-confold --configure -a
       // The default is true, to ensure updates keep getting installed
       //Unattended-Upgrade::AutoFixInterruptedDpkg "false";
@@ -99,7 +104,7 @@
       //Unattended-Upgrade::Remove-Unused-Dependencies "false";
 
       // Automatically reboot *WITHOUT CONFIRMATION* if
-      //  the file /var/run/reboot-required is found after the upgrade 
+      //  the file /var/run/reboot-required is found after the upgrade
       // JA
       Unattended-Upgrade::Automatic-Reboot "true";
 
