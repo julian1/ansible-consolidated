@@ -1,15 +1,13 @@
 
-# start simpleSSHD on phone, get ip, then run script
+# start simpleSSHD on phone and get the ip, then run
 
-# OK. better than jmtpfs and fuse over usb, which has file locking issues with file based rsync. 
-# even if slower due to wifi
-# note requires the trailing slash on /sdcard/, else permissions issue
+# OK. more reliable than jmtpfs over usb, even if slower. no lockup when read /sdcard.
+# note it does not work if say '172.16.2.202:/sdcard' without trailing slash
 
 set -x
 
-#ip=172.16.2.202
-ip=192.168.4.101
-
-rsync -avvzP -e 'ssh -p 2222'  "$ip:/sdcard/"   /home/large/phone/
+ip=172.16.2.202
+# ip=192.168.4.101
+rsync -avzP --delete  -e 'ssh -p 2222'  "$ip:/sdcard/"   /home/large/phone/
 
 
