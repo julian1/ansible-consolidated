@@ -19,5 +19,7 @@
     - name: admin/sshd
     - name: admin/fail2ban-sshd   # too generic for servers?
 
+    #- name: admin/unattended-upgrades
+
 
 
