@@ -35,7 +35,7 @@
       group: me
       src: low-battery-alert.sh
 
-  # a20 phone
+  # any phone with simplesshd
   - copy:
       dest: /usr/local/bin/rsync-phone.sh
       mode: 0755
@@ -43,13 +43,12 @@
       group: me
       src: rsync-phone.sh
 
-  # a20  not good for full backup due to fuse file locking, but easier than jmtpfs for simple copying/dir exploring
   - copy:
-      dest: /usr/local/bin/sshfs-phone.sh
+      dest: /usr/local/bin/send-to-phone.sh
       mode: 0755
       owner: me
       group: me
-      src: sshfs-phone.sh
+      src: send-to-phone.sh
 
 
 
