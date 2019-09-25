@@ -1,19 +1,20 @@
 # deployed by ansible whoot!
 
 # https://raspberrypi.stackexchange.com/questions/752/how-do-i-prevent-the-screen-from-going-blank
-xset s off         # don't activate screensaver
-xset -dpms         # disable DPMS (Energy Star) features.
-xset s noblank     # don't blank the video device
-# xset -dpms; xset s off
+xset s off          # don't activate screensaver
+xset -dpms          # disable DPMS (Energy Star) features.
+xset s noblank      # don't blank the video device
 
 xset r rate   200   # keyboard repeat rate fixes firefox scrolling
                     # 150 is too short. causes repeat in xterm terminal.
+
+xset b off          # turn bell off
 
 
 setxkbmap -option compose:ralt   # accented compose key is right alt
 
 # setxkbmap -option caps:swapescape   # make caps-lock the escape key, and escape caps-lock. for vim etc.
-setxkbmap -option caps:escape         # to make caps-lock an additional escape
+# setxkbmap -option caps:escape         # to make caps-lock an additional escape
 
 xrdb -merge <<- EOF
   XTerm*selectToClipboard: true
@@ -56,13 +57,6 @@ pulseaudio --kill
 sleep 0.5
 pulseaudio --start
 
-# MAY OR MAY NOT BE NEEDED with change to libinput replacing synaptics
-# to turn on trackpad tap to select/button
-# buster no longer used.
-# synclient TapButton1=1
-
-# turn bell off
-xset b off
 
 # start xmonad
 xmonad
