@@ -20,8 +20,8 @@ xrdb -merge <<- EOF
   XTerm*selectToClipboard: true
   XTerm*faceName: DejaVu Sans Mono
   XTerm*faceSize: 11
-  XTerm*Background: white
-  XTerm*Foreground: black
+  XTerm*Background: black
+  XTerm*Foreground: white
 EOF
 
 # keymap

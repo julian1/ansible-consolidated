@@ -41,7 +41,8 @@ mykeys = [
 -- 2018 GOOD
 -- font and font size will inherit from .xinitrc,
 -- but should be XTerm*faceName: DejaVu Sans Mono, XTerm*faceSize: 11   ! laptop
-myterminal = "xterm  -fg white -bg black"
+-- myterminal = "xterm  -fg white -bg black"
+myterminal = "xterm"
 
 
 myLogHook dest = dynamicLogWithPP defaultPP { ppOutput = hPutStrLn dest
