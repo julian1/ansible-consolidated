@@ -5,6 +5,8 @@
   - apt: name=xorg
 
   # - apt: name=xserver-xorg-input-synaptics   # for synclient  - not for stretch and above
+  # mouse sstuff
+  # - apt: name=xserver-xorg-input-synaptics state=absent
 
 
   # TODO add meteo to group tty
@@ -20,8 +22,7 @@
 
   - copy: src=xinitrc             dest=/home/{{user}}/.xinitrc   owner={{user}} group={{user}}
 
-  # mouse sstuff
-  - apt: name=xserver-xorg-input-synaptics state=absent
+
   - copy: src=40-libinput.conf    dest=/usr/share/X11/xorg.conf.d/40-libinput.conf   
 
   - copy: src=xmobarrc            dest=/home/{{user}}/.xmobarrc   owner={{user}} group={{user}}

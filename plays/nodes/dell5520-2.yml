@@ -17,17 +17,17 @@
     # https://serverfault.com/questions/758376/local-ansible-playbook-run-playbook-with-vars-for-role
     - name: personal/dotfiles
       tags: dotfiles
-      user: meteo
-      path: /home/meteo
+      user: me
+      path: /home/me
 
     - name: personal/pathogen
       tags: pathogen
-      user: meteo
-      path: /home/meteo
+      user: me
+      path: /home/me
 
     - name: personal/xmonad
       tags: xmonad
-      user: meteo
+      user: me
 
     - name: admin/alsa
 

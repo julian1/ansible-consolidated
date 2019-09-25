@@ -49,7 +49,7 @@ EOF
 
 # brightness
 # xrandr --output eDP1 --brightness .45
-xrandr --output eDP-1 --brightness .35
+xrandr --output eDP-1 --brightness .55
 
 # start pulse audio
 pulseaudio --kill
@@ -58,7 +58,8 @@ pulseaudio --start
 
 # MAY OR MAY NOT BE NEEDED with change to libinput replacing synaptics
 # to turn on trackpad tap to select/button
-synclient TapButton1=1
+# buster no longer used.
+# synclient TapButton1=1
 
 # turn bell off
 xset b off
