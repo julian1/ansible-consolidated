@@ -1,6 +1,6 @@
 
   - hosts:
-      - nuc
+      - localhost
     roles:
       - admin/alsa
 

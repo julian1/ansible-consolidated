@@ -1,0 +1,11 @@
+
+
+- hosts:
+    - localhost
+
+  roles:
+    - name: personal/xmonad
+      tags: xmonad
+      user: me
+
+
