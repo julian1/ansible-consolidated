@@ -1,0 +1,14 @@
+
+
+- hosts:
+    - all
+
+  roles:
+    - name: admin/apt-buster
+      mirror: http://ftp.au.debian.org/debian/
+
+    - admin/apt-update
+
+  tasks:
+  handlers:
+
