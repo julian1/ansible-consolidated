@@ -1,9 +1,15 @@
-Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
+Config { 
+        font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
+
+        -- , overrideRedirect = False
+        -- , persistent = True
+
+        , position = TopW L 100
+
         , borderColor = "black"
         , border = TopB
         , bgColor = "black"
         , fgColor = "grey"
-        , position = TopW L 100
         , commands = [ 
 						  Run Network "wlan0" ["-L","0","-H","32","--normal","green","--high","red"] 10
 						 , Run Wireless "wlan0" ["-L","40","-H","70","--normal","yellow","--high","green","--low","red","-t","<essid> (<quality>%)"] 10

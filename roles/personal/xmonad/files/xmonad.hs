@@ -25,14 +25,18 @@ myWorkspaces = ["1","2","3","4","5","6","7","8","9"] ++ (map snd myExtraWorkspac
 
 
 mykeys = [
-          ((mod1Mask ,  xK_z), spawn "xtrlock -b"),
-          ((mod1Mask ,  xK_x), spawn "xtrlock -b")
+          ((mod1Mask ,  xK_z), spawn "xtrlock -b")
+          -- ((mod1Mask ,  xK_x), spawn "xtrlock -b")
+          -- ((mod4Mask .|. shiftMask, xK_f), sendMessage ToggleStruts)
+
         ] ++ [
          ((mod1Mask, key), (windows $ W.greedyView ws))
          | (key,ws) <- myExtraWorkspaces
        ] ++ [
         ((mod1Mask .|. shiftMask, key), (windows $ W.shift ws))
         | (key,ws) <- myExtraWorkspaces
+
+
        ]
 
 
@@ -45,18 +49,22 @@ mykeys = [
 myterminal = "xterm"
 
 
-myLogHook dest = dynamicLogWithPP defaultPP { ppOutput = hPutStrLn dest
-,ppVisible = wrap "(" ")"
+myLogHook dest = dynamicLogWithPP defaultPP { 
+  ppOutput = hPutStrLn dest
+  , ppVisible = wrap "(" ")"
 }
 
 main = do
 -- xmproc <- spawnPipe "/usr/bin/xmobar /home/meteo/.xmobarrc"
 -- xmonad should read ~/.xmobarrc by default, to avoid specify ~/
 xmproc <- spawnPipe "xmobar"
-xmonad $ defaultConfig
-        {
+xmonad $ 
+  defaultConfig {
 
+      -- ells xmonad that you don't want your tiled windows to overlap xmobar.
+      -- https://stackoverflow.com/questions/20446348/xmonad-toggle-fullscreen-xmobar#20448499
       manageHook = manageDocks <+> manageHook defaultConfig
+  
     , layoutHook = avoidStruts $ layoutHook defaultConfig
 
     , workspaces = myWorkspaces
@@ -68,12 +76,13 @@ xmonad $ defaultConfig
 
 		, terminal = myterminal
 
+
+    -- intelij
+    , startupHook = setWMName "LG3D"
+
 		-- , startupHook = spawnOnce "/usr/bin/xmobar /home/meteo/.xmobarrc"
 
-        -- intelij
-        , startupHook = setWMName "LG3D"
-
-        }
+  }
 		`additionalKeys`
         mykeys
 
