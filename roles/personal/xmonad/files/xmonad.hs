@@ -45,11 +45,11 @@ mykeys = [
 -- 2018 GOOD
 -- font and font size will inherit from .xinitrc,
 -- but should be XTerm*faceName: DejaVu Sans Mono, XTerm*faceSize: 11   ! laptop
--- myterminal = "xterm  -fg white -bg black"
+-- 2019 myterminal = "xterm  -fg white -bg black"
 myterminal = "xterm"
 
 
-myLogHook dest = dynamicLogWithPP defaultPP { 
+myLogHook dest = dynamicLogWithPP defaultPP {
   ppOutput = hPutStrLn dest
   , ppVisible = wrap "(" ")"
 }
@@ -58,16 +58,17 @@ main = do
 -- xmproc <- spawnPipe "/usr/bin/xmobar /home/meteo/.xmobarrc"
 -- xmonad should read ~/.xmobarrc by default, to avoid specify ~/
 xmproc <- spawnPipe "xmobar"
-xmonad $ 
+xmonad $
   defaultConfig {
 
       -- ells xmonad that you don't want your tiled windows to overlap xmobar.
       -- https://stackoverflow.com/questions/20446348/xmonad-toggle-fullscreen-xmobar#20448499
       manageHook = manageDocks <+> manageHook defaultConfig
-  
+
     , layoutHook = avoidStruts $ layoutHook defaultConfig
 
-    -- https://github.com/xmonad/xmonad/issues/15
+      -- http://hackage.haskell.org/package/xmonad-contrib-0.15/docs/XMonad-Hooks-ManageDocks.html
+      -- https://github.com/xmonad/xmonad/issues/15
     , handleEventHook = do
             -- ewmhDesktopsEventHook
             docksEventHook
@@ -75,7 +76,9 @@ xmonad $
 
     , workspaces = myWorkspaces
 
+      -- green
     , focusedBorderColor =  "#009900"
+      -- grey
     , normalBorderColor  =  "#666666"
 
 		, logHook = myLogHook xmproc
