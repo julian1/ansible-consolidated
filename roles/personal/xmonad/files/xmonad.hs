@@ -67,6 +67,12 @@ xmonad $
   
     , layoutHook = avoidStruts $ layoutHook defaultConfig
 
+    -- https://github.com/xmonad/xmonad/issues/15
+    , handleEventHook = do
+            -- ewmhDesktopsEventHook
+            docksEventHook
+            -- fullscreenEventHook,
+
     , workspaces = myWorkspaces
 
     , focusedBorderColor =  "#009900"
