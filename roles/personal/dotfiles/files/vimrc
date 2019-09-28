@@ -11,6 +11,10 @@
 
 
 " *********** MISC ****************
+
+" disable mouse, which interferes with copy/paste from terminal
+:set mouse=
+
 " start in number mode
 set number
 

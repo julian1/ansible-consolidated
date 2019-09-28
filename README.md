@@ -29,9 +29,9 @@ ansible-playbook plays/admin/deploy-war.yml     -i geoserver.localnet, --extra-v
 
 # setting and overriding vars
 ansible-playbook plays/admin/user.yml         -i $host,   --extra-vars "username=parity"
+ansible-playbook plays/personal/dotfiles.yml  -i localhost, -c local --extra-vars "path=/root user=root"
 ansible-playbook plays/personal/dotfiles.yml  -i $host,   --extra-vars "path=/home/parity user=parity"
 ansible-playbook plays/personal/dotfiles.yml  -i $host,   --extra-vars "path=/root user=root"
-ansible-playbook plays/personal/dotfiles.yml  -i localhost, -c local --extra-vars "path=/root user=root"
 ansible-playbook plays/personal/dotfiles.yml  -i 10.3.0.10, --extra-vars "path=/root user=root ansible_python_interpreter=/run/current-system/sw/bin/python"
 
 # nixos temporary examples,
