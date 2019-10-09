@@ -1,9 +1,15 @@
 
+
 - hosts: all
   vars_files:
     - ../../credentials.yml
   vars:
   roles:
+    - name: admin/user
+      username: me
+      path: /home/me
+      mode: 0700
+
     - name: personal/dotfiles
       path: /home/me
       user: me
