@@ -1,6 +1,6 @@
 
 # keys are frequently injected for containers - so should not be installing them
-# actually no sure. keys are injected for root only. cannot inject for me, because user and permissions not yet created.
+# actually no. keys are injected for root only. cannot inject for me, because user and permissions not yet created.
 
 - hosts: all
   vars_files:
@@ -8,14 +8,11 @@
   vars:
   roles:
 
-
-
     # this role should be removed, factored out
     - name: admin/user
       username: me
       path: /home/me
       mode: 0700
-
 
     - name: personal/dotfiles
       path: /home/me

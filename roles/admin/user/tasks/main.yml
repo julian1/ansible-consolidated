@@ -1,7 +1,8 @@
 
 
 
-# TODO remove this.
+# TODO remove this. - problem can't seem to get user to run in top level run-list due to name/rol name parameter clash
+
 # this is so small it's hardly useful/valuable in terms of factorization. 
 # but it allows user creation to be sequenced in ordinary rolelist, rather than pre_tasks.  
 
