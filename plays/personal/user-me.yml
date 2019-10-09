@@ -1,0 +1,16 @@
+
+- hosts: all
+  vars_files:
+    - ../../credentials.yml
+  vars:
+  roles:
+    - name: personal/dotfiles
+      path: /home/me
+      user: me
+      tags: dotfiles
+
+    - name: personal/pathogen
+      path: /home/me
+      user: me
+      tags: pathogen
+

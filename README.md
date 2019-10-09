@@ -46,7 +46,8 @@ apt-get install python-minimal
 export host=n.n.n.n
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
 ansible-playbook plays/personal/bootstrap.yml   -i $host,
-ansible-playbook plays/personal/default-users.yml -i $host,
+ansible-playbook plays/personal/user-root.yml   -i $host,
+ansible-playbook plays/personal/user-me.yml     -i $host,
 
 # or bootstrap specific,
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
@@ -55,7 +56,9 @@ ansible-playbook plays/admin/locale.yml         -i $host, --extra-vars "locale=e
 ansible-playbook plays/admin/sshd.yml           -i $host,
 ansible-playbook plays/admin/fail2ban-sshd.yml  -i $host,
 ansible-playbook plays/admin/devenv-lite.yml    -i $host,
-ansible-playbook plays/personal/default-users.yml -i $host,
+ansible-playbook plays/personal/user-root.yml   -i $host,
+ansible-playbook plays/personal/user-me.yml     -i $host,
+
 
 
 # flags

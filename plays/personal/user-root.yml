@@ -1,7 +1,4 @@
 
-# create root and me users, with dotfiles
-
-
 - hosts: all
   vars_files:
     - ../../credentials.yml
@@ -17,13 +14,4 @@
       user: root
       tags: root_dotfiles
 
-    - name: personal/dotfiles
-      path: /home/me
-      user: me
-      tags: dotfiles
-
-    - name: personal/pathogen
-      path: /home/me
-      user: me
-      tags: pathogen
 
