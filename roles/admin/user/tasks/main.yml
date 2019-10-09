@@ -1,5 +1,6 @@
 
-# this is so small it's not valuable in terms of factorization. 
+# TODO remove this.
+# this is so small it's hardly useful/valuable in terms of factorization. 
 # but it allows user creation to be sequenced in ordinary rolelist, rather than pre_tasks.  
 
 # TODO issue is ability to set groups.
