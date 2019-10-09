@@ -22,7 +22,7 @@
   # root user (no ssh)
   - user:
       name: root
-      shell: bin/bash
+      shell: /bin/bash
 
   # note staff group has same security implications as root, since can put binaries in /usr/local/bin and usurp root privileges
   # so must be trusted
