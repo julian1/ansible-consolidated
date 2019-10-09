@@ -1,4 +1,6 @@
 
+# keys are frequently injected for containers - so should not be installing them
+# actually no sure. keys are injected for root only. cannot inject for me, because user and permissions not yet created.
 
 - hosts: all
   vars_files:
@@ -6,30 +8,14 @@
   vars:
   roles:
 
-    # - name: user  name=me shell=/bin/bash
 
-    #- name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
-    #- name: Add user
-    #  user:
-    #    name: me
-    #    shell: /bin/bash
-
-#- name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
-#  user:
-#    name: johnd
-#    comment: John Doe
-#    uid: 1040
-#    group: admin
-
-#        comment: John Doe
-#        uid: 1040
-#        group: admin
 
     # this role should be removed, factored out
     - name: admin/user
       username: me
       path: /home/me
       mode: 0700
+
 
     - name: personal/dotfiles
       path: /home/me

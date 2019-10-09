@@ -44,7 +44,11 @@ ansible-playbook plays/personal/pathogen.yml  -i nixos02, --extra-vars "path=/ro
 # bootstrap
 apt-get install python-minimal
 export host=n.n.n.n
+
+# only needed for non-injected hostname
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
+
+#
 ansible-playbook plays/personal/bootstrap.yml   -i $host,
 ansible-playbook plays/personal/user-root.yml   -i $host,
 ansible-playbook plays/personal/user-me.yml     -i $host,
