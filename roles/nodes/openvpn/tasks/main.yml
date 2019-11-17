@@ -254,7 +254,7 @@
 # COPY back to localhost with,
 # rsync root@vpn:/root/clients/client03.tgz .
 
-# apt-get install openvpn  - maybe openvpnclient
+# apt-get install openvpn  - maybe openvpnclient. buster only has openvpn
 
 # cd /etc/openvpn/
 # rm * -rf

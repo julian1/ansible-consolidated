@@ -35,7 +35,7 @@
 
 
   # set more restrictive permissions
-  - file: > 
+  - file: >
       path=/home/me
       mode=0700
       owner=me
@@ -81,7 +81,7 @@
 
         # JA
         # 2.5" ssd
-        UUID=2357e387-a4e0-49cb-9409-278d41c2975d   /mnt/drive    ext4  errors=remount-ro 0       2
+        UUID=2357e387-a4e0-49cb-9409-278d41c2975d   //mnt/drive   ext4  errors=remount-ro         0       2
 
         # JA root ramdisk
         tmpfs                                       /root         tmpfs   rw,nodev,nosuid,size=1G 0       0
