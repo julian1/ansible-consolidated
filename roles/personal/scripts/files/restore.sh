@@ -39,9 +39,15 @@ fi
 # read pass
 read -s -p "pass: " pass ; echo
 
-cipher=-aes-256-cbc
+# https://en.wikipedia.org/wiki/PBKDF2
+# https://crypto.stackexchange.com/questions/34884/length-of-encryption-password-aes-256-cbc
+# https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_.28CBC.29
+cipher='-aes-256-cbc'
+hash='-pbkdf2'
+
 
 openssl enc \
+  "$hash" \
   -d "$cipher" \
   -pass "pass:$pass" \
   -in $src \
