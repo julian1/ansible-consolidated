@@ -1,32 +1,25 @@
 
-# solidity should be a different play.
-# as should node...
+# change name parity-build.yml
+# we need flexibility - build user/dir should be different to deploy user/dir
+
 
 - hosts: all
   vars_files:
     - ../../credentials.yml
 
   vars:
-    # v2.0.5
-    # - parity_version: v1.10.8
-    # - parity_build_dir: /home/parity/parity-v1.10.8
-    - parity_version: v2.0.5
-    - parity_build_dir: /home/parity/parity-v2.0.5
-    - parity_user: parity
+    - parity_version: v2.5.11
+    - parity_build_dir: "/home/me/parity-{{parity_version}}"
+    - parity_user: me
 
   roles:
 
-    - name: admin/user
-      username: parity
-      path: /home/parity
-      mode: 0700
-
-    # Parity Ethereum requires Rust version 1.29.x to build.
-    # version: 1.21.0
     # Version 1.29.1 (2018-09-25)
+    # 1.39.0 dec 2019.
     - name: devel/rust
-      user: parity
-      version: 1.29.1
+      user: me
+      #version: 1.29.1
+      version: 1.39.0
 
 
     - name: crypto/parity
@@ -35,9 +28,24 @@
       user: "{{parity_user}}"
 
 
-    - name: crypto/parity-config
-      build_dir: "{{parity_build_dir}}"
 
 
+#- name: admin/user
+#  username: me
+#  path: /home/me
+#  mode: 0700
+
+# Parity Ethereum requires Rust version 1.29.x to build.
+# version: 1.21.0
+
+
+# v2.0.5
+# - parity_version: v1.10.8
+# - parity_build_dir: /home/parity/parity-v1.10.8
+
+
+# run configuration should not be in the main build play
+#- name: crypto/parity-config
+#  build_dir: "{{parity_build_dir}}"
 
 

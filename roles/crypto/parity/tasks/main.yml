@@ -4,11 +4,12 @@
 
   - apt: name=gcc
   - apt: name=g++
-  - apt: name=libudev-dev
+  - apt: name=libudev-dev   # old dep, may not need
   - apt: name=pkg-config
   - apt: name=make
   - apt: name=cmake
-  # - apt: name=yasm
+  # - apt: name=yasm        # doccumented dep, but may not need.
+
 
   # old
   #- apt: name=libssl-dev  removal not tested...
@@ -22,21 +23,10 @@
       force=yes
       recursive=no
       version={{version}}
-      # version=v1.7.12
-      # version=v1.7.6
-      # version=v1.6.10
-      # version=v1.6.8
-      # there is v1.7.0,but looks bloated
-      # v2.0.5
     become: yes
     become_user: "{{user}}"
     tags: checkout
 
-
-  # - file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
-
-  # cargo build --release   <- builds just parity
-  # cargo build --release --features final
 
   - name: build parity
     become: yes
@@ -47,4 +37,17 @@
       creates={{build_dir}}/target/release/parity
     tags: build
 
+
+# - file: path="{{build_dir}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
+
+# cargo build --release   <- builds just parity
+# cargo build --release --features final
+
+
+# version=v1.7.12
+# version=v1.7.6
+# version=v1.6.10
+# version=v1.6.8
+# there is v1.7.0,but looks bloated
+# v2.0.5
 
