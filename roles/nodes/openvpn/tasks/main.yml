@@ -153,7 +153,7 @@
       #iptables -t nat -A PREROUTING -p udp -i eth0 --dport 30303 -j DNAT --to 10.8.0.22
 
       # transmission/bittorrent p2p
-      #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.18
+      iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 51413 -j DNAT --to 10.8.0.6 # devel07
 
       # grin p2p, and send/receive api
       #iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 13414 -j DNAT --to 10.8.0.10
