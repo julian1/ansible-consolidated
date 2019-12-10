@@ -10,6 +10,7 @@ set -x
 # ip=192.168.4.101
 # ip=192.168.4.105
 ip=192.168.42.129
-rsync -avzP --delete  -e 'ssh -p 2222'  "$ip:/sdcard/"   /home/large/phone/
+# ip=192.168.0.136
+rsync -avzP --delete  -e 'ssh -p 2222'  "$ip:/sdcard/"   /home/large/phone/a20/
 
 
