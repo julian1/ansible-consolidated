@@ -60,8 +60,9 @@
 
       # for local client, specify data dir to read user/password from bitcoin.conf
       bitcoin-cli \
-        --datadir=./data \
-        $@ | less
+        --datadir=./data $@ 
+
+      # | less
 
 
 - copy:
