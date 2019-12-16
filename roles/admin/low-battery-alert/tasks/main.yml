@@ -5,7 +5,7 @@
 # /sys/class/power_supply/BAT0/status
 # Charging
 
-
+# deploy script
 - copy:
     dest: /usr/local/bin/low-battery-alert.sh
     mode: 0777
@@ -14,6 +14,7 @@
     src: ../../roles/personal/scripts/files/low-battery-alert.sh
 
 
+# configure cron
 # use cron instead of systemd because for less noisy logs.
 # format in /etc/cron.d/ is different than # /var/spool/cron/crontabs/meteo
 # /etc/cron.d includes the user
@@ -65,12 +66,17 @@
 #        Type=simple
 #        # TODO  change me!
 #        User=root
-#        # User=meteo
-#        # Group=meteo
-#        ExecStart=/bin/bash /home/meteo/low-battery-alert.sh
+#        # User=me
+#        # Group=me
+#        # ExecStart=/bin/bash /home/meteo/low-battery-alert.sh
+
+         # 2019 LIKE THIS
+#        ExecStart=/bin/bash /usr/local/bin/loop.sh 60 /usr/local/bin/low-battery-alert.sh
 #        # Environment="DISPLAY=:0" "XAUTHORITY=/home/b00m/.Xauthority"
-#        Restart=always
-#        RestartSec=60
+
+#        2019. DON"T DO THIS. instead call loop...
+#        # Restart=always
+#        # RestartSec=60
 #
 #        [Install]
 #        WantedBy=multi-user.target
