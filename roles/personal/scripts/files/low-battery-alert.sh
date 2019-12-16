@@ -1,7 +1,10 @@
 #!/bin/bash
 # deployed by ansible!
 
-threshold=90
+## OK - this can be converted to a systemd service by simply having systemd start a loop script
+## eg.  loop.sh 30 low_battery_alert.sh 
+
+threshold=50
 capacity=$(cat /sys/class/power_supply/BAT0/capacity)
 status=$(cat /sys/class/power_supply/BAT0/status)
 
