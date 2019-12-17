@@ -28,9 +28,13 @@ alias iftop='iftop -B -P -N'
 # shortcuts
 alias g=git
 alias s=sudo
-alias l=less
-alias v='vim -p'
-alias p=ping
+alias c=clear
+alias l=ls
+
+
+#alias l=less
+#alias v='vim -p'
+#alias p=ping
 
 alias sc=systemctl    # shadows /usr/bin/sc
 alias jc=journalctl
