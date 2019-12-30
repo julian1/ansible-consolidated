@@ -7,6 +7,7 @@
 
 _foo() 
 {
+  # see, https://debian-administration.org/article/317/An_introduction_to_bash_completion_part_2
     local cur prev opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -17,11 +18,11 @@ _foo()
 
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     # opts="--help --verbose --version"
-    opts=". open-trade nspawn backup ansible-consolidated Config_Stuff2 devel07/me devel07/downloads devel07.old/downloads nixos03/me"
+    opts=". open-trade nspawn backup ansible-consolidated nixos-config Config_Stuff2 devel07/me devel07/downloads devel07.old/downloads nixos03/me"
 
     #if [[ ${cur} == -* ]] ; then
-        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-        return 0
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    return 0
     #fi
 }
 complete -F _foo h 
@@ -37,11 +38,13 @@ function h() {
   elif [ $1 = 'nspawn' ];               then cd '/home/me/nspawn/'; 
   elif [ $1 = 'backup' ];               then cd '/mnt/drive/backup/'; 
   elif [ $1 = 'ansible-consolidated' ]; then cd '/home/me/devel/ansible-consolidated/'; 
+  elif [ $1 = 'nixos-config' ];         then cd '/home/me/devel/nixos-config/'; 
+
   elif [ $1 = 'Config_Stuff2' ];        then cd '/home/me/Config_Stuff2/'; 
 
   elif [ $1 = 'devel07/me'   ];         then cd '/home/large/nspawn/devel07.chroot/home/me/'; 
   elif [ $1 = 'devel07/downloads' ];    then cd '/home/large/nspawn/devel07.chroot/var/lib/transmission-daemon/downloads/'; 
-  elif [ $1 = 'devel07.old/downloads' ];    then cd '/home/large/nspawn/devel07.chroot.old/var/lib/transmission-daemon/downloads/'; 
+  elif [ $1 = 'devel07.old/downloads' ]; then cd '/home/large/nspawn/devel07.chroot.old/var/lib/transmission-daemon/downloads/'; 
 
  
 
