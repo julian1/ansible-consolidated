@@ -17,7 +17,7 @@ _foo()
 
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     # opts="--help --verbose --version"
-    opts=". open-trade nspawn backup ansible-consolidated Config_Stuff2 devel07/me devel07/downloads nixos03/me"
+    opts=". open-trade nspawn backup ansible-consolidated Config_Stuff2 devel07/me devel07/downloads devel07.old/downloads nixos03/me"
 
     #if [[ ${cur} == -* ]] ; then
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
@@ -28,8 +28,9 @@ complete -F _foo h
 
 function h() {
 
-  if [ -z "$1" ];                       then echo 'unrecognized path';
-  elif [ $1 = '.' ];                    then cd '/home/me/'; # fi;
+  # if [ -z "$1" ];                       then echo 'unrecognized path';
+  if [ -z "$1" ];                       then cd '/home/me/';
+  #elif [ $1 = '.' ];                    then cd '/home/me/'; # fi;
 
   elif [ $1 = 'open-trade' ];           then cd '/home/me/devel/haskell/open-trade/'; 
   #elif [ $1 = 'nspawn' ];              then cd '/home/me/devel/nspawn/'; 
@@ -39,7 +40,11 @@ function h() {
   elif [ $1 = 'Config_Stuff2' ];        then cd '/home/me/Config_Stuff2/'; 
 
   elif [ $1 = 'devel07/me'   ];         then cd '/home/large/nspawn/devel07.chroot/home/me/'; 
-  elif [ $1 = 'devel07/downloads' ];    then cd '/home/large/nspawn/devel07.chroot/var/lib/transmission-daemon/downloads'; 
+  elif [ $1 = 'devel07/downloads' ];    then cd '/home/large/nspawn/devel07.chroot/var/lib/transmission-daemon/downloads/'; 
+  elif [ $1 = 'devel07.old/downloads' ];    then cd '/home/large/nspawn/devel07.chroot.old/var/lib/transmission-daemon/downloads/'; 
+
+ 
+
   elif [ $1 = 'nixos03/me'   ];         then cd '/home/large/nspawn/nixos03.chroot/home/me/'; 
   else 
     echo 'unrecognized path';
