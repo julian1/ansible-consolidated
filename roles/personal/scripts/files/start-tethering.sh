@@ -11,14 +11,13 @@ if [ -z $1 ]; then
   dhclient -r
   dhclient -v usb0
   # ip route
-  ifconfig br0 10.3.0.1 netmask 255.255.255.0
 else
   # any arg
-  echo "using wifi"
+  echo "start wicd"
   set -x
   dhclient -r
   dhclient -r
   systemctl start wicd
-  ifconfig br0 10.3.0.1 netmask 255.255.255.0
 fi
 
+ifconfig br0 10.3.0.1 netmask 255.255.255.0

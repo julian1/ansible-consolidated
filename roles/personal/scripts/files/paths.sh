@@ -5,7 +5,7 @@
 # would be really nice if could have something similar that would replace current string
 # to use in contexts other that cd
 
-_foo() 
+_foo()
 {
   # see, https://debian-administration.org/article/317/An_introduction_to_bash_completion_part_2
     local cur prev opts
@@ -25,7 +25,7 @@ _foo()
     return 0
     #fi
 }
-complete -F _foo h 
+complete -F _foo h
 
 function h() {
 
@@ -33,30 +33,27 @@ function h() {
   if [ -z "$1" ];                       then cd '/home/me/';
   #elif [ $1 = '.' ];                    then cd '/home/me/'; # fi;
 
-  elif [ $1 = 'open-trade' ];           then cd '/home/me/devel/haskell/open-trade/'; 
-  #elif [ $1 = 'nspawn' ];              then cd '/home/me/devel/nspawn/'; 
-  elif [ $1 = 'nspawn' ];               then cd '/home/me/nspawn/'; 
-  elif [ $1 = 'backup' ];               then cd '/mnt/drive/backup/'; 
-  elif [ $1 = 'ansible-consolidated' ]; then cd '/home/me/devel/ansible-consolidated/'; 
-  elif [ $1 = 'nixos-config' ];         then cd '/home/me/devel/nixos-config/'; 
+  elif [ $1 = 'open-trade' ];           then cd '/home/me/devel/haskell/open-trade/';
+  elif [ $1 = 'nspawn' ];               then cd '/home/me/devel/nspawn/';
+  elif [ $1 = 'ansible-consolidated' ]; then cd '/home/me/devel/ansible-consolidated/';
+  elif [ $1 = 'nixos-config' ];         then cd '/home/me/devel/nixos-config/';
+  elif [ $1 = 'Config_Stuff2' ];        then cd '/home/me/devel/Config_Stuff2/';
 
-  elif [ $1 = 'Config_Stuff2' ];        then cd '/home/me/Config_Stuff2/'; 
+  elif [ $1 = 'backup' ];               then cd '/mnt/drive/backup/';
 
-  elif [ $1 = 'devel07/me'   ];         then cd '/home/large/nspawn/devel07.chroot/home/me/'; 
-  elif [ $1 = 'devel07/downloads' ];    then cd '/home/large/nspawn/devel07.chroot/var/lib/transmission-daemon/downloads/'; 
-  elif [ $1 = 'devel07.old/downloads' ]; then cd '/home/large/nspawn/devel07.chroot.old/var/lib/transmission-daemon/downloads/'; 
+  elif [ $1 = 'devel07/me'   ];         then cd '/home/large/nspawn/devel07.chroot/home/me/';
+  elif [ $1 = 'devel07/downloads' ];    then cd '/home/large/nspawn/devel07.chroot/var/lib/transmission-daemon/downloads/';
+  elif [ $1 = 'devel07.old/downloads' ]; then cd '/home/large/nspawn/devel07.chroot.old/var/lib/transmission-daemon/downloads/';
 
- 
-
-  elif [ $1 = 'nixos03/me'   ];         then cd '/home/large/nspawn/nixos03.chroot/home/me/'; 
-  else 
+  elif [ $1 = 'nixos03/me'   ];         then cd '/home/large/nspawn/nixos03.chroot/home/me/';
+  else
     echo 'unrecognized path';
   fi;
 
   #if [ $1 = 'home' ];       then cd '/home/me/'; fi;
   # ok we can do tab completion, buy just using a set/map
   # echo 'hi'
-  
+
 
 };
 

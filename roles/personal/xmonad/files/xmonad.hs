@@ -9,7 +9,7 @@ import System.IO
 
 import XMonad.Util.SpawnOnce
 
--- intelij
+-- intellij
 import XMonad.Hooks.SetWMName
 
 
@@ -84,7 +84,7 @@ xmonad $
 		, terminal = myterminal
 
 
-    -- intelij
+    -- intellij
     , startupHook = setWMName "LG3D"
 
 		-- , startupHook = spawnOnce "/usr/bin/xmobar /home/meteo/.xmobarrc"
