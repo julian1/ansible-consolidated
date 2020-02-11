@@ -52,6 +52,7 @@ ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname
 ansible-playbook plays/personal/bootstrap.yml   -i $host,
 ansible-playbook plays/personal/user-root.yml   -i $host,
 ansible-playbook plays/personal/user-me.yml     -i $host,
+ansible-playbook plays/admin/devenv-lite.yml    -i $host,
 
 # or bootstrap specific,
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
