@@ -28,6 +28,11 @@
       mode: 0755
       src: smaller.sh
 
+  - copy:
+      dest: "{{path}}/start-tethering.sh"
+      mode: 0755
+      src: start-tethering.sh
+
 
 
   # see low-battery-alert role for actual cron configuration and deploy.

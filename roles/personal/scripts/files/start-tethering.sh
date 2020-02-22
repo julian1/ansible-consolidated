@@ -8,7 +8,7 @@ if [ -z $1 ]; then
   systemctl stop wicd
   sleep 1
   dhclient -r
-  dhclient -r
+  # dhclient -r
   dhclient -v usb0
   # ip route
 else
@@ -16,8 +16,9 @@ else
   echo "start wicd"
   set -x
   dhclient -r
-  dhclient -r
+  # dhclient -r
   systemctl start wicd
 fi
 
 ifconfig br0 10.3.0.1 netmask 255.255.255.0
+
