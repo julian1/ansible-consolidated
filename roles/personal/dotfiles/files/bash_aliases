@@ -7,6 +7,10 @@ export HISTSIZE=40001
 export HISTTIMEFORMAT="%T " # "
 export EDITOR=vim
 
+
+PATH="$HOME/.local/bin:$PATH"
+
+
 # ps except deselect kernel kthreadd
 # use ps2 f for tree listing without kernel processes
 # hmmm, 'ps xf' appears to do similar and better...
