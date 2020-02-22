@@ -48,11 +48,12 @@ export host=n.n.n.n
 # only needed for non-injected hostname
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
 
-#
+# fast
 ansible-playbook plays/personal/bootstrap.yml   -i $host,
 ansible-playbook plays/personal/user-root.yml   -i $host,
 ansible-playbook plays/personal/user-me.yml     -i $host,
 ansible-playbook plays/admin/devenv-lite.yml    -i $host,
+ansible-playbook plays/personal/scripts.yml     -i localhost, -c local
 
 # or bootstrap specific,
 ansible-playbook plays/admin/hostname.yml       -i $host, --extra-vars "hostname=$host"
@@ -63,6 +64,7 @@ ansible-playbook plays/admin/fail2ban-sshd.yml  -i $host,
 ansible-playbook plays/admin/devenv-lite.yml    -i $host,
 ansible-playbook plays/personal/user-root.yml   -i $host,
 ansible-playbook plays/personal/user-me.yml     -i $host,
+ansible-playbook plays/personal/scripts.yml     -i localhost, -c local
 
 
 

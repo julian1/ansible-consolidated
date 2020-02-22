@@ -1,4 +1,6 @@
 
+  # placing in ~/.local/bin avoids need for root, good for servers
+
   - file: path="{{path}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
 
   - copy:

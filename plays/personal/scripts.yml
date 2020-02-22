@@ -1,8 +1,7 @@
 
-  - hosts: all
-    #roles:
-    #  - personal/scripts
+  # placing in ~/.local/bin avoids need for root, good for servers
 
+  - hosts: all
  
     roles:
       - name: personal/scripts
