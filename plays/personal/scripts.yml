@@ -1,6 +1,12 @@
 
   - hosts: all
+    #roles:
+    #  - personal/scripts
+
+ 
     roles:
-      - personal/scripts
+      - name: personal/scripts
+        path: "/home/me/.local/bin"
+        user: me
 
 

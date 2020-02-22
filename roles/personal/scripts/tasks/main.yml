@@ -1,27 +1,28 @@
 
+  - file: path="{{path}}" state=directory owner="{{user}}" group="{{user}}" recurse=yes
 
   - copy:
-      dest: /usr/local/bin/backup.sh
+      dest: "{{path}}/backup.sh"
       mode: 0755
       src: backup.sh
 
   - copy:
-      dest: /usr/local/bin/restore.sh
+      dest: "{{path}}/restore.sh"
       mode: 0755
       src: restore.sh
 
   - copy:
-      dest: /usr/local/bin/brightness.sh
+      dest: "{{path}}/brightness.sh"
       mode: 0755
       src: brightness.sh
 
   - copy:
-      dest: /usr/local/bin/volume.sh
+      dest: "{{path}}/volume.sh"
       mode: 0755
       src: volume.sh
 
   - copy:
-      dest: /usr/local/bin/smaller.sh
+      dest: "{{path}}/smaller.sh"
       mode: 0755
       src: smaller.sh
 
@@ -29,25 +30,25 @@
 
   # see low-battery-alert role for actual cron configuration and deploy.
   - copy:
-      dest: /usr/local/bin/low-battery-alert.sh
+      dest: "{{path}}/low-battery-alert.sh"   # FIXME
       mode: 0777
-      owner: me
-      group: me
+      owner: "{{user}}"
+      group: "{{user}}"
       src: low-battery-alert.sh
 
   # any phone with simplesshd
   - copy:
-      dest: /usr/local/bin/rsync-phone.sh
+      dest: "{{path}}/rsync-phone.sh"
       mode: 0755
-      owner: me
-      group: me
+      owner: "{{user}}"
+      group: "{{user}}"
       src: rsync-phone.sh
 
   - copy:
-      dest: /usr/local/bin/send-to-phone.sh
+      dest: "{{path}}/send-to-phone.sh"
       mode: 0755
-      owner: me
-      group: me
+      owner: "{{user}}"
+      group: "{{user}}"
       src: send-to-phone.sh
 
 
