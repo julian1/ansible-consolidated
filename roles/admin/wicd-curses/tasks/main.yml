@@ -1,0 +1,12 @@
+
+  # think will need a reboot to pickup "non-free" firmware
+
+  - apt: name=firmware-iwlwifi   # required. for firmware. needs "non-free" in /etc/apt/sources.list
+
+  # seems to be installed by default with buster
+  - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
+  - apt: name=iw
+
+  - apt: name=wicd-curses
+
+

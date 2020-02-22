@@ -1,6 +1,6 @@
 
-# 1. do alsa, and check.
-# 2. install this.  very simple. 
+# 1. do alsa, and check sound works with "# speaker-test"
+# 2. install pulse.  very simple. 
 # worked immediately, just started firefox/youtube after to check
 # headphones also work.
 

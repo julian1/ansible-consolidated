@@ -1,0 +1,7 @@
+
+  # think will need a reboot to pickup "non-free" firmware
+
+  - hosts:
+      - localhost
+    roles:
+      - admin/wicd-curses
