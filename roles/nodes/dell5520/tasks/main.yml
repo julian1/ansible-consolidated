@@ -8,6 +8,37 @@
   # wireless
   # non-free firmware load for iwlwifi-7260-17.ucode  - worked!
 
+
+#  - copy:
+#      dest: /etc/fstab
+#      backup: yes
+#      content: |
+#        # deployed by ansible!
+#        # allow writing /dev/sdb device
+#
+#        # Use 'blkid' to print the universally unique identifier for a
+#        # device; this may be used with UUID= as a more robust way to name devices
+#        # that works even if disks are added and removed. See fstab(5).
+#
+#        # JA all of this is default
+#        # <file system>                             <mount point> <type>  <options>       <dump>  <pass>
+#        /dev/mapper/nvme0n1p4_crypt                 /             ext4    errors=remount-ro       0       1
+#
+#        # /boot was on /dev/nvme0n1p2 during installation
+#        UUID=695d2c88-d939-4789-853f-3fb9668fb08b   /boot         ext4    defaults                0       2
+#
+#        # /boot/efi was on /dev/nvme0n1p1 during installation
+#        UUID=2518-1278                              /boot/efi     vfat    umask=0077              0       1
+#
+#        # JA
+#        # 2.5" ssd
+#        UUID=2357e387-a4e0-49cb-9409-278d41c2975d   //mnt/drive   ext4  errors=remount-ro         0       2
+#
+#        # JA root ramdisk
+#        tmpfs                                       /root         tmpfs   rw,nodev,nosuid,size=1G 0       0
+#
+
+
   - apt: name=firmware-iwlwifi   # needs non-free in sources
 
   - apt: name=wireless-tools  # iwconfig - useful to check wlan1 state
@@ -56,35 +87,6 @@
         # udevadm control --reload-rules && udevadm trigger
         # KERNEL=="sdb", SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="me"
         SUBSYSTEM=="block", ATTRS{idVendor}=="058f", ATTRS{idProduct}=="6387", MODE="0666", OWNER="me"
-
-
-  - copy:
-      dest: /etc/fstab
-      backup: yes
-      content: |
-        # deployed by ansible!
-        # allow writing /dev/sdb device
-
-        # Use 'blkid' to print the universally unique identifier for a
-        # device; this may be used with UUID= as a more robust way to name devices
-        # that works even if disks are added and removed. See fstab(5).
-
-        # JA all of this is default
-        # <file system>                             <mount point> <type>  <options>       <dump>  <pass>
-        /dev/mapper/nvme0n1p4_crypt                 /             ext4    errors=remount-ro       0       1
-
-        # /boot was on /dev/nvme0n1p2 during installation
-        UUID=695d2c88-d939-4789-853f-3fb9668fb08b   /boot         ext4    defaults                0       2
-
-        # /boot/efi was on /dev/nvme0n1p1 during installation
-        UUID=2518-1278                              /boot/efi     vfat    umask=0077              0       1
-
-        # JA
-        # 2.5" ssd
-        UUID=2357e387-a4e0-49cb-9409-278d41c2975d   //mnt/drive   ext4  errors=remount-ro         0       2
-
-        # JA root ramdisk
-        tmpfs                                       /root         tmpfs   rw,nodev,nosuid,size=1G 0       0
 
 
 
