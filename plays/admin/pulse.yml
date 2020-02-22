@@ -2,6 +2,7 @@
 # 1. do alsa, and check.
 # 2. install this.  very simple. 
 # worked immediately, just started firefox/youtube after to check
+# headphones also work.
 
   - hosts:
       - localhost
