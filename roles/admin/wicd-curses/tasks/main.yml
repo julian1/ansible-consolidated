@@ -1,4 +1,9 @@
 
+  # reboot
+  # ifconfig wlp2s0 up
+  # iwlist scan
+  # now have to get the thing named wlan0 so that wicd-curses can see it.
+
   # think will need a reboot to pickup "non-free" firmware
 
   - apt: name=firmware-iwlwifi   # required. for firmware. needs "non-free" in /etc/apt/sources.list
