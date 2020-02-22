@@ -1,0 +1,68 @@
+
+# ethernet bridge for qemu and nspawn, kvm, docker etc
+
+
+  #############################
+  # bridge
+
+  - apt: name=bridge-utils
+
+  # insertafter: "<body>"
+  - blockinfile:
+      dest: /etc/network/interfaces
+      marker: "# {mark} ansible bridge"
+      content: |
+        auto br0
+        iface br0 inet static
+          address 10.3.0.1
+          netmask 255.255.255.0
+          bridge_ports dummy0
+          bridge_stp off
+          bridge_fd 0
+    notify: restart-br0
+
+
+  #####
+  # Support bridge addif for qemu
+  # tunctl from uml-utilities only needed for permissions, not strictly needed
+  - apt: name=qemu-kvm
+  - apt: name=uml-utilities
+
+  - copy:
+      dest: /etc/qemu-ifup
+      mode: 0755
+      content: |
+        #!/bin/sh -x
+        # deployed by ansible
+        echo "i am $(whoami)"
+        switch=br0
+        if [ -n "$1" ];then
+            # has to be run as root...
+            # tunctl -u `whoami` -t $1
+            ip link set $1 up
+            sleep 0.5s
+            brctl addif $switch $1
+            exit 0
+        else
+            ECHO "Error: no interface specified"
+            exit 1
+        fi
+
+  - copy:
+      dest: /etc/qemu-ifdown
+      mode: 0755
+      content: |
+        #!/bin/sh -x
+        # deployed by ansible
+        switch=br0
+        if [ -n "$1" ];then
+            # permissions...
+            brctl delif $switch $1
+            ip link delete $1
+            exit 0
+        else
+            echo "Error: no interface specified"
+            exit 1
+        fi
+
+
