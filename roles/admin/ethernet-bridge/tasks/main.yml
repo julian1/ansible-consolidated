@@ -1,4 +1,10 @@
 
+# also need.
+# 1) host ip-forwarding
+# 2) host nat
+# 3) host apt-get install systemd-container
+
+
 # ethernet bridge for qemu and nspawn, kvm, docker etc
 
 
