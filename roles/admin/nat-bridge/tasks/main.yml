@@ -1,0 +1,39 @@
+
+
+#############################
+# firewall, nat
+# must be integrated whatever else is needed on the host
+
+- apt: name=iptables
+- apt: name=m4
+- apt: name=iptables-persistent
+
+- copy:
+    dest: /etc/iptables-rules.m4
+    content: |
+      # deployed by ansible!
+
+      #####
+      # flush current chain rules
+      iptables -t filter --flush
+      iptables -t nat --flush
+
+      #############
+      # NAT - IMPORTANT -
+      # if not using our own router with a route to 10.3.0.0, then we need local outgoing NAT
+      # on the interface.
+
+      iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o wlan0 -j MASQUERADE
+      iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -o usb0  -j MASQUERADE
+
+      # polyc - no restrictions
+      iptables -P INPUT  ACCEPT
+      iptables -P OUTPUT ACCEPT
+      iptables -P FORWARD ACCEPT
+
+
+  notify: reconfigure-iptables
+  tags: iptables
+
+
+
