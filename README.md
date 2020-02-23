@@ -3,6 +3,8 @@
 
 Ansible plays for use with dev, systemd-nspawn containers, kvm, cloud instances, vbox etc.
 
+For local root, may need,
+export PATH=/sbin/:/usr/sbin/:$PATH
 
 #### Examples
 
