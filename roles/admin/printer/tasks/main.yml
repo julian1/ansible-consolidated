@@ -4,10 +4,12 @@
 
   - service: name=cups state=started
 
-  # IMPORTANT no longer idempotent. to allow change configuration.
+  # IMPORTANT no longer idempotent. to allow changing configuration
   # run once only.
 
-  # make idempotent
+  # TODO make idempotent - needs more work
+  # eg. write config to file, determine if file changed, then call lpadmin 
+
   #- shell: lpstat -p | grep -q {{pname}}
   #  register: have_printer
   #  ignore_errors: yes
