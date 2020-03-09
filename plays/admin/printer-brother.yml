@@ -1,4 +1,7 @@
 
+# http://localhost:631/printers/Brother
+# http://192.168.0.8/printer/main.html 
+
 - hosts:
     - localhost
   roles:
