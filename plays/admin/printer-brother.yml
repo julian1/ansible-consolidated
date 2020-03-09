@@ -1,0 +1,20 @@
+
+
+# everything that's not super low level
+# we should not be mixing low level stuff - like udev, fstab, mirrors,  with scripts and timezoes.
+
+
+- hosts:
+    - localhost
+
+  roles:
+    # TODO - move out here? second level config...
+    - name: admin/printer
+      tags: printer
+      pname: Brother
+      # url: socket://brother.localnet:9100
+      # kelly. netgear.
+      url: socket://192.168.0.8:9100
+      ppd: BRHL16_2_GPL.ppd
+
+
