@@ -14,6 +14,7 @@
       pname: Brother
       # url: socket://brother.localnet:9100
       # kelly. netgear.
+      # whoot
       url: socket://192.168.0.8:9100
       ppd: BRHL16_2_GPL.ppd
 

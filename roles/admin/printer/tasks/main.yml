@@ -4,10 +4,14 @@
 
   - service: name=cups state=started
 
-  - shell: lpstat -p | grep -q {{pname}}
-    register: have_printer
-    ignore_errors: yes
-    changed_when: "have_printer.rc != 0"
+  # IMPORTANT no longer idempotent. to allow change configuration.
+  # run once only.
+
+  # make idempotent
+  #- shell: lpstat -p | grep -q {{pname}}
+  #  register: have_printer
+  #  ignore_errors: yes
+  #  changed_when: "have_printer.rc != 0"
 
   - copy: src={{ppd}} dest=/tmp
 
@@ -20,6 +24,7 @@
         -E
       # set default
       lpadmin -d {{pname}}
-    when: "have_printer.rc != 0"
+
+  #  when: "have_printer.rc != 0"
 
 
