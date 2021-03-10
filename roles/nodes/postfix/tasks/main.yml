@@ -381,7 +381,14 @@
         # deployed by ansible!
 
         AuthservID mail.julian1.io  # JA
-        PidFile /var/run/opendmarc.pid #Debian default
+        # PidFile /var/run/opendmarc.pid #Debian default
+
+        # JA mar 10 2021
+        # changed, due to inability to write
+        PidFile /var/run/opendmarc/opendmarc.pid
+
+
+
         RejectFailures false
         Syslog true
 
@@ -392,7 +399,10 @@
         HistoryFile /var/run/opendmarc/opendmarc.dat
         #for testing:
         SoftwareHeader true
-
+  
+        # JA mar 10 2021
+        # https://serverfault.com/questions/1026200/opendkim-wont-start-opendkim-milter-socket-must-be-specified
+        Socket                  inet:54321@localhost
 
   - file: path=/etc/opendmarc/ state=directory owner=root group=opendmarc
 
@@ -431,6 +441,8 @@
 
         [Install]
         WantedBy=multi-user.target
+
+
 
     notify: reconfigure-dmarc
 
