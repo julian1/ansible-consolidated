@@ -7,7 +7,7 @@
 
 - debug: msg="user={{user}}, path={{path}}"
 
-
+# need a flag to force update, if git changes,
 
 - command: sh -c "bash -c ./install.sh {{path}}"
   args:
