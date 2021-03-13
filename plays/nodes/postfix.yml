@@ -1,15 +1,24 @@
 
+
 - hosts: all
-  vars:
+  vars_files:
+    - ../../credentials.yml
+
   roles:
+    # locale and timezone should be fixed here
     #- admin/timezone
-    - admin/locale
-    - admin/sshd
+    #- admin/locale
+    #- admin/sshd
     # - admin/fail2ban
     # - admin/firewall
 
+    # required as main postfix account
+    - name: admin/user
+      username: me
+      path: /home/me
+      mode: 0700
+
     - nodes/postfix
-    #- nodes/postfix-fail2ban
     - nodes/fail2ban-postfix
 
   tasks:
