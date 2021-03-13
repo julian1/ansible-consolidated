@@ -1,7 +1,4 @@
 
-#DEPRECATED
-
-# not sure, if shouldn't be a sh scripted install in a separate github repo, since it's more code
 
 - hosts: all
   roles:
