@@ -2,7 +2,7 @@
 - hosts: all
   vars:
   roles:
-    - admin/timezone
+    #- admin/timezone
     - admin/locale
     - admin/sshd
     # - admin/fail2ban
