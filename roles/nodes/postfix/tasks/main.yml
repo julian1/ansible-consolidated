@@ -401,7 +401,7 @@
         HistoryFile /var/run/opendmarc/opendmarc.dat
         #for testing:
         SoftwareHeader true
-  
+
         # JA mar 10 2021
         # https://serverfault.com/questions/1026200/opendkim-wont-start-opendkim-milter-socket-must-be-specified
         Socket                  inet:54321@localhost
@@ -561,7 +561,11 @@
         # should redirect gmail also. or create another account. or revert back?
         mail: me
         root: me
-        gmail: me
+        # gmail: me     # standalone
+        # need both?
+        groups-id: /dev/null
+        groups-io: /dev/null
+
         nobody: root
         hostmaster: root
         usenet: root
@@ -570,6 +574,9 @@
         www: root
         ftp: root
         abuse: root
+
+        # https://www.serverwatch.com/guides/forwarding-a-postfix-virtual-alias-to-dev-null/
+        # devnull: /dev/null
 
     notify: reconfigure-aliases
     tags: aliases
