@@ -2,8 +2,8 @@
   - name: reconfigure-low-battery-alert
     command: "{{item}}"
     with_items:
-      - systemctl stop low-battery-alert.service 
-      - systemctl daemon-reload 
-      - systemctl enable low-battery-alert.service 
-      - systemctl start  low-battery-alert.service 
+      - systemctl stop low-battery-alert.service low-battery-alert.timer
+      - systemctl daemon-reload
+      - systemctl enable low-battery-alert.service low-battery-alert.timer
+      - systemctl start  low-battery-alert.service low-battery-alert.timer
 

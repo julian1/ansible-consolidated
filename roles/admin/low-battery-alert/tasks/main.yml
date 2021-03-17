@@ -1,5 +1,3 @@
-
-# https://unix.stackexchange.com/questions/1974/how-do-i-make-my-pc-speaker-beep
 # https://www.pcsuggest.com/show-notification-play-sound-low-battery-linux/
 
 # /sys/class/power_supply/BAT0/status
@@ -11,10 +9,66 @@
     mode: 0777
     owner: me
     group: me
-    src: ../../roles/personal/scripts/files/low-battery-alert.sh
+    src: low-battery-alert.sh
 
 
-# configure cron
+
+################################
+# systemd timer service needs two files. one for service and one for timer.
+# Use this to see timers, show how long to run.
+#   systemctl list-timers
+#   journalctl -f -u low-battery-alert
+
+# https://medium.com/horrible-hacks/using-systemd-as-a-better-cron-a4023eea996d
+
+- copy:
+    dest: /etc/systemd/system/low-battery-alert.service
+    mode: 0644
+    content: |
+      # deployed by ansible!
+
+      [Unit]
+      Description=Send alerts on low battery
+
+      [Service]
+      ExecStart=/bin/bash /usr/local/bin/low-battery-alert.sh
+
+      # this suppresses logging, but not the start message on timer events
+      # https://serverfault.com/questions/838574/how-to-silent-a-systemd-service
+      #StandardOutput=null
+      #StandardError=journal
+
+      [Install]
+      WantedBy=timers.target
+
+  notify: reconfigure-low-battery-alert
+
+- copy:
+    dest: /etc/systemd/system/low-battery-alert.timer
+    mode: 0644
+    content: |
+      # deployed by ansible!
+
+      [Unit]
+      Description=Send alerts on low battery
+      Requires=low-battery-alert.service
+
+      [Timer]
+      Unit=low-battery-alert.service
+      OnUnitInactiveSec=60s
+      #RandomizedDelaySec=60s
+      AccuracySec=1s
+
+      [Install]
+      WantedBy=timers.target
+
+
+  notify: reconfigure-low-battery-alert
+
+
+
+
+# configure using cron
 # use cron instead of systemd because for less noisy logs.
 # format in /etc/cron.d/ is different than # /var/spool/cron/crontabs/meteo
 # /etc/cron.d includes the user
@@ -27,59 +81,13 @@
 # will put the output in syslog for safe keeping, and stop the MTA complaints"
 
 # TODO would be better to run as another user. ie not me
-- copy:
-    dest: /etc/cron.d/low-battery-alert
-    owner: root
-    group: root
-    mode: 0644
-    content: |
-      * * * * * me /usr/local/bin/low-battery-alert.sh 2>&1 | logger -t low-battery-alert
+#- copy:
+#    dest: /etc/cron.d/low-battery-alert
+#    owner: root
+#    group: root
+#    mode: 0644
+#    content: |
+#      * * * * * me /usr/local/bin/low-battery-alert.sh 2>&1 | logger -t low-battery-alert
 
 
 
-
-
-
-
-#  - copy:
-#      dest: /var/spool/cron/crontabs/meteo
-#      owner: meteo
-#      group: crontab
-#      mode: 0600
-#      content: |
-# 
-
-
-#
-#   systemd is noisy in syslog and difficult to filter
-#  - copy:
-#      dest: /etc/systemd/system/low-battery-alert.service
-#      mode: 0644
-#      content: |
-#        # deployed by ansible!
-#
-#        [Unit]
-#        Description=Send alerts on low battery
-#
-#        [Service]
-#        # Type=forked
-#        Type=simple
-#        # TODO  change me!
-#        User=root
-#        # User=me
-#        # Group=me
-#        # ExecStart=/bin/bash /home/meteo/low-battery-alert.sh
-
-         # 2019 LIKE THIS
-#        ExecStart=/bin/bash /usr/local/bin/loop.sh 60 /usr/local/bin/low-battery-alert.sh
-#        # Environment="DISPLAY=:0" "XAUTHORITY=/home/b00m/.Xauthority"
-
-#        2019. DON"T DO THIS. instead call loop...
-#        # Restart=always
-#        # RestartSec=60
-#
-#        [Install]
-#        WantedBy=multi-user.target
-#
-#    notify: reconfigure-low-battery-alert
-#
