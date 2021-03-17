@@ -1,0 +1,39 @@
+
+# looping version. without systemd timer which is too chatty in the logs
+
+
+- copy:
+    dest: /usr/local/bin/low-battery-alert.sh
+    mode: 0777
+    owner: me
+    group: me
+    src: low-battery-alert.sh
+
+  notify: reconfigure-low-battery-alert
+
+
+
+- copy:
+    dest: /etc/systemd/system/low-battery-alert.service
+    mode: 0644
+    content: |
+      # deployed by ansible!
+
+      [Unit]
+      Description=Send alerts on low battery
+
+      [Service]
+      ExecStart=/bin/bash /usr/local/bin/low-battery-alert.sh
+
+      #
+      # this suppresses logging, but not the start message on timer events
+      # https://serverfault.com/questions/838574/how-to-silent-a-systemd-service
+      #StandardOutput=null
+      #StandardError=journal
+
+      [Install]
+      WantedBy=timers.target
+
+  notify: reconfigure-low-battery-alert
+
+

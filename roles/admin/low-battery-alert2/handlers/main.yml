@@ -1,0 +1,11 @@
+
+# make sure low-batter-alert.timer is not running and disabled! 
+
+  - name: reconfigure-low-battery-alert
+    command: "{{item}}"
+    with_items:
+      - systemctl stop low-battery-alert.service
+      - systemctl daemon-reload
+      - systemctl enable low-battery-alert.service
+      - systemctl start  low-battery-alert.service
+
