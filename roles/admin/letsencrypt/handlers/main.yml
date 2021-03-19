@@ -8,9 +8,9 @@
 - name: reconfigure-certbot-update
   command: "{{item}}"
   with_items:
-    - systemctl stop certbot.service
+    - systemctl stop certbot.service certbot.timer
     - systemctl daemon-reload
-    - systemctl enable certbot.service
-    - systemctl start  certbot.service
+    - systemctl enable certbot.service certbot.timer
+    - systemctl start  certbot.service certbot.timer
 
 
