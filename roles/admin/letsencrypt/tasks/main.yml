@@ -82,9 +82,6 @@
 #  /lib/systemd/system/certbot.service
 #  /lib/systemd/system/certbot.timer
 
-# think we would just need to update systemd execstart.
-# test -x /usr/bin/certbot -a \! -d /run/systemd/system && perl -e 'sleep int(rand(43200))' && certbot -q renew --renew-hook "systemctl reload apache2"
-
 # 
 # certbot renew --dry-run
 
