@@ -1,6 +1,7 @@
 
 # test apache2. mar 2021.
 # https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-debian-10/
+# test, https://www.ssllabs.com/ssltest/analyze.html?d=julian1.io&hideResults=on&latest
 
 - apt: name=apache2
 
