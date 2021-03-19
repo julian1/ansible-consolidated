@@ -60,32 +60,36 @@
     dest: /etc/apache2/sites-available/default.conf
     create: true
     content: |
-      <VirtualHost *:80>
+      <VirtualHost *:80> 
+        ServerName julian1.io
+        ServerAlias www.julian1.io
 
-        DocumentRoot      /var/www/html
-
-        # Require all granted
-
-        # eg.
-        ProxyPass         /mcp2   http://mcp2.aodn.org.au
-        ProxyPassReverse  /mcp2   http://mcp2.aodn.org.au 
-
+        Redirect permanent / https://julian1.io/
       </VirtualHost>
 
 
-#      <VirtualHost *:443>
-#        DocumentRoot      /var/www/html
-#
-#        # eg.
-#        ProxyPass         /mcp2   http://mcp2.aodn.org.au
-#        ProxyPassReverse  /mcp2   http://mcp2.aodn.org.au 
-#
-#        SSLEngine On
-#        SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
-#        SSLCertificateKeyFile   /etc/ssl/private/ssl-cert-snakeoil.key
-#        # SSLCertificateChainFile /etc/ssl/certs/aodn.org.au.chain.crt
-#
-#      </VirtualHost>
+
+      <VirtualHost *:443>
+        ServerName julian1.io
+        ServerAlias www.julian1.io
+
+        Protocols h2 http/1.1
+
+        <If "%{HTTP_HOST} == 'www.julian1.io'">
+          Redirect permanent / https://julian1.io/
+        </If>
+
+        #DocumentRoot /var/www/julian1.io/public_html
+        #ErrorLog ${APACHE_LOG_DIR}/julian1.io-error.log
+        #CustomLog ${APACHE_LOG_DIR}/julian1.io-access.log combined
+
+        SSLEngine On
+        SSLCertificateFile /etc/letsencrypt/live/julian1.io/fullchain.pem
+        SSLCertificateKeyFile /etc/letsencrypt/live/julian1.io/privkey.pem
+
+        # Other Apache Configuration
+
+      </VirtualHost>
 
 
   notify: reload-apache2
