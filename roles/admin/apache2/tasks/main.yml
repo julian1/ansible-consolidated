@@ -1,0 +1,98 @@
+
+# test apache2. mar 2021. copied from rev-proxy
+# https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-debian-10/
+
+# apache
+- apt: name=apache2
+
+# mod proxy
+#- apt: name=libapache2-mod-proxy-html
+#libapache2-mod-proxy-uwsgi
+
+# enable proxy
+- apache2_module: name={{item}} state=present
+  with_items:
+    - proxy
+    - proxy_http
+    - proxy_html
+    - ssl
+
+# - command: a2enmod proxy proxy_http
+# - command: a2enmod proxy proxy_html
+
+# https://cumptrnrd.wordpress.com/2013/04/21/securing-apache-content-with-basic-authentication-on-ubuntu/
+#- command: a2enmod auth_basic
+#- command: a2enmod authn_file
+#- command: a2enmod authz_user
+
+
+# remove default site
+- command: a2dissite 000-default.conf
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+
+
+
+# TODO control docroot with var
+# tmp dir for files
+- file: path=/var/www/html     state=directory mode=0755
+- file: path=/var/www/html/tmp state=directory mode=0755
+
+# document root
+- copy:
+    dest: /var/www/html/index.html
+    content: |
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <h1>Woot!!</h1>
+          <ul>
+
+            <li><a href="/tmp">tmp</a></li>
+          </ul>
+        </body>
+      </html>
+
+# TODO authentification...
+
+# reverse proxy
+- blockinfile:
+    dest: /etc/apache2/sites-available/default.conf
+    create: true
+    content: |
+      <VirtualHost *:80>
+
+        DocumentRoot      /var/www/html
+
+        # Require all granted
+
+        # eg.
+        ProxyPass         /mcp2   http://mcp2.aodn.org.au
+        ProxyPassReverse  /mcp2   http://mcp2.aodn.org.au 
+
+      </VirtualHost>
+
+
+#      <VirtualHost *:443>
+#        DocumentRoot      /var/www/html
+#
+#        # eg.
+#        ProxyPass         /mcp2   http://mcp2.aodn.org.au
+#        ProxyPassReverse  /mcp2   http://mcp2.aodn.org.au 
+#
+#        SSLEngine On
+#        SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+#        SSLCertificateKeyFile   /etc/ssl/private/ssl-cert-snakeoil.key
+#        # SSLCertificateChainFile /etc/ssl/certs/aodn.org.au.chain.crt
+#
+#      </VirtualHost>
+
+
+  notify: reload-apache2
+
+# enable
+- command: a2ensite default
+  args:
+    creates: /etc/apache2/sites-enabled/default.conf
+
+

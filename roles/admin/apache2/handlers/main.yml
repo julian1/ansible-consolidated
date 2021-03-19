@@ -1,0 +1,5 @@
+
+
+- name: reload-apache2
+  command: service apache2 reload
+
