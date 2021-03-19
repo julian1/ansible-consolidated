@@ -3,3 +3,14 @@
 - name: reload-apache2
   command: service apache2 reload
 
+
+
+- name: reconfigure-certbot-update
+  command: "{{item}}"
+  with_items:
+    - systemctl stop certbot.service
+    - systemctl daemon-reload
+    - systemctl enable certbot.service
+    - systemctl start  certbot.service
+
+

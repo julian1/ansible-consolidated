@@ -76,4 +76,35 @@
 # do manually. after config.
 # certbot certonly --agree-tos --email admin@julian1.io --webroot -w /var/lib/letsencrypt/ -d julian1.io -d www.julian1.io
 
+# think cron job is *not* run,
+# /etc/cron.d/certbot
+# instead, there's a systemd certbot service and timer here,
+#  /lib/systemd/system/certbot.service
+#  /lib/systemd/system/certbot.timer
+
+# think we would just need to update systemd execstart.
+# test -x /usr/bin/certbot -a \! -d /run/systemd/system && perl -e 'sleep int(rand(43200))' && certbot -q renew --renew-hook "systemctl reload apache2"
+
+# 
+# certbot renew --dry-run
+
+
+- copy:
+    dest: /lib/systemd/system/certbot.service
+    # backup original,
+    backup: yes
+    content: |
+      [Unit]
+      Description=Certbot
+      Documentation=file:///usr/share/doc/python-certbot-doc/html/index.html
+      Documentation=https://letsencrypt.readthedocs.io/en/latest/
+      [Service]
+      Type=oneshot
+      # ExecStart=/usr/bin/certbot -q renew
+      ExecStart=/usr/bin/certbot -q renew --renew-hook "systemctl reload apache2"
+      PrivateTmp=true
+
+  notify: reconfigure-certbot-update
+
+
 
