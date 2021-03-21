@@ -82,9 +82,10 @@
 #  /lib/systemd/system/certbot.service
 #  /lib/systemd/system/certbot.timer
 
-# 
+#
 # certbot renew --dry-run
-
+#
+# journalctl -xe -u certbot
 
 - copy:
     dest: /lib/systemd/system/certbot.service
